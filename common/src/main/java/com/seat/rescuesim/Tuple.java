@@ -11,6 +11,11 @@ public class Tuple<K, V> {
         this.second = second;
     }
 
+    public Tuple(Tuple<K, V> tuple) {
+        this.first = tuple.first;
+        this.second = tuple.second;
+    }
+
     public K getFirst() {
         return this.first;
     }
@@ -19,11 +24,15 @@ public class Tuple<K, V> {
         return this.second;
     }
 
-    public String toString() {
+    public JSONArray toJSON() {
         JSONArray json = new JSONArray();
         json.put(this.first.toString());
         json.put(this.second.toString());
-        return json.toString();
+        return json;
+    }
+
+    public String toString() {
+        return this.toJSON().toString();
     }
 
 }
