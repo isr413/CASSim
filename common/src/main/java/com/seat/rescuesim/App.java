@@ -12,6 +12,7 @@ public class App
             100,
             1.37,
             1.0,
+            0.0,
             new Map(13, 13, 10)
         );
         String json = config.encode();
