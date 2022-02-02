@@ -1,4 +1,7 @@
-package com.seat.rescuesim;
+package com.seat.rescuesim.simserver;
+
+import com.seat.rescuesim.common.Map;
+import com.seat.rescuesim.common.ScenarioConfig;
 
 /**
  * Hello world!
