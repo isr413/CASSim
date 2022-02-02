@@ -65,6 +65,10 @@ public class DroneSpecification {
         return this.maxVelocity;
     }
 
+    public double getMinBatteryUsage() {
+        return this.minBatteryUsage;
+    }
+
     public Sensor[] getSensors() {
         return this.sensors;
     }

@@ -3,7 +3,11 @@ package com.seat.rescuesim;
 public enum SensorType {
     None(0),
     Vision(1),
-    Bluetooth(2);
+    Bluetooth(2),
+    ShortRangeRadio(3),
+    LongRangeRadio(4),
+    GPS(5),
+    Medical(6);
 
     private int type;
 
