@@ -3,6 +3,7 @@ package com.seat.rescuesim;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 public class Map {
     private static final String MAP_GRID = "map_grid";
     private static final String MAP_WIDTH = "map_width";
