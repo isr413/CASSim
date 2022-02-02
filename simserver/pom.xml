@@ -30,6 +30,13 @@
       <artifactId>json</artifactId>
       <version>20190722</version>
     </dependency>
+    <dependency>
+      <groupId>com.seat.rescuesim.common</groupId>
+      <artifactId>common</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/common.jar</systemPath>
+    </dependency>
   </dependencies>
 
   <build>

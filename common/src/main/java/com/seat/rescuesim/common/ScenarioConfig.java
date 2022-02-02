@@ -1,4 +1,4 @@
-package com.seat.rescuesim;
+package com.seat.rescuesim.common;
 
 import org.json.JSONException;
 import org.json.JSONObject;

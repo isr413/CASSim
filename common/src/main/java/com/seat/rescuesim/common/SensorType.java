@@ -1,4 +1,4 @@
-package com.seat.rescuesim;
+package com.seat.rescuesim.common;
 
 public enum SensorType {
     None(0),
