@@ -1,7 +1,8 @@
 package com.seat.rescuesim.common;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,7 +21,7 @@ public class DroneSpecification {
     private double maxBatteryPower;
     private double maxVelocity;
     private double minBatteryUsage;
-    private Sensor[] sensors;
+    private HashMap<SensorType, Sensor> sensors;
 
     public static DroneSpecification decode(JSONObject json) throws JSONException {
         double batteryPower = json.getDouble(DroneSpecification.DRONE_FUEL);
@@ -28,10 +29,10 @@ public class DroneSpecification {
         Vector location = Vector.decode(json.getJSONArray(DroneSpecification.DRONE_LOCATION));
         double velocity = json.getDouble(DroneSpecification.DRONE_VELOCITY);
         double acceleration = json.getDouble(DroneSpecification.DRONE_ACCELERATION);
-        JSONArray droneSensors = json.getJSONArray(DroneSpecification.DRONE_SENSORS);
-        Sensor[] sensors = new Sensor[droneSensors.length()];
-        for (int i = 0; i < sensors.length; i++) {
-            sensors[i] = Sensor.decode(droneSensors.getJSONObject(i));
+        JSONArray jsonSensors = json.getJSONArray(DroneSpecification.DRONE_SENSORS);
+        ArrayList<Sensor> sensors = new ArrayList<>();
+        for (int i = 0; i < jsonSensors.length(); i++) {
+            sensors.add(Sensor.decode(jsonSensors.getJSONObject(i)));
         }
         return new DroneSpecification(batteryPower, batteryUsage, location, velocity, acceleration, sensors);
     }
@@ -40,8 +41,44 @@ public class DroneSpecification {
         return DroneSpecification.decode(new JSONObject(encoding));
     }
 
+    public DroneSpecification(double batteryPower, double batteryUsage, Vector location) {
+        this(batteryPower, batteryUsage, location, 0.0, 0.0, new HashMap<SensorType, Sensor>());
+    }
+
+    public DroneSpecification(double batteryPower, double batteryUsage, Vector location, Sensor[] sensors) {
+        this(batteryPower, batteryUsage, location, 0.0, 0.0, sensors);
+    }
+
+    public DroneSpecification(double batteryPower, double batteryUsage, Vector location, ArrayList<Sensor> sensors) {
+        this(batteryPower, batteryUsage, location, 0.0, 0.0, sensors);
+    }
+
+    public DroneSpecification(double batteryPower, double batteryUsage, Vector location,
+            HashMap<SensorType, Sensor> sensors) {
+        this(batteryPower, batteryUsage, location, 0.0, 0.0, sensors);
+    }
+
+    public DroneSpecification(double batteryPower, double batteryUsage, Vector location, double velocity,
+            double acceleration) {
+        this(batteryPower, batteryUsage, location, velocity, acceleration, new HashMap<SensorType, Sensor>());
+    }
+
     public DroneSpecification(double batteryPower, double batteryUsage, Vector location, double velocity,
             double acceleration, Sensor[] sensors) {
+        this(batteryPower, batteryUsage, location, velocity, acceleration,
+                new ArrayList<Sensor>(Arrays.asList(sensors)));
+    }
+
+    public DroneSpecification(double batteryPower, double batteryUsage, Vector location, double velocity,
+            double acceleration, ArrayList<Sensor> sensors) {
+        this(batteryPower, batteryUsage, location, velocity, acceleration);
+        for (Sensor sensor : sensors) {
+            this.sensors.put(sensor.getType(), sensor);
+        }
+    }
+
+    public DroneSpecification(double batteryPower, double batteryUsage, Vector location, double velocity,
+            double acceleration, HashMap<SensorType, Sensor> sensors) {
         this.maxBatteryPower = batteryPower;
         this.minBatteryUsage = batteryUsage;
         this.initialLocation = location;
@@ -70,26 +107,28 @@ public class DroneSpecification {
         return this.minBatteryUsage;
     }
 
-    public Sensor[] getSensors() {
-        return this.sensors;
+    public ArrayList<Sensor> getSensors() {
+        return new ArrayList<Sensor>(this.sensors.values());
     }
 
     public Sensor getSensorWithType(SensorType type) {
-        for (int i = 0; i < this.sensors.length; i++) {
-            if (this.sensors[i].getType() == type) {
-                return this.sensors[i];
-            }
+        if (!this.hasSensorWithType(type)) {
+            Debugger.logger.err("No sensor with type (" + type.toString() + ") found on drone spec");
+            return null;
         }
-        return null;
+        return this.sensors.get(type);
+    }
+
+    public boolean hasSensors() {
+        return !this.sensors.isEmpty();
     }
 
     public boolean hasSensorWithType(SensorType type) {
-        for (int i = 0; i < this.sensors.length; i++) {
-            if (this.sensors[i].getType() == type) {
-                return true;
-            }
-        }
-        return false;
+        return this.sensors.containsKey(type);
+    }
+
+    public boolean isKinetic() {
+        return this.maxVelocity > 0;
     }
 
     public String encode() {
@@ -104,8 +143,8 @@ public class DroneSpecification {
         json.put(DroneSpecification.DRONE_VELOCITY, this.maxVelocity);
         json.put(DroneSpecification.DRONE_ACCELERATION, this.maxAcceleration);
         JSONArray droneSensors = new JSONArray();
-        for (int i = 0; i < this.sensors.length; i++) {
-            droneSensors.put(this.sensors[i].toJSON());
+        for (Sensor sensor : this.sensors.values()) {
+            droneSensors.put(sensor.toJSON());
         }
         json.put(DroneSpecification.DRONE_SENSORS, droneSensors);
         return json;
@@ -118,8 +157,11 @@ public class DroneSpecification {
     public boolean equals(DroneSpecification spec) {
         return this.maxBatteryPower == spec.maxBatteryPower && this.minBatteryUsage == spec.minBatteryUsage &&
                 this.initialLocation.equals(spec.initialLocation) && this.maxVelocity == spec.maxVelocity &&
-                this.maxAcceleration == spec.maxAcceleration && this.sensors.length == spec.sensors.length &&
-                new HashSet<>(Arrays.asList(this.sensors)).equals(new HashSet<>(Arrays.asList(spec.sensors)));
+                this.maxAcceleration == spec.maxAcceleration && this.sensors.equals(spec.sensors);
+    }
+
+    public boolean equals(String encoding) {
+        return this.encode().equals(encoding);
     }
 
 }

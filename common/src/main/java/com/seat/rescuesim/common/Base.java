@@ -65,6 +65,10 @@ public class Base {
         return this.sensors.get(type);
     }
 
+    public boolean hasSensors() {
+        return !this.sensors.isEmpty();
+    }
+
     public boolean hasSensorWithType(SensorType type) {
         return this.sensors.containsKey(type);
     }
