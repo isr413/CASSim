@@ -18,12 +18,20 @@ public enum SensorType {
         return this.type;
     }
 
-    public String toString() {
+    public String encode() {
         return String.valueOf(this.type);
+    }
+
+    public String toString() {
+        return this.encode();
     }
 
     public boolean equals(SensorType type) {
         return this.type == type.type;
+    }
+
+    public boolean equals(String encoding) {
+        return this.encode().equals(encoding);
     }
 
 }
