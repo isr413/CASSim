@@ -35,4 +35,8 @@ public class Tuple<K, V> {
         return this.toJSON().toString();
     }
 
+    public boolean equals(Tuple<K, V> tuple) {
+        return this.first.equals(tuple.first) && this.second.equals(tuple.second);
+    }
+
 }

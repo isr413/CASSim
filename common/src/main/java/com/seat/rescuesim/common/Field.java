@@ -116,4 +116,9 @@ public class Field {
         return this.encode();
     }
 
+    public boolean equals(Field field) {
+        return this.direction.equals(field.direction) && this.magnitude == field.magnitude &&
+                this.sensorInterference.equals(field.sensorInterference);
+    }
+
 }

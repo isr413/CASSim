@@ -22,4 +22,8 @@ public enum SensorType {
         return String.valueOf(this.type);
     }
 
+    public boolean equals(SensorType type) {
+        return this.type == type.type;
+    }
+
 }

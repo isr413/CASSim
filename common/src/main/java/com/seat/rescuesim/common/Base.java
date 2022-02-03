@@ -1,7 +1,5 @@
 package com.seat.rescuesim.common;
 
-import java.util.ArrayList;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,6 +73,11 @@ public class Base {
 
     public String toString() {
         return this.encode();
+    }
+
+    public boolean equals(Base base) {
+        // every base is distinct regardless of properties
+        return this == base;
     }
 
 }

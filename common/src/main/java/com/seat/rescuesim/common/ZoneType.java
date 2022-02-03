@@ -19,4 +19,8 @@ public enum ZoneType {
         return String.valueOf(this.type);
     }
 
+    public boolean equals(ZoneType type) {
+        return this.type == type.type;
+    }
+
 }

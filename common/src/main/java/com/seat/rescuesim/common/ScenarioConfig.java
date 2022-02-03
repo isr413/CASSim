@@ -115,4 +115,9 @@ public class ScenarioConfig {
         return this.encode();
     }
 
+    public boolean equals(ScenarioConfig config) {
+        // scenario config should be a singleton
+        return this == config;
+    }
+
 }

@@ -108,4 +108,9 @@ public class Map {
         return this.encode();
     }
 
+    public boolean equals(Map map) {
+        // map should be a singleton
+        return this == map;
+    }
+
 }

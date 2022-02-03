@@ -83,4 +83,9 @@ public class Zone {
         return this.encode();
     }
 
+    public boolean equals(Zone zone) {
+        return this.type.equals(zone.type) && this.size == zone.size &&
+                this.ground.equals(zone.ground) && this.aerial.equals(zone.aerial);
+    }
+
 }

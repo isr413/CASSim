@@ -65,4 +65,8 @@ public class Vector {
         return this.encode();
     }
 
+    public boolean equals(Vector vec) {
+        return this.x == vec.x && this.y == vec.y && this.z == vec.z;
+    }
+
 }

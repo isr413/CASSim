@@ -74,4 +74,9 @@ public class Sensor {
         return this.encode();
     }
 
+    public boolean equals(Sensor sensor) {
+        // every sensor should be unique by type in each scenario
+        return this.type.equals(sensor.type);
+    }
+
 }

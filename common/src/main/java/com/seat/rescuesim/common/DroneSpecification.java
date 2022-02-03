@@ -1,6 +1,7 @@
 package com.seat.rescuesim.common;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -112,6 +113,13 @@ public class DroneSpecification {
 
     public String toString() {
         return this.encode();
+    }
+
+    public boolean equals(DroneSpecification spec) {
+        return this.maxBatteryPower == spec.maxBatteryPower && this.minBatteryUsage == spec.minBatteryUsage &&
+                this.initialLocation.equals(spec.initialLocation) && this.maxVelocity == spec.maxVelocity &&
+                this.maxAcceleration == spec.maxAcceleration && this.sensors.length == spec.sensors.length &&
+                new HashSet<>(Arrays.asList(this.sensors)).equals(new HashSet<>(Arrays.asList(spec.sensors)));
     }
 
 }
