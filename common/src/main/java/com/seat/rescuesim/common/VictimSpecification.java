@@ -41,6 +41,18 @@ public class VictimSpecification {
         this(batteryPower, staticBatteryUsage, new Tuple<Double, Double>(0.0, 0.0), new HashMap<SensorType, Sensor>());
     }
 
+    public VictimSpecification(double batteryPower, double staticBatteryUsage, Sensor[] sensors) {
+        this(batteryPower, staticBatteryUsage, new Tuple<Double, Double>(0.0, 0.0), sensors);
+    }
+
+    public VictimSpecification(double batteryPower, double staticBatteryUsage, ArrayList<Sensor> sensors) {
+        this(batteryPower, staticBatteryUsage, new Tuple<Double, Double>(0.0, 0.0), sensors);
+    }
+
+    public VictimSpecification(double batteryPower, double staticBatteryUsage, HashMap<SensorType, Sensor> sensors) {
+        this(batteryPower, staticBatteryUsage, new Tuple<Double, Double>(0.0, 0.0), sensors);
+    }
+
     public VictimSpecification(double batteryPower, double staticBatteryUsage,
             double moveSpeedMean, double moveSpeedStdDev) {
         this(batteryPower, staticBatteryUsage, new Tuple<Double, Double>(moveSpeedMean, moveSpeedStdDev),
