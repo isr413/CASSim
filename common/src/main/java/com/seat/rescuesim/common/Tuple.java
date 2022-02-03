@@ -3,6 +3,7 @@ package com.seat.rescuesim.common;
 import org.json.JSONArray;
 
 public class Tuple<K, V> {
+
     protected K first;
     protected V second;
 
@@ -24,6 +25,10 @@ public class Tuple<K, V> {
         return this.second;
     }
 
+    public String encode() {
+        return this.toJSON().toString();
+    }
+
     public JSONArray toJSON() {
         JSONArray json = new JSONArray();
         json.put(this.first.toString());
@@ -32,11 +37,15 @@ public class Tuple<K, V> {
     }
 
     public String toString() {
-        return this.toJSON().toString();
+        return this.encode();
     }
 
     public boolean equals(Tuple<K, V> tuple) {
         return this.first.equals(tuple.first) && this.second.equals(tuple.second);
+    }
+
+    public boolean equals(String encoding) {
+        return this.encode().equals(encoding);
     }
 
 }
