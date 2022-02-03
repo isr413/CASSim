@@ -29,6 +29,10 @@ public class Base {
         return Base.decode(new JSONObject(encoding));
     }
 
+    public Base() {
+        this(new Vector(), new HashMap<SensorType, Sensor>());
+    }
+
     public Base(Vector location) {
         this(location, new HashMap<SensorType, Sensor>());
     }
