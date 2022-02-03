@@ -5,9 +5,8 @@ public enum SensorType {
     Vision(1),
     Bluetooth(2),
     ShortRangeRadio(3),
-    LongRangeRadio(4),
-    GPS(5),
-    Medical(6);
+    GPS(4),
+    Medical(5);
 
     private int type;
 

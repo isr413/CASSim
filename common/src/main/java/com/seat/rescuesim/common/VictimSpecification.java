@@ -59,17 +59,16 @@ public class VictimSpecification {
         return this.sensors;
     }
 
-    public Sensor[] getSensorsWithType(SensorType type) {
-        ArrayList<Sensor> sensorsWithType = new ArrayList<>();
+    public Sensor getSensorWithType(SensorType type) {
         for (int i = 0; i < this.sensors.length; i++) {
             if (this.sensors[i].getType() == type) {
-                sensorsWithType.add(this.sensors[i]);
+                return this.sensors[i];
             }
         }
-        return (Sensor[]) sensorsWithType.toArray();
+        return null;
     }
 
-    public boolean hasSensorType(SensorType type) {
+    public boolean hasSensorWithType(SensorType type) {
         for (int i = 0; i < this.sensors.length; i++) {
             if (this.sensors[i].getType() == type) {
                 return true;
