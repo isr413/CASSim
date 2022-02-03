@@ -102,8 +102,22 @@ public class Map {
     }
 
     public boolean equals(Map map) {
-        // map should be a singleton
-        return this == map;
+        boolean flag = this.width == map.width && this.height == map.height && this.zoneSize == map.zoneSize;
+        if (!flag) {
+            return false;
+        }
+        for (int y = 0; y < this.height; y++) {
+            for (int x = 0; x < this.width; x++) {
+                if (!this.grid[y][x].equals(map.grid[y][x])) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean equals(String encoding) {
+        return this.encode().equals(encoding);
     }
 
 }
