@@ -87,8 +87,11 @@ public class Zone {
     }
 
     public boolean equals(Zone zone) {
-        // zones should be unique by location in each scenario
         return this.location.equals(zone.location);
+    }
+
+    public boolean equals(String encoding) {
+        return this.encode().equals(encoding);
     }
 
 }
