@@ -41,7 +41,7 @@ public class Map {
         this.grid = new Zone[this.height][this.width];
         for (int y = 0; y < this.height; y++) {
             for (int x = 0; x < this.width; x++) {
-                this.grid[y][x] = new Zone(this.zoneSize);
+                this.grid[y][x] = new Zone(new Vector(x, y, 0), this.zoneSize);
             }
         }
     }
@@ -51,13 +51,6 @@ public class Map {
         this.height = height;
         this.zoneSize = zoneSize;
         this.grid = gridZones;
-    }
-
-    public Map(Map map) {
-        this.width = map.width;
-        this.height = map.height;
-        this.zoneSize = map.zoneSize;
-        this.grid = map.grid;
     }
 
     public int getWidth() {
