@@ -114,10 +114,6 @@ public class DroneSpecification {
         return this.maxVelocity;
     }
 
-    public double getStaticBatteryUsage() {
-        return this.staticBatteryUsage;
-    }
-
     public ArrayList<Sensor> getSensors() {
         return new ArrayList<Sensor>(this.sensors.values());
     }
@@ -128,6 +124,10 @@ public class DroneSpecification {
             return null;
         }
         return this.sensors.get(type);
+    }
+
+    public double getStaticBatteryUsage() {
+        return this.staticBatteryUsage;
     }
 
     public boolean hasSensors() {
