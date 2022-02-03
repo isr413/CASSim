@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 public class Vector {
+
     private double x;
     private double y;
     private double z;
@@ -20,21 +21,17 @@ public class Vector {
     }
 
     public Vector() {
-        this.x = 0.0;
-        this.y = 0.0;
-        this.z = 0.0;
+        this(0, 0, 0);
+    }
+
+    public Vector(double x, double y) {
+        this(x, y, 0);
     }
 
     public Vector(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
-    }
-
-    public Vector(Vector v) {
-        this.x = v.x;
-        this.y = v.y;
-        this.z = v.z;
     }
 
     public double getX() {
@@ -67,6 +64,10 @@ public class Vector {
 
     public boolean equals(Vector vec) {
         return this.x == vec.x && this.y == vec.y && this.z == vec.z;
+    }
+
+    public boolean equals(String encoding) {
+        return this.encode().equals(encoding);
     }
 
 }

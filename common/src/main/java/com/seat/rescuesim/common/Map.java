@@ -41,7 +41,7 @@ public class Map {
         this.grid = new Zone[this.height][this.width];
         for (int y = 0; y < this.height; y++) {
             for (int x = 0; x < this.width; x++) {
-                this.grid[y][x] = new Zone(new Vector(x, y, 0), this.zoneSize);
+                this.grid[y][x] = new Zone(new Vector(x, y), this.zoneSize);
             }
         }
     }
