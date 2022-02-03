@@ -30,8 +30,7 @@ public class Base {
     }
 
     public Base(Vector location) {
-        this.location = location;
-        this.sensors = new HashMap<>();
+        this(location, new HashMap<SensorType, Sensor>());
     }
 
     public Base(Vector location, Sensor[] sensors) {
@@ -40,9 +39,8 @@ public class Base {
 
     public Base(Vector location, ArrayList<Sensor> sensors) {
         this(location);
-        HashMap<SensorType, Sensor> sensorMap = new HashMap<>();
         for (Sensor sensor : sensors) {
-            sensorMap.put(sensor.getType(), sensor);
+            this.sensors.put(sensor.getType(), sensor);
         }
     }
 
