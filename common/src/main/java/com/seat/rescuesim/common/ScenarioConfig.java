@@ -116,8 +116,15 @@ public class ScenarioConfig {
     }
 
     public boolean equals(ScenarioConfig config) {
-        // scenario config should be a singleton
-        return this == config;
+        return this.numDrones == config.numDrones && this.droneSpec.equals(config.droneSpec) &&
+                this.numVictims == config.numVictims && this.victimSpec.equals(config.victimSpec) &&
+                this.map.equals(config.map) && this.base.equals(config.base) &&
+                this.disasterScaleParam == config.disasterScaleParam && this.missionLength == config.missionLength &&
+                this.stepSize == config.stepSize;
+    }
+
+    public boolean equals(String encoding) {
+        return this.encode().equals(encoding);
     }
 
 }
