@@ -9,28 +9,28 @@ public class Debugger {
 
     public static final Debugger logger = new Debugger();
 
-    public static void err(String msg) {
+    public void err(String msg) {
         System.err.println(Debugger.ANSI_RED + "ERR: " + msg + Debugger.ANSI_RESET);
     }
 
-    public static void fatal(String msg) {
-        Debugger.fatal(msg, 1);
+    public void fatal(String msg) {
+        this.fatal(msg, 1);
     }
 
-    public static void fatal(String msg, int errorCode) {
+    public void fatal(String msg, int errorCode) {
         System.err.println(Debugger.ANSI_RED + "ERR: " + msg + Debugger.ANSI_RESET);
         System.exit(errorCode);
     }
 
-    public static void info(String msg) {
+    public void info(String msg) {
         System.out.println(Debugger.ANSI_GREEN + "ERR: " + msg + Debugger.ANSI_RESET);
     }
 
-    public static void state(String msg) {
+    public void state(String msg) {
         System.out.println(Debugger.ANSI_BLUE + "ERR: " + msg + Debugger.ANSI_RESET);
     }
 
-    public static void warn(String msg) {
+    public void warn(String msg) {
         System.out.println(Debugger.ANSI_YELLOW + "ERR: " + msg + Debugger.ANSI_RESET);
     }
 
