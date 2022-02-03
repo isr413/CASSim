@@ -1,5 +1,7 @@
 package com.seat.rescuesim.common;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.json.JSONArray;
@@ -41,23 +43,21 @@ public class Field {
     }
 
     public Field() {
-        this.direction = new Vector();
-        this.magnitude = 0.0;
-        this.sensorInterference = new HashMap<>();
+        this(new Vector(), 0.0, new HashMap<SensorType, Double>());
     }
 
     public Field(Vector direction, double magnitude) {
-        this.direction = direction;
-        this.magnitude = magnitude;
-        this.sensorInterference = new HashMap<>();
+        this(direction, magnitude, new HashMap<SensorType, Double>());
     }
 
-    public Field(Vector direction, double magnitude, Tuple<SensorType, Double>[] interferences) {
-        this.direction = direction;
-        this.magnitude = magnitude;
-        this.sensorInterference = new HashMap<>();
-        for (int i = 0; i < interferences.length; i++) {
-            this.sensorInterference.put(interferences[i].getFirst(), interferences[i].getSecond());
+    public Field(Vector direction, double magnitude, Tuple<SensorType, Double>[] interference) {
+        this(direction, magnitude, new ArrayList<Tuple<SensorType, Double>>(Arrays.asList(interference)));
+    }
+
+    public Field(Vector direction, double magnitude, ArrayList<Tuple<SensorType, Double>> interference) {
+        this(direction, magnitude);
+        for (Tuple<SensorType, Double> tuple : interference) {
+            this.sensorInterference.put(tuple.getFirst(), tuple.getSecond());
         }
     }
 
@@ -65,12 +65,6 @@ public class Field {
         this.direction = direction;
         this.magnitude = magnitude;
         this.sensorInterference = interferences;
-    }
-
-    public Field(Field field) {
-        this.direction = field.direction;
-        this.magnitude = field.magnitude;
-        this.sensorInterference = field.sensorInterference;
     }
 
     public Vector getDirection() {
@@ -81,19 +75,23 @@ public class Field {
         return this.magnitude;
     }
 
-    public HashMap<SensorType, Double> getSensorInterferences() {
+    public HashMap<SensorType, Double> getSensorInterference() {
         return this.sensorInterference;
     }
 
-    public boolean hasSensorInterference(SensorType sensor) {
-        return this.sensorInterference.containsKey(sensor);
-    }
-
-    public double getSensorInterference(SensorType sensor) {
-        if (!this.hasSensorInterference(sensor)) {
+    public double getSensorInterferenceWithType(SensorType sensor) {
+        if (!this.hasSensorInterferenceWithType(sensor)) {
             return 0.0;
         }
         return this.sensorInterference.get(sensor);
+    }
+
+    public boolean hasSensorInterference() {
+        return !this.sensorInterference.isEmpty();
+    }
+
+    public boolean hasSensorInterferenceWithType(SensorType sensor) {
+        return this.sensorInterference.containsKey(sensor);
     }
 
     public String encode() {
@@ -119,6 +117,10 @@ public class Field {
     public boolean equals(Field field) {
         return this.direction.equals(field.direction) && this.magnitude == field.magnitude &&
                 this.sensorInterference.equals(field.sensorInterference);
+    }
+
+    public boolean equals(String encoding) {
+        return this.encode().equals(encoding);
     }
 
 }
