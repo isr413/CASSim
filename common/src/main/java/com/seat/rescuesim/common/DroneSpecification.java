@@ -46,20 +46,20 @@ public class DroneSpecification {
     }
 
     public DroneSpecification(double batteryPower, Vector batteryUsage, Vector location) {
-        this(batteryPower, batteryUsage, location, 0.0, 0.0, 0.0, new HashMap<SensorType, Sensor>());
+        this(batteryPower, batteryUsage, location, 0, 0, 0, new HashMap<SensorType, Sensor>());
     }
 
     public DroneSpecification(double batteryPower, Vector batteryUsage, Vector location, Sensor[] sensors) {
-        this(batteryPower, batteryUsage, location, 0.0, 0.0, 0.0, sensors);
+        this(batteryPower, batteryUsage, location, 0, 0, 0, sensors);
     }
 
     public DroneSpecification(double batteryPower, Vector batteryUsage, Vector location, ArrayList<Sensor> sensors) {
-        this(batteryPower, batteryUsage, location, 0.0, 0.0, 0.0, sensors);
+        this(batteryPower, batteryUsage, location, 0, 0, 0, sensors);
     }
 
     public DroneSpecification(double batteryPower, Vector batteryUsage, Vector location,
             HashMap<SensorType, Sensor> sensors) {
-        this(batteryPower, batteryUsage, location, 0.0, 0.0, 0.0, sensors);
+        this(batteryPower, batteryUsage, location, 0, 0, 0, sensors);
     }
 
     public DroneSpecification(double batteryPower, Vector batteryUsage, Vector location,

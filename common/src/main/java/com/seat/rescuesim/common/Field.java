@@ -43,7 +43,7 @@ public class Field {
     }
 
     public Field() {
-        this(new Vector(), 0.0, new HashMap<SensorType, Double>());
+        this(new Vector(), 0, new HashMap<SensorType, Double>());
     }
 
     public Field(Vector direction, double magnitude) {
@@ -81,7 +81,7 @@ public class Field {
 
     public double getSensorInterferenceWithType(SensorType sensor) {
         if (!this.hasSensorInterferenceWithType(sensor)) {
-            return 0.0;
+            return 0;
         }
         return this.sensorInterference.get(sensor);
     }

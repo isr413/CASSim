@@ -99,7 +99,7 @@ public class DroneRemote {
 
     public DroneRemote(DroneSpecification droneSpec, int remoteID, double batteryPower, Vector location,
             Vector velocity, Vector acceleration, ArrayList<SensorType> activeSensors) {
-        this(droneSpec, remoteID, batteryPower, location, velocity, acceleration);
+        this(droneSpec, remoteID, batteryPower, location, velocity, acceleration, new HashSet<SensorType>());
         for (SensorType type : activeSensors) {
             if (!this.spec.hasSensorWithType(type)) {
                 Debugger.logger.err(String.format("Drone %s should have sensor with type %s",
