@@ -1,6 +1,7 @@
 package com.seat.rescuesim.simserver;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import com.seat.rescuesim.common.Debugger;
@@ -58,25 +59,47 @@ public class DroneRemote {
     private Vector velocity;
 
     public DroneRemote(DroneSpecification droneSpec) {
-        this.spec = droneSpec;
-        this.remoteID = DroneRemote.getID();
-        this.batteryPower = this.spec.getMaxBatteryPower();
-        this.location = this.spec.getInitialLocation();
-        this.velocity = new Vector();
-        this.acceleration = new Vector();
-        this.activeSensors = new HashSet<>();
-        DroneRemote.updateRemoteCount();
+        this(droneSpec, DroneRemote.getID(), droneSpec.getMaxBatteryPower(), droneSpec.getInitialLocation(),
+            new Vector(), new Vector(), new HashSet<SensorType>());
+    }
+
+    public DroneRemote(DroneSpecification droneSpec, int remoteID, double batteryPower) {
+        this(droneSpec, remoteID, batteryPower, droneSpec.getInitialLocation(), new Vector(), new Vector(),
+                new HashSet<SensorType>());
+    }
+
+    public DroneRemote(DroneSpecification droneSpec, int remoteID, double batteryPower,
+            SensorType[] activeSensors) {
+        this(droneSpec, remoteID, batteryPower, droneSpec.getInitialLocation(), new Vector(), new Vector(),
+            activeSensors);
+    }
+
+    public DroneRemote(DroneSpecification droneSpec, int remoteID, double batteryPower,
+            ArrayList<SensorType> activeSensors) {
+        this(droneSpec, remoteID, batteryPower, droneSpec.getInitialLocation(), new Vector(), new Vector(),
+            activeSensors);
+    }
+
+    public DroneRemote(DroneSpecification droneSpec, int remoteID, double batteryPower,
+            HashSet<SensorType> activeSensors) {
+        this(droneSpec, remoteID, batteryPower, droneSpec.getInitialLocation(), new Vector(), new Vector(),
+            activeSensors);
+    }
+
+    public DroneRemote(DroneSpecification droneSpec, int remoteID, double batteryPower, Vector location,
+            Vector velocity, Vector acceleration) {
+        this(droneSpec, remoteID, batteryPower, location, velocity, acceleration, new HashSet<SensorType>());
+    }
+
+    public DroneRemote(DroneSpecification droneSpec, int remoteID, double batteryPower, Vector location,
+            Vector velocity, Vector acceleration, SensorType[] activeSensors) {
+        this(droneSpec, remoteID, batteryPower, location, velocity, acceleration,
+                new ArrayList<SensorType>(Arrays.asList(activeSensors)));
     }
 
     public DroneRemote(DroneSpecification droneSpec, int remoteID, double batteryPower, Vector location,
             Vector velocity, Vector acceleration, ArrayList<SensorType> activeSensors) {
-        this.spec = droneSpec;
-        this.remoteID = remoteID;
-        this.batteryPower = batteryPower;
-        this.location = location;
-        this.velocity = velocity;
-        this.acceleration = acceleration;
-        this.activeSensors = new HashSet<>();
+        this(droneSpec, remoteID, batteryPower, location, velocity, acceleration);
         for (SensorType type : activeSensors) {
             if (!this.spec.hasSensorWithType(type)) {
                 Debugger.logger.err("drone (" + this.remoteID +
@@ -86,6 +109,24 @@ public class DroneRemote {
                         ") has duplicate active sensor of type (" + type.toString() + ")");
             } else {
                 this.activeSensors.add(type);
+            }
+        }
+    }
+
+    public DroneRemote(DroneSpecification droneSpec, int remoteID, double batteryPower, Vector location,
+            Vector velocity, Vector acceleration, HashSet<SensorType> activeSensors) {
+        this.spec = droneSpec;
+        this.remoteID = remoteID;
+        this.batteryPower = batteryPower;
+        this.location = location;
+        this.velocity = velocity;
+        this.acceleration = acceleration;
+        this.activeSensors = activeSensors;
+        for (SensorType type : this.activeSensors) {
+            if (!this.spec.hasSensorWithType(type)) {
+                Debugger.logger.err("drone (" + this.remoteID +
+                        ") should have sensor with type (" + type.toString() + ")");
+                this.activeSensors.remove(type);
             }
         }
         DroneRemote.updateRemoteCount();
