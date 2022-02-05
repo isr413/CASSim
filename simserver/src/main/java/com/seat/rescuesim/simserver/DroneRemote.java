@@ -1,9 +1,11 @@
 package com.seat.rescuesim.simserver;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 
+import com.seat.rescuesim.common.Debugger;
 import com.seat.rescuesim.common.DroneSpecification;
+import com.seat.rescuesim.common.Sensor;
 import com.seat.rescuesim.common.SensorType;
 import com.seat.rescuesim.common.Vector;
 
@@ -29,10 +31,10 @@ public class DroneRemote {
         Vector direction = Vector.decode(json.getJSONArray(DroneRemote.DRONE_DIRECTION));
         double velocity = json.getDouble(DroneRemote.DRONE_VELOCITY);
         double acceleration = json.getDouble(DroneRemote.DRONE_ACCELERATION);
-        JSONArray sensors = json.getJSONArray(DroneRemote.DRONE_ACTIVE_SENSORS);
-        SensorType[] activeSensors = new SensorType[sensors.length()];
-        for (int i = 0; i < activeSensors.length; i++) {
-            activeSensors[i] = SensorType.values()[sensors.getInt(i)];
+        JSONArray jsonSensors = json.getJSONArray(DroneRemote.DRONE_ACTIVE_SENSORS);
+        ArrayList<SensorType> activeSensors = new ArrayList<>();
+        for (int i = 0; i < jsonSensors.length(); i++) {
+           activeSensors.add(SensorType.values()[jsonSensors.getInt(i)]);
         }
         return new DroneRemote(droneSpec, remoteID, batteryPower, location, direction, velocity, acceleration, activeSensors);
     }
@@ -50,7 +52,7 @@ public class DroneRemote {
     }
 
     private double acceleration;
-    private ArrayList<SensorType> activeSensors;
+    private HashSet<SensorType> activeSensors;
     private double batteryPower;
     private Vector direction;
     private Vector location;
@@ -66,12 +68,12 @@ public class DroneRemote {
         this.direction = new Vector();
         this.velocity = 0.0;
         this.acceleration = 0.0;
-        this.activeSensors = new ArrayList<>();
+        this.activeSensors = new HashSet<>();
         DroneRemote.updateRemoteCount();
     }
 
-    public DroneRemote(DroneSpecification droneSpec, int remoteID, double batteryPower, Vector location, Vector direction,
-            double velocity, double acceleration, SensorType[] activeSensors) {
+    public DroneRemote(DroneSpecification droneSpec, int remoteID, double batteryPower, Vector location,
+            Vector direction, double velocity, double acceleration, ArrayList<SensorType> activeSensors) {
         this.spec = droneSpec;
         this.remoteID = remoteID;
         this.batteryPower = batteryPower;
@@ -79,10 +81,17 @@ public class DroneRemote {
         this.direction = direction;
         this.velocity = velocity;
         this.acceleration = acceleration;
-        if (activeSensors.length > 0) {
-            this.activeSensors = new ArrayList<>(Arrays.asList(activeSensors));
-        } else {
-            this.activeSensors = new ArrayList<>();
+        this.activeSensors = new HashSet<>();
+        for (SensorType type : activeSensors) {
+            if (!this.spec.hasSensorWithType(type)) {
+                Debugger.logger.err("drone (" + this.remoteID +
+                        ") should have sensor with type (" + type.toString() + ")");
+            } else if (this.hasActiveSensorWithType(type)) {
+                Debugger.logger.err("drone (" + this.remoteID +
+                        ") has duplicate active sensor of type (" + type.toString() + ")");
+            } else {
+                this.activeSensors.add(type);
+            }
         }
         DroneRemote.updateRemoteCount();
     }
@@ -91,8 +100,29 @@ public class DroneRemote {
         return this.acceleration;
     }
 
-    public SensorType[] getActiveSensors() {
-        return (SensorType[]) this.activeSensors.toArray();
+    public ArrayList<Sensor> getActiveSensors() {
+        ArrayList<Sensor> sensors = new ArrayList<>();
+        for (SensorType type : this.activeSensors) {
+            sensors.add(this.spec.getSensorWithType(type));
+        }
+        return sensors;
+    }
+
+    public Sensor getActiveSensorWithType(SensorType type) {
+        if (!this.spec.hasSensorWithType(type)) {
+            Debugger.logger.err("No sensor with type (" + type.toString() + ") on drone (" + this.remoteID + ")");
+            return null;
+        }
+        if (!this.hasActiveSensorWithType(type)) {
+            Debugger.logger.err("Sensor with type (" + type.toString() +
+                    ") is inactive on drone (" + this.remoteID + ")");
+            return null;
+        }
+        return this.spec.getSensorWithType(type);
+    }
+
+    public ArrayList<SensorType> getActiveSensorTypes() {
+        return new ArrayList<SensorType>(this.activeSensors);
     }
 
     public double getBatteryPower() {
@@ -115,17 +145,32 @@ public class DroneRemote {
         return this.remoteID;
     }
 
+    public ArrayList<Sensor> getSensors() {
+        return this.spec.getSensors();
+    }
+
+    public Sensor getSensorWithType(SensorType type) {
+        return this.spec.getSensorWithType(type);
+    }
+
     public double getVelocity() {
         return this.velocity;
     }
 
-    public boolean hasActiveSensor(SensorType type) {
-        for (int i = 0; i < this.activeSensors.size(); i++) {
-            if (this.activeSensors.get(i) == type) {
-                return true;
-            }
-        }
-        return false;
+    public boolean hasActiveSensors() {
+        return !this.activeSensors.isEmpty();
+    }
+
+    public boolean hasActiveSensorWithType(SensorType type) {
+        return this.activeSensors.contains(type);
+    }
+
+    public boolean hasSensors() {
+        return this.spec.hasSensors();
+    }
+
+    public boolean hasSensorWithType(SensorType type) {
+        return this.spec.hasSensorWithType(type);
     }
 
     public String encode() {
@@ -140,11 +185,11 @@ public class DroneRemote {
         json.put(DroneRemote.DRONE_DIRECTION, this.direction.toJSON());
         json.put(DroneRemote.DRONE_VELOCITY, this.velocity);
         json.put(DroneRemote.DRONE_ACCELERATION, this.acceleration);
-        JSONArray sensors = new JSONArray();
-        for (int i = 0; i < this.activeSensors.size(); i++) {
-            sensors.put(this.activeSensors.get(i).getType());
+        JSONArray jsonSensors = new JSONArray();
+        for (SensorType type : this.activeSensors) {
+            jsonSensors.put(type.getType());
         }
-        json.put(DroneRemote.DRONE_ACTIVE_SENSORS, sensors);
+        json.put(DroneRemote.DRONE_ACTIVE_SENSORS, jsonSensors);
         return json;
     }
 
