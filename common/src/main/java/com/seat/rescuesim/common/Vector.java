@@ -30,8 +30,18 @@ public class Vector {
     }
 
     /** Computes X component of the magnitude given the provided angles (in radians). */
+    public static double getXComponent(double magnitude, double angleXY) {
+        return Vector.getXComponent(magnitude, 0, angleXY);
+    }
+
+    /** Computes X component of the magnitude given the provided angles (in radians). */
     public static double getXComponent(double magnitude, double angleBetween, double angleXY) {
         return magnitude * Math.cos(angleBetween) * Math.cos(angleXY);
+    }
+
+    /** Computes X component of the magnitude given the provided angles (in radians). */
+    public static Vector getXVector(double magnitude, double angleXY) {
+        return Vector.getXVector(magnitude, 0, angleXY);
     }
 
     /** Computes X component of the magnitude given the provided angles (in radians). */
@@ -40,8 +50,18 @@ public class Vector {
     }
 
     /** Computes Y component of the magnitude given the provided angles (in radians). */
+    public static double getYComponent(double magnitude, double angleXY) {
+        return Vector.getYComponent(magnitude, 0, angleXY);
+    }
+
+    /** Computes Y component of the magnitude given the provided angles (in radians). */
     public static double getYComponent(double magnitude, double angleBetween, double angleXY) {
         return magnitude * Math.cos(angleBetween) * Math.sin(angleXY);
+    }
+
+    /** Computes Y component of the magnitude given the provided angles (in radians). */
+    public static Vector getYVector(double magnitude, double angleXY) {
+        return Vector.getYVector(magnitude, 0, angleXY);
     }
 
     /** Computes Y component of the magnitude given the provided angles (in radians). */
@@ -51,7 +71,7 @@ public class Vector {
 
     /** Computes X component of the magnitude given the provided angles (in radians). */
     public static double getZComponent(double magnitude, double angleBetween) {
-        return magnitude * Math.cos(angleBetween);
+        return magnitude * Math.sin(angleBetween);
     }
 
     /** Computes X component of the magnitude given the provided angles (in radians). */

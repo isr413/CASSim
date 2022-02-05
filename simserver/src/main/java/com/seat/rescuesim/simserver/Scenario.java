@@ -2,6 +2,7 @@ package com.seat.rescuesim.simserver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import com.seat.rescuesim.common.Debugger;
 import com.seat.rescuesim.common.ScenarioConfig;
@@ -20,6 +21,7 @@ public class Scenario {
     private ScenarioConfig config;
     private double missionTime;
     private HashMap<Integer, DroneRemote> remotes;
+    private Random rng;
     private HashMap<Integer, Victim> victims;
 
     public static Scenario decode(JSONObject json) throws JSONException {
@@ -80,6 +82,7 @@ public class Scenario {
     public Scenario(ScenarioConfig config, double missionTime, HashMap<Integer, DroneRemote> remotes,
             HashMap<Integer, Victim> victims) {
         this.config = config;
+        this.rng = new Random();
         this.missionTime = missionTime;
         this.remotes = remotes;
         this.victims = victims;
@@ -98,12 +101,21 @@ public class Scenario {
             while (this.config.getMap().getZoneAtLocation(randomLocation).equals(
                     this.config.getMap().getZoneAtLocation(this.config.getBase().getLocation()))) {
                 randomLocation = new Vector(
-                    Math.random() * this.config.getMap().getWidth(),
-                    Math.random() * this.config.getMap().getHeight(),
+                    this.rng.nextDouble() * this.config.getMap().getWidth(),
+                    this.rng.nextDouble() * this.config.getMap().getHeight(),
                     0
                 );
             }
-            Victim victim = new Victim(this.config.getVictimSpecification(), randomLocation);
+            double sampleSpeed = this.rng.nextGaussian() *
+                this.config.getVictimSpecification().getMoveSpeedDistributionParameters().getSecond() +
+                this.config.getVictimSpecification().getMoveSpeedDistributionParameters().getFirst();
+            double randomHeading = (this.rng.nextDouble() * 2 * Math.PI) - Math.PI;
+            Vector sampleVelocity = new Vector(
+                Vector.getXComponent(sampleSpeed, randomHeading),
+                Vector.getYComponent(sampleSpeed, randomHeading),
+                0
+            );
+            Victim victim = new Victim(this.config.getVictimSpecification(), randomLocation, sampleVelocity);
             this.victims.put(victim.getVictimID(), victim);
         }
     }
