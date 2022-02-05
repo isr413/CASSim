@@ -103,10 +103,10 @@ public class DroneRemote {
         for (SensorType type : activeSensors) {
             if (!this.spec.hasSensorWithType(type)) {
                 Debugger.logger.err(String.format("Drone %s should have sensor with type %s",
-                    this.getDroneLabel(), this.getSensorLabel(type)));
+                    this.getLabel(), type.getLabel()));
             } else if (this.hasActiveSensorWithType(type)) {
                 Debugger.logger.err(String.format("Drone has duplicate active sensor of type %s",
-                    this.getDroneLabel(), this.getSensorLabel(type)));
+                    this.getLabel(), type.getLabel()));
             } else {
                 this.activeSensors.add(type);
             }
@@ -125,30 +125,22 @@ public class DroneRemote {
         for (SensorType type : this.activeSensors) {
             if (!this.spec.hasSensorWithType(type)) {
                 Debugger.logger.err(String.format("Drone %s should have sensor with type %s",
-                    this.getDroneLabel(), this.getSensorLabel(type)));
+                    this.getLabel(), type.getLabel()));
                 this.activeSensors.remove(type);
             }
         }
         DroneRemote.updateRemoteCount();
     }
 
-    private String getDroneLabel() {
-        return String.format("(%d)", this.remoteID);
-    }
-
-    private String getSensorLabel(SensorType type) {
-        return String.format("(%d)", type.getType());
-    }
-
     public boolean activateSensorWithType(SensorType type) {
         if (!this.hasSensorWithType(type)) {
             Debugger.logger.err(String.format("Cannot activate sensor %s of drone %s",
-                this.getSensorLabel(type), this.getDroneLabel()));
+                type.getLabel(), this.getLabel()));
             return false;
         }
         if (this.hasActiveSensorWithType(type)) {
             Debugger.logger.warn(String.format("Sensor %s of drone %s is already active",
-                this.getSensorLabel(type), this.getDroneLabel()));
+                type.getLabel(), this.getLabel()));
             return true;
         }
         this.activeSensors.add(type);
@@ -158,7 +150,7 @@ public class DroneRemote {
     public void chargeBattery(double batteryPowerDelta) {
         if (batteryPowerDelta < 0) {
             Debugger.logger.err(String.format("Cannot update battery power of drone %s by %.2f",
-                this.getDroneLabel(), batteryPowerDelta));
+                this.getLabel(), batteryPowerDelta));
             return;
         }
         if (this.spec.getMaxBatteryPower() < this.batteryPower + batteryPowerDelta) {
@@ -171,12 +163,12 @@ public class DroneRemote {
     public boolean deactivateSensorWithType(SensorType type) {
         if (!this.hasSensorWithType(type)) {
             Debugger.logger.err(String.format("Cannot deactivate sensor %s of drone %s",
-                this.getSensorLabel(type), this.getDroneLabel()));
+                type.getLabel(), this.getLabel()));
             return false;
         }
         if (!this.hasActiveSensorWithType(type)) {
             Debugger.logger.warn(String.format("Sensor %s of drone %s is already inactive",
-                this.getSensorLabel(type), this.getDroneLabel()));
+                type.getLabel(), this.getLabel()));
             return true;
         }
         this.activeSensors.remove(type);
@@ -205,12 +197,12 @@ public class DroneRemote {
     public Sensor getActiveSensorWithType(SensorType type) {
         if (!this.spec.hasSensorWithType(type)) {
             Debugger.logger.err(String.format("No sensor with type %s on drone %s",
-                this.getSensorLabel(type), this.getDroneLabel()));
+                type.getLabel(), this.getLabel()));
             return null;
         }
         if (!this.hasActiveSensorWithType(type)) {
             Debugger.logger.err(String.format("Sensor with type %s is inactive on drone %s",
-                this.getSensorLabel(type), this.getDroneLabel()));
+                type.getLabel(), this.getLabel()));
             return null;
         }
         return this.spec.getSensorWithType(type);
@@ -226,6 +218,10 @@ public class DroneRemote {
 
     public DroneSpecification getDroneSpecification() {
         return this.spec;
+    }
+
+    public String getLabel() {
+        return String.format("<%d>", this.remoteID);
     }
 
     public Vector getLocation() {
@@ -283,10 +279,10 @@ public class DroneRemote {
     private void setAcceleration(Vector acceleration) {
         if (this.spec.getMaxAcceleration() < acceleration.getMagnitude()) {
             Debugger.logger.warn(String.format("Cannot set acceleration of drone %s to be %s",
-                this.getDroneLabel(), acceleration.toString()));
+                this.getLabel(), acceleration.toString()));
             acceleration = Vector.scale(acceleration.getUnitVector(), this.spec.getMaxAcceleration());
             Debugger.logger.state(String.format("Setting acceleration of drone %s to be %s",
-                this.getDroneLabel(), acceleration.toString()));
+                this.getLabel(), acceleration.toString()));
         }
         this.acceleration = acceleration;
     }
@@ -294,10 +290,10 @@ public class DroneRemote {
     private void setBatteryPower(double batteryPower) {
         if (batteryPower < 0 || this.spec.getMaxBatteryPower() < batteryPower) {
             Debugger.logger.warn(String.format("Cannot set battery power of drone %s to be %.2f",
-                this.getDroneLabel(), batteryPower));
+                this.getLabel(), batteryPower));
             batteryPower = (batteryPower < 0) ? 0 : this.spec.getMaxBatteryPower();
             Debugger.logger.warn(String.format("Setting battery power of drone %s to be %.2f",
-                this.getDroneLabel(), batteryPower));
+                this.getLabel(), batteryPower));
         }
         this.batteryPower = batteryPower;
     }
@@ -309,10 +305,10 @@ public class DroneRemote {
     private void setVelocity(Vector velocity) {
         if (this.spec.getMaxVelocity() < velocity.getMagnitude()) {
             Debugger.logger.warn(String.format("Cannot set velocity of drone %s to be %s",
-                this.getDroneLabel(), velocity.toString()));
+                this.getLabel(), velocity.toString()));
             velocity = Vector.scale(velocity.getUnitVector(), this.spec.getMaxVelocity());
             Debugger.logger.state(String.format("Setting velocity of drone %s to be %s",
-                this.getDroneLabel(), velocity.toString()));
+                this.getLabel(), velocity.toString()));
         }
         this.velocity = velocity;
     }
@@ -362,30 +358,30 @@ public class DroneRemote {
             if (jerk != null) {
                 if (this.spec.getMaxJerk() * stepSize < jerk.getMagnitude()) {
                     Debugger.logger.warn(String.format("Cannot update acceleration of drone %s by jerk %s",
-                        this.getDroneLabel(), jerk.toString()));
+                        this.getLabel(), jerk.toString()));
                     jerk = Vector.scale(jerk.getUnitVector(), this.spec.getMaxJerk() * stepSize);
                     Debugger.logger.state(String.format("Updating acceleration of drone %s by jerk %s",
-                        this.getDroneLabel(), jerk.toString()));
+                        this.getLabel(), jerk.toString()));
                 }
                 newAcceleration = Vector.add(this.acceleration, jerk);
                 if (this.spec.getMaxAcceleration() < newAcceleration.getMagnitude()) {
                     Debugger.logger.warn(String.format("Cannot update acceleration of drone %s to %s",
-                        this.getDroneLabel(), newAcceleration.toString()));
+                        this.getLabel(), newAcceleration.toString()));
                     newAcceleration = Vector.scale(newAcceleration.getUnitVector(), this.spec.getMaxAcceleration());
                     jerk = Vector.subtract(newAcceleration, this.acceleration);
                     Debugger.logger.state(String.format("Updating acceleration of drone %s to %s",
-                        this.getDroneLabel(), newAcceleration.toString()));
+                        this.getLabel(), newAcceleration.toString()));
                 }
             }
             Vector newVelocity = Vector.add(this.velocity, Vector.scale(newAcceleration, stepSize));
             if (this.spec.getMaxVelocity() < newVelocity.getMagnitude()) {
                 Debugger.logger.warn(String.format("Cannot update velocity of drone %s to %s",
-                        this.getDroneLabel(), newVelocity.toString()));
+                        this.getLabel(), newVelocity.toString()));
                 newVelocity = Vector.scale(newVelocity.getUnitVector(), this.spec.getMaxVelocity());
                 newAcceleration = Vector.subtract(newVelocity, this.velocity);
                 jerk = Vector.subtract(newAcceleration, this.acceleration);
                 Debugger.logger.state(String.format("Updating velocity of drone %s to %s",
-                        this.getDroneLabel(), newVelocity.toString()));
+                        this.getLabel(), newVelocity.toString()));
             }
             this.setAcceleration(newAcceleration);
             this.setVelocity(newVelocity);
