@@ -132,6 +132,19 @@ public class DroneRemote {
         DroneRemote.updateRemoteCount();
     }
 
+    public boolean activateSensorWithType(SensorType type) {
+        if (!this.hasSensorWithType(type)) {
+            Debugger.logger.err("Cannot activate sensor (" + type.toString() + ") of drone (" + this.remoteID + ")");
+            return false;
+        }
+        if (this.hasActiveSensorWithType(type)) {
+            Debugger.logger.warn("Sensor (" + type.toString() + ") of drone (" + this.remoteID + ") is already active");
+            return true;
+        }
+        this.activeSensors.add(type);
+        return true;
+    }
+
     public void chargeBattery(double batteryPowerDelta) {
         if (batteryPowerDelta < 0) {
             Debugger.logger.err("Cannot update battery power of drone (" + this.remoteID + ") by " + batteryPowerDelta);
@@ -142,6 +155,20 @@ public class DroneRemote {
         } else {
             this.setBatteryPower(this.batteryPower + batteryPowerDelta);
         }
+    }
+
+    public boolean deactivateSensorWithType(SensorType type) {
+        if (!this.hasSensorWithType(type)) {
+            Debugger.logger.err("Cannot deactivate sensor (" + type.toString() + ") of drone (" + this.remoteID + ")");
+            return false;
+        }
+        if (!this.hasActiveSensorWithType(type)) {
+            Debugger.logger.warn("Sensor (" + type.toString() + ") of drone (" +
+                    this.remoteID + ") is already inactive");
+            return true;
+        }
+        this.activeSensors.remove(type);
+        return true;
     }
 
     public void disable() {
