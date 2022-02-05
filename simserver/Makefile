@@ -5,7 +5,7 @@ clean:
 	mvn clean
 
 install:
-	cp ../common/target/common-1.0-SNAPSHOT.jar ./lib/common.jar && mvn install
+	cp ../common/target/common-1.0-SNAPSHOT.jar ./lib/common.jar && mvn validate && mvn install
 
 run:
 	java -jar target/simserver-1.0-SNAPSHOT-jar-with-dependencies.jar
