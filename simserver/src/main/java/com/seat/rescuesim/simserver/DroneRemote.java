@@ -317,34 +317,36 @@ public class DroneRemote {
         this.velocity = velocity;
     }
 
-    public void update() {
-        this.update(null, null, null);
+    public void update(double stepSize) {
+        this.update(stepSize, null, null, null);
     }
 
-    public void update(HashSet<SensorType> activations) {
-        this.update(null, activations, null);
+    public void update(double stepSize, HashSet<SensorType> activations) {
+        this.update(stepSize, null, activations, null);
     }
 
-    public void update(HashSet<SensorType> activations, HashSet<SensorType> deactivations) {
-        this.update(null, activations, deactivations);
+    public void update(double stepSize, HashSet<SensorType> activations, HashSet<SensorType> deactivations) {
+        this.update(stepSize, null, activations, deactivations);
     }
 
-    public void update(Vector jerk) {
-        this.update(jerk, null, null);
+    public void update(double stepSize, Vector jerk) {
+        this.update(stepSize, jerk, null, null);
     }
 
-    public void update(Vector jerk, HashSet<SensorType> activations) {
-        this.update(jerk, activations, null);
+    public void update(double stepSize, Vector jerk, HashSet<SensorType> activations) {
+        this.update(stepSize, jerk, activations, null);
     }
 
     /**
      * Pushes the drone with the force of delta, and activates and deactivates the specified sensors.
      *
-     * @param jerk the change in acceleration of the drone
+     * @param stepSize the change in time measured in seconds from the last update
+     * @param jerk the change in acceleration of the drone for this step
      * @param activations the sensors to be activated
      * @param deactivations the sensors to be deactivated
      */
-    public void update(Vector jerk, HashSet<SensorType> activations, HashSet<SensorType> deactivations) {
+    public void update(double stepSize, Vector jerk, HashSet<SensorType> activations,
+            HashSet<SensorType> deactivations) {
         if (activations != null) {
             for (SensorType type : activations) {
                 this.activateSensorWithType(type);
@@ -358,10 +360,10 @@ public class DroneRemote {
         if (this.isMoving() || jerk != null) {
             Vector newAcceleration = this.acceleration;
             if (jerk != null) {
-                if (this.spec.getMaxJerk() < jerk.getMagnitude()) {
+                if (this.spec.getMaxJerk() * stepSize < jerk.getMagnitude()) {
                     Debugger.logger.warn(String.format("Cannot update acceleration of drone %s by jerk %s",
                         this.getDroneLabel(), jerk.toString()));
-                    jerk = Vector.scale(jerk.getUnitVector(), this.spec.getMaxJerk());
+                    jerk = Vector.scale(jerk.getUnitVector(), this.spec.getMaxJerk() * stepSize);
                     Debugger.logger.state(String.format("Updating acceleration of drone %s by jerk %s",
                         this.getDroneLabel(), jerk.toString()));
                 }
@@ -375,7 +377,7 @@ public class DroneRemote {
                         this.getDroneLabel(), newAcceleration.toString()));
                 }
             }
-            Vector newVelocity = Vector.add(this.velocity, newAcceleration);
+            Vector newVelocity = Vector.add(this.velocity, Vector.scale(newAcceleration, stepSize));
             if (this.spec.getMaxVelocity() < newVelocity.getMagnitude()) {
                 Debugger.logger.warn(String.format("Cannot update velocity of drone %s to %s",
                         this.getDroneLabel(), newVelocity.toString()));
@@ -388,15 +390,15 @@ public class DroneRemote {
             this.setAcceleration(newAcceleration);
             this.setVelocity(newVelocity);
         }
-        this.updateBatteryPower();
+        this.updateBatteryPower(stepSize);
         if (this.isAlive() && this.isMoving()) {
-            this.updateLocation();
+            this.updateLocation(stepSize);
         } else if (!this.isAlive()) {
             this.disable();
         }
     }
 
-    private void updateBatteryPower() {
+    private void updateBatteryPower(double stepSize) {
         double batteryUsage = this.spec.getStaticBatteryUsage();
         Vector horizontalAcceleration = new Vector(this.acceleration.getX(), this.acceleration.getY(), 0);
         batteryUsage += this.spec.getHorizontalKineticBatteryUsage() * horizontalAcceleration.getMagnitude();
@@ -404,6 +406,7 @@ public class DroneRemote {
         for (SensorType type : this.activeSensors) {
             batteryUsage += this.getSensorWithType(type).getBatteryUsage();
         }
+        batteryUsage *= stepSize;
         if (this.batteryPower - batteryUsage > 0) {
             this.setBatteryPower(this.batteryPower - batteryUsage);
         } else {
@@ -411,8 +414,8 @@ public class DroneRemote {
         }
     }
 
-    private void updateLocation() {
-        this.setLocation(Vector.add(this.location, this.velocity));
+    private void updateLocation(double stepSize) {
+        this.setLocation(Vector.add(this.location, Vector.scale(this.velocity, stepSize)));
     }
 
     public String encode() {
