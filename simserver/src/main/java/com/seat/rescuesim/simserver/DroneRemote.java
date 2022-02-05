@@ -132,6 +132,25 @@ public class DroneRemote {
         DroneRemote.updateRemoteCount();
     }
 
+    public void chargeBattery(double batteryPowerDelta) {
+        if (batteryPowerDelta < 0) {
+            Debugger.logger.err("Cannot update battery power of drone (" + this.remoteID + ") by " + batteryPowerDelta);
+            return;
+        }
+        if (this.spec.getMaxBatteryPower() < this.batteryPower + batteryPowerDelta) {
+            this.setBatteryPower(this.spec.getMaxBatteryPower());
+        } else {
+            this.setBatteryPower(this.batteryPower + batteryPowerDelta);
+        }
+    }
+
+    public void disable() {
+        this.batteryPower = 0;
+        this.acceleration = new Vector();
+        this.velocity = new Vector();
+        this.activeSensors = new HashSet<>();
+    }
+
     public Vector getAcceleration() {
         return this.acceleration;
     }
@@ -205,12 +224,34 @@ public class DroneRemote {
         return this.spec.hasSensorWithType(type);
     }
 
+    public boolean isAlive() {
+        return this.batteryPower > 0;
+    }
+
+    public boolean isDisabled() {
+        return !this.isAlive();
+    }
+
     public boolean isMoving() {
         return this.velocity.getMagnitude() > 0;
     }
 
     public boolean isKinetic() {
         return this.spec.isKinetic();
+    }
+
+    private void setBatteryPower(double batteryPower) {
+        if (this.spec.getMaxBatteryPower() < batteryPower) {
+            Debugger.logger.warn("Cannot set battery power of drone (" + this.remoteID + ") to be " + batteryPower);
+            Debugger.logger.state("Setting battery power of drone (" + this.remoteID +
+                ") to be " + this.spec.getMaxBatteryPower());
+            batteryPower = this.spec.getMaxBatteryPower();
+        } else if (batteryPower < 0) {
+            Debugger.logger.err("Cannot set battery power of drone (" + this.remoteID + ") to be " + batteryPower);
+            Debugger.logger.state("Setting battery power of drone (" + this.remoteID + ") to be 0");
+            batteryPower = 0;
+        }
+        this.batteryPower = batteryPower;
     }
 
     public String encode() {
