@@ -317,6 +317,104 @@ public class DroneRemote {
         this.velocity = velocity;
     }
 
+    public void update() {
+        this.update(null, null, null);
+    }
+
+    public void update(HashSet<SensorType> activations) {
+        this.update(null, activations, null);
+    }
+
+    public void update(HashSet<SensorType> activations, HashSet<SensorType> deactivations) {
+        this.update(null, activations, deactivations);
+    }
+
+    public void update(Vector jerk) {
+        this.update(jerk, null, null);
+    }
+
+    public void update(Vector jerk, HashSet<SensorType> activations) {
+        this.update(jerk, activations, null);
+    }
+
+    /**
+     * Pushes the drone with the force of delta, and activates and deactivates the specified sensors.
+     *
+     * @param jerk the change in acceleration of the drone
+     * @param activations the sensors to be activated
+     * @param deactivations the sensors to be deactivated
+     */
+    public void update(Vector jerk, HashSet<SensorType> activations, HashSet<SensorType> deactivations) {
+        if (activations != null) {
+            for (SensorType type : activations) {
+                this.activateSensorWithType(type);
+            }
+        }
+        if (deactivations != null) {
+            for (SensorType type : deactivations) {
+                this.deactivateSensorWithType(type);
+            }
+        }
+        if (this.isMoving() || jerk != null) {
+            Vector newAcceleration = this.acceleration;
+            if (jerk != null) {
+                if (this.spec.getMaxJerk() < jerk.getMagnitude()) {
+                    Debugger.logger.warn(String.format("Cannot update acceleration of drone %s by jerk %s",
+                        this.getDroneLabel(), jerk.toString()));
+                    jerk = Vector.scale(jerk.getUnitVector(), this.spec.getMaxJerk());
+                    Debugger.logger.state(String.format("Updating acceleration of drone %s by jerk %s",
+                        this.getDroneLabel(), jerk.toString()));
+                }
+                newAcceleration = Vector.add(this.acceleration, jerk);
+                if (this.spec.getMaxAcceleration() < newAcceleration.getMagnitude()) {
+                    Debugger.logger.warn(String.format("Cannot update acceleration of drone %s to %s",
+                        this.getDroneLabel(), newAcceleration.toString()));
+                    newAcceleration = Vector.scale(newAcceleration.getUnitVector(), this.spec.getMaxAcceleration());
+                    jerk = Vector.subtract(newAcceleration, this.acceleration);
+                    Debugger.logger.state(String.format("Updating acceleration of drone %s to %s",
+                        this.getDroneLabel(), newAcceleration.toString()));
+                }
+            }
+            Vector newVelocity = Vector.add(this.velocity, newAcceleration);
+            if (this.spec.getMaxVelocity() < newVelocity.getMagnitude()) {
+                Debugger.logger.warn(String.format("Cannot update velocity of drone %s to %s",
+                        this.getDroneLabel(), newVelocity.toString()));
+                newVelocity = Vector.scale(newVelocity.getUnitVector(), this.spec.getMaxVelocity());
+                newAcceleration = Vector.subtract(newVelocity, this.velocity);
+                jerk = Vector.subtract(newAcceleration, this.acceleration);
+                Debugger.logger.state(String.format("Updating velocity of drone %s to %s",
+                        this.getDroneLabel(), newVelocity.toString()));
+            }
+            this.setAcceleration(newAcceleration);
+            this.setVelocity(newVelocity);
+        }
+        this.updateBatteryPower();
+        if (this.isAlive() && this.isMoving()) {
+            this.updateLocation();
+        } else if (!this.isAlive()) {
+            this.disable();
+        }
+    }
+
+    private void updateBatteryPower() {
+        double batteryUsage = this.spec.getStaticBatteryUsage();
+        Vector horizontalAcceleration = new Vector(this.acceleration.getX(), this.acceleration.getY(), 0);
+        batteryUsage += this.spec.getHorizontalKineticBatteryUsage() * horizontalAcceleration.getMagnitude();
+        batteryUsage += this.spec.getVerticalKineticBatteryUsage() * this.acceleration.getZ();
+        for (SensorType type : this.activeSensors) {
+            batteryUsage += this.getSensorWithType(type).getBatteryUsage();
+        }
+        if (this.batteryPower - batteryUsage > 0) {
+            this.setBatteryPower(this.batteryPower - batteryUsage);
+        } else {
+            this.setBatteryPower(0);
+        }
+    }
+
+    private void updateLocation() {
+        this.setLocation(Vector.add(this.location, this.velocity));
+    }
+
     public String encode() {
         return this.toJSON().toString();
     }
