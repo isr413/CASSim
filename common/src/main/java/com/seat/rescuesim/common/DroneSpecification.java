@@ -9,29 +9,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class DroneSpecification {
+    private static final String DRONE_BATTERY_USAGE = "battery_usage";
     private static final String DRONE_LOCATION = "location";
     private static final String DRONE_MAX_ACCELERATION = "max_acceleration";
     private static final String DRONE_MAX_BATTERY = "max_battery";
     private static final String DRONE_MAX_JERK = "max_jerk";
     private static final String DRONE_MAX_VELOCITY = "max_velocity";
-    private static final String DRONE_KINETIC_BATTERY_USAGE = "kinetic_battery_usage";
     private static final String DRONE_SENSORS = "sensors";
-    private static final String DRONE_STATIC_BATTERY_USAGE = "static_battery_usage";
 
+    private Vector batteryUsage; // [static (hovering), horizontal movement, vertical movement]
     private Vector initialLocation;
-    private double kineticBatteryUsage;
     private double maxAcceleration;
     private double maxBatteryPower;
     private double maxJerk;
     private double maxVelocity;
     private HashMap<SensorType, Sensor> sensors;
-    private double staticBatteryUsage;
 
     public static DroneSpecification decode(JSONObject json) throws JSONException {
         double batteryPower = json.getDouble(DroneSpecification.DRONE_MAX_BATTERY);
-        double staticBatteryUsage = json.getDouble(DroneSpecification.DRONE_STATIC_BATTERY_USAGE);
+        Vector batteryUsage = Vector.decode(json.getJSONArray(DroneSpecification.DRONE_BATTERY_USAGE));
         Vector location = Vector.decode(json.getJSONArray(DroneSpecification.DRONE_LOCATION));
-        double kineticBatteryUsage = json.getDouble(DroneSpecification.DRONE_KINETIC_BATTERY_USAGE);
         double velocity = json.getDouble(DroneSpecification.DRONE_MAX_VELOCITY);
         double acceleration = json.getDouble(DroneSpecification.DRONE_MAX_ACCELERATION);
         double jerk = json.getDouble(DroneSpecification.DRONE_MAX_JERK);
@@ -40,71 +37,71 @@ public class DroneSpecification {
         for (int i = 0; i < jsonSensors.length(); i++) {
             sensors.add(Sensor.decode(jsonSensors.getJSONObject(i)));
         }
-        return new DroneSpecification(batteryPower, staticBatteryUsage, location,
-                kineticBatteryUsage, velocity, acceleration, jerk, sensors);
+        return new DroneSpecification(batteryPower, batteryUsage, location,
+                velocity, acceleration, jerk, sensors);
     }
 
     public static DroneSpecification decode(String encoding) throws JSONException {
         return DroneSpecification.decode(new JSONObject(encoding));
     }
 
-    public DroneSpecification(double batteryPower, double staticBatteryUsage, Vector location) {
-        this(batteryPower, staticBatteryUsage, location, 0.0, 0.0, 0.0, 0.0, new HashMap<SensorType, Sensor>());
+    public DroneSpecification(double batteryPower, Vector batteryUsage, Vector location) {
+        this(batteryPower, batteryUsage, location, 0.0, 0.0, 0.0, new HashMap<SensorType, Sensor>());
     }
 
-    public DroneSpecification(double batteryPower, double staticBatteryUsage, Vector location, Sensor[] sensors) {
-        this(batteryPower, staticBatteryUsage, location, 0.0, 0.0, 0.0, 0.0, sensors);
+    public DroneSpecification(double batteryPower, Vector batteryUsage, Vector location, Sensor[] sensors) {
+        this(batteryPower, batteryUsage, location, 0.0, 0.0, 0.0, sensors);
     }
 
-    public DroneSpecification(double batteryPower, double staticBatteryUsage,
-            Vector location, ArrayList<Sensor> sensors) {
-        this(batteryPower, staticBatteryUsage, location, 0.0, 0.0, 0.0, 0.0, sensors);
+    public DroneSpecification(double batteryPower, Vector batteryUsage, Vector location, ArrayList<Sensor> sensors) {
+        this(batteryPower, batteryUsage, location, 0.0, 0.0, 0.0, sensors);
     }
 
-    public DroneSpecification(double batteryPower, double staticBatteryUsage, Vector location,
+    public DroneSpecification(double batteryPower, Vector batteryUsage, Vector location,
             HashMap<SensorType, Sensor> sensors) {
-        this(batteryPower, staticBatteryUsage, location, 0.0, 0.0, 0.0, 0.0, sensors);
+        this(batteryPower, batteryUsage, location, 0.0, 0.0, 0.0, sensors);
     }
 
-    public DroneSpecification(double batteryPower, double staticBatteryUsage, Vector location,
-            double kineticBatteryUsage, double velocity, double acceleration, double jerk) {
-        this(batteryPower, staticBatteryUsage, location,
-                kineticBatteryUsage, velocity, acceleration, jerk, new HashMap<SensorType, Sensor>());
+    public DroneSpecification(double batteryPower, Vector batteryUsage, Vector location,
+            double velocity, double acceleration, double jerk) {
+        this(batteryPower, batteryUsage, location, velocity, acceleration, jerk, new HashMap<SensorType, Sensor>());
     }
 
-    public DroneSpecification(double batteryPower, double staticBatteryUsage, Vector location,
-            double kineticBatteryUsage, double velocity, double acceleration, double jerk, Sensor[] sensors) {
-        this(batteryPower, staticBatteryUsage, location,
-            kineticBatteryUsage, velocity, acceleration, jerk, new ArrayList<Sensor>(Arrays.asList(sensors)));
+    public DroneSpecification(double batteryPower, Vector batteryUsage, Vector location,
+            double velocity, double acceleration, double jerk, Sensor[] sensors) {
+        this(batteryPower, batteryUsage, location, velocity, acceleration, jerk,
+            new ArrayList<Sensor>(Arrays.asList(sensors)));
     }
 
-    public DroneSpecification(double batteryPower, double staticBatteryUsage, Vector location,
-            double kineticBatteryUsage, double velocity, double acceleration, double jerk, ArrayList<Sensor> sensors) {
-        this(batteryPower, staticBatteryUsage, location, kineticBatteryUsage, velocity, acceleration, jerk);
+    public DroneSpecification(double batteryPower, Vector batteryUsage, Vector location,
+            double velocity, double acceleration, double jerk, ArrayList<Sensor> sensors) {
+        this(batteryPower, batteryUsage, location, velocity, acceleration, jerk);
         for (Sensor sensor : sensors) {
             this.sensors.put(sensor.getType(), sensor);
         }
     }
 
-    public DroneSpecification(double batteryPower, double staticBatteryUsage, Vector location,
-            double kineticBatteryUsage, double velocity, double acceleration, double jerk,
-            HashMap<SensorType, Sensor> sensors) {
+    public DroneSpecification(double batteryPower, Vector batteryUsage, Vector location,
+            double velocity, double acceleration, double jerk, HashMap<SensorType, Sensor> sensors) {
         this.maxBatteryPower = batteryPower;
-        this.staticBatteryUsage = staticBatteryUsage;
+        this.batteryUsage = batteryUsage;
         this.initialLocation = location;
-        this.kineticBatteryUsage = kineticBatteryUsage;
         this.maxVelocity = velocity;
         this.maxAcceleration = acceleration;
         this.maxJerk = jerk;
         this.sensors = sensors;
     }
 
+    public Vector getBatteryUsage() {
+        return this.batteryUsage;
+    }
+
     public Vector getInitialLocation() {
         return this.initialLocation;
     }
 
-    public double getKineticBatteryUsage() {
-        return this.kineticBatteryUsage;
+    public double getHorizontalKineticBatteryUsage() {
+        return this.batteryUsage.getY();
     }
 
     public double getMaxAcceleration() {
@@ -136,7 +133,11 @@ public class DroneSpecification {
     }
 
     public double getStaticBatteryUsage() {
-        return this.staticBatteryUsage;
+        return this.batteryUsage.getX();
+    }
+
+    public double getVerticalKineticBatteryUsage() {
+        return this.batteryUsage.getZ();
     }
 
     public boolean hasSensors() {
@@ -158,9 +159,8 @@ public class DroneSpecification {
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         json.put(DroneSpecification.DRONE_MAX_BATTERY, this.maxBatteryPower);
-        json.put(DroneSpecification.DRONE_STATIC_BATTERY_USAGE, this.staticBatteryUsage);
+        json.put(DroneSpecification.DRONE_BATTERY_USAGE, this.batteryUsage.toJSON());
         json.put(DroneSpecification.DRONE_LOCATION, this.initialLocation.toJSON());
-        json.put(DroneSpecification.DRONE_KINETIC_BATTERY_USAGE, this.kineticBatteryUsage);
         json.put(DroneSpecification.DRONE_MAX_VELOCITY, this.maxVelocity);
         json.put(DroneSpecification.DRONE_MAX_ACCELERATION, this.maxAcceleration);
         json.put(DroneSpecification.DRONE_MAX_JERK, this.maxJerk);
@@ -177,9 +177,8 @@ public class DroneSpecification {
     }
 
     public boolean equals(DroneSpecification spec) {
-        return this.maxBatteryPower == spec.maxBatteryPower && this.staticBatteryUsage == spec.staticBatteryUsage &&
-                this.initialLocation.equals(spec.initialLocation) &&
-                this.kineticBatteryUsage == spec.kineticBatteryUsage && this.maxVelocity == spec.maxVelocity &&
+        return this.maxBatteryPower == spec.maxBatteryPower && this.batteryUsage.equals(spec.batteryUsage) &&
+                this.initialLocation.equals(spec.initialLocation) && this.maxVelocity == spec.maxVelocity &&
                 this.maxAcceleration == spec.maxAcceleration &&
                 this.maxJerk == spec.maxJerk && this.sensors.equals(spec.sensors);
     }
