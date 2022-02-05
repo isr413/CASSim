@@ -334,7 +334,7 @@ public class DroneRemote {
     }
 
     /**
-     * Pushes the drone with the force of delta, and activates and deactivates the specified sensors.
+     * Pushes the drone with the force of jerk, and activates and deactivates the specified sensors.
      *
      * @param stepSize the change in time measured in seconds from the last update
      * @param jerk the change in acceleration of the drone for this step

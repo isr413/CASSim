@@ -290,6 +290,84 @@ public class Victim {
         this.velocity = velocity;
     }
 
+    public void update(double stepSize) {
+        this.update(stepSize, null, null, null);
+    }
+
+    public void update(double stepSize, HashSet<SensorType> activations) {
+        this.update(stepSize, null, activations, null);
+    }
+
+    public void update(double stepSize, HashSet<SensorType> activations, HashSet<SensorType> deactivations) {
+        this.update(stepSize, null, activations, deactivations);
+    }
+
+    public void update(double stepSize, Vector jerk) {
+        this.update(stepSize, jerk, null, null);
+    }
+
+    public void update(double stepSize, Vector jerk, HashSet<SensorType> activations) {
+        this.update(stepSize, jerk, activations, null);
+    }
+
+    /**
+     * Pushes the victim with the force of jerk, and activates and deactivates the specified sensors.
+     *
+     * @param stepSize the change in time measured in seconds from the last update
+     * @param jerk the change in acceleration of the victim for this step
+     * @param activations the sensors to be activated
+     * @param deactivations the sensors to be deactivated
+     */
+    public void update(double stepSize, Vector jerk, HashSet<SensorType> activations,
+            HashSet<SensorType> deactivations) {
+        if (activations != null) {
+            for (SensorType type : activations) {
+                this.activateSensorWithType(type);
+            }
+        }
+        if (deactivations != null) {
+            for (SensorType type : deactivations) {
+                this.deactivateSensorWithType(type);
+            }
+        }
+        this.updateBatteryPower(stepSize);
+        if (!this.hasLiveBattery()) {
+            this.disableBattery();
+        }
+        if (jerk != null) {
+            Vector newVelocity = Vector.add(this.velocity, jerk);
+            if (this.spec.getMaxVelocity() < newVelocity.getMagnitude()) {
+                Debugger.logger.warn(String.format("Cannot update velocity of victim %s to %s",
+                        this.getLabel(), newVelocity.toString()));
+                newVelocity = Vector.scale(newVelocity.getUnitVector(), this.spec.getMaxVelocity());
+                jerk = Vector.subtract(newVelocity, this.velocity);
+                Debugger.logger.state(String.format("Updating velocity of victim %s to %s",
+                        this.getLabel(), newVelocity.toString()));
+            }
+            this.setVelocity(newVelocity);
+        }
+        if (this.isMoving()) {
+            this.updateLocation(stepSize);
+        }
+    }
+
+    private void updateBatteryPower(double stepSize) {
+        double batteryUsage = this.spec.getStaticBatteryUsage();
+        for (SensorType type : this.activeSensors) {
+            batteryUsage += this.getSensorWithType(type).getBatteryUsage();
+        }
+        batteryUsage *= stepSize;
+        if (this.batteryPower - batteryUsage > 0) {
+            this.setBatteryPower(this.batteryPower - batteryUsage);
+        } else {
+            this.setBatteryPower(0);
+        }
+    }
+
+    private void updateLocation(double stepSize) {
+        this.setLocation(Vector.add(this.location, Vector.scale(this.velocity, stepSize)));
+    }
+
     public String encode() {
         return this.toJSON().toString();
     }
