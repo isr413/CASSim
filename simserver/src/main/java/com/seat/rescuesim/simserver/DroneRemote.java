@@ -17,10 +17,9 @@ public class DroneRemote {
     private static final String DRONE_ACCELERATION = "acceleration";
     private static final String DRONE_ACTIVE_SENSORS = "active_sensors";
     private static final String DRONE_BATTERY = "battery_power";
-    private static final String DRONE_DIRECTION = "direction";
     private static final String DRONE_LOCATION = "location";
     private static final String DRONE_REMOTE_ID = "remote_id";
-    private static final String DRONE_VELOCITY = "speed";
+    private static final String DRONE_VELOCITY = "velocity";
 
     private static int remoteCount = 0;
 
@@ -28,15 +27,14 @@ public class DroneRemote {
         int remoteID = json.getInt(DroneRemote.DRONE_REMOTE_ID);
         double batteryPower = json.getDouble(DroneRemote.DRONE_BATTERY);
         Vector location = Vector.decode(json.getJSONArray(DroneRemote.DRONE_LOCATION));
-        Vector direction = Vector.decode(json.getJSONArray(DroneRemote.DRONE_DIRECTION));
-        double velocity = json.getDouble(DroneRemote.DRONE_VELOCITY);
-        double acceleration = json.getDouble(DroneRemote.DRONE_ACCELERATION);
+        Vector velocity = Vector.decode(json.getJSONArray(DroneRemote.DRONE_VELOCITY));
+        Vector acceleration = Vector.decode(json.getJSONArray(DroneRemote.DRONE_ACCELERATION));
         JSONArray jsonSensors = json.getJSONArray(DroneRemote.DRONE_ACTIVE_SENSORS);
         ArrayList<SensorType> activeSensors = new ArrayList<>();
         for (int i = 0; i < jsonSensors.length(); i++) {
            activeSensors.add(SensorType.values()[jsonSensors.getInt(i)]);
         }
-        return new DroneRemote(droneSpec, remoteID, batteryPower, location, direction, velocity, acceleration, activeSensors);
+        return new DroneRemote(droneSpec, remoteID, batteryPower, location, velocity, acceleration, activeSensors);
     }
 
     public static DroneRemote decode(DroneSpecification droneSpec, String encoding) throws JSONException {
@@ -51,34 +49,31 @@ public class DroneRemote {
         DroneRemote.remoteCount++;
     }
 
-    private double acceleration;
+    private Vector acceleration;
     private HashSet<SensorType> activeSensors;
     private double batteryPower;
-    private Vector direction;
     private Vector location;
     private int remoteID;
     private DroneSpecification spec;
-    private double velocity;
+    private Vector velocity;
 
     public DroneRemote(DroneSpecification droneSpec) {
         this.spec = droneSpec;
         this.remoteID = DroneRemote.getID();
         this.batteryPower = this.spec.getMaxBatteryPower();
         this.location = this.spec.getInitialLocation();
-        this.direction = new Vector();
-        this.velocity = 0.0;
-        this.acceleration = 0.0;
+        this.velocity = new Vector();
+        this.acceleration = new Vector();
         this.activeSensors = new HashSet<>();
         DroneRemote.updateRemoteCount();
     }
 
     public DroneRemote(DroneSpecification droneSpec, int remoteID, double batteryPower, Vector location,
-            Vector direction, double velocity, double acceleration, ArrayList<SensorType> activeSensors) {
+            Vector velocity, Vector acceleration, ArrayList<SensorType> activeSensors) {
         this.spec = droneSpec;
         this.remoteID = remoteID;
         this.batteryPower = batteryPower;
         this.location = location;
-        this.direction = direction;
         this.velocity = velocity;
         this.acceleration = acceleration;
         this.activeSensors = new HashSet<>();
@@ -96,7 +91,7 @@ public class DroneRemote {
         DroneRemote.updateRemoteCount();
     }
 
-    public double getAcceleration() {
+    public Vector getAcceleration() {
         return this.acceleration;
     }
 
@@ -129,10 +124,6 @@ public class DroneRemote {
         return this.batteryPower;
     }
 
-    public Vector getDirection() {
-        return this.direction;
-    }
-
     public DroneSpecification getDroneSpecification() {
         return this.spec;
     }
@@ -153,7 +144,7 @@ public class DroneRemote {
         return this.spec.getSensorWithType(type);
     }
 
-    public double getVelocity() {
+    public Vector getVelocity() {
         return this.velocity;
     }
 
@@ -173,6 +164,14 @@ public class DroneRemote {
         return this.spec.hasSensorWithType(type);
     }
 
+    public boolean isMoving() {
+        return this.velocity.getMagnitude() > 0;
+    }
+
+    public boolean isKinetic() {
+        return this.spec.isKinetic();
+    }
+
     public String encode() {
         return this.toJSON().toString();
     }
@@ -182,9 +181,8 @@ public class DroneRemote {
         json.put(DroneRemote.DRONE_REMOTE_ID, this.remoteID);
         json.put(DroneRemote.DRONE_BATTERY, this.batteryPower);
         json.put(DroneRemote.DRONE_LOCATION, this.location.toJSON());
-        json.put(DroneRemote.DRONE_DIRECTION, this.direction.toJSON());
-        json.put(DroneRemote.DRONE_VELOCITY, this.velocity);
-        json.put(DroneRemote.DRONE_ACCELERATION, this.acceleration);
+        json.put(DroneRemote.DRONE_VELOCITY, this.velocity.toJSON());
+        json.put(DroneRemote.DRONE_ACCELERATION, this.acceleration.toJSON());
         JSONArray jsonSensors = new JSONArray();
         for (SensorType type : this.activeSensors) {
             jsonSensors.put(type.getType());
