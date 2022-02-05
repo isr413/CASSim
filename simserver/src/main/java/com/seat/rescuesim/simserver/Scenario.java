@@ -85,11 +85,17 @@ public class Scenario {
     }
 
     private void initRemotes() {
-
+        for (int i = 0; i < this.config.getNumberOfDrones(); i++) {
+            DroneRemote remote = new DroneRemote(this.config.getDroneSpecification());
+            this.remotes.put(remote.getRemoteID(), remote);
+        }
     }
 
     private void initVictims() {
-
+        for (int i = 0; i < this.config.getNumberOfVictims(); i++) {
+            Victim victim = new Victim(this.config.getVictimSpecification());
+            this.victims.put(victim.getVictimID(), victim);
+        }
     }
 
     public ScenarioConfig getConfig() {
