@@ -53,6 +53,10 @@ public class Base {
         this.sensors = sensors;
     }
 
+    public String getLabel() {
+        return String.format("<%s>", this.location.toString());
+    }
+
     public Vector getLocation() {
         return this.location;
     }
@@ -63,7 +67,8 @@ public class Base {
 
     public Sensor getSensorWithType(SensorType type) {
         if (!this.hasSensorWithType(type)) {
-            Debugger.logger.err("No sensor with type (" + type.toString() + ") found on base");
+            Debugger.logger.err(String.format("No sensor with type %s found on base %s",
+                type.getLabel(), this.getLabel()));
             return null;
         }
         return this.sensors.get(type);

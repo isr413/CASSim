@@ -53,20 +53,20 @@ public class Map {
         this.grid = gridZones;
     }
 
-    public int getWidth() {
-        return this.width;
+    public Zone[][] getGrid() {
+        return this.grid;
     }
 
     public int getHeight() {
         return this.height;
     }
 
-    public int getZoneSize() {
-        return this.zoneSize;
+    public String getLabel() {
+        return String.format("<(%d, %d)>", this.width, this.height);
     }
 
-    public Zone[][] getGrid() {
-        return this.grid;
+    public int getWidth() {
+        return this.width;
     }
 
     public Zone getZone(int y, int x) {
@@ -74,6 +74,10 @@ public class Map {
             return null;
         }
         return this.grid[y][x];
+    }
+
+    public int getZoneSize() {
+        return this.zoneSize;
     }
 
     public String encode() {

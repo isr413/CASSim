@@ -126,7 +126,7 @@ public class DroneSpecification {
 
     public Sensor getSensorWithType(SensorType type) {
         if (!this.hasSensorWithType(type)) {
-            Debugger.logger.err("No sensor with type (" + type.toString() + ") found on drone spec");
+            Debugger.logger.err(String.format("No sensor with type %s found on drone spec", type.getLabel()));
             return null;
         }
         return this.sensors.get(type);

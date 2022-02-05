@@ -46,6 +46,18 @@ public class Zone {
         this.aerial = aerial;
     }
 
+    public Field getAerialField() {
+        return this.aerial;
+    }
+
+    public Field getGroundField() {
+        return this.ground;
+    }
+
+    public String getLabel() {
+        return String.format("<%d, %s>", this.type.getType(), this.location.toString());
+    }
+
     public Vector getLocation() {
         return this.location;
     }
@@ -56,14 +68,6 @@ public class Zone {
 
     public ZoneType getZoneType() {
         return this.type;
-    }
-
-    public Field getGroundField() {
-        return this.ground;
-    }
-
-    public Field getAerialField() {
-        return this.aerial;
     }
 
     public String encode() {

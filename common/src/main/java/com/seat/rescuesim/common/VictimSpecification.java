@@ -115,7 +115,7 @@ public class VictimSpecification {
 
     public Sensor getSensorWithType(SensorType type) {
         if (!this.hasSensorWithType(type)) {
-            Debugger.logger.err("No sensor with type (" + type.toString() + ") found on victim spec");
+            Debugger.logger.err(String.format("No sensor with type %s found on victim spec", type.getLabel()));
             return null;
         }
         return this.sensors.get(type);
