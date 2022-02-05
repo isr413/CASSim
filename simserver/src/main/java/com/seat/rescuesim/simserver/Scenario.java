@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.seat.rescuesim.common.Debugger;
 import com.seat.rescuesim.common.ScenarioConfig;
+import com.seat.rescuesim.common.Vector;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -93,7 +94,12 @@ public class Scenario {
 
     private void initVictims() {
         for (int i = 0; i < this.config.getNumberOfVictims(); i++) {
-            Victim victim = new Victim(this.config.getVictimSpecification());
+            Vector randomLocation = new Vector(
+                Math.random() * this.config.getMap().getWidth(),
+                Math.random() * this.config.getMap().getHeight(),
+                0
+            );
+            Victim victim = new Victim(this.config.getVictimSpecification(), randomLocation);
             this.victims.put(victim.getVictimID(), victim);
         }
     }

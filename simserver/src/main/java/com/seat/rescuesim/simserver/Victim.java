@@ -60,6 +60,16 @@ public class Victim {
             new HashSet<SensorType>());
     }
 
+    public Victim(VictimSpecification victimSpec, Vector location) {
+        this(victimSpec, Victim.getID(), victimSpec.getMaxBatteryPower(), location, new Vector(),
+            new HashSet<SensorType>());
+    }
+
+    public Victim(VictimSpecification victimSpec, Vector location, Vector velocity) {
+        this(victimSpec, Victim.getID(), victimSpec.getMaxBatteryPower(), location, velocity,
+            new HashSet<SensorType>());
+    }
+
     public Victim(VictimSpecification victimSpec, int victimID, double batteryPower) {
         this(victimSpec, victimID, batteryPower, new Vector(), new Vector());
     }
