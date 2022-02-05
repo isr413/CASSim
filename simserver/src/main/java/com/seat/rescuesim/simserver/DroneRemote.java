@@ -292,7 +292,7 @@ public class DroneRemote {
             Debugger.logger.warn(String.format("Cannot set battery power of drone %s to be %.2f",
                 this.getLabel(), batteryPower));
             batteryPower = (batteryPower < 0) ? 0 : this.spec.getMaxBatteryPower();
-            Debugger.logger.warn(String.format("Setting battery power of drone %s to be %.2f",
+            Debugger.logger.state(String.format("Setting battery power of drone %s to be %.2f",
                 this.getLabel(), batteryPower));
         }
         this.batteryPower = batteryPower;
