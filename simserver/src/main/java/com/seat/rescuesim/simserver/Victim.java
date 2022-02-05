@@ -8,6 +8,7 @@ import com.seat.rescuesim.common.Debugger;
 import com.seat.rescuesim.common.VictimSpecification;
 import com.seat.rescuesim.common.Sensor;
 import com.seat.rescuesim.common.SensorType;
+import com.seat.rescuesim.common.Vector;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,18 +18,22 @@ public class Victim {
     private static final String VICTIM_ACTIVE_SENSORS = "active_sensors";
     private static final String VICTIM_BATTERY = "battery_power";
     private static final String VICTIM_ID = "victim_id";
+    private static final String VICTIM_LOCATION = "location";
+    private static final String VICTIM_VELOCITY = "velocity";
 
     private static int victimCount = 0;
 
     public static Victim decode(VictimSpecification victimSpec, JSONObject json) throws JSONException {
         int victimID = json.getInt(Victim.VICTIM_ID);
         double batteryPower = json.getDouble(Victim.VICTIM_BATTERY);
+        Vector location = Vector.decode(json.getJSONArray(Victim.VICTIM_LOCATION));
+        Vector velocity = Vector.decode(json.getJSONArray(Victim.VICTIM_VELOCITY));
         JSONArray jsonSensors = json.getJSONArray(Victim.VICTIM_ACTIVE_SENSORS);
         ArrayList<SensorType> activeSensors = new ArrayList<>();
         for (int i = 0; i < jsonSensors.length(); i++) {
            activeSensors.add(SensorType.values()[jsonSensors.getInt(i)]);
         }
-        return new Victim(victimSpec, victimID, batteryPower, activeSensors);
+        return new Victim(victimSpec, victimID, batteryPower, location, velocity, activeSensors);
     }
 
     public static Victim decode(VictimSpecification victimSpec, String encoding) throws JSONException {
@@ -45,24 +50,47 @@ public class Victim {
 
     private HashSet<SensorType> activeSensors;
     private double batteryPower;
+    private Vector location;
     private VictimSpecification spec;
+    private Vector velocity;
     private int victimID;
 
     public Victim(VictimSpecification victimSpec) {
-        this(victimSpec, Victim.getID(), victimSpec.getMaxBatteryPower(), new HashSet<SensorType>());
+        this(victimSpec, Victim.getID(), victimSpec.getMaxBatteryPower(), new Vector(), new Vector(),
+            new HashSet<SensorType>());
     }
 
     public Victim(VictimSpecification victimSpec, int victimID, double batteryPower) {
-        this(victimSpec, victimID, batteryPower, new HashSet<SensorType>());
+        this(victimSpec, victimID, batteryPower, new Vector(), new Vector());
     }
 
     public Victim(VictimSpecification victimSpec, int victimID, double batteryPower, SensorType[] activeSensors) {
-        this(victimSpec, victimID, batteryPower, new ArrayList<SensorType>(Arrays.asList(activeSensors)));
+        this(victimSpec, victimID, batteryPower, new Vector(), new Vector(), activeSensors);
     }
 
     public Victim(VictimSpecification victimSpec, int victimID, double batteryPower,
             ArrayList<SensorType> activeSensors) {
-        this(victimSpec, victimID, batteryPower, new HashSet<SensorType>());
+        this(victimSpec, victimID, batteryPower, new Vector(), new Vector(), activeSensors);
+    }
+
+    public Victim(VictimSpecification victimSpec, int victimID, double batteryPower,
+            HashSet<SensorType> activeSensors) {
+        this(victimSpec, victimID, batteryPower, new Vector(), new Vector(), activeSensors);
+    }
+
+    public Victim(VictimSpecification victimSpec, int victimID, double batteryPower, Vector location, Vector velocity) {
+        this(victimSpec, victimID, batteryPower, location, velocity, new HashSet<SensorType>());
+    }
+
+    public Victim(VictimSpecification victimSpec, int victimID, double batteryPower, Vector location, Vector velocity,
+            SensorType[] activeSensors) {
+        this(victimSpec, victimID, batteryPower, location, velocity,
+            new ArrayList<SensorType>(Arrays.asList(activeSensors)));
+    }
+
+    public Victim(VictimSpecification victimSpec, int victimID, double batteryPower, Vector location, Vector velocity,
+            ArrayList<SensorType> activeSensors) {
+        this(victimSpec, victimID, batteryPower, location, velocity, new HashSet<SensorType>());
         for (SensorType type : activeSensors) {
             if (!this.spec.hasSensorWithType(type)) {
                 Debugger.logger.err(String.format("Victim %s should have sensor with type %s",
@@ -76,11 +104,13 @@ public class Victim {
         }
     }
 
-    public Victim(VictimSpecification victimSpec, int victimID, double batteryPower,
+    public Victim(VictimSpecification victimSpec, int victimID, double batteryPower, Vector location, Vector velocity,
             HashSet<SensorType> activeSensors) {
         this.spec = victimSpec;
         this.victimID = victimID;
         this.batteryPower = batteryPower;
+        this.location = location;
+        this.velocity = velocity;
         this.activeSensors = activeSensors;
         for (SensorType type : this.activeSensors) {
             if (!this.spec.hasSensorWithType(type)) {
@@ -135,8 +165,13 @@ public class Victim {
         return true;
     }
 
-    public void disable() {
+    public void disableBattery() {
         this.batteryPower = 0;
+        this.activeSensors = new HashSet<>();
+    }
+
+    public void disableVictim() {
+        this.velocity = new Vector();
     }
 
     public ArrayList<Sensor> getActiveSensors() {
@@ -173,12 +208,20 @@ public class Victim {
         return String.format("<%d>", this.victimID);
     }
 
+    public Vector getLocation() {
+        return this.location;
+    }
+
     public ArrayList<Sensor> getSensors() {
         return this.spec.getSensors();
     }
 
     public Sensor getSensorWithType(SensorType type) {
         return this.spec.getSensorWithType(type);
+    }
+
+    public Vector getVelocity() {
+        return this.velocity;
     }
 
     public int getVictimID() {
@@ -197,6 +240,14 @@ public class Victim {
         return this.activeSensors.contains(type);
     }
 
+    public boolean hasLiveBattery() {
+        return this.batteryPower > 0;
+    }
+
+    public boolean hasDisabledBattery() {
+        return !this.hasLiveBattery();
+    }
+
     public boolean hasSensors() {
         return this.spec.hasSensors();
     }
@@ -205,12 +256,12 @@ public class Victim {
         return this.spec.hasSensorWithType(type);
     }
 
-    public boolean isAlive() {
-        return this.batteryPower > 0;
+    public boolean isMoving() {
+        return this.velocity.getMagnitude() > 0;
     }
 
-    public boolean isDisabled() {
-        return !this.isAlive();
+    public boolean isProne() {
+        return !this.isMoving();
     }
 
     private void setBatteryPower(double batteryPower) {
@@ -224,6 +275,21 @@ public class Victim {
         this.batteryPower = batteryPower;
     }
 
+    private void setLocation(Vector location) {
+        this.location = location;
+    }
+
+    private void setVelocity(Vector velocity) {
+        if (this.spec.getMaxVelocity() < velocity.getMagnitude()) {
+            Debugger.logger.warn(String.format("Cannot set velocity of victim %s to be %s",
+                this.getLabel(), velocity.toString()));
+            velocity = Vector.scale(velocity.getUnitVector(), this.spec.getMaxVelocity());
+            Debugger.logger.state(String.format("Setting velocity of victim %s to be %s",
+                this.getLabel(), velocity.toString()));
+        }
+        this.velocity = velocity;
+    }
+
     public String encode() {
         return this.toJSON().toString();
     }
@@ -232,6 +298,8 @@ public class Victim {
         JSONObject json = new JSONObject();
         json.put(Victim.VICTIM_ID, this.victimID);
         json.put(Victim.VICTIM_BATTERY, this.batteryPower);
+        json.put(Victim.VICTIM_LOCATION, this.location.toJSON());
+        json.put(Victim.VICTIM_VELOCITY, this.velocity.toJSON());
         JSONArray jsonSensors = new JSONArray();
         for (SensorType type : this.activeSensors) {
             jsonSensors.put(type.getType());
