@@ -76,6 +76,14 @@ public class Map {
         return this.grid[y][x];
     }
 
+    public Zone getZoneAtLocation(double x, double y) {
+        return this.getZone((int) (y / this.zoneSize), (int) (x / this.zoneSize));
+    }
+
+    public Zone getZoneAtLocation(Vector location) {
+        return this.getZoneAtLocation(location.getX(), location.getY());
+    }
+
     public int getZoneSize() {
         return this.zoneSize;
     }

@@ -94,11 +94,15 @@ public class Scenario {
 
     private void initVictims() {
         for (int i = 0; i < this.config.getNumberOfVictims(); i++) {
-            Vector randomLocation = new Vector(
-                Math.random() * this.config.getMap().getWidth(),
-                Math.random() * this.config.getMap().getHeight(),
-                0
-            );
+            Vector randomLocation = this.config.getBase().getLocation();
+            while (this.config.getMap().getZoneAtLocation(randomLocation).equals(
+                    this.config.getMap().getZoneAtLocation(this.config.getBase().getLocation()))) {
+                randomLocation = new Vector(
+                    Math.random() * this.config.getMap().getWidth(),
+                    Math.random() * this.config.getMap().getHeight(),
+                    0
+                );
+            }
             Victim victim = new Victim(this.config.getVictimSpecification(), randomLocation);
             this.victims.put(victim.getVictimID(), victim);
         }
