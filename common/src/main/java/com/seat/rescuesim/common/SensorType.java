@@ -14,6 +14,10 @@ public enum SensorType {
         this.type = type;
     }
 
+    public String getLabel() {
+        return String.format("<%d>", this.type);
+    }
+
     public int getType() {
         return this.type;
     }

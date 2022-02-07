@@ -29,8 +29,66 @@ public class Vector {
         );
     }
 
+    /** Computes X component of the magnitude given the provided angles (in radians). */
+    public static double getXComponent(double magnitude, double angleXY) {
+        return Vector.getXComponent(magnitude, 0, angleXY);
+    }
+
+    /** Computes X component of the magnitude given the provided angles (in radians). */
+    public static double getXComponent(double magnitude, double angleBetween, double angleXY) {
+        return magnitude * Math.cos(angleBetween) * Math.cos(angleXY);
+    }
+
+    /** Computes X component of the magnitude given the provided angles (in radians). */
+    public static Vector getXVector(double magnitude, double angleXY) {
+        return Vector.getXVector(magnitude, 0, angleXY);
+    }
+
+    /** Computes X component of the magnitude given the provided angles (in radians). */
+    public static Vector getXVector(double magnitude, double angleBetween, double angleXY) {
+        return new Vector(Vector.getXComponent(magnitude, angleBetween, angleXY), 0, 0);
+    }
+
+    /** Computes Y component of the magnitude given the provided angles (in radians). */
+    public static double getYComponent(double magnitude, double angleXY) {
+        return Vector.getYComponent(magnitude, 0, angleXY);
+    }
+
+    /** Computes Y component of the magnitude given the provided angles (in radians). */
+    public static double getYComponent(double magnitude, double angleBetween, double angleXY) {
+        return magnitude * Math.cos(angleBetween) * Math.sin(angleXY);
+    }
+
+    /** Computes Y component of the magnitude given the provided angles (in radians). */
+    public static Vector getYVector(double magnitude, double angleXY) {
+        return Vector.getYVector(magnitude, 0, angleXY);
+    }
+
+    /** Computes Y component of the magnitude given the provided angles (in radians). */
+    public static Vector getYVector(double magnitude, double angleBetween, double angleXY) {
+        return new Vector(0, Vector.getYComponent(magnitude, angleBetween, angleXY), 0);
+    }
+
+    /** Computes X component of the magnitude given the provided angles (in radians). */
+    public static double getZComponent(double magnitude, double angleBetween) {
+        return magnitude * Math.sin(angleBetween);
+    }
+
+    /** Computes X component of the magnitude given the provided angles (in radians). */
+    public static Vector getZVector(double magnitude, double angleBetween) {
+        return new Vector(0, 0, Vector.getZComponent(magnitude, angleBetween));
+    }
+
+    public static Vector pow(Vector a, double exp) {
+        return new Vector(Math.pow(a.x, exp), Math.pow(a.y, exp), Math.pow(a.z, exp));
+    }
+
     public static Vector scale(Vector a, double scalar) {
         return new Vector(a.x * scalar, a.y * scalar, a.z * scalar);
+    }
+
+    public static Vector sqrt(Vector a) {
+        return new Vector(Math.sqrt(a.x), Math.sqrt(a.y), Math.sqrt(a.z));
     }
 
     public static Vector subtract(Vector a, Vector b) {

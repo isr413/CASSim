@@ -1,35 +1,41 @@
 package com.seat.rescuesim.simserver;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
+
+import com.seat.rescuesim.common.Debugger;
 import com.seat.rescuesim.common.ScenarioConfig;
+import com.seat.rescuesim.common.Vector;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Scenario {
-    private static final String SCENARIO_CONFIG = "scenario_config";
+    private static final String SCENARIO_CONFIG = "config";
     private static final String SCENARIO_REMOTES = "remotes";
     private static final String SCENARIO_TIME = "time";
     private static final String SCENARIO_VICTIMS = "victims";
 
     private ScenarioConfig config;
-    private Log history;
     private double missionTime;
-    private DroneRemote[] remotes;
-    private Victim[] victims;
+    private HashMap<Integer, DroneRemote> remotes;
+    private Random rng;
+    private HashMap<Integer, Victim> victims;
 
     public static Scenario decode(JSONObject json) throws JSONException {
         ScenarioConfig config = ScenarioConfig.decode(json.getJSONObject(Scenario.SCENARIO_CONFIG));
         double missionTime = json.getDouble(Scenario.SCENARIO_TIME);
         JSONArray jsonRemotes = json.getJSONArray(Scenario.SCENARIO_REMOTES);
-        DroneRemote[] remotes = new DroneRemote[jsonRemotes.length()];
-        for (int i = 0; i < remotes.length; i++) {
-            remotes[i] = DroneRemote.decode(jsonRemotes.getJSONObject(i), config.getDroneSpecification());
+        ArrayList<DroneRemote> remotes = new ArrayList<>();
+        for (int i = 0; i < jsonRemotes.length(); i++) {
+            remotes.add(DroneRemote.decode(config.getDroneSpecification(), jsonRemotes.getJSONObject(i)));
         }
         JSONArray jsonVictims = json.getJSONArray(Scenario.SCENARIO_VICTIMS);
-        Victim[] victims = new Victim[jsonVictims.length()];
-        for (int i = 0; i < victims.length; i++) {
-            victims[i] = Victim.decode(jsonVictims.getJSONObject(i), config.getVictimSpecification());
+        ArrayList<Victim> victims = new ArrayList<>();
+        for (int i = 0; i < jsonVictims.length(); i++) {
+            victims.add(Victim.decode(config.getVictimSpecification(), jsonVictims.getJSONObject(i)));
         }
         return new Scenario(config, missionTime, remotes, victims);
     }
@@ -47,32 +53,70 @@ public class Scenario {
     }
 
     public Scenario(ScenarioConfig config) {
-        this.history = new Log();
-        this.config = config;
-        this.missionTime = 0.0;
-        this.remotes = new DroneRemote[this.config.getNumberOfDrones()];
-        this.victims = new Victim[this.config.getNumberOfVictims()];
+        this(config, 0, new HashMap<Integer, DroneRemote>(), new HashMap<Integer, Victim>());
         this.initRemotes();
         this.initVictims();
     }
 
-    public Scenario(ScenarioConfig config, double missionTime, DroneRemote[] remotes, Victim[] victims) {
-        this.history = new Log();
+    public Scenario(ScenarioConfig config, double missionTime, ArrayList<DroneRemote> remotes,
+            ArrayList<Victim> victims) {
+        this(config, missionTime, new HashMap<Integer, DroneRemote>(), new HashMap<Integer, Victim>());
+        for (DroneRemote remote : remotes) {
+            if (!this.hasRemoteWithID(remote.getRemoteID())) {
+                this.remotes.put(remote.getRemoteID(), remote);
+            } else {
+                Debugger.logger.err(String.format("Scenario should not include duplicate remotes with label %s",
+                    remote.getLabel()));
+            }
+        }
+        for (Victim victim : victims) {
+            if (!this.hasVictimWithID(victim.getVictimID())) {
+                this.victims.put(victim.getVictimID(), victim);
+            } else {
+                Debugger.logger.err(String.format("Scenario should not include duplicate remotes with label %s",
+                    victim.getLabel()));
+            }
+        }
+    }
+
+    public Scenario(ScenarioConfig config, double missionTime, HashMap<Integer, DroneRemote> remotes,
+            HashMap<Integer, Victim> victims) {
         this.config = config;
+        this.rng = new Random();
         this.missionTime = missionTime;
         this.remotes = remotes;
         this.victims = victims;
     }
 
     private void initRemotes() {
-        for (int i = 0; i < this.remotes.length; i++) {
-            this.remotes[i] = new DroneRemote(this.config.getDroneSpecification());
+        for (int i = 0; i < this.config.getNumberOfDrones(); i++) {
+            DroneRemote remote = new DroneRemote(this.config.getDroneSpecification());
+            this.remotes.put(remote.getRemoteID(), remote);
         }
     }
 
     private void initVictims() {
-        for (int i = 0; i < this.victims.length; i++) {
-            this.victims[i] = new Victim(this.config.getVictimSpecification());
+        for (int i = 0; i < this.config.getNumberOfVictims(); i++) {
+            Vector randomLocation = this.config.getBase().getLocation();
+            while (this.config.getMap().getZoneAtLocation(randomLocation).equals(
+                    this.config.getMap().getZoneAtLocation(this.config.getBase().getLocation()))) {
+                randomLocation = new Vector(
+                    this.rng.nextDouble() * this.config.getMap().getWidth(),
+                    this.rng.nextDouble() * this.config.getMap().getHeight(),
+                    0
+                );
+            }
+            double sampleSpeed = this.rng.nextGaussian() *
+                this.config.getVictimSpecification().getMoveSpeedDistributionParameters().getSecond() +
+                this.config.getVictimSpecification().getMoveSpeedDistributionParameters().getFirst();
+            double randomHeading = (this.rng.nextDouble() * 2 * Math.PI) - Math.PI;
+            Vector sampleVelocity = new Vector(
+                Vector.getXComponent(sampleSpeed, randomHeading),
+                Vector.getYComponent(sampleSpeed, randomHeading),
+                0
+            );
+            Victim victim = new Victim(this.config.getVictimSpecification(), randomLocation, sampleVelocity);
+            this.victims.put(victim.getVictimID(), victim);
         }
     }
 
@@ -80,34 +124,40 @@ public class Scenario {
         return this.config;
     }
 
-    public Log getHistory() {
-        return this.history;
-    }
-
     public double getMissionTime() {
         return this.missionTime;
     }
 
-    public DroneRemote[] getRemotes() {
-        return this.remotes;
+    public ArrayList<DroneRemote> getRemotes() {
+        return new ArrayList<DroneRemote>(this.remotes.values());
     }
 
-    public DroneRemote getRemote(int idx) {
-        if (idx < 0 || this.remotes.length <= idx) {
+    public DroneRemote getRemoteWithID(int remoteID) {
+        if (!this.hasRemoteWithID(remoteID)) {
+            Debugger.logger.err(String.format("Scenario does not include a remote with id %d", remoteID));
             return null;
         }
-        return this.remotes[idx];
+        return this.remotes.get(remoteID);
     }
 
-    public Victim[] getVictims() {
-        return this.victims;
+    public ArrayList<Victim> getVictims() {
+        return new ArrayList<Victim>(this.victims.values());
     }
 
-    public Victim getVictim(int idx) {
-        if (idx < 0 || this.remotes.length <= idx) {
+    public Victim getVictimWithID(int victimID) {
+        if (!this.hasVictimWithID(victimID)) {
+            Debugger.logger.err(String.format("Scenario does not include a victim with id %d", victimID));
             return null;
         }
-        return this.victims[idx];
+        return this.victims.get(victimID);
+    }
+
+    public boolean hasRemoteWithID(int remoteID) {
+        return this.remotes.containsKey(remoteID);
+    }
+
+    public boolean hasVictimWithID(int victimID) {
+        return this.victims.containsKey(victimID);
     }
 
     public String encode() {
@@ -118,15 +168,16 @@ public class Scenario {
         JSONObject json = new JSONObject();
         json.put(Scenario.SCENARIO_CONFIG, this.config.toJSON());
         json.put(Scenario.SCENARIO_TIME, this.missionTime);
-        JSONArray remotes = new JSONArray();
-        for (int i = 0; i < this.remotes.length; i++) {
-            remotes.put(this.remotes[i].toJSON());
+        JSONArray jsonRemotes = new JSONArray();
+        for (DroneRemote remote : this.remotes.values()) {
+            jsonRemotes.put(remote.toJSON());
         }
-        json.put(Scenario.SCENARIO_REMOTES, remotes);
-        JSONArray victims = new JSONArray();
-        for (int i = 0; i < this.victims.length; i++) {
-            victims.put(this.victims[i].toJSON());
+        json.put(Scenario.SCENARIO_REMOTES, jsonRemotes);
+        JSONArray jsonVictims = new JSONArray();
+        for (Victim victim : this.victims.values()) {
+            jsonVictims.put(victim.toJSON());
         }
+        json.put(Scenario.SCENARIO_VICTIMS, jsonVictims);
         return json;
     }
 

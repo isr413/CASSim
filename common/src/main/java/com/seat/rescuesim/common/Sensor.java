@@ -40,6 +40,10 @@ public class Sensor {
         return this.batteryUsage;
     }
 
+    public String getLabel() {
+        return this.type.getLabel();
+    }
+
     public double getSensorAccuracy() {
         return this.accuracy;
     }
