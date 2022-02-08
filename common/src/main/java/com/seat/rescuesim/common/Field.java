@@ -26,7 +26,7 @@ public class Field {
     private HashMap<SensorType, Double> sensorInterference;
 
     public static Field decode(JSONArray json) throws JSONException {
-        Vector direction = Vector.decode(json.getJSONArray(0));
+        Vector direction = new Vector(json.getJSONArray(0));
         double magnitude = json.getDouble(1);
         JSONObject interferences = json.getJSONObject(2);
         HashMap<SensorType, Double> sensorInterferences = new HashMap<>();

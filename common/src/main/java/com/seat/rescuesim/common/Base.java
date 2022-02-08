@@ -16,7 +16,7 @@ public class Base {
     private HashMap<SensorType, Sensor> sensors;
 
     public static Base decode(JSONObject json) throws JSONException {
-        Vector location = Vector.decode(json.getJSONArray(Base.BASE_LOCATION));
+        Vector location = new Vector(json.getJSONArray(Base.BASE_LOCATION));
         JSONArray jsonSensors = json.getJSONArray(Base.BASE_SENSORS);
         ArrayList<Sensor> sensors = new ArrayList<>();
         for (int i = 0; i < jsonSensors.length(); i++) {

@@ -1,10 +1,13 @@
 package com.seat.rescuesim.common;
 
-import org.json.JSONArray;
-import org.json.JSONException;
+import com.seat.rescuesim.common.json.JSONAble;
+import com.seat.rescuesim.common.json.JSONArray;
+import com.seat.rescuesim.common.json.JSONArrayBuilder;
+import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 
 /** A vector triple of doubles for representing points and forces in 2D and 3D space. */
-public class Vector {
+public class Vector extends JSONAble {
     /** A basis vectors for vectors in 3D space. */
     public static final Vector BASIS_VECTOR = new Vector(1, 1, 1);
     public static final Vector X_BASIS = new Vector(1, 0, 0);
@@ -133,17 +136,19 @@ public class Vector {
     private double y; // Y-axis (+ goes south; - goes north)
     private double z; // Z-axis (+ increases elevation; - decreases elevation)
 
-    /** Returns the vector representation of the provided JSON array. */
-    public static Vector decode(JSONArray json) throws JSONException {
-        double x = json.getDouble(0);
-        double y = json.getDouble(1);
-        double z = json.getDouble(2);
-        return new Vector(x, y, z);
+    /** JSONAble constructor for JSONArray interface type. */
+    public Vector(JSONArray json) {
+        super(json);
     }
 
-    /** Returns the vector representation of the encoded string. */
-    public static Vector decode(String encoding) throws JSONException {
-        return Vector.decode(new JSONArray(encoding));
+    /** JSONAble constructor for JSONOption. */
+    public Vector(JSONOption option) {
+        super(option);
+    }
+
+    /** JSONAble constructor for String encoding. */
+    public Vector(String encoding) {
+        super(encoding);
     }
 
     /** Constructs a zero vector. */
@@ -166,6 +171,14 @@ public class Vector {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    /** Decodes the JSONArray. */
+    @Override
+    protected void decode(JSONArray json) {
+        this.x = json.getDouble(0);
+        this.y = json.getDouble(1);
+        this.z = json.getDouble(2);
     }
 
     /** Returns the angle between the Z-basis and this vector. */
@@ -229,33 +242,18 @@ public class Vector {
         return new Vector(this.x / magnitude, this.y / magnitude, this.z / magnitude);
     }
 
-    /** Returns a decodable string representation of this vector. */
-    public String encode() {
-        return this.toJSON().toString();
-    }
-
     /** Returns a decodable JSON representation of this vector. */
-    public JSONArray toJSON() {
-        JSONArray json = new JSONArray();
+    public JSONOption toJSON() {
+        JSONArrayBuilder json = JSONBuilder.Array();
         json.put(this.x);
         json.put(this.y);
         json.put(this.z);
-        return json;
-    }
-
-    /** Returns a string representation of this vector for printing. */
-    public String toString() {
-        return this.encode();
+        return json.toJSON();
     }
 
     /** Returns true if both vectors have equal components. */
     public boolean equals(Vector vec) {
         return this.x == vec.x && this.y == vec.y && this.z == vec.z;
-    }
-
-    /** Returns true if this vector has the same encoding. */
-    public boolean equals(String encoding) {
-        return this.encode().equals(encoding);
     }
 
 }

@@ -28,8 +28,8 @@ public class DroneSpecification {
 
     public static DroneSpecification decode(JSONObject json) throws JSONException {
         double batteryPower = json.getDouble(DroneSpecification.DRONE_MAX_BATTERY);
-        Vector batteryUsage = Vector.decode(json.getJSONArray(DroneSpecification.DRONE_BATTERY_USAGE));
-        Vector location = Vector.decode(json.getJSONArray(DroneSpecification.DRONE_LOCATION));
+        Vector batteryUsage = new Vector(json.getJSONArray(DroneSpecification.DRONE_BATTERY_USAGE));
+        Vector location = new Vector(json.getJSONArray(DroneSpecification.DRONE_LOCATION));
         double velocity = json.getDouble(DroneSpecification.DRONE_MAX_VELOCITY);
         double acceleration = json.getDouble(DroneSpecification.DRONE_MAX_ACCELERATION);
         double jerk = json.getDouble(DroneSpecification.DRONE_MAX_JERK);

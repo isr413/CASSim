@@ -18,7 +18,7 @@ public class Zone {
 
     public static Zone decode(JSONObject json) throws JSONException {
         int type = json.getInt(Zone.ZONE_TYPE);
-        Vector location = Vector.decode(json.getJSONArray(Zone.ZONE_LOCATION));
+        Vector location = new Vector(json.getJSONArray(Zone.ZONE_LOCATION));
         int size = json.getInt(Zone.ZONE_SIZE);
         JSONArray fields = json.getJSONArray(Zone.ZONE_FIELDS);
         Field ground = Field.decode(fields.getJSONArray(0));
