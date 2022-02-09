@@ -1,10 +1,6 @@
 package com.seat.rescuesim.common.math;
 
-import com.seat.rescuesim.common.json.JSONAble;
-import com.seat.rescuesim.common.json.JSONArray;
-import com.seat.rescuesim.common.json.JSONArrayBuilder;
-import com.seat.rescuesim.common.json.JSONBuilder;
-import com.seat.rescuesim.common.json.JSONOption;
+import com.seat.rescuesim.common.json.*;
 
 /**
  * The Field class represents forces that can act on Victims or Drones. Things to remember:
@@ -24,10 +20,10 @@ import com.seat.rescuesim.common.json.JSONOption;
  */
 public class Field extends JSONAble {
 
-    private FieldType type;
     private Vector jerk;
     private double magnitude;
     private Vector point;
+    private FieldType type;
 
     public Field(JSONArray json) {
         super(json);

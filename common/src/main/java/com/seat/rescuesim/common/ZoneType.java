@@ -1,9 +1,12 @@
 package com.seat.rescuesim.common;
 
-public enum ZoneType {
-    NONE(-1),
-    CLOSED(0),
-    OPEN(1);
+import com.seat.rescuesim.common.util.SerializableEnum;
+
+/** A serializable enumeration to denote types of Zones. */
+public enum ZoneType implements SerializableEnum {
+    NONE(0),
+    CLOSED(1),
+    OPEN(2);
 
     private int type;
 
@@ -11,28 +14,16 @@ public enum ZoneType {
         this.type = type;
     }
 
-    public String getLabel() {
-        return String.format("<%d>", this.type);
+    public boolean equals(ZoneType type) {
+        return this.type == type.type;
     }
 
     public int getType() {
         return this.type;
     }
 
-    public String encode() {
-        return String.valueOf(this.type);
-    }
-
     public String toString() {
-        return this.encode();
-    }
-
-    public boolean equals(ZoneType type) {
-        return this.type == type.type;
-    }
-
-    public boolean equals(String encoding) {
-        return this.encode().equals(encoding);
+        return this.getLabel();
     }
 
 }

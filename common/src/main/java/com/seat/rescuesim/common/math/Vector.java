@@ -1,10 +1,6 @@
 package com.seat.rescuesim.common.math;
 
-import com.seat.rescuesim.common.json.JSONAble;
-import com.seat.rescuesim.common.json.JSONArray;
-import com.seat.rescuesim.common.json.JSONArrayBuilder;
-import com.seat.rescuesim.common.json.JSONBuilder;
-import com.seat.rescuesim.common.json.JSONOption;
+import com.seat.rescuesim.common.json.*;
 
 /** A vector triple of doubles for representing points and forces in 2D and 3D space. */
 public class Vector extends JSONAble {
