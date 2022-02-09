@@ -1,9 +1,8 @@
 package com.seat.rescuesim.common;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.seat.rescuesim.common.json.*;
 
-public class ScenarioConfig {
+public class ScenarioConfig extends JSONAble {
     private static final String BASE = "base";
     private static final String DISASTER_SCALE = "disaster_scale";
     private static final String DRONE_SPEC = "drone_spec";
@@ -15,7 +14,7 @@ public class ScenarioConfig {
     private static final String VICTIM_SPEC = "victim_spec";
 
     private Base base;
-    private double disasterScaleParam;
+    private double disasterScale;
     private DroneSpecification droneSpec;
     private Map map;
     private int missionLength;
@@ -24,45 +23,50 @@ public class ScenarioConfig {
     private double stepSize;
     private VictimSpecification victimSpec;
 
-    public static ScenarioConfig decode(JSONObject json) throws JSONException {
-        int numDrones = json.getInt(ScenarioConfig.NUM_DRONES);
-        DroneSpecification droneSpec = DroneSpecification.decode(json.getJSONObject(ScenarioConfig.DRONE_SPEC));
-        int numVictims = json.getInt(ScenarioConfig.NUM_VICTIMS);
-        VictimSpecification victimSpec = VictimSpecification.decode(json.getJSONObject(ScenarioConfig.VICTIM_SPEC));
-        Map map = Map.decode(json.getJSONObject(ScenarioConfig.MAP));
-        Base base = Base.decode(json.getJSONObject(ScenarioConfig.BASE));
-        double disasterScale = json.getDouble(ScenarioConfig.DISASTER_SCALE);
-        int missionLength = json.getInt(ScenarioConfig.MISSION_LENGTH);
-        double stepSize = json.getDouble(ScenarioConfig.STEP_SIZE);
-        return new ScenarioConfig(numDrones, droneSpec, numVictims, victimSpec, map, base,
-                disasterScale, missionLength, stepSize);
+    public ScenarioConfig(JSONObject json) {
+        super(json);
     }
 
-    public static ScenarioConfig decode(String encoding) {
-        return ScenarioConfig.decode(new JSONObject(encoding));
+    public ScenarioConfig(JSONOption option) {
+        super(option);
     }
 
-    public ScenarioConfig(int numDrones, DroneSpecification droneSpec,
-            int numVictims, VictimSpecification victimSpec,
-            Map map, Base base,
-            double disasterScale, int missionLength, double stepSize) {
-        this.numDrones = numDrones;
-        this.droneSpec = droneSpec;
-        this.numVictims = numVictims;
-        this.victimSpec = victimSpec;
+    public ScenarioConfig(String encoding) {
+        super(encoding);
+    }
+
+    public ScenarioConfig(Map map, double disasterScale, int missionLength, double stepSize, int numVictims,
+            VictimSpecification victimSpec, Base base, int numDrones, DroneSpecification droneSpec) {
         this.map = map;
-        this.base = base;
-        this.disasterScaleParam = disasterScale;
+        this.disasterScale = disasterScale;
         this.missionLength = missionLength;
         this.stepSize = stepSize;
+        this.numVictims = numVictims;
+        this.victimSpec = victimSpec;
+        this.base = base;
+        this.numDrones = numDrones;
+        this.droneSpec = droneSpec;
+    }
+
+    @Override
+    protected void decode(JSONObject json) {
+        this.map = new Map(json.getJSONObject(ScenarioConfig.MAP));
+        this.disasterScale = json.getDouble(ScenarioConfig.DISASTER_SCALE);
+        this.missionLength = json.getInt(ScenarioConfig.MISSION_LENGTH);
+        this.stepSize = json.getDouble(ScenarioConfig.STEP_SIZE);
+        this.numVictims = json.getInt(ScenarioConfig.NUM_VICTIMS);
+        this.victimSpec = new VictimSpecification(json.getJSONObject(ScenarioConfig.VICTIM_SPEC));
+        this.base = new Base(json.getJSONObject(ScenarioConfig.BASE));
+        this.numDrones = json.getInt(ScenarioConfig.NUM_DRONES);
+        this.droneSpec = new DroneSpecification(json.getJSONObject(ScenarioConfig.DRONE_SPEC));
     }
 
     public Base getBase() {
         return this.base;
     }
 
-    public double getDisasterScaleParameter() {
-        return this.disasterScaleParam;
+    public double getDisasterScale() {
+        return this.disasterScale;
     }
 
     public DroneSpecification getDroneSpecification() {
@@ -97,34 +101,25 @@ public class ScenarioConfig {
         return this.toJSON().toString();
     }
 
-    public JSONObject toJSON() {
-        JSONObject json = new JSONObject();
-        json.put(ScenarioConfig.NUM_DRONES, this.numDrones);
-        json.put(ScenarioConfig.DRONE_SPEC, this.droneSpec.toJSON());
-        json.put(ScenarioConfig.NUM_VICTIMS, this.numVictims);
-        json.put(ScenarioConfig.VICTIM_SPEC, this.victimSpec.toJSON());
+    public JSONOption toJSON() {
+        JSONObjectBuilder json = JSONBuilder.Object();
         json.put(ScenarioConfig.MAP, this.map.toJSON());
-        json.put(ScenarioConfig.BASE, this.base.toJSON());
-        json.put(ScenarioConfig.DISASTER_SCALE, this.disasterScaleParam);
+        json.put(ScenarioConfig.DISASTER_SCALE, this.disasterScale);
         json.put(ScenarioConfig.MISSION_LENGTH, this.missionLength);
         json.put(ScenarioConfig.STEP_SIZE, this.stepSize);
-        return json;
-    }
-
-    public String toString() {
-        return this.encode();
+        json.put(ScenarioConfig.NUM_VICTIMS, this.numVictims);
+        json.put(ScenarioConfig.VICTIM_SPEC, this.victimSpec.toJSON());
+        json.put(ScenarioConfig.BASE, this.base.toJSON());
+        json.put(ScenarioConfig.NUM_DRONES, this.numDrones);
+        json.put(ScenarioConfig.DRONE_SPEC, this.droneSpec.toJSON());
+        return json.toJSON();
     }
 
     public boolean equals(ScenarioConfig config) {
-        return this.numDrones == config.numDrones && this.droneSpec.equals(config.droneSpec) &&
-                this.numVictims == config.numVictims && this.victimSpec.equals(config.victimSpec) &&
-                this.map.equals(config.map) && this.base.equals(config.base) &&
-                this.disasterScaleParam == config.disasterScaleParam && this.missionLength == config.missionLength &&
-                this.stepSize == config.stepSize;
-    }
-
-    public boolean equals(String encoding) {
-        return this.encode().equals(encoding);
+        return this.map.equals(config.map) && this.disasterScale == config.disasterScale &&
+            this.missionLength == config.missionLength && this.numVictims == config.numVictims &&
+            this.victimSpec.equals(config.victimSpec) && this.base.equals(config.base) &&
+            this.numDrones == config.numDrones && this.droneSpec.equals(config.droneSpec);
     }
 
 }
