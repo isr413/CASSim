@@ -1,15 +1,20 @@
 package com.seat.rescuesim.common;
 
+import java.util.Random;
+
 import com.seat.rescuesim.common.json.*;
 
 public class ScenarioConfig extends JSONAble {
     private static final String BASE = "base";
+    private static final String DEFAULT_ID = "default";
     private static final String DISASTER_SCALE = "disaster_scale";
     private static final String DRONE_SPEC = "drone_spec";
     private static final String MAP = "map";
     private static final String MISSION_LENGTH = "mission_length";
     private static final String NUM_DRONES = "num_drones";
     private static final String NUM_VICTIMS = "num_victims";
+    private static final String SCENARIO_ID = "scenario_id";
+    private static final String SEED = "seed";
     private static final String STEP_SIZE = "step_size";
     private static final String VICTIM_SPEC = "victim_spec";
 
@@ -20,6 +25,8 @@ public class ScenarioConfig extends JSONAble {
     private int missionLength;
     private int numDrones;
     private int numVictims;
+    private String scenarioID;
+    private long seed;
     private double stepSize;
     private VictimSpecification victimSpec;
 
@@ -35,8 +42,32 @@ public class ScenarioConfig extends JSONAble {
         super(encoding);
     }
 
-    public ScenarioConfig(Map map, double disasterScale, int missionLength, double stepSize, int numVictims,
-            VictimSpecification victimSpec, Base base, int numDrones, DroneSpecification droneSpec) {
+    public ScenarioConfig(Map map, double disasterScale, int missionLength,
+            double stepSize, int numVictims, VictimSpecification victimSpec,
+            Base base, int numDrones, DroneSpecification droneSpec) {
+        this(ScenarioConfig.DEFAULT_ID, map, disasterScale, missionLength, stepSize, numVictims, victimSpec,
+            base, numDrones, droneSpec);
+    }
+
+    public ScenarioConfig(long seed, Map map, double disasterScale, int missionLength,
+            double stepSize, int numVictims, VictimSpecification victimSpec,
+            Base base, int numDrones, DroneSpecification droneSpec) {
+        this(ScenarioConfig.DEFAULT_ID, seed, map, disasterScale, missionLength, stepSize, numVictims, victimSpec,
+            base, numDrones, droneSpec);
+    }
+
+    public ScenarioConfig(String scenarioID, Map map, double disasterScale, int missionLength,
+            double stepSize, int numVictims, VictimSpecification victimSpec,
+            Base base, int numDrones, DroneSpecification droneSpec) {
+        this(scenarioID, new Random().nextLong(), map, disasterScale, missionLength, stepSize, numVictims, victimSpec,
+            base, numDrones, droneSpec);
+    }
+
+    public ScenarioConfig(String scenarioID, long seed, Map map, double disasterScale, int missionLength,
+            double stepSize, int numVictims, VictimSpecification victimSpec,
+            Base base, int numDrones, DroneSpecification droneSpec) {
+        this.scenarioID = scenarioID;
+        this.seed = seed;
         this.map = map;
         this.disasterScale = disasterScale;
         this.missionLength = missionLength;
@@ -50,6 +81,8 @@ public class ScenarioConfig extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) {
+        this.scenarioID = json.getString(ScenarioConfig.SCENARIO_ID);
+        this.seed = json.getLong(ScenarioConfig.SEED);
         this.map = new Map(json.getJSONObject(ScenarioConfig.MAP));
         this.disasterScale = json.getDouble(ScenarioConfig.DISASTER_SCALE);
         this.missionLength = json.getInt(ScenarioConfig.MISSION_LENGTH);
@@ -89,6 +122,14 @@ public class ScenarioConfig extends JSONAble {
         return this.numVictims;
     }
 
+    public String getScenarioID() {
+        return this.scenarioID;
+    }
+
+    public long getSeed() {
+        return this.seed;
+    }
+
     public double getStepSize() {
         return this.stepSize;
     }
@@ -103,6 +144,8 @@ public class ScenarioConfig extends JSONAble {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
+        json.put(ScenarioConfig.SCENARIO_ID, this.scenarioID);
+        json.put(ScenarioConfig.SEED, this.seed);
         json.put(ScenarioConfig.MAP, this.map.toJSON());
         json.put(ScenarioConfig.DISASTER_SCALE, this.disasterScale);
         json.put(ScenarioConfig.MISSION_LENGTH, this.missionLength);

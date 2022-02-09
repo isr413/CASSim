@@ -62,6 +62,11 @@ public class JSONBuilder {
         }
 
         /** Appends the value to the JSONArray. */
+        public void put(long value) {
+            this.json.put(value);
+        }
+
+        /** Appends the value to the JSONArray. */
         public void put(String value) {
             this.json.put(value);
         }
@@ -124,6 +129,11 @@ public class JSONBuilder {
             } else {
                 this.put(key, value.toString());
             }
+        }
+
+        /** Inserts the key-value pair into the JSONObject. */
+        public void put(String key, long value) {
+            this.json.put(key, value);
         }
 
         /** Inserts the key-value pair into the JSONObject. */

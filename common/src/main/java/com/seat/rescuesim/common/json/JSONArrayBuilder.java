@@ -19,6 +19,9 @@ public interface JSONArrayBuilder {
     void put(JSONOption value);
 
     /** Appends the value to the JSONArray. */
+    void put(long value);
+
+    /** Appends the value to the JSONArray. */
     void put(String value);
 
     /** Returns the JSONOption representation of the JSONArray. */

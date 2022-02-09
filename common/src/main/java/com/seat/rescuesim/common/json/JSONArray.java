@@ -36,6 +36,12 @@ public interface JSONArray {
      */
     JSONOption getJSONOption(int idx) throws IndexOutOfBoundsException, JSONException;
 
+    /** Returns the long value at index idx.
+     * @throws IndexOutOfBoundsException if the idx is out of bounds
+     * @throws JSONException if the value at idx cannot be converted to an int
+     */
+    long getLong(int idx) throws IndexOutOfBoundsException, JSONException;
+
     /** Returns the String representation of the value at index idx.
      * @throws IndexOutOfBoundsException if the idx is out of bounds
      */

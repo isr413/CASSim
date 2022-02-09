@@ -19,6 +19,9 @@ public interface JSONObjectBuilder {
     void put(String key, JSONOption value);
 
     /** Inserts the key-value pair into the JSONObject. */
+    void put(String key, long value);
+
+    /** Inserts the key-value pair into the JSONObject. */
     void put(String key, String value);
 
     /** Returns the JSONOption representation of the JSONObject. */

@@ -192,6 +192,19 @@ public class JSONOption {
             }
         }
 
+        /** Returns the long value at index idx.
+         * @throws IndexOutOfBoundsException if the idx is out of bounds
+         * @throws JSONException if the value at idx cannot be converted to an int
+         */
+        public long getLong(int idx) throws IndexOutOfBoundsException, JSONException {
+            this.assertBounds(idx);
+            try {
+                return this.json.getLong(idx);
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
+            }
+        }
+
         /** Returns the String representation of the value at index idx.
          * @throws IndexOutOfBoundsException if the idx is out of bounds
          */
@@ -297,6 +310,19 @@ public class JSONOption {
                     return new JSONOption(new JSONObjectOption(this.json.getJSONObject(key)));
                 }
                 return JSONOption.None();
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
+            }
+        }
+
+        /** Returns the long value associated with the key.
+         * @throws IndexOutOfBoundsException if the Object has no such key
+         * @throws JSONException if the value associated with the key cannot be converted to an int
+         */
+        public long getLong(String key) throws IndexOutOfBoundsException, JSONException {
+            this.assertContains(key);
+            try {
+                return this.json.getLong(key);
             } catch (org.json.JSONException e) {
                 throw new JSONException(e.toString());
             }

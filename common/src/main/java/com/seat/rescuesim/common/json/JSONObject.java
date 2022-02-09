@@ -33,6 +33,12 @@ public interface JSONObject {
      */
     JSONOption getJSONOption(String key) throws IndexOutOfBoundsException, JSONException;
 
+    /** Returns the long value associated with the key.
+     * @throws IndexOutOfBoundsException if the Object has no such key
+     * @throws JSONException if the value associated with the key cannot be converted to an int
+     */
+    long getLong(String key) throws IndexOutOfBoundsException, JSONException;
+
     /** Returns the String representation of the value associated with the key.
      * @throws IndexOutOfBoundsException if the Object has no such key
      */
