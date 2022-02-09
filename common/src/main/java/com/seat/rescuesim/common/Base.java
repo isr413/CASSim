@@ -13,7 +13,7 @@ public class Base extends JSONAble {
     private static final String BASE_SENSORS = "sensors";
 
     private Vector location;
-    private HashMap<SensorType, SensorSpecification> sensors;
+    private HashMap<String, SensorSpecification> sensors;
 
     public Base(JSONObject json) {
         super(json);
@@ -28,11 +28,11 @@ public class Base extends JSONAble {
     }
 
     public Base() {
-        this(new Vector(), new HashMap<SensorType, SensorSpecification>());
+        this(new Vector(), new HashMap<String, SensorSpecification>());
     }
 
     public Base(Vector location) {
-        this(location, new HashMap<SensorType, SensorSpecification>());
+        this(location, new HashMap<String, SensorSpecification>());
     }
 
     public Base(Vector location, SensorSpecification[] sensors) {
@@ -40,13 +40,13 @@ public class Base extends JSONAble {
     }
 
     public Base(Vector location, ArrayList<SensorSpecification> sensors) {
-        this(location, new HashMap<SensorType, SensorSpecification>());
+        this(location, new HashMap<String, SensorSpecification>());
         for (SensorSpecification spec : sensors) {
-            this.sensors.put(spec.getSensorType(), spec);
+            this.sensors.put(spec.getSpecID(), spec);
         }
     }
 
-    public Base(Vector location, HashMap<SensorType, SensorSpecification> sensors) {
+    public Base(Vector location, HashMap<String, SensorSpecification> sensors) {
         this.location = location;
         this.sensors = sensors;
     }
@@ -58,7 +58,7 @@ public class Base extends JSONAble {
         JSONArray jsonSensors = json.getJSONArray(Base.BASE_SENSORS);
         for (int i = 0; i < jsonSensors.length(); i++) {
             SensorSpecification spec = new SensorSpecification(jsonSensors.getJSONObject(i));
-            this.sensors.put(spec.getSensorType(), spec);
+            this.sensors.put(spec.getSpecID(), spec);
         }
     }
 
@@ -74,21 +74,21 @@ public class Base extends JSONAble {
         return new ArrayList<>(this.sensors.values());
     }
 
-    public SensorSpecification getSensorWithType(SensorType type) {
-        if (!this.hasSensorWithType(type)) {
+    public SensorSpecification getSensor(String sensor) {
+        if (!this.hasSensor(sensor)) {
             Debugger.logger.err(String.format("No sensor with type %s found on base %s",
-                type.getLabel(), this.getLabel()));
+                sensor, this.getLabel()));
             return null;
         }
-        return this.sensors.get(type);
+        return this.sensors.get(sensor);
     }
 
     public boolean hasSensors() {
         return !this.sensors.isEmpty();
     }
 
-    public boolean hasSensorWithType(SensorType type) {
-        return this.sensors.containsKey(type);
+    public boolean hasSensor(String sensor) {
+        return this.sensors.containsKey(sensor);
     }
 
     public JSONOption toJSON() {

@@ -18,7 +18,7 @@ public class VictimSpecification extends JSONAble {
     private double maxBatteryPower;
     private double maxVelocity;
     private Double[] moveSpeedDistParams;
-    private HashMap<SensorType, SensorSpecification> sensors;
+    private HashMap<String, SensorSpecification> sensors;
     private double staticBatteryUsage;
     private VictimType type;
 
@@ -36,7 +36,7 @@ public class VictimSpecification extends JSONAble {
 
     public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage) {
         this(type, maxBatteryPower, staticBatteryUsage, new Double[]{0.0, 0.0}, 0,
-            new HashMap<SensorType, SensorSpecification>());
+            new HashMap<String, SensorSpecification>());
     }
 
     public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
@@ -50,20 +50,20 @@ public class VictimSpecification extends JSONAble {
     }
 
     public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
-            HashMap<SensorType, SensorSpecification> sensors) {
+            HashMap<String, SensorSpecification> sensors) {
         this(type, maxBatteryPower, staticBatteryUsage, new Double[]{0.0, 0.0}, 0, sensors);
     }
 
     public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
             double moveSpeedMean, double moveSpeedStdDev, double maxVelocity) {
         this(type, maxBatteryPower, staticBatteryUsage, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity,
-            new HashMap<SensorType, SensorSpecification>());
+            new HashMap<String, SensorSpecification>());
     }
 
     public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
             Double[] moveSpeedDistParams, double maxVelocity) {
         this(type, maxBatteryPower, staticBatteryUsage, moveSpeedDistParams, maxVelocity,
-            new HashMap<SensorType, SensorSpecification>());
+            new HashMap<String, SensorSpecification>());
     }
 
     public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
@@ -88,21 +88,21 @@ public class VictimSpecification extends JSONAble {
     public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
             Double[] moveSpeedDistParams, double maxVelocity, ArrayList<SensorSpecification> sensors) {
         this(type, maxBatteryPower, staticBatteryUsage, moveSpeedDistParams, maxVelocity,
-            new HashMap<SensorType, SensorSpecification>());
+            new HashMap<String, SensorSpecification>());
         for (SensorSpecification spec : sensors) {
-            this.sensors.put(spec.getSensorType(), spec);
+            this.sensors.put(spec.getSpecID(), spec);
         }
     }
 
     public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
             double moveSpeedMean, double moveSpeedStdDev, double maxVelocity,
-            HashMap<SensorType, SensorSpecification> sensors) {
+            HashMap<String, SensorSpecification> sensors) {
         this(type, maxBatteryPower, staticBatteryUsage, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity,
             sensors);
     }
 
     public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
-            Double[] moveSpeedDistParams, double maxVelocity, HashMap<SensorType, SensorSpecification> sensors) {
+            Double[] moveSpeedDistParams, double maxVelocity, HashMap<String, SensorSpecification> sensors) {
         this.type = type;
         this.maxBatteryPower = maxBatteryPower;
         this.staticBatteryUsage = staticBatteryUsage;
@@ -126,7 +126,7 @@ public class VictimSpecification extends JSONAble {
         JSONArray jsonSensors = json.getJSONArray(VictimSpecification.VICTIM_SENSORS);
         for (int i = 0; i < jsonSensors.length(); i++) {
             SensorSpecification spec = new SensorSpecification(jsonSensors.getJSONObject(i));
-            this.sensors.put(spec.getSensorType(), spec);
+            this.sensors.put(spec.getSpecID(), spec);
         }
     }
 
@@ -150,13 +150,13 @@ public class VictimSpecification extends JSONAble {
         return new ArrayList<SensorSpecification>(this.sensors.values());
     }
 
-    public SensorSpecification getSensorWithType(SensorType type) {
-        if (!this.hasSensorWithType(type)) {
+    public SensorSpecification getSensor(String sensor) {
+        if (!this.hasSensor(sensor)) {
             Debugger.logger.err(String.format("No sensor with type %s found on victim spec %s",
-                type.getLabel(), this.type.getLabel()));
+                sensor, this.type.getLabel()));
             return null;
         }
-        return this.sensors.get(type);
+        return this.sensors.get(sensor);
     }
 
     public double getStaticBatteryUsage() {
@@ -171,8 +171,8 @@ public class VictimSpecification extends JSONAble {
         return !this.sensors.isEmpty();
     }
 
-    public boolean hasSensorWithType(SensorType type) {
-        return this.sensors.containsKey(type);
+    public boolean hasSensor(String sensor) {
+        return this.sensors.containsKey(sensor);
     }
 
     public boolean isAlive() {

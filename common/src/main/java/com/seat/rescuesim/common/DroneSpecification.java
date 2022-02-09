@@ -24,7 +24,7 @@ public class DroneSpecification extends JSONAble {
     private double maxBatteryPower;
     private double maxJerk;
     private double maxVelocity;
-    private HashMap<SensorType, SensorSpecification> sensors;
+    private HashMap<String, SensorSpecification> sensors;
     private DroneType type;
 
     public DroneSpecification(JSONObject json) {
@@ -40,7 +40,7 @@ public class DroneSpecification extends JSONAble {
     }
 
     public DroneSpecification(DroneType type, double maxBatteryPower, Vector batteryUsage, Vector location) {
-        this(type, maxBatteryPower, batteryUsage, location, 0, 0, 0, new HashMap<SensorType, SensorSpecification>());
+        this(type, maxBatteryPower, batteryUsage, location, 0, 0, 0, new HashMap<String, SensorSpecification>());
     }
 
     public DroneSpecification(DroneType type, double maxBatteryPower, Vector batteryUsage, Vector location,
@@ -54,14 +54,14 @@ public class DroneSpecification extends JSONAble {
     }
 
     public DroneSpecification(DroneType type, double maxBatteryPower, Vector batteryUsage, Vector location,
-            HashMap<SensorType, SensorSpecification> sensors) {
+            HashMap<String, SensorSpecification> sensors) {
         this(type, maxBatteryPower, batteryUsage, location, 0, 0, 0, sensors);
     }
 
     public DroneSpecification(DroneType type, double maxBatteryPower, Vector batteryUsage, Vector location,
             double maxVelocity, double maxAccleration, double maxJerk) {
         this(type, maxBatteryPower, batteryUsage, location, maxVelocity, maxAccleration, maxJerk,
-            new HashMap<SensorType, SensorSpecification>());
+            new HashMap<String, SensorSpecification>());
     }
 
     public DroneSpecification(DroneType type, double maxBatteryPower, Vector batteryUsage, Vector location,
@@ -73,15 +73,15 @@ public class DroneSpecification extends JSONAble {
     public DroneSpecification(DroneType type, double maxBatteryPower, Vector batteryUsage, Vector location,
             double maxVelocity, double maxAccleration, double maxJerk, ArrayList<SensorSpecification> sensors) {
         this(type, maxBatteryPower, batteryUsage, location, maxVelocity, maxAccleration, maxJerk,
-            new HashMap<SensorType, SensorSpecification>());
+            new HashMap<String, SensorSpecification>());
         for (SensorSpecification spec : sensors) {
-            this.sensors.put(spec.getSensorType(), spec);
+            this.sensors.put(spec.getSpecID(), spec);
         }
     }
 
     public DroneSpecification(DroneType type, double maxBatteryPower, Vector batteryUsage, Vector location,
             double maxVelocity, double maxAcceleration, double maxJerk,
-            HashMap<SensorType, SensorSpecification> sensors) {
+            HashMap<String, SensorSpecification> sensors) {
         this.type = type;
         this.maxBatteryPower = maxBatteryPower;
         this.batteryUsage = batteryUsage;
@@ -105,7 +105,7 @@ public class DroneSpecification extends JSONAble {
         JSONArray jsonSensors = json.getJSONArray(DroneSpecification.DRONE_SENSORS);
         for (int i = 0; i < jsonSensors.length(); i++) {
             SensorSpecification spec = new SensorSpecification(jsonSensors.getJSONObject(i));
-            this.sensors.put(spec.getSensorType(), spec);
+            this.sensors.put(spec.getSpecID(), spec);
         }
     }
 
@@ -149,13 +149,13 @@ public class DroneSpecification extends JSONAble {
         return new ArrayList<SensorSpecification>(this.sensors.values());
     }
 
-    public SensorSpecification getSensorWithType(SensorType type) {
-        if (!this.hasSensorWithType(type)) {
+    public SensorSpecification getSensor(String sensor) {
+        if (!this.hasSensor(sensor)) {
             Debugger.logger.err(String.format("No sensor with type %s found on drone spec %s",
-                type.getLabel(), this.type.getLabel()));
+                sensor, this.type.getLabel()));
             return null;
         }
-        return this.sensors.get(type);
+        return this.sensors.get(sensor);
     }
 
     public double getStaticBatteryUsage() {
@@ -170,8 +170,8 @@ public class DroneSpecification extends JSONAble {
         return !this.sensors.isEmpty();
     }
 
-    public boolean hasSensorWithType(SensorType type) {
-        return this.sensors.containsKey(type);
+    public boolean hasSensor(String sensor) {
+        return this.sensors.containsKey(sensor);
     }
 
     public boolean isDisabled() {
