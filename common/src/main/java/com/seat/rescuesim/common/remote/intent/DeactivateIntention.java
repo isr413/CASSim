@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import com.seat.rescuesim.common.SensorType;
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.remote.Intention;
 import com.seat.rescuesim.common.remote.IntentionType;
@@ -13,7 +12,7 @@ import com.seat.rescuesim.common.util.Debugger;
 public class DeactivateIntention extends Intention {
     private static final String DEACTIVATIONS = "deactivations";
 
-    private HashSet<SensorType> deactivations;
+    private HashSet<String> deactivations;
 
     public DeactivateIntention(JSONObject json) {
         super(json);
@@ -28,21 +27,21 @@ public class DeactivateIntention extends Intention {
     }
 
     public DeactivateIntention() {
-        this(new HashSet<SensorType>());
+        this(new HashSet<String>());
     }
 
-    public DeactivateIntention(SensorType[] sensors) {
-        this(new ArrayList<SensorType>(Arrays.asList(sensors)));
+    public DeactivateIntention(String[] sensors) {
+        this(new ArrayList<String>(Arrays.asList(sensors)));
     }
 
-    public DeactivateIntention(ArrayList<SensorType> sensors) {
-        this(new HashSet<SensorType>());
-        for (SensorType type : sensors) {
-            this.addDeactivation(type);
+    public DeactivateIntention(ArrayList<String> sensors) {
+        this(new HashSet<String>());
+        for (String sensor : sensors) {
+            this.addDeactivation(sensor);
         }
     }
 
-    public DeactivateIntention(HashSet<SensorType> sensors) {
+    public DeactivateIntention(HashSet<String> sensors) {
         super(IntentionType.ACTIVATE);
         this.deactivations = sensors;
     }
@@ -53,20 +52,20 @@ public class DeactivateIntention extends Intention {
         this.deactivations = new HashSet<>();
         JSONArray jsonSensors = json.getJSONArray(DeactivateIntention.DEACTIVATIONS);
         for (int i = 0; i < jsonSensors.length(); i++) {
-            this.addDeactivation(SensorType.values()[jsonSensors.getInt(i)]);
+            this.addDeactivation(jsonSensors.getString(i));
         }
     }
 
-    public boolean addDeactivation(SensorType type) {
-        if (this.hasDeactivationWithType(type)) {
-            Debugger.logger.warn(String.format("Sensor %s is already intended to be activated", type.getLabel()));
+    public boolean addDeactivation(String sensor) {
+        if (this.hasDeactivationOfSensor(sensor)) {
+            Debugger.logger.warn(String.format("Sensor %s is already intended to be activated", sensor));
             return true;
         }
-        this.deactivations.add(type);
+        this.deactivations.add(sensor);
         return true;
     }
 
-    public HashSet<SensorType> getDeactivations() {
+    public HashSet<String> getDeactivations() {
         return this.deactivations;
     }
 
@@ -74,16 +73,16 @@ public class DeactivateIntention extends Intention {
         return !this.deactivations.isEmpty();
     }
 
-    public boolean hasDeactivationWithType(SensorType type) {
-        return this.deactivations.contains(type);
+    public boolean hasDeactivationOfSensor(String sensor) {
+        return this.deactivations.contains(sensor);
     }
 
-    public boolean removeDeactivation(SensorType type) {
-        if (!this.hasDeactivationWithType(type)) {
-            Debugger.logger.warn(String.format("Sensor %s is not intended to be activated", type.getLabel()));
+    public boolean removeDeactivation(String sensor) {
+        if (!this.hasDeactivationOfSensor(sensor)) {
+            Debugger.logger.warn(String.format("Sensor %s is not intended to be activated", sensor));
             return true;
         }
-        this.deactivations.remove(type);
+        this.deactivations.remove(sensor);
         return true;
     }
 
@@ -91,8 +90,8 @@ public class DeactivateIntention extends Intention {
     public JSONOption toJSON() {
         JSONObjectBuilder json = super.getJSONBuilder();
         JSONArrayBuilder jsonSensors = JSONBuilder.Array();
-        for (SensorType type : this.deactivations) {
-            jsonSensors.put(type.getType());
+        for (String sensor : this.deactivations) {
+            jsonSensors.put(sensor);
         }
         json.put(DeactivateIntention.DEACTIVATIONS, jsonSensors.toJSON());
         return json.toJSON();

@@ -4,11 +4,9 @@ import com.seat.rescuesim.common.util.SerializableEnum;
 
 public enum SensorType implements SerializableEnum {
     None(0),
-    Vision(1),
-    Bluetooth(2),
-    ShortRangeRadio(3),
-    GPS(4),
-    Medical(5);
+    Communication(1),
+    Monitor(2),
+    Vision(3);
 
     private int type;
 

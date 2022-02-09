@@ -8,11 +8,13 @@ public class SensorSpecification extends JSONAble {
     private static final String SENSOR_DELAY = "delay";
     private static final String SENSOR_RANGE = "range";
     private static final String SENSOR_TYPE = "type";
+    private static final String SPEC_ID = "spec_id";
 
     private double accuracy;
     private double batteryUsage;
     private double delay;
     private double range;
+    private String specID;
     private SensorType type;
 
     public SensorSpecification(JSONObject json) {
@@ -27,7 +29,29 @@ public class SensorSpecification extends JSONAble {
         super(encoding);
     }
 
+    public SensorSpecification(SensorType type, double range, double batteryUsage) {
+        this(type.toString(), type, range, batteryUsage, 1, 0);
+    }
+
+    public SensorSpecification(String specID, SensorType type, double range, double batteryUsage) {
+        this(specID, type, range, batteryUsage, 1, 0);
+    }
+
+    public SensorSpecification(SensorType type, double range, double batteryUsage, double accuracy) {
+        this(type.toString(), type, range, batteryUsage, accuracy, 0);
+    }
+
+    public SensorSpecification(String specID, SensorType type, double range, double batteryUsage, double accuracy) {
+        this(specID, type, range, batteryUsage, accuracy, 0);
+    }
+
     public SensorSpecification(SensorType type, double range, double batteryUsage, double accuracy, double delay) {
+        this(type.toString(), type, range, batteryUsage, accuracy, delay);
+    }
+
+    public SensorSpecification(String specID, SensorType type, double range, double batteryUsage, double accuracy,
+            double delay) {
+        this.specID = specID;
         this.type = type;
         this.range = range;
         this.batteryUsage = batteryUsage;
@@ -37,6 +61,7 @@ public class SensorSpecification extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) {
+        this.specID = json.getString(SensorSpecification.SPEC_ID);
         this.type = SensorType.values()[json.getInt(SensorSpecification.SENSOR_TYPE)];
         this.range = json.getDouble(SensorSpecification.SENSOR_RANGE);
         this.batteryUsage = json.getDouble(SensorSpecification.SENSOR_BATTERY_USAGE);
@@ -49,7 +74,7 @@ public class SensorSpecification extends JSONAble {
     }
 
     public String getLabel() {
-        return this.type.getLabel();
+        return String.format("<%s>", this.specID);
     }
 
     public double getSensorAccuracy() {
@@ -68,8 +93,13 @@ public class SensorSpecification extends JSONAble {
         return this.type;
     }
 
+    public String getSpecID() {
+        return this.specID;
+    }
+
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
+        json.put(SensorSpecification.SPEC_ID, this.specID);
         json.put(SensorSpecification.SENSOR_TYPE, this.type.getType());
         json.put(SensorSpecification.SENSOR_RANGE, this.range);
         json.put(SensorSpecification.SENSOR_BATTERY_USAGE, this.batteryUsage);
@@ -78,8 +108,8 @@ public class SensorSpecification extends JSONAble {
         return json.toJSON();
     }
 
-    public boolean equals(SensorSpecification sensor) {
-        return this.type.equals(sensor.type);
+    public boolean equals(SensorSpecification spec) {
+        return this.specID.equals(spec.specID);
     }
 
 }

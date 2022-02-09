@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import com.seat.rescuesim.common.SensorType;
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.remote.Intention;
 import com.seat.rescuesim.common.remote.IntentionType;
@@ -13,7 +12,7 @@ import com.seat.rescuesim.common.util.Debugger;
 public class ActivateIntention extends Intention {
     private static final String ACTIVATIONS = "activations";
 
-    private HashSet<SensorType> activations;
+    private HashSet<String> activations;
 
     public ActivateIntention(JSONObject json) {
         super(json);
@@ -28,21 +27,21 @@ public class ActivateIntention extends Intention {
     }
 
     public ActivateIntention() {
-        this(new HashSet<SensorType>());
+        this(new HashSet<String>());
     }
 
-    public ActivateIntention(SensorType[] sensors) {
-        this(new ArrayList<SensorType>(Arrays.asList(sensors)));
+    public ActivateIntention(String[] sensors) {
+        this(new ArrayList<String>(Arrays.asList(sensors)));
     }
 
-    public ActivateIntention(ArrayList<SensorType> sensors) {
-        this(new HashSet<SensorType>());
-        for (SensorType type : sensors) {
-            this.addActivation(type);
+    public ActivateIntention(ArrayList<String> sensors) {
+        this(new HashSet<String>());
+        for (String sensor : sensors) {
+            this.addActivation(sensor);
         }
     }
 
-    public ActivateIntention(HashSet<SensorType> sensors) {
+    public ActivateIntention(HashSet<String> sensors) {
         super(IntentionType.ACTIVATE);
         this.activations = sensors;
     }
@@ -53,20 +52,20 @@ public class ActivateIntention extends Intention {
         this.activations = new HashSet<>();
         JSONArray jsonSensors = json.getJSONArray(ActivateIntention.ACTIVATIONS);
         for (int i = 0; i < jsonSensors.length(); i++) {
-            this.addActivation(SensorType.values()[jsonSensors.getInt(i)]);
+            this.addActivation(jsonSensors.getString(i));
         }
     }
 
-    public boolean addActivation(SensorType type) {
-        if (this.hasActivationWithType(type)) {
-            Debugger.logger.warn(String.format("Sensor %s is already intended to be activated", type.getLabel()));
+    public boolean addActivation(String sensor) {
+        if (this.hasActivationOfSensor(sensor)) {
+            Debugger.logger.warn(String.format("Sensor %s is already intended to be activated", sensor));
             return true;
         }
-        this.activations.add(type);
+        this.activations.add(sensor);
         return true;
     }
 
-    public HashSet<SensorType> getActivations() {
+    public HashSet<String> getActivations() {
         return this.activations;
     }
 
@@ -74,16 +73,16 @@ public class ActivateIntention extends Intention {
         return !this.activations.isEmpty();
     }
 
-    public boolean hasActivationWithType(SensorType type) {
-        return this.activations.contains(type);
+    public boolean hasActivationOfSensor(String sensor) {
+        return this.activations.contains(sensor);
     }
 
-    public boolean removeActivation(SensorType type) {
-        if (!this.hasActivationWithType(type)) {
-            Debugger.logger.warn(String.format("Sensor %s is not intended to be activated", type.getLabel()));
+    public boolean removeActivation(String sensor) {
+        if (!this.hasActivationOfSensor(sensor)) {
+            Debugger.logger.warn(String.format("Sensor %s is not intended to be activated", sensor));
             return true;
         }
-        this.activations.remove(type);
+        this.activations.remove(sensor);
         return true;
     }
 
@@ -91,8 +90,8 @@ public class ActivateIntention extends Intention {
     public JSONOption toJSON() {
         JSONObjectBuilder json = super.getJSONBuilder();
         JSONArrayBuilder jsonSensors = JSONBuilder.Array();
-        for (SensorType type : this.activations) {
-            jsonSensors.put(type.getType());
+        for (String sensor : this.activations) {
+            jsonSensors.put(sensor);
         }
         json.put(ActivateIntention.ACTIVATIONS, jsonSensors.toJSON());
         return json.toJSON();

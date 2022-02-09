@@ -2,17 +2,16 @@ package com.seat.rescuesim.common.remote;
 
 import java.util.HashSet;
 
-import com.seat.rescuesim.common.SensorType;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.intent.*;
 
 public class Intent {
 
-    public static Intention Activate(HashSet<SensorType> sensors) {
+    public static Intention Activate(HashSet<String> sensors) {
         return new ActivateIntention(sensors);
     }
 
-    public static Intention Deactivate(HashSet<SensorType> sensors) {
+    public static Intention Deactivate(HashSet<String> sensors) {
         return new DeactivateIntention(sensors);
     }
 
