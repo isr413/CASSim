@@ -3,6 +3,7 @@ package com.seat.rescuesim.common;
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.*;
 
+/** Represents the single cubic zone within the map grid. */
 public class Zone extends JSONAble {
     private static final String ZONE_LOCATION = "location";
     private static final String ZONE_FIELDS = "fields";
@@ -14,6 +15,18 @@ public class Zone extends JSONAble {
     private Vector location;
     private int size;
     private ZoneType type;
+
+    public Zone(JSONObject json) {
+        super(json);
+    }
+
+    public Zone(JSONOption option) {
+        super(option);
+    }
+
+    public Zone(String encoding) {
+        super(encoding);
+    }
 
     public Zone(Vector location, int size) {
         this(ZoneType.OPEN, location, size, new Field(), new Field());

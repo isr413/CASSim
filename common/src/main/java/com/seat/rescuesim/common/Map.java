@@ -1,56 +1,61 @@
 package com.seat.rescuesim.common;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.math.*;
 
-public class Map {
+/** Represents the map grid. */
+public class Map extends JSONAble {
     private static final String MAP_GRID = "map_grid";
-    private static final String MAP_WIDTH = "map_width";
     private static final String MAP_HEIGHT = "map_height";
+    private static final String MAP_WIDTH = "map_width";
     private static final String ZONE_SIZE = "zone_size";
 
-    private int width;
-    private int height;
-    private int zoneSize;
     private Zone[][] grid;
+    private int height; // number of zones in each column of the grid
+    private int width;  // number of zones in each row of the grid
+    private int zoneSize;
 
-    public static Map decode(JSONObject json) throws JSONException {
-        int width = json.getInt(Map.MAP_WIDTH);
-        int height = json.getInt(Map.MAP_HEIGHT);
-        int zoneSize = json.getInt(Map.ZONE_SIZE);
-        Zone[][] gridZones = new Zone[height][width];
-        JSONArray zones = json.getJSONArray(Map.MAP_GRID);
-        for (int y = 0; y < height; y++) {
-            JSONArray row = zones.getJSONArray(y);
-            for (int x = 0; x < width; x++) {
-                gridZones[y][x] = Zone.decode(row.getJSONObject(x));
-            }
-        }
-        return new Map(width, height, zoneSize, gridZones);
+    public Map(JSONObject json) {
+        super(json);
     }
 
-    public static Map decode(String encoding) throws JSONException {
-        return Map.decode(new JSONObject(encoding));
+    public Map(JSONOption option) {
+        super(option);
     }
 
-    public Map(int width, int height, int zoneSize) {
-        this.width = width;
-        this.height = height;
-        this.zoneSize = zoneSize;
-        this.grid = new Zone[this.height][this.width];
+    public Map(String encoding) {
+        super(encoding);
+    }
+
+    public Map(int zoneSize, int width, int height) {
+        this(new Zone[height][width], zoneSize, width, height);
         for (int y = 0; y < this.height; y++) {
             for (int x = 0; x < this.width; x++) {
-                this.grid[y][x] = new Zone(new Vector(x, y), this.zoneSize);
+                this.grid[y][x] = new Zone(new Vector(x + this.zoneSize/2.0, y + this.zoneSize/2.0), this.zoneSize);
             }
         }
     }
 
-    public Map(int width, int height, int zoneSize, Zone[][] gridZones) {
+    public Map(Zone[][] grid, int zoneSize, int width, int height) {
+        this.grid = grid;
+        this.zoneSize = zoneSize;
         this.width = width;
         this.height = height;
-        this.zoneSize = zoneSize;
-        this.grid = gridZones;
+    }
+
+    @Override
+    protected void decode(JSONObject json) {
+        this.width = json.getInt(Map.MAP_WIDTH);
+        this.height = json.getInt(Map.MAP_HEIGHT);
+        this.zoneSize = json.getInt(Map.ZONE_SIZE);
+        this.grid = new Zone[this.height][this.width];
+        JSONArray jsonGrid = json.getJSONArray(Map.MAP_GRID);
+        for (int y = 0; y < this.height; y++) {
+            JSONArray jsonRow = jsonGrid.getJSONArray(y);
+            for (int x = 0; x < this.width; x++) {
+                this.grid[y][x] = new Zone(jsonRow.getJSONObject(x));
+            }
+        }
     }
 
     public Zone[][] getGrid() {
@@ -69,17 +74,32 @@ public class Map {
         return this.width;
     }
 
-    public Zone getZone(int y, int x) {
-        if (y < 0 || this.height <= y || x < 0 || this.width <= x) {
-            return null;
+    /** Returns the Zone located at row y, column x.
+     *
+     * @throws IndexOutOfBoundsException if the either y or x are out of bounds
+     */
+    public Zone getZone(int y, int x) throws IndexOutOfBoundsException {
+        if (y < 0 || this.height <= y) {
+            throw new IndexOutOfBoundsException(y);
+        }
+        if (x < 0 || this.width <= x) {
+            throw new IndexOutOfBoundsException(x);
         }
         return this.grid[y][x];
     }
 
+    /** Returns the Zone that contains the location with the specified x and y coordinates.
+     *
+     * @throws IndexOutOfBoundsException if the either y or x are out of bounds
+     */
     public Zone getZoneAtLocation(double x, double y) {
         return this.getZone((int) (y / this.zoneSize), (int) (x / this.zoneSize));
     }
 
+    /** Returns the Zone that contains the location with the specified coordinates.
+     *
+     * @throws IndexOutOfBoundsException if the vector is out of bounds
+     */
     public Zone getZoneAtLocation(Vector location) {
         return this.getZoneAtLocation(location.getX(), location.getY());
     }
@@ -88,29 +108,21 @@ public class Map {
         return this.zoneSize;
     }
 
-    public String encode() {
-        return this.toJSON().toString();
-    }
-
-    public JSONObject toJSON() {
-        JSONObject json = new JSONObject();
+    public JSONOption toJSON() {
+        JSONObjectBuilder json = JSONBuilder.Object();
         json.put(Map.MAP_WIDTH, this.width);
         json.put(Map.MAP_HEIGHT, this.height);
         json.put(Map.ZONE_SIZE, this.zoneSize);
-        JSONArray zones = new JSONArray();
+        JSONArrayBuilder jsonGrid = JSONBuilder.Array();
         for (int y = 0; y < this.height; y++) {
-            JSONArray row = new JSONArray();
+            JSONArrayBuilder jsonRow = JSONBuilder.Array();
             for (int x = 0; x < this.width; x++) {
-                row.put(this.getZone(y, x).toJSON());
+                jsonRow.put(this.getZone(y, x).toJSON());
             }
-            zones.put(row);
+            jsonGrid.put(jsonRow.toJSON());
         }
-        json.put(Map.MAP_GRID, zones);
-        return json;
-    }
-
-    public String toString() {
-        return this.encode();
+        json.put(Map.MAP_GRID, jsonGrid.toJSON());
+        return json.toJSON();
     }
 
     public boolean equals(Map map) {
@@ -126,10 +138,6 @@ public class Map {
             }
         }
         return true;
-    }
-
-    public boolean equals(String encoding) {
-        return this.encode().equals(encoding);
     }
 
 }
