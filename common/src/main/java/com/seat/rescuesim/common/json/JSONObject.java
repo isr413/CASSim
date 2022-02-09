@@ -44,6 +44,9 @@ public interface JSONObject {
      */
     String getString(String key) throws IndexOutOfBoundsException;
 
+    /** Returns true if the JSONObject contains the specified key. */
+    boolean hasKey(String key);
+
     /** Returns the number of key-value pairs stored in the JSONObject. */
     int size();
 

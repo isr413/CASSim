@@ -340,6 +340,11 @@ public class JSONOption {
             }
         }
 
+        /** Returns true if the JSONObject contains the specified key. */
+        public boolean hasKey(String key) {
+            return this.json.has(key);
+        }
+
         /** Returns the number of key-value pairs stored in the JSONObject. */
         public int size() {
             return this.json.length();
