@@ -146,10 +146,6 @@ public class VictimSpecification extends JSONAble {
         return this.moveSpeedDistParams;
     }
 
-    public ArrayList<SensorSpecification> getSensors() {
-        return new ArrayList<SensorSpecification>(this.sensors.values());
-    }
-
     public SensorSpecification getSensor(String sensor) {
         if (!this.hasSensor(sensor)) {
             Debugger.logger.err(String.format("No sensor with type %s found on victim spec %s",
@@ -157,6 +153,20 @@ public class VictimSpecification extends JSONAble {
             return null;
         }
         return this.sensors.get(sensor);
+    }
+
+    public ArrayList<SensorSpecification> getSensors() {
+        return new ArrayList<SensorSpecification>(this.sensors.values());
+    }
+
+    public ArrayList<SensorSpecification> getSensorsWithType(SensorType type) {
+        ArrayList<SensorSpecification> specs = new ArrayList<>();
+        for (SensorSpecification spec : this.sensors.values()) {
+            if (spec.getSensorType() == type) {
+                specs.add(spec);
+            }
+        }
+        return specs;
     }
 
     public double getStaticBatteryUsage() {
@@ -167,12 +177,21 @@ public class VictimSpecification extends JSONAble {
         return this.type;
     }
 
+    public boolean hasSensor(String sensor) {
+        return this.sensors.containsKey(sensor);
+    }
+
     public boolean hasSensors() {
         return !this.sensors.isEmpty();
     }
 
-    public boolean hasSensor(String sensor) {
-        return this.sensors.containsKey(sensor);
+    public boolean hasSensorWithType(SensorType type) {
+        for (SensorSpecification spec : this.sensors.values()) {
+            if (spec.getSensorType() == type) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isAlive() {

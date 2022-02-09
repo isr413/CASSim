@@ -70,10 +70,6 @@ public class Base extends JSONAble {
         return this.location;
     }
 
-    public ArrayList<SensorSpecification> getSensors() {
-        return new ArrayList<>(this.sensors.values());
-    }
-
     public SensorSpecification getSensor(String sensor) {
         if (!this.hasSensor(sensor)) {
             Debugger.logger.err(String.format("No sensor with type %s found on base %s",
@@ -83,12 +79,35 @@ public class Base extends JSONAble {
         return this.sensors.get(sensor);
     }
 
-    public boolean hasSensors() {
-        return !this.sensors.isEmpty();
+    public ArrayList<SensorSpecification> getSensors() {
+        return new ArrayList<>(this.sensors.values());
+    }
+
+    public ArrayList<SensorSpecification> getSensorsWithType(SensorType type) {
+        ArrayList<SensorSpecification> specs = new ArrayList<>();
+        for (SensorSpecification spec : this.sensors.values()) {
+            if (spec.getSensorType() == type) {
+                specs.add(spec);
+            }
+        }
+        return specs;
     }
 
     public boolean hasSensor(String sensor) {
         return this.sensors.containsKey(sensor);
+    }
+
+    public boolean hasSensors() {
+        return !this.sensors.isEmpty();
+    }
+
+    public boolean hasSensorWithType(SensorType type) {
+        for (SensorSpecification spec : this.sensors.values()) {
+            if (spec.getSensorType() == type) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public JSONOption toJSON() {
