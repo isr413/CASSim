@@ -38,6 +38,9 @@ public interface JSONObject {
      */
     String getString(String key) throws IndexOutOfBoundsException;
 
+    /** Returns the number of key-value pairs stored in the JSONObject. */
+    int size();
+
     /** Returns the String representation of the JSONObject. */
     String toString();
 

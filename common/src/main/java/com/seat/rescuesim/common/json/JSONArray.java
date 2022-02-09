@@ -3,6 +3,9 @@ package com.seat.rescuesim.common.json;
 /** An interface for classes that support a JSON Array representation. */
 public interface JSONArray {
 
+    /** Returns the number of elements in the JSONArray. */
+    int length();
+
     /** Returns the double value at index idx.
      * @throws IndexOutOfBoundsException if the idx is out of bounds
      * @throws JSONException if the value at idx cannot be converted to a double

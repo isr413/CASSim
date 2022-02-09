@@ -116,6 +116,11 @@ public class JSONOption {
             }
         }
 
+        /** Returns the number of elements in the JSONArray. */
+        public int length() {
+            return this.json.length();
+        }
+
         /** Returns the double value at index idx.
          * @throws IndexOutOfBoundsException if the idx is out of bounds
          * @throws JSONException if the value at idx cannot be converted to a double
@@ -307,6 +312,11 @@ public class JSONOption {
             } catch (org.json.JSONException e) {
                 throw new JSONException(e.toString());
             }
+        }
+
+        /** Returns the number of key-value pairs stored in the JSONObject. */
+        public int size() {
+            return this.json.length();
         }
 
         /** Returns the String representation of the JSONObject. */
