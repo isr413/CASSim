@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common;
+package com.seat.rescuesim.common.util;
 
 public class Debugger {
     private static final String ANSI_BLUE = "\u001B[34m";

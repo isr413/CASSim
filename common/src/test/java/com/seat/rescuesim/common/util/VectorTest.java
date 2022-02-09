@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common;
+package com.seat.rescuesim.common.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
