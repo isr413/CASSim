@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common.util;
+package com.seat.rescuesim.common.math;
 
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;

@@ -1,4 +1,6 @@
-package com.seat.rescuesim.common.util;
+package com.seat.rescuesim.common.math;
+
+import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable enumeration to denote types of Fields. */
 public enum FieldType implements SerializableEnum {
