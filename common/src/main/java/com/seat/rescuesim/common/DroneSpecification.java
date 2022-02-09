@@ -125,6 +125,10 @@ public class DroneSpecification extends JSONAble {
         return this.batteryUsage.getY();
     }
 
+    public String getLabel() {
+        return this.type.getLabel();
+    }
+
     public double getMaxAcceleration() {
         return this.maxAcceleration;
     }

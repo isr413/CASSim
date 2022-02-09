@@ -130,6 +130,10 @@ public class VictimSpecification extends JSONAble {
         }
     }
 
+    public String getLabel() {
+        return this.type.getLabel();
+    }
+
     public double getMaxBatteryPower() {
         return this.maxBatteryPower;
     }
@@ -148,7 +152,8 @@ public class VictimSpecification extends JSONAble {
 
     public SensorSpecification getSensorWithType(SensorType type) {
         if (!this.hasSensorWithType(type)) {
-            Debugger.logger.err(String.format("No sensor with type %s found on victim spec", type.getLabel()));
+            Debugger.logger.err(String.format("No sensor with type %s found on victim spec %s",
+                type.getLabel(), this.type.getLabel()));
             return null;
         }
         return this.sensors.get(type);
