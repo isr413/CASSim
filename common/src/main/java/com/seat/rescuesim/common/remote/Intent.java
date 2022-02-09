@@ -2,6 +2,8 @@ package com.seat.rescuesim.common.remote;
 
 import java.util.HashSet;
 
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.intent.*;
 
@@ -41,6 +43,18 @@ public class Intent {
 
     public static Intention Shutdown() {
         return new DoneIntention();
+    }
+
+    public static Intention Some(JSONObject json) {
+        return null;
+    }
+
+    public static Intention Some(JSONOption option) {
+        return null;
+    }
+
+    public static Intention Some(String encoding) {
+        return null;
     }
 
     public static Intention Startup() {
