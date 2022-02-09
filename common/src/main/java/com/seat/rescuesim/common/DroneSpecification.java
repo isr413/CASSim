@@ -27,6 +27,18 @@ public class DroneSpecification extends JSONAble {
     private HashMap<SensorType, SensorSpecification> sensors;
     private DroneType type;
 
+    public DroneSpecification(JSONObject json) {
+        super(json);
+    }
+
+    public DroneSpecification(JSONOption option) {
+        super(option);
+    }
+
+    public DroneSpecification(String encoding) {
+        super(encoding);
+    }
+
     public DroneSpecification(DroneType type, double maxBatteryPower, Vector batteryUsage, Vector location) {
         this(type, maxBatteryPower, batteryUsage, location, 0, 0, 0, new HashMap<SensorType, SensorSpecification>());
     }
