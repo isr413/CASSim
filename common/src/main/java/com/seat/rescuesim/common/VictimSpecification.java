@@ -13,12 +13,14 @@ public class VictimSpecification extends JSONAble {
     private static final String VICTIM_MOVE_SPEED_PARAMS = "move_speed_params";
     private static final String VICTIM_SENSORS = "sensors";
     private static final String VICTIM_STATIC_BATTERY_USAGE = "static_battery_usage";
+    private static final String VICTIM_TYPE = "type";
 
     private double maxBatteryPower;
     private double maxVelocity;
     private Double[] moveSpeedDistParams;
     private HashMap<SensorType, SensorSpecification> sensors;
     private double staticBatteryUsage;
+    private VictimType type;
 
     public VictimSpecification(JSONObject json) {
         super(json);
@@ -32,73 +34,77 @@ public class VictimSpecification extends JSONAble {
         super(encoding);
     }
 
-    public VictimSpecification(double batteryPower, double staticBatteryUsage) {
-        this(batteryPower, staticBatteryUsage, new Double[]{0.0, 0.0}, 0,
+    public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage) {
+        this(type, maxBatteryPower, staticBatteryUsage, new Double[]{0.0, 0.0}, 0,
             new HashMap<SensorType, SensorSpecification>());
     }
 
-    public VictimSpecification(double batteryPower, double staticBatteryUsage, SensorSpecification[] sensors) {
-        this(batteryPower, staticBatteryUsage, new Double[]{0.0, 0.0}, 0, sensors);
+    public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
+            SensorSpecification[] sensors) {
+        this(type, maxBatteryPower, staticBatteryUsage, new Double[]{0.0, 0.0}, 0, sensors);
     }
 
-    public VictimSpecification(double batteryPower, double staticBatteryUsage,
+    public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
             ArrayList<SensorSpecification> sensors) {
-        this(batteryPower, staticBatteryUsage, new Double[]{0.0, 0.0}, 0, sensors);
+        this(type, maxBatteryPower, staticBatteryUsage, new Double[]{0.0, 0.0}, 0, sensors);
     }
 
-    public VictimSpecification(double batteryPower, double staticBatteryUsage,
+    public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
             HashMap<SensorType, SensorSpecification> sensors) {
-        this(batteryPower, staticBatteryUsage, new Double[]{0.0, 0.0}, 0, sensors);
+        this(type, maxBatteryPower, staticBatteryUsage, new Double[]{0.0, 0.0}, 0, sensors);
     }
 
-    public VictimSpecification(double batteryPower, double staticBatteryUsage,
+    public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
             double moveSpeedMean, double moveSpeedStdDev, double maxVelocity) {
-        this(batteryPower, staticBatteryUsage, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity,
+        this(type, maxBatteryPower, staticBatteryUsage, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity,
             new HashMap<SensorType, SensorSpecification>());
     }
 
-    public VictimSpecification(double batteryPower, double staticBatteryUsage,
+    public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
             Double[] moveSpeedDistParams, double maxVelocity) {
-        this(batteryPower, staticBatteryUsage, moveSpeedDistParams, maxVelocity,
+        this(type, maxBatteryPower, staticBatteryUsage, moveSpeedDistParams, maxVelocity,
             new HashMap<SensorType, SensorSpecification>());
     }
 
-    public VictimSpecification(double batteryPower, double staticBatteryUsage,
+    public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
             double moveSpeedMean, double moveSpeedStdDev, double maxVelocity, SensorSpecification[] sensors) {
-        this(batteryPower, staticBatteryUsage, new Double[]{moveSpeedMean, moveSpeedStdDev},
+        this(type, maxBatteryPower, staticBatteryUsage, new Double[]{moveSpeedMean, moveSpeedStdDev},
                 maxVelocity, new ArrayList<SensorSpecification>(Arrays.asList(sensors)));
     }
 
-    public VictimSpecification(double batteryPower, double staticBatteryUsage,
+    public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
             Double[] moveSpeedDistParams, double maxVelocity, SensorSpecification[] sensors) {
-        this(batteryPower, staticBatteryUsage, moveSpeedDistParams, maxVelocity,
+        this(type, maxBatteryPower, staticBatteryUsage, moveSpeedDistParams, maxVelocity,
             new ArrayList<SensorSpecification>(Arrays.asList(sensors)));
     }
 
-    public VictimSpecification(double batteryPower, double staticBatteryUsage,
+    public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
             double moveSpeedMean, double moveSpeedStdDev, double maxVelocity,
             ArrayList<SensorSpecification> sensors) {
-        this(batteryPower, staticBatteryUsage, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity, sensors);
+        this(type, maxBatteryPower, staticBatteryUsage, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity,
+            sensors);
     }
 
-    public VictimSpecification(double batteryPower, double staticBatteryUsage,
+    public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
             Double[] moveSpeedDistParams, double maxVelocity, ArrayList<SensorSpecification> sensors) {
-        this(batteryPower, staticBatteryUsage, moveSpeedDistParams, maxVelocity,
+        this(type, maxBatteryPower, staticBatteryUsage, moveSpeedDistParams, maxVelocity,
             new HashMap<SensorType, SensorSpecification>());
         for (SensorSpecification spec : sensors) {
             this.sensors.put(spec.getSensorType(), spec);
         }
     }
 
-    public VictimSpecification(double batteryPower, double staticBatteryUsage,
+    public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
             double moveSpeedMean, double moveSpeedStdDev, double maxVelocity,
             HashMap<SensorType, SensorSpecification> sensors) {
-        this(batteryPower, staticBatteryUsage, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity, sensors);
+        this(type, maxBatteryPower, staticBatteryUsage, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity,
+            sensors);
     }
 
-    public VictimSpecification(double batteryPower, double staticBatteryUsage,
+    public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage,
             Double[] moveSpeedDistParams, double maxVelocity, HashMap<SensorType, SensorSpecification> sensors) {
-        this.maxBatteryPower = batteryPower;
+        this.type = type;
+        this.maxBatteryPower = maxBatteryPower;
         this.staticBatteryUsage = staticBatteryUsage;
         this.moveSpeedDistParams = moveSpeedDistParams;
         this.maxVelocity = maxVelocity;
@@ -107,6 +113,7 @@ public class VictimSpecification extends JSONAble {
 
     @Override
     public void decode(JSONObject json) {
+        this.type = VictimType.values()[json.getInt(VictimSpecification.VICTIM_TYPE)];
         this.maxBatteryPower = json.getDouble(VictimSpecification.VICTIM_MAX_BATTERY);
         this.staticBatteryUsage = json.getDouble(VictimSpecification.VICTIM_STATIC_BATTERY_USAGE);
         JSONArray jsonParams = json.getJSONArray(VictimSpecification.VICTIM_MOVE_SPEED_PARAMS);
@@ -151,6 +158,10 @@ public class VictimSpecification extends JSONAble {
         return this.staticBatteryUsage;
     }
 
+    public VictimType getVictimType() {
+        return this.type;
+    }
+
     public boolean hasSensors() {
         return !this.sensors.isEmpty();
     }
@@ -159,12 +170,17 @@ public class VictimSpecification extends JSONAble {
         return this.sensors.containsKey(type);
     }
 
-    public boolean isDead() {
+    public boolean isAlive() {
         return this.maxVelocity > 0;
+    }
+
+    public boolean isDead() {
+        return !this.isAlive();
     }
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
+        json.put(VictimSpecification.VICTIM_TYPE, this.type.getType());
         json.put(VictimSpecification.VICTIM_MAX_BATTERY, this.maxBatteryPower);
         json.put(VictimSpecification.VICTIM_STATIC_BATTERY_USAGE, this.staticBatteryUsage);
         JSONArrayBuilder jsonParams = JSONBuilder.Array();
@@ -182,8 +198,9 @@ public class VictimSpecification extends JSONAble {
     }
 
     public boolean equals(VictimSpecification spec) {
-        return this.maxBatteryPower == spec.maxBatteryPower && this.staticBatteryUsage == spec.staticBatteryUsage &&
-                Arrays.equals(this.moveSpeedDistParams, spec.moveSpeedDistParams) && this.sensors.equals(spec.sensors);
+        return this.type.equals(spec.type) && this.maxBatteryPower == spec.maxBatteryPower &&
+            this.staticBatteryUsage == spec.staticBatteryUsage &&
+            Arrays.equals(this.moveSpeedDistParams, spec.moveSpeedDistParams) && this.sensors.equals(spec.sensors);
     }
 
 }
