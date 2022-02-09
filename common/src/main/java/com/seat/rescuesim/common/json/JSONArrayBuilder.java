@@ -4,24 +4,24 @@ package com.seat.rescuesim.common.json;
 public interface JSONArrayBuilder {
 
     /** Appends the value to the JSONArray. */
-    public void put(double value);
+    void put(double value);
 
     /** Appends the value to the JSONArray. */
-    public void put(int value);
+    void put(int value);
 
     /** Appends the value to the JSONArray. */
-    public void put(JSONArray value);
+    void put(JSONArray value);
 
     /** Appends the value to the JSONArray. */
-    public void put(JSONObject value);
+    void put(JSONObject value);
 
     /** Appends the value to the JSONArray. */
-    public void put(JSONOption value);
+    void put(JSONOption value);
 
     /** Appends the value to the JSONArray. */
-    public void put(String value);
+    void put(String value);
 
     /** Returns the JSONOption representation of the JSONArray. */
-    public JSONOption toJSON();
+    JSONOption toJSON();
 
 }
