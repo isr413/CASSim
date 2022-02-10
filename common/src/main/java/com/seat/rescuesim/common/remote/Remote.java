@@ -66,6 +66,10 @@ public class Remote extends JSONAble {
         return this.intentions.get(type);
     }
 
+    public String getLabel() {
+        return String.format("<%d>", this.remoteID);
+    }
+
     public boolean hasIntention(Intention intent) {
         return this.hasIntentionWithType(intent.getIntentionType());
     }
