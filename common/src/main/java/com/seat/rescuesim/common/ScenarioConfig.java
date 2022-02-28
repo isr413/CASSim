@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.seat.rescuesim.common.json.*;
 
+/** A serializable class to store scenario configurations. */
 public class ScenarioConfig extends JSONAble {
     private static final String BASE = "base";
     private static final String DEFAULT_ID = "default";
@@ -42,6 +43,77 @@ public class ScenarioConfig extends JSONAble {
         super(encoding);
     }
 
+    //-- Constructors for scenarios with no victims and no drones --//
+    public ScenarioConfig(Map map, int missionLength, double stepSize) {
+        this(ScenarioConfig.DEFAULT_ID, map, 0, missionLength, stepSize, 0, VictimSpecification.None(),
+            Base.None(), 0, DroneSpecification.None());
+    }
+
+    public ScenarioConfig(String scenarioID, Map map, int missionLength, double stepSize) {
+        this(scenarioID, map, 0, missionLength, stepSize, 0, VictimSpecification.None(),
+            Base.None(), 0, DroneSpecification.None());
+    }
+
+    public ScenarioConfig(long seed, Map map, int missionLength, double stepSize) {
+        this(ScenarioConfig.DEFAULT_ID, seed, map, 0, missionLength, stepSize, 0, VictimSpecification.None(),
+            Base.None(), 0, DroneSpecification.None());
+    }
+
+    public ScenarioConfig(String scenarioID, long seed, Map map, int missionLength, double stepSize) {
+        this(scenarioID, seed, map, 0, missionLength, stepSize, 0, VictimSpecification.None(),
+            Base.None(), 0, DroneSpecification.None());
+    }
+
+    //-- Constructors for scenarios with victims and no drones --//
+    public ScenarioConfig(Map map, int missionLength, double stepSize, int numVictims, VictimSpecification victimSpec) {
+        this(ScenarioConfig.DEFAULT_ID, map, 0, missionLength, stepSize, numVictims, victimSpec,
+            Base.None(), 0, DroneSpecification.None());
+    }
+
+    public ScenarioConfig(String scenarioID, Map map, int missionLength, double stepSize, int numVictims,
+            VictimSpecification victimSpec) {
+        this(scenarioID, map, 0, missionLength, stepSize, numVictims, victimSpec,
+            Base.None(), 0, DroneSpecification.None());
+    }
+
+    public ScenarioConfig(long seed, Map map, int missionLength, double stepSize, int numVictims,
+            VictimSpecification victimSpec) {
+        this(ScenarioConfig.DEFAULT_ID, seed, map, 0, missionLength, stepSize, numVictims, victimSpec,
+            Base.None(), 0, DroneSpecification.None());
+    }
+
+    public ScenarioConfig(String scenarioID, long seed, Map map, int missionLength, double stepSize, int numVictims,
+            VictimSpecification victimSpec) {
+        this(scenarioID, seed, map, 0, missionLength, stepSize, numVictims, victimSpec,
+            Base.None(), 0, DroneSpecification.None());
+    }
+
+    //-- Constructors for scenarios with victims and drones but no base --//
+    public ScenarioConfig(Map map, int missionLength, double stepSize, int numVictims, VictimSpecification victimSpec,
+            int numDrones, DroneSpecification droneSpec) {
+        this(ScenarioConfig.DEFAULT_ID, map, 0, missionLength, stepSize, numVictims, victimSpec,
+            Base.None(), numDrones, droneSpec);
+    }
+
+    public ScenarioConfig(String scenarioID, Map map, int missionLength, double stepSize, int numVictims,
+            VictimSpecification victimSpec, int numDrones, DroneSpecification droneSpec) {
+        this(scenarioID, map, 0, missionLength, stepSize, numVictims, victimSpec,
+            Base.None(), numDrones, droneSpec);
+    }
+
+    public ScenarioConfig(long seed, Map map, int missionLength, double stepSize, int numVictims,
+            VictimSpecification victimSpec, int numDrones, DroneSpecification droneSpec) {
+        this(ScenarioConfig.DEFAULT_ID, seed, map, 0, missionLength, stepSize, numVictims, victimSpec,
+            Base.None(), numDrones, droneSpec);
+    }
+
+    public ScenarioConfig(String scenarioID, long seed, Map map, int missionLength, double stepSize, int numVictims,
+            VictimSpecification victimSpec, int numDrones, DroneSpecification droneSpec) {
+        this(scenarioID, seed, map, 0, missionLength, stepSize, numVictims, victimSpec,
+            Base.None(), numDrones, droneSpec);
+    }
+
+    //-- Constructors for scenarios with victims, drones, and a base --//
     public ScenarioConfig(Map map, double disasterScale, int missionLength,
             double stepSize, int numVictims, VictimSpecification victimSpec,
             Base base, int numDrones, DroneSpecification droneSpec) {
@@ -49,17 +121,17 @@ public class ScenarioConfig extends JSONAble {
             base, numDrones, droneSpec);
     }
 
-    public ScenarioConfig(long seed, Map map, double disasterScale, int missionLength,
-            double stepSize, int numVictims, VictimSpecification victimSpec,
-            Base base, int numDrones, DroneSpecification droneSpec) {
-        this(ScenarioConfig.DEFAULT_ID, seed, map, disasterScale, missionLength, stepSize, numVictims, victimSpec,
-            base, numDrones, droneSpec);
-    }
-
     public ScenarioConfig(String scenarioID, Map map, double disasterScale, int missionLength,
             double stepSize, int numVictims, VictimSpecification victimSpec,
             Base base, int numDrones, DroneSpecification droneSpec) {
         this(scenarioID, new Random().nextLong(), map, disasterScale, missionLength, stepSize, numVictims, victimSpec,
+            base, numDrones, droneSpec);
+    }
+
+    public ScenarioConfig(long seed, Map map, double disasterScale, int missionLength,
+            double stepSize, int numVictims, VictimSpecification victimSpec,
+            Base base, int numDrones, DroneSpecification droneSpec) {
+        this(ScenarioConfig.DEFAULT_ID, seed, map, disasterScale, missionLength, stepSize, numVictims, victimSpec,
             base, numDrones, droneSpec);
     }
 
