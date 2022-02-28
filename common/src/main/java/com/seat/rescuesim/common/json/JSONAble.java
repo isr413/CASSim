@@ -17,8 +17,8 @@ public abstract class JSONAble {
     }
 
     /** JSONAble constructor for decoding a JSONOption. */
-    protected JSONAble(JSONOption json) {
-        this.decode(json);
+    protected JSONAble(JSONOption option) {
+        this.decode(option);
     }
 
     /** JSONAble constructor for decoding a String encoding. */
@@ -63,6 +63,26 @@ public abstract class JSONAble {
     /** Returns the JSON serialization of this Object. */
     public String encode() {
         return this.toJSON().toString();
+    }
+
+    /** Returns true if the the JSONAble has the same encoding. */
+    public boolean equals(JSONAble json) {
+        return this.equals(json.encode());
+    }
+
+    /** Returns true if the the JSONArray has the same encoding. */
+    public boolean equals(JSONArray json) {
+        return this.equals(json.toString());
+    }
+
+    /** Returns true if the the JSONObject has the same encoding. */
+    public boolean equals(JSONObject json) {
+        return this.equals(json.toString());
+    }
+
+    /** Returns true if the the JSONOption has the same encoding. */
+    public boolean equals(JSONOption option) {
+        return this.equals(option.toString());
     }
 
     /** Returns true if the encoding would deserialize to this Object. */
