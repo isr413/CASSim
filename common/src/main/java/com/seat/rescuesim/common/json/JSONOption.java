@@ -20,6 +20,10 @@ public class JSONOption {
 
     /** Returns an option wrapper for the JSONArray or JSONObject interace types based on the encoding. */
     public static JSONOption String(String encoding) {
+        if (!encoding.isEmpty() && ((encoding.charAt(0) == '"' && encoding.charAt(encoding.length()-1) == '"')
+                || (encoding.charAt(0) == '\'' && encoding.charAt(encoding.length()-1) == '\''))) {
+            encoding = encoding.substring(0, encoding.length()-1);
+        }
         if (encoding.isEmpty()) {
             return JSONOption.None();
         }
@@ -76,7 +80,7 @@ public class JSONOption {
     }
 
     /** Returns the JSONObject wrapped by this option.
-     * @throws JSONException if the option being wrapped is not an Array option
+     * @throws JSONException if the option being wrapped is not an Object option
      */
     public JSONObject someObject() throws JSONException {
         if (!this.isSomeObject()) {
