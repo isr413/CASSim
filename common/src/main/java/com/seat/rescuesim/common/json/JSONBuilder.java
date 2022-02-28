@@ -37,7 +37,7 @@ public class JSONBuilder {
             if (value instanceof JSONOption.JSONArrayOption) {
                 this.json.put(((JSONOption.JSONArrayOption) value).json);
             } else {
-                this.json.put(new JSONOption.JSONArrayOption(value.toString()));
+                this.json.put(new JSONOption.JSONArrayOption(value.toString()).json);
             }
         }
 
@@ -46,7 +46,7 @@ public class JSONBuilder {
             if (value instanceof JSONOption.JSONObjectOption) {
                 this.json.put(((JSONOption.JSONObjectOption) value).json);
             } else {
-                this.json.put(new JSONOption.JSONObjectOption(value.toString()));
+                this.json.put(new JSONOption.JSONObjectOption(value.toString()).json);
             }
         }
 
@@ -107,7 +107,7 @@ public class JSONBuilder {
             if (value instanceof JSONOption.JSONArrayOption) {
                 this.json.put(key, ((JSONOption.JSONArrayOption) value).json);
             } else {
-                this.json.put(key, new JSONOption.JSONArrayOption(value.toString()));
+                this.json.put(key, new JSONOption.JSONArrayOption(value.toString()).json);
             }
         }
 
@@ -116,7 +116,7 @@ public class JSONBuilder {
             if (value instanceof JSONOption.JSONObjectOption) {
                 this.json.put(key, ((JSONOption.JSONObjectOption) value).json);
             } else {
-                this.json.put(key, new JSONOption.JSONObjectOption(value.toString()));
+                this.json.put(key, new JSONOption.JSONObjectOption(value.toString()).json);
             }
         }
 
