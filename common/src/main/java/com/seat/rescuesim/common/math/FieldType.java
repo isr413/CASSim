@@ -5,8 +5,9 @@ import com.seat.rescuesim.common.util.SerializableEnum;
 /** A serializable enumeration to denote types of Fields. */
 public enum FieldType implements SerializableEnum {
     NONE(0),
-    PUSH(1),
-    PULL(2);
+    JERK(1),
+    PUSH(2),
+    PULL(3);
 
     private int type;
 

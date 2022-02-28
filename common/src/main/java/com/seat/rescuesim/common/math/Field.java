@@ -4,7 +4,7 @@ import com.seat.rescuesim.common.json.*;
 
 /**
  * The Field class represents forces that can act on Victims or Drones. Things to remember:
- *  - the FieldType determines whether the force how the force should be applied (push, pull, etc.)
+ *  - the FieldType determines how the force should be applied (push, pull, etc.)
  *  - the magnitude determines the size of the force
  *  - the point is a unit vector that determines the direction of the force
  *  - the point vector represents a momentary force applied per second to an actor's location while in the field
@@ -41,12 +41,12 @@ public class Field extends JSONAble {
         this(FieldType.NONE, new Vector(), 0, new Vector());
     }
 
-    public Field(FieldType type, Vector point, double magnitude) {
-        this(type, point, magnitude, new Vector());
+    public Field(Vector jerk) {
+        this(FieldType.JERK, new Vector(), 0, jerk);
     }
 
-    public Field(FieldType type, Vector jerk) {
-        this(type, new Vector(), 0, jerk);
+    public Field(FieldType type, Vector point, double magnitude) {
+        this(type, point, magnitude, new Vector());
     }
 
     public Field(FieldType type, Vector point, double magnitude, Vector jerk) {
