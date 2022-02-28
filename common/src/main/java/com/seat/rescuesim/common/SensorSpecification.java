@@ -2,6 +2,7 @@ package com.seat.rescuesim.common;
 
 import com.seat.rescuesim.common.json.*;
 
+/** A serializable class for sensors specifications. */
 public class SensorSpecification extends JSONAble {
     private static final String SENSOR_ACCURACY = "accuracy";
     private static final String SENSOR_BATTERY_USAGE = "battery_usage";

@@ -8,6 +8,7 @@ import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.util.Debugger;
 
+/** A serializable class to represent the specification of a Drone.  */
 public class DroneSpecification extends JSONAble {
     private static final String DRONE_BATTERY_USAGE = "battery_usage";
     private static final String DRONE_LOCATION = "location";
@@ -17,6 +18,10 @@ public class DroneSpecification extends JSONAble {
     private static final String DRONE_MAX_VELOCITY = "max_velocity";
     private static final String DRONE_SENSORS = "sensors";
     private static final String DRONE_TYPE = "type";
+
+    public static DroneSpecification None() {
+        return new DroneSpecification();
+    }
 
     private Vector batteryUsage; // [static (hovering), horizontal movement, vertical movement]
     private Vector initialLocation;
@@ -37,6 +42,10 @@ public class DroneSpecification extends JSONAble {
 
     public DroneSpecification(String encoding) {
         super(encoding);
+    }
+
+    public DroneSpecification() {
+        this(DroneType.NONE, 0, new Vector(), new Vector(), 0, 0, 0, new HashMap<String, SensorSpecification>());
     }
 
     public DroneSpecification(DroneType type, double maxBatteryPower, Vector batteryUsage, Vector location) {

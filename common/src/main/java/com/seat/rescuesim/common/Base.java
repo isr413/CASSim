@@ -8,9 +8,14 @@ import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.util.Debugger;
 
+/** A serializable class to represent the Drone HQ, or Base. */
 public class Base extends JSONAble {
     private static final String BASE_LOCATION = "location";
     private static final String BASE_SENSORS = "sensors";
+
+    public static Base None() {
+        return new Base();
+    }
 
     private Vector location;
     private HashMap<String, SensorSpecification> sensors;

@@ -15,6 +15,10 @@ public class VictimSpecification extends JSONAble {
     private static final String VICTIM_STATIC_BATTERY_USAGE = "static_battery_usage";
     private static final String VICTIM_TYPE = "type";
 
+    public static VictimSpecification None() {
+        return new VictimSpecification();
+    }
+
     private double maxBatteryPower;
     private double maxVelocity;
     private Double[] moveSpeedDistParams;
@@ -32,6 +36,10 @@ public class VictimSpecification extends JSONAble {
 
     public VictimSpecification(String encoding) {
         super(encoding);
+    }
+
+    public VictimSpecification() {
+        this(VictimType.NONE, 0, 0, new Double[]{0.0, 0.0}, 0, new HashMap<String, SensorSpecification>());
     }
 
     public VictimSpecification(VictimType type, double maxBatteryPower, double staticBatteryUsage) {
