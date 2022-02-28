@@ -11,9 +11,9 @@ public class Map extends JSONAble {
     private static final String ZONE_SIZE = "zone_size";
 
     private Zone[][] grid;
-    private int height; // number of zones in each column of the grid
-    private int width;  // number of zones in each row of the grid
-    private int zoneSize;
+    private int height;     // number of zones in each column of the grid
+    private int width;      // number of zones in each row of the grid
+    private int zoneSize;   // zones in the same map grid must have a uniform size
 
     public Map(JSONObject json) {
         super(json);
@@ -31,7 +31,7 @@ public class Map extends JSONAble {
         this(new Zone[height][width], zoneSize, width, height);
         for (int y = 0; y < this.height; y++) {
             for (int x = 0; x < this.width; x++) {
-                this.grid[y][x] = new Zone(new Vector(x + this.zoneSize/2.0, y + this.zoneSize/2.0), this.zoneSize);
+                this.grid[y][x] = new Zone(new Vector(this.zoneSize*(x + 0.5), this.zoneSize*(y + 0.5)), this.zoneSize);
             }
         }
     }
@@ -75,7 +75,6 @@ public class Map extends JSONAble {
     }
 
     /** Returns the Zone located at row y, column x.
-     *
      * @throws IndexOutOfBoundsException if the either y or x are out of bounds
      */
     public Zone getZone(int y, int x) throws IndexOutOfBoundsException {
@@ -89,7 +88,6 @@ public class Map extends JSONAble {
     }
 
     /** Returns the Zone that contains the location with the specified x and y coordinates.
-     *
      * @throws IndexOutOfBoundsException if the either y or x are out of bounds
      */
     public Zone getZoneAtLocation(double x, double y) {
@@ -97,7 +95,6 @@ public class Map extends JSONAble {
     }
 
     /** Returns the Zone that contains the location with the specified coordinates.
-     *
      * @throws IndexOutOfBoundsException if the vector is out of bounds
      */
     public Zone getZoneAtLocation(Vector location) {
