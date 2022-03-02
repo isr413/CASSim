@@ -1,12 +1,13 @@
 package com.seat.rescuesim.common.remote;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import com.seat.rescuesim.common.json.*;
-import com.seat.rescuesim.common.remote.snap.ScenarioState;
-import com.seat.rescuesim.common.remote.snap.SnapStatus;
+import com.seat.rescuesim.common.util.Debugger;
 
+/** A serializable class to represent a single snapshot of the current sim state. */
 public class Snapshot extends JSONAble {
     private static final String ACTIVE_REMOTES = "active_remotes";
     private static final String HASH = "hash";
@@ -21,7 +22,7 @@ public class Snapshot extends JSONAble {
     private String hash;
     private HashSet<String> remotes;
     private String scenarioID;
-    private ScenarioState state;
+    private HashMap<String, RemoteState> state;
     private SnapStatus status;
     private double stepSize;
     private double time;
@@ -38,13 +39,13 @@ public class Snapshot extends JSONAble {
         super(encoding);
     }
 
-    public Snapshot(String hash, String scenarioID, double time, double stepSize, HashSet<String> remotes,
-            HashSet<String> activeRemotes, ScenarioState state) {
-        this(hash, scenarioID, SnapStatus.START, time, stepSize, remotes, activeRemotes, state);
+    public Snapshot(String hash, String scenarioID, double stepSize, HashSet<String> remotes,
+            HashMap<String, RemoteState> state) {
+        this(hash, scenarioID, SnapStatus.START, 0, stepSize, remotes, remotes, state);
     }
 
     public Snapshot(String hash, String scenarioID, SnapStatus status, double time, double stepSize,
-            HashSet<String> remotes, HashSet<String> activeRemotes, ScenarioState state) {
+            HashSet<String> remotes, HashSet<String> activeRemotes, HashMap<String, RemoteState> state) {
         this.hash = hash;
         this.scenarioID = scenarioID;
         this.status = status;
@@ -72,7 +73,12 @@ public class Snapshot extends JSONAble {
         for (int i = 0; i < jsonActiveRemotes.length(); i++) {
             this.activeRemotes.add(jsonActiveRemotes.getString(i));
         }
-        this.state = new ScenarioState(json.getJSONArray(Snapshot.STATE));
+        JSONArray jsonState = json.getJSONArray(Snapshot.STATE);
+        this.state = new HashMap<>();
+        for (int i = 0; i < jsonState.length(); i++) {
+            RemoteState state = new RemoteState(jsonState.getJSONObject(i));
+            this.state.put(state.getRemoteLabel(), state);
+        }
     }
 
     public ArrayList<String> getActiveRemotes() {
@@ -87,12 +93,20 @@ public class Snapshot extends JSONAble {
         return new ArrayList<String>(this.remotes);
     }
 
+    public RemoteState getRemoteState(String remote) {
+        if (!this.hasRemoteState(remote)) {
+            Debugger.logger.err(String.format("No state for remote %s", remote));
+            return null;
+        }
+        return this.state.get(remote);
+    }
+
     public String getScenarioID() {
         return this.scenarioID;
     }
 
-    public ScenarioState getState() {
-        return this.state;
+    public ArrayList<RemoteState> getState() {
+        return new ArrayList<RemoteState>(this.state.values());
     }
 
     public SnapStatus getStatus() {
@@ -123,6 +137,14 @@ public class Snapshot extends JSONAble {
         return !this.remotes.isEmpty();
     }
 
+    public boolean hasRemoteState(String remote) {
+        return this.state.containsKey(remote);
+    }
+
+    public boolean hasState() {
+        return !this.state.isEmpty();
+    }
+
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(Snapshot.HASH, this.hash);
@@ -140,7 +162,11 @@ public class Snapshot extends JSONAble {
             jsonActiveRemotes.put(remote);
         }
         json.put(Snapshot.ACTIVE_REMOTES, jsonActiveRemotes.toJSON());
-        json.put(Snapshot.STATE, this.state.toJSON());
+        JSONArrayBuilder jsonState = JSONBuilder.Array();
+        for (RemoteState state : this.state.values()) {
+            jsonState.put(state.toJSON());
+        }
+        json.put(Snapshot.STATE, jsonState.toJSON());
         return json.toJSON();
     }
 

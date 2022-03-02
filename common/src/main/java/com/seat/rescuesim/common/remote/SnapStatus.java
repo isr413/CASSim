@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common.remote.snap;
+package com.seat.rescuesim.common.remote;
 
 import com.seat.rescuesim.common.util.SerializableEnum;
 
