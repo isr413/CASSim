@@ -10,9 +10,27 @@ import com.seat.rescuesim.common.util.Debugger;
 public class Remote extends JSONAble {
     private static final String INTENTIONS = "intentions";
     private static final String REMOTE_ID = "remote_id";
+    private static final String REMOTE_TYPE = "remote_type";
 
     private HashMap<IntentionType, Intention> intentions;
-    private int remoteID;
+    private String remoteID;
+    private RemoteType type;
+
+    public static Remote Drone(String remoteID) {
+        return new Remote(RemoteType.DRONE, remoteID);
+    }
+
+    public static Remote None(String remoteID) {
+        return new Remote(RemoteType.NONE, remoteID);
+    }
+
+    public static Remote Sensor(String remoteID) {
+        return new Remote(RemoteType.SENSOR, remoteID);
+    }
+
+    public static Remote Victim(String remoteID) {
+        return new Remote(RemoteType.VICTIM, remoteID);
+    }
 
     public Remote(JSONObject json) {
         super(json);
@@ -26,14 +44,16 @@ public class Remote extends JSONAble {
         super(encoding);
     }
 
-    public Remote(int remoteID) {
+    public Remote(RemoteType type, String remoteID) {
+        this.type = type;
         this.remoteID = remoteID;
         this.intentions = new HashMap<>();
     }
 
     @Override
     protected void decode(JSONObject json) {
-        this.remoteID = json.getInt(Remote.REMOTE_ID);
+        this.type = RemoteType.values()[json.getInt(Remote.REMOTE_ID)];
+        this.remoteID = json.getString(Remote.REMOTE_ID);
         this.intentions = new HashMap<>();
         JSONArray jsonIntentions = json.getJSONArray(Remote.INTENTIONS);
         for (int i = 0; i < jsonIntentions.length(); i++) {
@@ -70,6 +90,14 @@ public class Remote extends JSONAble {
         return String.format("<%d>", this.remoteID);
     }
 
+    public String getRemoteID() {
+        return this.remoteID;
+    }
+
+    public RemoteType getRemoteType() {
+        return this.type;
+    }
+
     public boolean hasIntention(Intention intent) {
         return this.hasIntentionWithType(intent.getIntentionType());
     }
@@ -97,6 +125,7 @@ public class Remote extends JSONAble {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
+        json.put(Remote.REMOTE_TYPE, this.type.getType());
         json.put(Remote.REMOTE_ID, this.remoteID);
         JSONArrayBuilder jsonIntentions = JSONBuilder.Array();
         for (Intention intent : this.intentions.values()) {
@@ -107,7 +136,7 @@ public class Remote extends JSONAble {
     }
 
     public boolean equals(Remote remote) {
-        return this.remoteID == remote.remoteID;
+        return this.type.equals(remote.type) && this.remoteID.equals(remote.remoteID);
     }
 
 }
