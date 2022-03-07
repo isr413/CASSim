@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common;
+package com.seat.rescuesim.common.sensor;
 
 import com.seat.rescuesim.common.util.SerializableEnum;
 
