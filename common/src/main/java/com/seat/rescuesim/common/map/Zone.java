@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common;
+package com.seat.rescuesim.common.map;
 
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.*;
