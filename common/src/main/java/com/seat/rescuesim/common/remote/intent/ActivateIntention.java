@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import com.seat.rescuesim.common.json.*;
-import com.seat.rescuesim.common.remote.Intention;
-import com.seat.rescuesim.common.remote.IntentionType;
 import com.seat.rescuesim.common.util.Debugger;
 
 public class ActivateIntention extends Intention {
@@ -35,10 +33,7 @@ public class ActivateIntention extends Intention {
     }
 
     public ActivateIntention(ArrayList<String> sensors) {
-        this(new HashSet<String>());
-        for (String sensor : sensors) {
-            this.addActivation(sensor);
-        }
+        this(new HashSet<String>(sensors));
     }
 
     public ActivateIntention(HashSet<String> sensors) {

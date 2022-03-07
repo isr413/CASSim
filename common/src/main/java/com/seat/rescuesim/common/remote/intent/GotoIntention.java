@@ -2,8 +2,6 @@ package com.seat.rescuesim.common.remote.intent;
 
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.remote.Intention;
-import com.seat.rescuesim.common.remote.IntentionType;
 
 public class GotoIntention extends Intention {
     private static final String LOCATION = "location";

@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common.remote;
+package com.seat.rescuesim.common.remote.intent;
 
 import com.seat.rescuesim.common.json.*;
 

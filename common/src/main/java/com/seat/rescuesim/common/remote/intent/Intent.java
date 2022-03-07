@@ -1,11 +1,10 @@
-package com.seat.rescuesim.common.remote;
+package com.seat.rescuesim.common.remote.intent;
 
 import java.util.HashSet;
 
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.remote.intent.*;
 
 public class Intent {
 

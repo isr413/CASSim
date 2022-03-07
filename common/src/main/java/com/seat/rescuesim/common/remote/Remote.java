@@ -3,8 +3,10 @@ package com.seat.rescuesim.common.remote;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
 import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.remote.intent.Intent;
+import com.seat.rescuesim.common.remote.intent.Intention;
+import com.seat.rescuesim.common.remote.intent.IntentionType;
 import com.seat.rescuesim.common.util.Debugger;
 
 public class Remote extends JSONAble {

@@ -1,7 +1,7 @@
 package com.seat.rescuesim.common;
 
 import java.util.Random;
-
+import com.seat.rescuesim.common.drone.DroneSpecification;
 import com.seat.rescuesim.common.json.*;
 
 /** A serializable class to store scenario configurations. */
@@ -9,7 +9,7 @@ public class ScenarioConfig extends JSONAble {
     private static final String BASE = "base";
     private static final String DEFAULT_ID = "default";
     private static final String DISASTER_SCALE = "disaster_scale";
-    private static final String DRONE_SPEC = "drone_spec";
+    private static final String DRONE_REMOTE_CONF = "drone_spec";
     private static final String MAP = "map";
     private static final String MISSION_LENGTH = "mission_length";
     private static final String NUM_DRONES = "num_drones";

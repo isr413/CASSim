@@ -1,9 +1,10 @@
-package com.seat.rescuesim.common;
+package com.seat.rescuesim.common.drone;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-
+import com.seat.rescuesim.common.SensorSpecification;
+import com.seat.rescuesim.common.SensorType;
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.util.Debugger;
