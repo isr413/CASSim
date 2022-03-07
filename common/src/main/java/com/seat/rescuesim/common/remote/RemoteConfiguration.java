@@ -8,11 +8,11 @@ import com.seat.rescuesim.common.json.*;
 
 /** An abstract class to represent remote configurations. */
 public abstract class RemoteConfiguration extends JSONAble {
-    protected static final String COUNT = "count";
-    protected static final String IS_DYNAMIC = "is_dynamic";
-    protected static final String REMOTES = "remotes";
-    protected static final String REMOTE_TYPE = "remote_type";
-    protected static final String SPEC = "spec";
+    private static final String COUNT = "count";
+    private static final String IS_DYNAMIC = "is_dynamic";
+    private static final String REMOTES = "remotes";
+    private static final String REMOTE_TYPE = "remote_type";
+    private static final String SPEC = "spec";
 
     protected int count;
     protected boolean dynamic;
@@ -89,7 +89,7 @@ public abstract class RemoteConfiguration extends JSONAble {
     @Override
     protected void decode(JSONObject json) {
         this.type = RemoteType.values()[json.getInt(RemoteConfiguration.REMOTE_TYPE)];
-        this.spec = null;
+        this.decodeSpecification(json.getJSONObject(RemoteConfiguration.SPEC));
         this.count = json.getInt(RemoteConfiguration.COUNT);
         JSONArray jsonRemotes = json.getJSONArray(RemoteConfiguration.REMOTES);
         this.remotes = new HashSet<>();
@@ -98,6 +98,9 @@ public abstract class RemoteConfiguration extends JSONAble {
         }
         this.dynamic = json.getBoolean(RemoteConfiguration.IS_DYNAMIC);
     }
+
+    /** Child class needs to override. */
+    protected abstract void decodeSpecification(JSONObject json);
 
     public int getCount() {
         return this.count;
