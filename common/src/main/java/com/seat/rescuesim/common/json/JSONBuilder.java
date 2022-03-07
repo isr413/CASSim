@@ -23,6 +23,11 @@ public class JSONBuilder {
         }
 
         /** Appends the value to the JSONArray. */
+        public void put(boolean value) {
+            this.json.put(value);
+        }
+
+        /** Appends the value to the JSONArray. */
         public void put(double value) {
             this.json.put(value);
         }
@@ -90,6 +95,11 @@ public class JSONBuilder {
 
         public JSONObjectOptionBuilder() {
             this.json = new org.json.JSONObject();
+        }
+
+        /** Inserts the key-value pair into the JSONObject. */
+        public void put(String key, boolean value) {
+            this.json.put(key, value);
         }
 
         /** Inserts the key-value pair into the JSONObject. */

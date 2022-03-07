@@ -3,8 +3,11 @@ package com.seat.rescuesim.common.json;
 /** An interface for classes that support a JSON Array representation. */
 public interface JSONArray {
 
-    /** Returns the number of elements in the JSONArray. */
-    int length();
+    /** Returns the boolean value at index idx.
+     * @throws IndexOutOfBoundsException if the idx is out of bounds
+     * @throws JSONException if the value at idx cannot be converted to a boolean
+     */
+    boolean getBoolean(int idx) throws IndexOutOfBoundsException, JSONException;
 
     /** Returns the double value at index idx.
      * @throws IndexOutOfBoundsException if the idx is out of bounds
@@ -46,6 +49,9 @@ public interface JSONArray {
      * @throws IndexOutOfBoundsException if the idx is out of bounds
      */
     String getString(int idx) throws IndexOutOfBoundsException;
+
+    /** Returns the number of elements in the JSONArray. */
+    int length();
 
     /** Returns the String representation of the JSONArray. */
     String toString();

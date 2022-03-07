@@ -3,6 +3,12 @@ package com.seat.rescuesim.common.json;
 /** An interface for classes that support a JSON Object representation. */
 public interface JSONObject {
 
+    /** Returns the boolean value associated with the key.
+     * @throws IndexOutOfBoundsException if the Object has no such key
+     * @throws JSONException if the value associated with the key cannot be converted to a boolean
+     */
+    boolean getBoolean(String key) throws IndexOutOfBoundsException, JSONException;
+
     /** Returns the double value associated with the key.
      * @throws IndexOutOfBoundsException if the Object has no such key
      * @throws JSONException if the value associated with the key cannot be converted to a double

@@ -4,6 +4,9 @@ package com.seat.rescuesim.common.json;
 public interface JSONArrayBuilder {
 
     /** Appends the value to the JSONArray. */
+    void put(boolean value);
+
+    /** Appends the value to the JSONArray. */
     void put(double value);
 
     /** Appends the value to the JSONArray. */

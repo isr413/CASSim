@@ -120,9 +120,17 @@ public class JSONOption {
             }
         }
 
-        /** Returns the number of elements in the JSONArray. */
-        public int length() {
-            return this.json.length();
+        /** Returns the boolean value at index idx.
+         * @throws IndexOutOfBoundsException if the idx is out of bounds
+         * @throws JSONException if the value at idx cannot be converted to a boolean
+         */
+        public boolean getBoolean(int idx) throws IndexOutOfBoundsException, JSONException {
+            this.assertBounds(idx);
+            try {
+                return this.json.getBoolean(idx);
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
+            }
         }
 
         /** Returns the double value at index idx.
@@ -221,6 +229,11 @@ public class JSONOption {
             }
         }
 
+        /** Returns the number of elements in the JSONArray. */
+        public int length() {
+            return this.json.length();
+        }
+
         /** Returns the String representation of the JSONArray. */
         public String toString() {
             return this.json.toString();
@@ -245,6 +258,19 @@ public class JSONOption {
         private void assertContains(String key) throws IndexOutOfBoundsException {
             if (!this.json.has(key)) {
                 throw new IndexOutOfBoundsException(String.format("%s not found in JSONObject.", key));
+            }
+        }
+
+        /** Returns the boolean value associated with the key.
+         * @throws IndexOutOfBoundsException if the Object has no such key
+         * @throws JSONException if the value associated with the key cannot be converted to a boolean
+         */
+        public boolean getBoolean(String key) throws IndexOutOfBoundsException, JSONException {
+            this.assertContains(key);
+            try {
+                return this.json.getBoolean(key);
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
             }
         }
 

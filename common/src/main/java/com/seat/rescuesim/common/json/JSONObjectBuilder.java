@@ -4,6 +4,9 @@ package com.seat.rescuesim.common.json;
 public interface JSONObjectBuilder {
 
     /** Inserts the key-value pair into the JSONObject. */
+    void put(String key, boolean value);
+
+    /** Inserts the key-value pair into the JSONObject. */
     void put(String key, double value);
 
     /** Inserts the key-value pair into the JSONObject. */
