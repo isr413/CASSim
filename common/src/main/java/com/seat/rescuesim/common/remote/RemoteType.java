@@ -5,9 +5,10 @@ import com.seat.rescuesim.common.util.SerializableEnum;
 /** A serializable enumeration to denote types of Remotes. */
 public enum RemoteType implements SerializableEnum {
     NONE(0),
-    DRONE(1),
-    VICTIM(2),
-    SENSOR(3);
+    BASE(1),
+    DRONE(2),
+    SENSOR(3),
+    VICTIM(4);
 
     private int type;
 
