@@ -1,17 +1,17 @@
 package com.seat.rescuesim.common.drone;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.remote.RemoteConfiguration;
+import com.seat.rescuesim.common.remote.RemoteType;
 
 /** A serializable class to represent the configuration of Drone Remotes.  */
-public class DroneConfiguration extends JSONAble {
-    private static final String DRONE_SPEC = "drone_spec";
-    private static final String REMOTES = "remotes";
+public class DroneConfiguration extends RemoteConfiguration {
 
-    private DroneSpecification droneSpec;
-    private HashSet<String> remotes;
+    public static DroneConfiguration None() {
+        return new DroneConfiguration();
+    }
 
     public DroneConfiguration(JSONObject json) {
         super(json);
@@ -26,60 +26,52 @@ public class DroneConfiguration extends JSONAble {
     }
 
     public DroneConfiguration() {
-        this(new HashSet<String>(), new DroneSpecification());
+        super();
     }
 
-    public DroneConfiguration(DroneSpecification droneSpec) {
-        this(new HashSet<String>(), droneSpec);
+    public DroneConfiguration(DroneSpecification spec) {
+        super(RemoteType.DRONE, spec);
     }
 
-    public DroneConfiguration(String[] remotes, DroneSpecification droneSpec) {
-        this(new ArrayList<String>(Arrays.asList(remotes)), droneSpec);
+    public DroneConfiguration(DroneSpecification spec, String[] remotes) {
+        super(RemoteType.DRONE, spec, remotes);
     }
 
-    public DroneConfiguration(ArrayList<String> remotes, DroneSpecification droneSpec) {
-        this(new HashSet<String>(), droneSpec);
-        for (String remote : remotes) {
-            this.remotes.add(remote);
-        }
+    public DroneConfiguration(DroneSpecification spec, ArrayList<String> remotes) {
+        super(RemoteType.DRONE, spec, remotes);
     }
 
-    public DroneConfiguration(HashSet<String> remotes, DroneSpecification droneSpec) {
-        this.remotes = remotes;
-        this.droneSpec = droneSpec;
+    public DroneConfiguration(DroneSpecification spec, HashSet<String> remotes) {
+        super(RemoteType.DRONE, spec, remotes);
     }
 
-    public DroneSpecification getDroneSpecification() {
-        return this.droneSpec;
+    public DroneConfiguration(DroneSpecification spec, int count) {
+        super(RemoteType.DRONE, spec, count);
     }
 
-    public boolean hasDroneSpecification() {
-        return this.droneSpec.getDroneType() != DroneType.NONE;
+    public DroneConfiguration(DroneSpecification spec, boolean dynamic) {
+        super(RemoteType.DRONE, spec, dynamic);
+    }
+
+    public DroneConfiguration(DroneSpecification spec, String[] remotes, boolean dynamic) {
+        super(RemoteType.DRONE, spec, remotes, dynamic);
+    }
+
+    public DroneConfiguration(DroneSpecification spec, ArrayList<String> remotes, boolean dynamic) {
+        super(RemoteType.DRONE, spec, remotes, dynamic);
+    }
+
+    public DroneConfiguration(DroneSpecification spec, HashSet<String> remotes, boolean dynamic) {
+        super(RemoteType.DRONE, spec, remotes, dynamic);
+    }
+
+    public DroneSpecification getSpecification() {
+        return (DroneSpecification) this.spec;
     }
 
     @Override
-    protected void decode(JSONObject json) {
-        this.remotes = new HashSet<>();
-        JSONArray jsonRemotes = json.getJSONArray(DroneConfiguration.REMOTES);
-        for (int i = 0; i < jsonRemotes.length(); i++) {
-            this.remotes.add(jsonRemotes.getString(i));
-        }
-        this.droneSpec = new DroneSpecification(json.getJSONObject(DroneConfiguration.DRONE_SPEC));
-    }
-
-    public JSONOption toJSON() {
-        JSONObjectBuilder json = JSONBuilder.Object();
-        JSONArrayBuilder jsonRemotes = JSONBuilder.Array();
-        for (String remote : this.remotes) {
-            jsonRemotes.put(remote);
-        }
-        json.put(DroneConfiguration.REMOTES, jsonRemotes.toJSON());
-        json.put(DroneConfiguration.DRONE_SPEC, this.droneSpec.toJSON());
-        return json.toJSON();
-    }
-
-    public boolean equals(DroneConfiguration conf) {
-        return this.remotes.equals(conf.remotes) && this.droneSpec.equals(conf.droneSpec);
+    protected void decodeSpecification(JSONObject json) {
+        this.spec = new DroneSpecification(json);
     }
 
 }

@@ -7,10 +7,11 @@ import com.seat.rescuesim.common.SensorSpecification;
 import com.seat.rescuesim.common.SensorType;
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.Vector;
+import com.seat.rescuesim.common.remote.RemoteSpecification;
 import com.seat.rescuesim.common.util.Debugger;
 
 /** A serializable class to represent the specification of a Drone.  */
-public class DroneSpecification extends JSONAble {
+public class DroneSpecification extends JSONAble implements RemoteSpecification {
     private static final String DRONE_BATTERY_USAGE = "battery_usage";
     private static final String DRONE_LOCATION = "location";
     private static final String DRONE_MAX_ACCELERATION = "max_acceleration";
@@ -18,7 +19,7 @@ public class DroneSpecification extends JSONAble {
     private static final String DRONE_MAX_JERK = "max_jerk";
     private static final String DRONE_MAX_VELOCITY = "max_velocity";
     private static final String DRONE_SENSORS = "sensors";
-    private static final String DRONE_TYPE = "type";
+    private static final String DRONE_TYPE = "drone_type";
 
     public static DroneSpecification None() {
         return new DroneSpecification();
@@ -136,7 +137,7 @@ public class DroneSpecification extends JSONAble {
     }
 
     public String getLabel() {
-        return this.type.getLabel();
+        return String.format("d%s", this.type.getLabel());
     }
 
     public double getMaxAcceleration() {
