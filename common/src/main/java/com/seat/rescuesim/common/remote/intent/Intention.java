@@ -4,7 +4,7 @@ import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.util.Debugger;
 
 public abstract class Intention extends JSONAble {
-    protected static final String INTENTION_TYPE = "intent_type";
+    private static final String INTENTION_TYPE = "intent_type";
 
     public static IntentionType decodeType(JSONObject json) {
         return IntentionType.values()[json.getInt(Intention.INTENTION_TYPE)];
@@ -64,7 +64,7 @@ public abstract class Intention extends JSONAble {
     }
 
     public boolean equals(Intention intent) {
-        return this.type == intent.type;
+        return this.type.equals(intent.type);
     }
 
 }
