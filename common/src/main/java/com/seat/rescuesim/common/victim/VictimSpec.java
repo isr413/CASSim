@@ -19,7 +19,7 @@ public class VictimSpec extends JSONAble implements RemoteSpecification {
     private static final String VICTIM_TYPE = "victim_type";
 
     public static VictimSpec None() {
-        return new VictimSpec();
+        return new VictimSpec(VictimType.NONE);
     }
 
     private double maxBatteryPower;
@@ -41,77 +41,177 @@ public class VictimSpec extends JSONAble implements RemoteSpecification {
         super(encoding);
     }
 
+    private VictimSpec(VictimType type) {
+        this(type, new Double[]{0.0, 0.0}, 0, 1, 0, new ArrayList<SensorConf>());
+    }
+
     public VictimSpec() {
-        this(VictimType.NONE, 0, 0, new Double[]{0.0, 0.0}, 0, new ArrayList<SensorConf>());
+        this(VictimType.DEFAULT, new Double[]{0.0, 0.0}, 0, 1, 0, new ArrayList<SensorConf>());
+    }
+
+    public VictimSpec(VictimType type, double moveSpeedMean, double moveSpeedStdDev, double maxVelocity) {
+        this(type, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity, 1, 0, new ArrayList<SensorConf>());
+    }
+
+    public VictimSpec(double moveSpeedMean, double moveSpeedStdDev, double maxVelocity) {
+        this(VictimType.DEFAULT, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity, 1, 0,
+            new ArrayList<SensorConf>());
+    }
+
+    public VictimSpec(VictimType type, double moveSpeedMean, double moveSpeedStdDev, double maxVelocity,
+            SensorConf[] sensors) {
+        this(type, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity, 1, 0, sensors);
+    }
+
+    public VictimSpec(double moveSpeedMean, double moveSpeedStdDev, double maxVelocity, SensorConf[] sensors) {
+        this(VictimType.DEFAULT, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity, 1, 0, sensors);
+    }
+
+    public VictimSpec(VictimType type, double moveSpeedMean, double moveSpeedStdDev, double maxVelocity,
+            ArrayList<SensorConf> sensors) {
+        this(type, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity, 1, 0, sensors);
+    }
+
+    public VictimSpec(double moveSpeedMean, double moveSpeedStdDev, double maxVelocity, ArrayList<SensorConf> sensors) {
+        this(VictimType.DEFAULT, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity, 1, 0, sensors);
+    }
+
+    public VictimSpec(VictimType type, Double[] moveSpeedDistParams, double maxVelocity) {
+        this(type, moveSpeedDistParams, maxVelocity, 1, 0, new ArrayList<SensorConf>());
+    }
+
+    public VictimSpec(Double[] moveSpeedDistParams, double maxVelocity) {
+        this(VictimType.DEFAULT, moveSpeedDistParams, maxVelocity, 1, 0, new ArrayList<SensorConf>());
+    }
+
+    public VictimSpec(VictimType type, Double[] moveSpeedDistParams, double maxVelocity, SensorConf[] sensors) {
+        this(type, moveSpeedDistParams, maxVelocity, 1, 0, sensors);
+    }
+
+    public VictimSpec(Double[] moveSpeedDistParams, double maxVelocity, SensorConf[] sensors) {
+        this(VictimType.DEFAULT, moveSpeedDistParams, maxVelocity, 1, 0, sensors);
+    }
+
+    public VictimSpec(VictimType type, Double[] moveSpeedDistParams, double maxVelocity,
+            ArrayList<SensorConf> sensors) {
+        this(type, moveSpeedDistParams, maxVelocity, 1, 0, sensors);
+    }
+
+    public VictimSpec(Double[] moveSpeedDistParams, double maxVelocity, ArrayList<SensorConf> sensors) {
+        this(VictimType.DEFAULT, moveSpeedDistParams, maxVelocity, 1, 0, sensors);
     }
 
     public VictimSpec(VictimType type, double maxBatteryPower, double staticBatteryUsage) {
-        this(type, maxBatteryPower, staticBatteryUsage, new Double[]{0.0, 0.0}, 0,
+        this(type, new Double[]{0.0, 0.0}, 0, maxBatteryPower, staticBatteryUsage, new ArrayList<SensorConf>());
+    }
+
+    public VictimSpec(double maxBatteryPower, double staticBatteryUsage) {
+        this(VictimType.DEFAULT, new Double[]{0.0, 0.0}, 0, maxBatteryPower, staticBatteryUsage,
             new ArrayList<SensorConf>());
     }
 
-    public VictimSpec(VictimType type, double maxBatteryPower, double staticBatteryUsage,
-            SensorConf[] sensors) {
-        this(type, maxBatteryPower, staticBatteryUsage, new Double[]{0.0, 0.0}, 0, sensors);
+    public VictimSpec(VictimType type, double maxBatteryPower, double staticBatteryUsage, SensorConf[] sensors) {
+        this(type, new Double[]{0.0, 0.0}, 0, maxBatteryPower, staticBatteryUsage, sensors);
+    }
+
+    public VictimSpec(double maxBatteryPower, double staticBatteryUsage, SensorConf[] sensors) {
+        this(VictimType.DEFAULT, new Double[]{0.0, 0.0}, 0, maxBatteryPower, staticBatteryUsage, sensors);
     }
 
     public VictimSpec(VictimType type, double maxBatteryPower, double staticBatteryUsage,
             ArrayList<SensorConf> sensors) {
-        this(type, maxBatteryPower, staticBatteryUsage, new Double[]{0.0, 0.0}, 0, sensors);
+        this(type, new Double[]{0.0, 0.0}, 0, maxBatteryPower, staticBatteryUsage, sensors);
     }
 
-    public VictimSpec(VictimType type, double maxBatteryPower, double staticBatteryUsage,
-            double moveSpeedMean, double moveSpeedStdDev, double maxVelocity) {
-        this(type, maxBatteryPower, staticBatteryUsage, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity,
+    public VictimSpec(double maxBatteryPower, double staticBatteryUsage, ArrayList<SensorConf> sensors) {
+        this(VictimType.DEFAULT, new Double[]{0.0, 0.0}, 0, maxBatteryPower, staticBatteryUsage, sensors);
+    }
+
+    public VictimSpec(VictimType type, double moveSpeedMean, double moveSpeedStdDev, double maxVelocity,
+            double maxBatteryPower, double staticBatteryUsage) {
+        this(type, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity, maxBatteryPower, staticBatteryUsage,
             new ArrayList<SensorConf>());
     }
 
-    public VictimSpec(VictimType type, double maxBatteryPower, double staticBatteryUsage,
-            Double[] moveSpeedDistParams, double maxVelocity) {
-        this(type, maxBatteryPower, staticBatteryUsage, moveSpeedDistParams, maxVelocity,
-        new ArrayList<SensorConf>());
+    public VictimSpec(double moveSpeedMean, double moveSpeedStdDev, double maxVelocity, double maxBatteryPower,
+            double staticBatteryUsage) {
+        this(VictimType.DEFAULT, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity, maxBatteryPower,
+            staticBatteryUsage, new ArrayList<SensorConf>());
     }
 
-    public VictimSpec(VictimType type, double maxBatteryPower, double staticBatteryUsage,
-            double moveSpeedMean, double moveSpeedStdDev, double maxVelocity, SensorConf[] sensors) {
-        this(type, maxBatteryPower, staticBatteryUsage, new Double[]{moveSpeedMean, moveSpeedStdDev},
-                maxVelocity, new ArrayList<SensorConf>(Arrays.asList(sensors)));
+    public VictimSpec(VictimType type, Double[] moveSpeedDistParams, double maxVelocity, double maxBatteryPower,
+            double staticBatteryUsage) {
+        this(type, moveSpeedDistParams, maxVelocity, maxBatteryPower, staticBatteryUsage, new ArrayList<SensorConf>());
     }
 
-    public VictimSpec(VictimType type, double maxBatteryPower, double staticBatteryUsage,
-            Double[] moveSpeedDistParams, double maxVelocity, SensorConf[] sensors) {
-        this(type, maxBatteryPower, staticBatteryUsage, moveSpeedDistParams, maxVelocity,
+    public VictimSpec(Double[] moveSpeedDistParams, double maxVelocity, double maxBatteryPower,
+            double staticBatteryUsage) {
+        this(VictimType.DEFAULT, moveSpeedDistParams, maxVelocity, maxBatteryPower, staticBatteryUsage,
+            new ArrayList<SensorConf>());
+    }
+
+    public VictimSpec(VictimType type, double moveSpeedMean, double moveSpeedStdDev, double maxVelocity,
+            double maxBatteryPower, double staticBatteryUsage, SensorConf[] sensors) {
+        this(type, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity, maxBatteryPower, staticBatteryUsage,
             new ArrayList<SensorConf>(Arrays.asList(sensors)));
     }
 
-    public VictimSpec(VictimType type, double maxBatteryPower, double staticBatteryUsage,
-            double moveSpeedMean, double moveSpeedStdDev, double maxVelocity,
-            ArrayList<SensorConf> sensors) {
-        this(type, maxBatteryPower, staticBatteryUsage, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity,
+    public VictimSpec(double moveSpeedMean, double moveSpeedStdDev, double maxVelocity, double maxBatteryPower,
+            double staticBatteryUsage, SensorConf[] sensors) {
+        this(VictimType.DEFAULT, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity, maxBatteryPower,
+            staticBatteryUsage, new ArrayList<SensorConf>(Arrays.asList(sensors)));
+    }
+
+    public VictimSpec(VictimType type, Double[] moveSpeedDistParams, double maxVelocity, double maxBatteryPower,
+            double staticBatteryUsage,SensorConf[] sensors) {
+        this(type, moveSpeedDistParams, maxVelocity, maxBatteryPower, staticBatteryUsage,
+            new ArrayList<SensorConf>(Arrays.asList(sensors)));
+    }
+
+    public VictimSpec(Double[] moveSpeedDistParams, double maxVelocity, double maxBatteryPower,
+            double staticBatteryUsage, SensorConf[] sensors) {
+        this(VictimType.DEFAULT, moveSpeedDistParams, maxVelocity, maxBatteryPower, staticBatteryUsage,
+            new ArrayList<SensorConf>(Arrays.asList(sensors)));
+    }
+
+    public VictimSpec(VictimType type, double moveSpeedMean, double moveSpeedStdDev, double maxVelocity,
+            double maxBatteryPower, double staticBatteryUsage, ArrayList<SensorConf> sensors) {
+        this(type, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity, maxBatteryPower, staticBatteryUsage,
             sensors);
     }
 
-    public VictimSpec(VictimType type, double maxBatteryPower, double staticBatteryUsage,
-            Double[] moveSpeedDistParams, double maxVelocity, ArrayList<SensorConf> sensors) {
+    public VictimSpec(double moveSpeedMean, double moveSpeedStdDev, double maxVelocity, double maxBatteryPower,
+            double staticBatteryUsage, ArrayList<SensorConf> sensors) {
+        this(VictimType.DEFAULT, new Double[]{moveSpeedMean, moveSpeedStdDev}, maxVelocity, maxBatteryPower,
+            staticBatteryUsage, sensors);
+    }
+
+    public VictimSpec(Double[] moveSpeedDistParams, double maxVelocity, double maxBatteryPower,
+            double staticBatteryUsage, ArrayList<SensorConf> sensors) {
+        this(VictimType.DEFAULT, moveSpeedDistParams, maxVelocity, maxBatteryPower, staticBatteryUsage, sensors);
+    }
+
+    public VictimSpec(VictimType type, Double[] moveSpeedDistParams, double maxVelocity,
+            double maxBatteryPower, double staticBatteryUsage, ArrayList<SensorConf> sensors) {
         this.type = type;
-        this.maxBatteryPower = maxBatteryPower;
-        this.staticBatteryUsage = staticBatteryUsage;
         this.moveSpeedDistParams = moveSpeedDistParams;
         this.maxVelocity = maxVelocity;
+        this.maxBatteryPower = maxBatteryPower;
+        this.staticBatteryUsage = staticBatteryUsage;
         this.sensors = sensors;
     }
 
     @Override
     public void decode(JSONObject json) {
         this.type = VictimType.values()[json.getInt(VictimSpec.VICTIM_TYPE)];
-        this.maxBatteryPower = json.getDouble(VictimSpec.VICTIM_MAX_BATTERY);
-        this.staticBatteryUsage = json.getDouble(VictimSpec.VICTIM_STATIC_BATTERY_USAGE);
         JSONArray jsonParams = json.getJSONArray(VictimSpec.VICTIM_MOVE_SPEED_PARAMS);
         this.moveSpeedDistParams = new Double[jsonParams.length()];
         for (int i = 0; i < this.moveSpeedDistParams.length; i++) {
             this.moveSpeedDistParams[i] = jsonParams.getDouble(i);
         }
         this.maxVelocity = json.getDouble(VictimSpec.VICTIM_MAX_VELOCITY);
+        this.maxBatteryPower = json.getDouble(VictimSpec.VICTIM_MAX_BATTERY);
+        this.staticBatteryUsage = json.getDouble(VictimSpec.VICTIM_STATIC_BATTERY_USAGE);
         this.sensors = new ArrayList<>();
         JSONArray jsonSensors = json.getJSONArray(VictimSpec.VICTIM_SENSORS);
         for (int i = 0; i < jsonSensors.length(); i++) {
@@ -218,14 +318,14 @@ public class VictimSpec extends JSONAble implements RemoteSpecification {
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(VictimSpec.VICTIM_TYPE, this.type.getType());
-        json.put(VictimSpec.VICTIM_MAX_BATTERY, this.maxBatteryPower);
-        json.put(VictimSpec.VICTIM_STATIC_BATTERY_USAGE, this.staticBatteryUsage);
         JSONArrayBuilder jsonParams = JSONBuilder.Array();
         for (int i = 0; i < this.moveSpeedDistParams.length; i++) {
             jsonParams.put(this.moveSpeedDistParams[i]);
         }
         json.put(VictimSpec.VICTIM_MOVE_SPEED_PARAMS, jsonParams.toJSON());
         json.put(VictimSpec.VICTIM_MAX_VELOCITY, this.maxVelocity);
+        json.put(VictimSpec.VICTIM_MAX_BATTERY, this.maxBatteryPower);
+        json.put(VictimSpec.VICTIM_STATIC_BATTERY_USAGE, this.staticBatteryUsage);
         JSONArrayBuilder jsonSensors = JSONBuilder.Array();
         for (SensorConf spec : this.sensors) {
             jsonSensors.put(spec.toJSON());
