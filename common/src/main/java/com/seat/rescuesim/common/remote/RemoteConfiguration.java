@@ -100,7 +100,7 @@ public abstract class RemoteConfiguration extends JSONAble {
     }
 
     /** Child class needs to override. */
-    protected abstract void decodeSpecification(JSONObject json);
+    protected abstract void decodeSpecification(JSONObject jsonSpec);
 
     public int getCount() {
         return this.count;
@@ -110,12 +110,12 @@ public abstract class RemoteConfiguration extends JSONAble {
         return this.remotes;
     }
 
-    public RemoteType getRemoteType() {
-        return this.type;
-    }
-
     public RemoteSpecification getSpecification() {
         return this.spec;
+    }
+
+    public RemoteType getType() {
+        return this.type;
     }
 
     public boolean hasRemote(String remote) {

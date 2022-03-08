@@ -3,20 +3,18 @@ package com.seat.rescuesim.common.sensor;
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.remote.RemoteSpecification;
 
-/** A serializable class for sensors specifications. */
+/** A serializable Sensor Prototype. */
 public class SensorSpec extends JSONAble implements RemoteSpecification {
     private static final String SENSOR_ACCURACY = "accuracy";
     private static final String SENSOR_BATTERY_USAGE = "battery_usage";
     private static final String SENSOR_DELAY = "delay";
     private static final String SENSOR_RANGE = "range";
-    private static final String SPEC_ID = "spec_id";
-    private static final String SENSOR_TYPE = "spec_type";
+    private static final String SENSOR_TYPE = "sensor_type";
 
     private double accuracy;
     private double batteryUsage;
     private double delay;
     private double range;
-    private String specID;
     private SensorType type;
 
     public SensorSpec(JSONObject json) {
@@ -31,43 +29,40 @@ public class SensorSpec extends JSONAble implements RemoteSpecification {
         super(encoding);
     }
 
-    public SensorSpec(SensorType type, double range, double batteryUsage) {
-        this(type.toString(), type, range, batteryUsage, 1, 0);
+    public SensorSpec() {
+        this(SensorType.None, 0, 0, 0, 0);
     }
 
-    public SensorSpec(String specID, SensorType type, double range, double batteryUsage) {
-        this(specID, type, range, batteryUsage, 1, 0);
+    public SensorSpec(SensorType type) {
+        this(type, Double.POSITIVE_INFINITY, 1, 0, 0);
     }
 
-    public SensorSpec(SensorType type, double range, double batteryUsage, double accuracy) {
-        this(type.toString(), type, range, batteryUsage, accuracy, 0);
+    public SensorSpec(SensorType type, double range) {
+        this(type, range, 1, 0, 0);
     }
 
-    public SensorSpec(String specID, SensorType type, double range, double batteryUsage, double accuracy) {
-        this(specID, type, range, batteryUsage, accuracy, 0);
+    public SensorSpec(SensorType type, double range, double accuracy) {
+        this(type, range, accuracy, 0, 0);
     }
 
-    public SensorSpec(SensorType type, double range, double batteryUsage, double accuracy, double delay) {
-        this(type.toString(), type, range, batteryUsage, accuracy, delay);
+    public SensorSpec(SensorType type, double range, double accuracy, double batteryUsage) {
+        this(type, range, accuracy, batteryUsage, 0);
     }
 
-    public SensorSpec(String specID, SensorType type, double range, double batteryUsage, double accuracy,
-            double delay) {
-        this.specID = specID;
+    public SensorSpec(SensorType type, double range, double accuracy, double batteryUsage, double delay) {
         this.type = type;
         this.range = range;
-        this.batteryUsage = batteryUsage;
         this.accuracy = accuracy;
+        this.batteryUsage = batteryUsage;
         this.delay = delay;
     }
 
     @Override
     protected void decode(JSONObject json) {
-        this.specID = json.getString(SensorSpec.SPEC_ID);
         this.type = SensorType.values()[json.getInt(SensorSpec.SENSOR_TYPE)];
+        this.accuracy = json.getDouble(SensorSpec.SENSOR_ACCURACY);
         this.range = json.getDouble(SensorSpec.SENSOR_RANGE);
         this.batteryUsage = json.getDouble(SensorSpec.SENSOR_BATTERY_USAGE);
-        this.accuracy = json.getDouble(SensorSpec.SENSOR_ACCURACY);
         this.delay = json.getDouble(SensorSpec.SENSOR_DELAY);
     }
 
@@ -76,7 +71,7 @@ public class SensorSpec extends JSONAble implements RemoteSpecification {
     }
 
     public String getLabel() {
-        return String.format("<%s>", this.specID);
+        return String.format("s%s", this.type.getLabel());
     }
 
     public double getSensorAccuracy() {
@@ -91,27 +86,23 @@ public class SensorSpec extends JSONAble implements RemoteSpecification {
         return this.range;
     }
 
-    public SensorType getSensorType() {
+    public SensorType getType() {
         return this.type;
-    }
-
-    public String getSpecID() {
-        return this.specID;
     }
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(SensorSpec.SPEC_ID, this.specID);
         json.put(SensorSpec.SENSOR_TYPE, this.type.getType());
         json.put(SensorSpec.SENSOR_RANGE, this.range);
-        json.put(SensorSpec.SENSOR_BATTERY_USAGE, this.batteryUsage);
         json.put(SensorSpec.SENSOR_ACCURACY, this.accuracy);
+        json.put(SensorSpec.SENSOR_BATTERY_USAGE, this.batteryUsage);
         json.put(SensorSpec.SENSOR_DELAY, this.delay);
         return json.toJSON();
     }
 
     public boolean equals(SensorSpec spec) {
-        return this.specID.equals(spec.specID);
+        return this.type.equals(spec.type) && this.range == spec.range && this.accuracy == spec.accuracy &&
+            this.batteryUsage == spec.batteryUsage && this.delay == spec.delay;
     }
 
 }
