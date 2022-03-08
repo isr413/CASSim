@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common.snap;
+package com.seat.rescuesim.common;
 
 import java.util.ArrayList;
 import java.util.HashMap;
