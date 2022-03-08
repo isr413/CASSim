@@ -1,11 +1,17 @@
-package com.seat.rescuesim.common.remote;
+package com.seat.rescuesim.common.snap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.seat.rescuesim.common.base.BaseState;
+import com.seat.rescuesim.common.drone.DroneState;
 import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.remote.RemoteState;
+import com.seat.rescuesim.common.remote.RemoteType;
+import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.util.Debugger;
+import com.seat.rescuesim.common.victim.VictimState;
 
 /** A serializable class to represent a single snapshot of the current sim state. */
 public class Snapshot extends JSONAble {
@@ -73,11 +79,32 @@ public class Snapshot extends JSONAble {
         for (int i = 0; i < jsonActiveRemotes.length(); i++) {
             this.activeRemotes.add(jsonActiveRemotes.getString(i));
         }
-        JSONArray jsonState = json.getJSONArray(Snapshot.STATE);
         this.state = new HashMap<>();
+        JSONArray jsonState = json.getJSONArray(Snapshot.STATE);
         for (int i = 0; i < jsonState.length(); i++) {
-            RemoteState state = new RemoteState(jsonState.getJSONObject(i));
-            this.state.put(state.getRemoteLabel(), state);
+            RemoteType type = RemoteState.decodeType(jsonState.getJSONObject(i));
+            RemoteState state = null;
+            switch (type) {
+                case BASE:
+                    state = new BaseState(jsonState.getJSONObject(i));
+                    break;
+                case DRONE:
+                    state = new DroneState(jsonState.getJSONObject(i));
+                    break;
+                case NONE:
+                    break;
+                case SENSOR:
+                    state = new SensorState(jsonState.getJSONObject(i));
+                    break;
+                case VICTIM:
+                    state = new VictimState(jsonState.getJSONObject(i));
+                    break;
+                default:
+                    break;
+            }
+            if (state != null) {
+                this.state.put(state.getRemoteID(), state);
+            }
         }
     }
 
