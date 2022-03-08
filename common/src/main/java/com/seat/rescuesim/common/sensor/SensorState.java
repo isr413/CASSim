@@ -33,6 +33,17 @@ public class SensorState extends RemoteState {
         this.format = format;
     }
 
+    @Override
+    protected void decode(JSONObject json) {
+        super.decode(json);
+        if (json.hasKey(SensorState.SENSOR_DATA)) {
+            this.data = json.getString(SensorState.SENSOR_DATA);
+        }
+        if (json.hasKey(SensorState.DATA_FORMAT)) {
+            this.format = json.getString(SensorState.DATA_FORMAT);
+        }
+    }
+
     public String getData() {
         return this.data;
     }
@@ -47,17 +58,6 @@ public class SensorState extends RemoteState {
 
     public boolean hasDataFormat() {
         return !this.format.isEmpty();
-    }
-
-    @Override
-    protected void decode(JSONObject json) {
-        super.decode(json);
-        if (json.hasKey(SensorState.SENSOR_DATA)) {
-            this.data = json.getString(SensorState.SENSOR_DATA);
-        }
-        if (json.hasKey(SensorState.DATA_FORMAT)) {
-            this.format = json.getString(SensorState.DATA_FORMAT);
-        }
     }
 
     @Override
