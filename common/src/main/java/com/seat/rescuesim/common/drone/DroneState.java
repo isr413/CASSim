@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common.victim;
+package com.seat.rescuesim.common.drone;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.util.Debugger;
 
-public class VictimState extends RemoteState {
+public class DroneState extends RemoteState {
     private static final String ACCELERATION = "acceleration";
     private static final String BATTERY = "battery";
     private static final String LOCATION = "location";
@@ -24,40 +24,40 @@ public class VictimState extends RemoteState {
     private HashMap<String, SensorState> sensors;
     private Vector velocity;
 
-    public VictimState(JSONObject json) {
+    public DroneState(JSONObject json) {
         super(json);
     }
 
-    public VictimState(JSONOption option) {
+    public DroneState(JSONOption option) {
         super(option);
     }
 
-    public VictimState(String encoding) {
+    public DroneState(String encoding) {
         super(encoding);
     }
 
-    public VictimState(String remote, Vector location) {
+    public DroneState(String remote, Vector location) {
         this(remote, location, new Vector(), new Vector(), 1, new HashMap<String, SensorState>());
     }
 
-    public VictimState(String remote, Vector location, SensorState[] sensors) {
+    public DroneState(String remote, Vector location, SensorState[] sensors) {
         this(remote, location, new Vector(), new Vector(), 1, new ArrayList<SensorState>(Arrays.asList(sensors)));
     }
 
-    public VictimState(String remote, Vector location, ArrayList<SensorState> sensors) {
+    public DroneState(String remote, Vector location, ArrayList<SensorState> sensors) {
         this(remote, location, new Vector(), new Vector(), 1, sensors);
     }
 
-    public VictimState(String remote, Vector location, Vector velocity, Vector acceleration) {
+    public DroneState(String remote, Vector location, Vector velocity, Vector acceleration) {
         this(remote, location, location, acceleration, 1, new HashMap<String, SensorState>());
     }
 
-    public VictimState(String remote, Vector location, Vector velocity, Vector acceleration, double battery,
+    public DroneState(String remote, Vector location, Vector velocity, Vector acceleration, double battery,
             SensorState[] sensors) {
         this(remote, location, velocity, acceleration, battery, new ArrayList<SensorState>(Arrays.asList(sensors)));
     }
 
-    public VictimState(String remote, Vector location, Vector velocity, Vector acceleration, double battery,
+    public DroneState(String remote, Vector location, Vector velocity, Vector acceleration, double battery,
             ArrayList<SensorState> sensors) {
         this(remote, location, velocity, acceleration, battery, new HashMap<String, SensorState>());
         for (SensorState state : sensors) {
@@ -65,9 +65,9 @@ public class VictimState extends RemoteState {
         }
     }
 
-    public VictimState(String remote, Vector location, Vector velocity, Vector acceleration, double battery,
+    public DroneState(String remote, Vector location, Vector velocity, Vector acceleration, double battery,
             HashMap<String, SensorState> sensors) {
-        super(RemoteType.VICTIM, remote);
+        super(RemoteType.DRONE, remote);
         this.location = location;
         this.velocity = velocity;
         this.acceleration = acceleration;
@@ -78,12 +78,12 @@ public class VictimState extends RemoteState {
     @Override
     protected void decode(JSONObject json) {
         super.decode(json);
-        this.location = new Vector(json.getJSONArray(VictimState.LOCATION));
-        this.velocity = new Vector(json.getJSONArray(VictimState.VELOCITY));
-        this.acceleration = new Vector(json.getJSONArray(VictimState.ACCELERATION));
-        this.battery = json.getDouble(VictimState.BATTERY);
+        this.location = new Vector(json.getJSONArray(DroneState.LOCATION));
+        this.velocity = new Vector(json.getJSONArray(DroneState.VELOCITY));
+        this.acceleration = new Vector(json.getJSONArray(DroneState.ACCELERATION));
+        this.battery = json.getDouble(DroneState.BATTERY);
         this.sensors = new HashMap<>();
-        JSONArray jsonState = json.getJSONArray(VictimState.SENSORS);
+        JSONArray jsonState = json.getJSONArray(DroneState.SENSORS);
         for (int i = 0; i < jsonState.length(); i++) {
             SensorState state = new SensorState(jsonState.getJSONObject(i));
             this.sensors.put(state.getRemoteID(), state);
@@ -104,7 +104,7 @@ public class VictimState extends RemoteState {
 
     public SensorState getSensor(String sensor) {
         if (!this.hasSensor(sensor)) {
-            Debugger.logger.err(String.format("No sensor %s found on victim %s", sensor, this.remote));
+            Debugger.logger.err(String.format("No sensor %s found on drone %s", sensor, this.remote));
             return null;
         }
         return this.sensors.get(sensor);
@@ -149,19 +149,19 @@ public class VictimState extends RemoteState {
     @Override
     public JSONOption toJSON() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(VictimState.LOCATION, this.location.toJSON());
-        json.put(VictimState.VELOCITY, this.velocity.toJSON());
-        json.put(VictimState.ACCELERATION, this.acceleration.toJSON());
-        json.put(VictimState.BATTERY, this.battery);
+        json.put(DroneState.LOCATION, this.location.toJSON());
+        json.put(DroneState.VELOCITY, this.velocity.toJSON());
+        json.put(DroneState.ACCELERATION, this.acceleration.toJSON());
+        json.put(DroneState.BATTERY, this.battery);
         JSONArrayBuilder jsonState = JSONBuilder.Array();
         for (SensorState state : this.sensors.values()) {
             jsonState.put(state.toJSON());
         }
-        json.put(VictimState.SENSORS, jsonState.toJSON());
+        json.put(DroneState.SENSORS, jsonState.toJSON());
         return json.toJSON();
     }
 
-    public boolean equals(VictimState state) {
+    public boolean equals(DroneState state) {
         return this.location.equals(state.location) && this.velocity.equals(state.velocity) &&
             this.acceleration.equals(state.acceleration) && this.battery == state.battery &&
             this.sensors.equals(state.sensors);
