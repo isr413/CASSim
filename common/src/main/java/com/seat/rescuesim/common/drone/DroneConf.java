@@ -6,7 +6,7 @@ import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.remote.RemoteConfiguration;
 import com.seat.rescuesim.common.remote.RemoteType;
 
-/** A serializable class to represent the configuration of Drone Remotes.  */
+/** A serializable class to represent the configuration of Drone Remotes. */
 public class DroneConf extends RemoteConfiguration {
 
     public static DroneConf None() {

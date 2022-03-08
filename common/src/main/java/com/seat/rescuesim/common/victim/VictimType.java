@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common;
+package com.seat.rescuesim.common.victim;
 
 import com.seat.rescuesim.common.util.SerializableEnum;
 

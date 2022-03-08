@@ -10,7 +10,7 @@ import com.seat.rescuesim.common.sensor.SensorConf;
 import com.seat.rescuesim.common.sensor.SensorType;
 import com.seat.rescuesim.common.util.Debugger;
 
-/** A serializable class to represent the specification of a Drone.  */
+/** A serializable class to represent the specification of a Drone. */
 public class DroneSpec extends JSONAble implements RemoteSpecification {
     private static final String DRONE_BATTERY_USAGE = "battery_usage";
     private static final String DRONE_LOCATION = "location";
@@ -167,6 +167,10 @@ public class DroneSpec extends JSONAble implements RemoteSpecification {
             if (conf.getSpecification().getType().equals(type)) {
                 confs.add(conf);
             }
+        }
+        if (confs.isEmpty()) {
+            Debugger.logger.err(String.format("No sensor with type %s found on drone spec %s",
+                type.getLabel(), this.type.getLabel()));
         }
         return confs;
     }
