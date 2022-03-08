@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import com.seat.rescuesim.common.base.BaseConf;
@@ -16,6 +17,7 @@ public class Scenario extends JSONAble {
     private static final String DRONE_CONF = "drone_conf";
     private static final String MAP = "map";
     private static final String MISSION_LENGTH = "mission_length";
+    private static final String NUM_BASES = "num_bases";
     private static final String NUM_DRONES = "num_drones";
     private static final String NUM_VICTIMS = "num_victims";
     private static final String SCENARIO_ID = "scenario_id";
@@ -23,17 +25,18 @@ public class Scenario extends JSONAble {
     private static final String STEP_SIZE = "step_size";
     private static final String VICTIM_CONF = "victim_conf";
 
-    private BaseConf baseConf;
+    private ArrayList<BaseConf> baseConf;
     private double disasterScale;
-    private DroneConf droneConf;
+    private ArrayList<DroneConf> droneConf;
     private Map map;
     private int missionLength;
+    private int numBases;
     private int numDrones;
     private int numVictims;
     private String scenarioID;
     private long seed;
     private double stepSize;
-    private VictimConf victimConf;
+    private ArrayList<VictimConf> victimConf;
 
     public Scenario(JSONObject json) {
         super(json);
@@ -49,110 +52,122 @@ public class Scenario extends JSONAble {
 
     //-- Constructors for scenarios with no victims and no drones --//
     public Scenario(Map map, int missionLength, double stepSize) {
-        this(Scenario.DEFAULT_ID, map, 0, missionLength, stepSize, 0, VictimConf.None(),
-            BaseConf.None(), 0, DroneConf.None());
+        this(Scenario.DEFAULT_ID, map, 0, missionLength, stepSize, new ArrayList<VictimConf>(),
+            new ArrayList<BaseConf>(), new ArrayList<DroneConf>());
     }
 
     public Scenario(String scenarioID, Map map, int missionLength, double stepSize) {
-        this(scenarioID, map, 0, missionLength, stepSize, 0, VictimConf.None(),
-            BaseConf.None(), 0, DroneConf.None());
+        this(scenarioID, map, 0, missionLength, stepSize, new ArrayList<VictimConf>(),
+            new ArrayList<BaseConf>(), new ArrayList<DroneConf>());
     }
 
     public Scenario(long seed, Map map, int missionLength, double stepSize) {
-        this(Scenario.DEFAULT_ID, seed, map, 0, missionLength, stepSize, 0, VictimConf.None(),
-            BaseConf.None(), 0, DroneConf.None());
+        this(Scenario.DEFAULT_ID, seed, map, 0, missionLength, stepSize, new ArrayList<VictimConf>(),
+            new ArrayList<BaseConf>(), new ArrayList<DroneConf>());
     }
 
     public Scenario(String scenarioID, long seed, Map map, int missionLength, double stepSize) {
-        this(scenarioID, seed, map, 0, missionLength, stepSize, 0, VictimConf.None(),
-            BaseConf.None(), 0, DroneConf.None());
+        this(scenarioID, seed, map, 0, missionLength, stepSize, new ArrayList<VictimConf>(),
+            new ArrayList<BaseConf>(), new ArrayList<DroneConf>());
     }
 
     //-- Constructors for scenarios with victims and no drones --//
-    public Scenario(Map map, int missionLength, double stepSize, int numVictims, VictimConf victimConf) {
-        this(Scenario.DEFAULT_ID, map, 0, missionLength, stepSize, numVictims, victimConf,
-            BaseConf.None(), 0, DroneConf.None());
+    public Scenario(Map map, int missionLength, double stepSize, ArrayList<VictimConf> victimConf) {
+        this(Scenario.DEFAULT_ID, map, 0, missionLength, stepSize, victimConf,
+            new ArrayList<BaseConf>(), new ArrayList<DroneConf>());
     }
 
-    public Scenario(String scenarioID, Map map, int missionLength, double stepSize, int numVictims,
-            VictimConf victimConf) {
-        this(scenarioID, map, 0, missionLength, stepSize, numVictims, victimConf,
-            BaseConf.None(), 0, DroneConf.None());
+    public Scenario(String scenarioID, Map map, int missionLength, double stepSize, ArrayList<VictimConf> victimConf) {
+        this(scenarioID, map, 0, missionLength, stepSize, victimConf,
+            new ArrayList<BaseConf>(), new ArrayList<DroneConf>());
     }
 
-    public Scenario(long seed, Map map, int missionLength, double stepSize, int numVictims,
-            VictimConf victimConf) {
-        this(Scenario.DEFAULT_ID, seed, map, 0, missionLength, stepSize, numVictims, victimConf,
-            BaseConf.None(), 0, DroneConf.None());
+    public Scenario(long seed, Map map, int missionLength, double stepSize, ArrayList<VictimConf> victimConf) {
+        this(Scenario.DEFAULT_ID, seed, map, 0, missionLength, stepSize, victimConf,
+            new ArrayList<BaseConf>(), new ArrayList<DroneConf>());
     }
 
-    public Scenario(String scenarioID, long seed, Map map, int missionLength, double stepSize, int numVictims,
-            VictimConf victimConf) {
-        this(scenarioID, seed, map, 0, missionLength, stepSize, numVictims, victimConf,
-            BaseConf.None(), 0, DroneConf.None());
+    public Scenario(String scenarioID, long seed, Map map, int missionLength, double stepSize,
+            ArrayList<VictimConf> victimConf) {
+        this(scenarioID, seed, map, 0, missionLength, stepSize, victimConf,
+            new ArrayList<BaseConf>(), new ArrayList<DroneConf>());
     }
 
     //-- Constructors for scenarios with victims and drones but no base --//
-    public Scenario(Map map, int missionLength, double stepSize, int numVictims, VictimConf victimConf,
-            int numDrones, DroneConf droneConf) {
-        this(Scenario.DEFAULT_ID, map, 0, missionLength, stepSize, numVictims, victimConf,
-            BaseConf.None(), numDrones, droneConf);
+    public Scenario(Map map, int missionLength, double stepSize, ArrayList<VictimConf> victimConf,
+            ArrayList<DroneConf> droneConf) {
+        this(Scenario.DEFAULT_ID, map, 0, missionLength, stepSize, victimConf, new ArrayList<BaseConf>(), droneConf);
     }
 
-    public Scenario(String scenarioID, Map map, int missionLength, double stepSize, int numVictims,
-            VictimConf victimConf, int numDrones, DroneConf droneConf) {
-        this(scenarioID, map, 0, missionLength, stepSize, numVictims, victimConf,
-            BaseConf.None(), numDrones, droneConf);
+    public Scenario(String scenarioID, Map map, int missionLength, double stepSize,
+            ArrayList<VictimConf> victimConf, ArrayList<DroneConf> droneConf) {
+        this(scenarioID, map, 0, missionLength, stepSize, victimConf, new ArrayList<BaseConf>(), droneConf);
     }
 
-    public Scenario(long seed, Map map, int missionLength, double stepSize, int numVictims,
-            VictimConf victimConf, int numDrones, DroneConf droneConf) {
-        this(Scenario.DEFAULT_ID, seed, map, 0, missionLength, stepSize, numVictims, victimConf,
-            BaseConf.None(), numDrones, droneConf);
+    public Scenario(long seed, Map map, int missionLength, double stepSize, ArrayList<VictimConf> victimConf,
+            ArrayList<DroneConf> droneConf) {
+        this(Scenario.DEFAULT_ID, seed, map, 0, missionLength, stepSize, victimConf, new ArrayList<BaseConf>(),
+            droneConf);
     }
 
-    public Scenario(String scenarioID, long seed, Map map, int missionLength, double stepSize, int numVictims,
-            VictimConf victimConf, int numDrones, DroneConf droneConf) {
-        this(scenarioID, seed, map, 0, missionLength, stepSize, numVictims, victimConf,
-            BaseConf.None(), numDrones, droneConf);
+    public Scenario(String scenarioID, long seed, Map map, int missionLength, double stepSize,
+            ArrayList<VictimConf> victimConf, ArrayList<DroneConf> droneConf) {
+        this(scenarioID, seed, map, 0, missionLength, stepSize, victimConf, new ArrayList<BaseConf>(), droneConf);
     }
 
     //-- Constructors for scenarios with victims, drones, and a base --//
-    public Scenario(Map map, double disasterScale, int missionLength,
-            double stepSize, int numVictims, VictimConf victimConf,
-            BaseConf baseConf, int numDrones, DroneConf droneConf) {
-        this(Scenario.DEFAULT_ID, map, disasterScale, missionLength, stepSize, numVictims, victimConf,
-            baseConf, numDrones, droneConf);
+    public Scenario(Map map, double disasterScale, int missionLength, double stepSize,
+            ArrayList<VictimConf> victimConf, ArrayList<BaseConf> baseConf, ArrayList<DroneConf> droneConf) {
+        this(Scenario.DEFAULT_ID, map, disasterScale, missionLength, stepSize, victimConf, baseConf, droneConf);
     }
 
-    public Scenario(String scenarioID, Map map, double disasterScale, int missionLength,
-            double stepSize, int numVictims, VictimConf victimConf,
-            BaseConf baseConf, int numDrones, DroneConf droneConf) {
-        this(scenarioID, new Random().nextLong(), map, disasterScale, missionLength, stepSize, numVictims, victimConf,
-            baseConf, numDrones, droneConf);
+    public Scenario(String scenarioID, Map map, double disasterScale, int missionLength, double stepSize,
+            ArrayList<VictimConf> victimConf, ArrayList<BaseConf> baseConf, ArrayList<DroneConf> droneConf) {
+        this(scenarioID, new Random().nextLong(), map, disasterScale, missionLength, stepSize, victimConf,
+            baseConf, droneConf);
     }
 
-    public Scenario(long seed, Map map, double disasterScale, int missionLength,
-            double stepSize, int numVictims, VictimConf victimConf,
-            BaseConf baseConf, int numDrones, DroneConf droneConf) {
-        this(Scenario.DEFAULT_ID, seed, map, disasterScale, missionLength, stepSize, numVictims, victimConf,
-            baseConf, numDrones, droneConf);
+    public Scenario(long seed, Map map, double disasterScale, int missionLength, double stepSize,
+            ArrayList<VictimConf> victimConf, ArrayList<BaseConf> baseConf, ArrayList<DroneConf> droneConf) {
+        this(Scenario.DEFAULT_ID, seed, map, disasterScale, missionLength, stepSize, victimConf, baseConf, droneConf);
     }
 
     public Scenario(String scenarioID, long seed, Map map, double disasterScale, int missionLength,
-            double stepSize, int numVictims, VictimConf victimConf,
-            BaseConf baseConf, int numDrones, DroneConf droneConf) {
+            double stepSize, ArrayList<VictimConf> victimConf, ArrayList<BaseConf> baseConf,
+            ArrayList<DroneConf> droneConf) {
         this.scenarioID = scenarioID;
         this.seed = seed;
         this.map = map;
         this.disasterScale = disasterScale;
         this.missionLength = missionLength;
         this.stepSize = stepSize;
-        this.numVictims = numVictims;
         this.victimConf = victimConf;
         this.baseConf = baseConf;
-        this.numDrones = numDrones;
         this.droneConf = droneConf;
+        this.countBases();
+        this.countDrones();
+        this.countVictims();
+    }
+
+    private void countBases() {
+        this.numBases = 0;
+        for (BaseConf conf : baseConf) {
+            this.numBases += conf.getCount();
+        }
+    }
+
+    private void countDrones() {
+        this.numDrones = 0;
+        for (DroneConf conf : droneConf) {
+            this.numDrones += conf.getCount();
+        }
+    }
+
+    private void countVictims() {
+        this.numVictims = 0;
+        for (VictimConf conf : victimConf) {
+            this.numVictims += conf.getCount();
+        }
     }
 
     @Override
@@ -163,14 +178,27 @@ public class Scenario extends JSONAble {
         this.disasterScale = json.getDouble(Scenario.DISASTER_SCALE);
         this.missionLength = json.getInt(Scenario.MISSION_LENGTH);
         this.stepSize = json.getDouble(Scenario.STEP_SIZE);
-        this.numVictims = json.getInt(Scenario.NUM_VICTIMS);
-        this.victimConf = new VictimConf(json.getJSONObject(Scenario.VICTIM_CONF));
-        this.baseConf = new BaseConf(json.getJSONObject(Scenario.BASE_CONF));
-        this.numDrones = json.getInt(Scenario.NUM_DRONES);
-        this.droneConf = new DroneConf(json.getJSONObject(Scenario.DRONE_CONF));
+        JSONArray jsonVictims = json.getJSONArray(Scenario.VICTIM_CONF);
+        this.victimConf = new ArrayList<>();
+        for (int i = 0; i < jsonVictims.length(); i++) {
+            this.victimConf.add(new VictimConf(jsonVictims.getJSONObject(i)));
+        }
+        JSONArray jsonBases = json.getJSONArray(Scenario.BASE_CONF);
+        this.baseConf = new ArrayList<>();
+        for (int i = 0; i < jsonBases.length(); i++) {
+            this.baseConf.add(new BaseConf(jsonBases.getJSONObject(i)));
+        }
+        JSONArray jsonDrones = json.getJSONArray(Scenario.DRONE_CONF);
+        this.droneConf = new ArrayList<>();
+        for (int i = 0; i < jsonDrones.length(); i++) {
+            this.droneConf.add(new DroneConf(jsonDrones.getJSONObject(i)));
+        }
+        this.countBases();
+        this.countDrones();
+        this.countVictims();
     }
 
-    public BaseConf getBaseConfiguration() {
+    public ArrayList<BaseConf> getBaseConfiguration() {
         return this.baseConf;
     }
 
@@ -178,7 +206,7 @@ public class Scenario extends JSONAble {
         return this.disasterScale;
     }
 
-    public DroneConf getDroneConfiguration() {
+    public ArrayList<DroneConf> getDroneConfiguration() {
         return this.droneConf;
     }
 
@@ -188,6 +216,10 @@ public class Scenario extends JSONAble {
 
     public int getMissionLength() {
         return this.missionLength;
+    }
+
+    public int getNumberOfBases() {
+        return this.numBases;
     }
 
     public int getNumberOfDrones() {
@@ -210,7 +242,7 @@ public class Scenario extends JSONAble {
         return this.stepSize;
     }
 
-    public VictimConf getVictimConfiguration() {
+    public ArrayList<VictimConf> getVictimConfiguration() {
         return this.victimConf;
     }
 
@@ -223,18 +255,30 @@ public class Scenario extends JSONAble {
         json.put(Scenario.MISSION_LENGTH, this.missionLength);
         json.put(Scenario.STEP_SIZE, this.stepSize);
         json.put(Scenario.NUM_VICTIMS, this.numVictims);
-        json.put(Scenario.VICTIM_CONF, this.victimConf.toJSON());
-        json.put(Scenario.BASE_CONF, this.baseConf.toJSON());
+        JSONArrayBuilder jsonVictims = JSONBuilder.Array();
+        for (VictimConf conf : this.victimConf) {
+            jsonVictims.put(conf.toJSON());
+        }
+        json.put(Scenario.VICTIM_CONF, jsonVictims.toJSON());
+        json.put(Scenario.NUM_BASES, this.numBases);
+        JSONArrayBuilder jsonBases = JSONBuilder.Array();
+        for (BaseConf conf : this.baseConf) {
+            jsonBases.put(conf.toJSON());
+        }
+        json.put(Scenario.BASE_CONF, jsonBases.toJSON());
         json.put(Scenario.NUM_DRONES, this.numDrones);
-        json.put(Scenario.DRONE_CONF, this.droneConf.toJSON());
+        JSONArrayBuilder jsonDrones = JSONBuilder.Array();
+        for (DroneConf conf : this.droneConf) {
+            jsonDrones.put(conf.toJSON());
+        }
+        json.put(Scenario.DRONE_CONF, jsonDrones.toJSON());
         return json.toJSON();
     }
 
     public boolean equals(Scenario config) {
         return this.map.equals(config.map) && this.disasterScale == config.disasterScale &&
-            this.missionLength == config.missionLength && this.numVictims == config.numVictims &&
-            this.victimConf.equals(config.victimConf) && this.baseConf.equals(config.baseConf) &&
-            this.numDrones == config.numDrones && this.droneConf.equals(config.droneConf);
+            this.missionLength == config.missionLength && this.victimConf.equals(config.victimConf) &
+            this.baseConf.equals(config.baseConf) && this.droneConf.equals(config.droneConf);
     }
 
 }
