@@ -19,7 +19,7 @@ public class VictimSpec extends JSONAble implements RemoteSpecification {
     private static final String VICTIM_TYPE = "victim_type";
 
     public static VictimSpec None() {
-        return new VictimSpec(VictimType.NONE);
+        return new VictimSpec(VictimType.NONE, new Double[]{0.0, 0.0}, 0, 1, 0, new ArrayList<SensorConf>());
     }
 
     private double maxBatteryPower;
@@ -39,10 +39,6 @@ public class VictimSpec extends JSONAble implements RemoteSpecification {
 
     public VictimSpec(String encoding) {
         super(encoding);
-    }
-
-    private VictimSpec(VictimType type) {
-        this(type, new Double[]{0.0, 0.0}, 0, 1, 0, new ArrayList<SensorConf>());
     }
 
     public VictimSpec() {
@@ -236,7 +232,7 @@ public class VictimSpec extends JSONAble implements RemoteSpecification {
     }
 
     public SensorConf getSensor(int idx) {
-        if (idx < 0 || this.sensors.size() <= idx) {
+        if (!this.hasSensor(idx)) {
             Debugger.logger.err(String.format("No sensor at idx %d found on victim spec %s",
                 idx, this.type.getLabel()));
             return null;
@@ -327,8 +323,8 @@ public class VictimSpec extends JSONAble implements RemoteSpecification {
         json.put(VictimSpec.VICTIM_MAX_BATTERY, this.maxBatteryPower);
         json.put(VictimSpec.VICTIM_STATIC_BATTERY_USAGE, this.staticBatteryUsage);
         JSONArrayBuilder jsonSensors = JSONBuilder.Array();
-        for (SensorConf spec : this.sensors) {
-            jsonSensors.put(spec.toJSON());
+        for (SensorConf conf : this.sensors) {
+            jsonSensors.put(conf.toJSON());
         }
         json.put(VictimSpec.VICTIM_SENSORS, jsonSensors.toJSON());
         return json.toJSON();
