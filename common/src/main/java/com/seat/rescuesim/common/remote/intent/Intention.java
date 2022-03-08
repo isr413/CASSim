@@ -1,9 +1,26 @@
 package com.seat.rescuesim.common.remote.intent;
 
 import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.util.Debugger;
 
 public abstract class Intention extends JSONAble {
-    protected static final String INTENTION_TYPE = "type";
+    protected static final String INTENTION_TYPE = "intent_type";
+
+    public static IntentionType decodeType(JSONObject json) {
+        return IntentionType.values()[json.getInt(Intention.INTENTION_TYPE)];
+    }
+
+    public static IntentionType decodeType(JSONOption option) {
+        if (option.isSomeObject()) {
+            return Intention.decodeType(option.someObject());
+        }
+        Debugger.logger.err(String.format("Cannot decode intention type of %s", option.toString()));
+        return null;
+    }
+
+    public static IntentionType decodeType(String encoding) {
+        return Intention.decodeType(JSONOption.String(encoding));
+    }
 
     protected IntentionType type;
 
@@ -28,12 +45,12 @@ public abstract class Intention extends JSONAble {
         this.type = IntentionType.values()[json.getInt(Intention.INTENTION_TYPE)];
     }
 
-    public IntentionType getIntentionType() {
-        return this.type;
-    }
-
     public String getLabel() {
         return this.type.getLabel();
+    }
+
+    public IntentionType getType() {
+        return this.type;
     }
 
     protected JSONObjectBuilder getJSONBuilder() {

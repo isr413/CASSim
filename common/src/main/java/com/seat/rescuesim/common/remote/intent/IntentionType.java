@@ -2,7 +2,7 @@ package com.seat.rescuesim.common.remote.intent;
 
 import com.seat.rescuesim.common.util.SerializableEnum;
 
-/** A serializable enumeration to denote types of Drones. */
+/** A serializable enumeration to denote types of intents. */
 public enum IntentionType implements SerializableEnum {
     NONE(0),
     ACTIVATE(1),
