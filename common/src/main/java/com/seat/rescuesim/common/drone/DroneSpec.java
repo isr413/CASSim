@@ -22,7 +22,7 @@ public class DroneSpec extends JSONAble implements RemoteSpecification {
     private static final String DRONE_TYPE = "drone_type";
 
     public static DroneSpec None() {
-        return new DroneSpec();
+        return new DroneSpec(DroneType.NONE, 0, new Vector(), new Vector(), 0, 0, 0, new ArrayList<SensorConf>());
     }
 
     private Vector batteryUsage; // [static (hovering), horizontal movement, vertical movement]
@@ -47,11 +47,15 @@ public class DroneSpec extends JSONAble implements RemoteSpecification {
     }
 
     public DroneSpec() {
-        this(DroneType.NONE, 0, new Vector(), new Vector(), 0, 0, 0, new ArrayList<SensorConf>());
+        this(DroneType.DEFAULT, 0, new Vector(), new Vector(), 0, 0, 0, new ArrayList<SensorConf>());
     }
 
     public DroneSpec(DroneType type, double maxBatteryPower, Vector batteryUsage, Vector location) {
         this(type, maxBatteryPower, batteryUsage, location, 0, 0, 0, new ArrayList<SensorConf>());
+    }
+
+    public DroneSpec(double maxBatteryPower, Vector batteryUsage, Vector location) {
+        this(DroneType.DEFAULT, maxBatteryPower, batteryUsage, location, 0, 0, 0, new ArrayList<SensorConf>());
     }
 
     public DroneSpec(DroneType type, double maxBatteryPower, Vector batteryUsage, Vector location,
@@ -59,9 +63,17 @@ public class DroneSpec extends JSONAble implements RemoteSpecification {
         this(type, maxBatteryPower, batteryUsage, location, 0, 0, 0, sensors);
     }
 
+    public DroneSpec(double maxBatteryPower, Vector batteryUsage, Vector location, SensorConf[] sensors) {
+        this(DroneType.DEFAULT, maxBatteryPower, batteryUsage, location, 0, 0, 0, sensors);
+    }
+
     public DroneSpec(DroneType type, double maxBatteryPower, Vector batteryUsage, Vector location,
             ArrayList<SensorConf> sensors) {
         this(type, maxBatteryPower, batteryUsage, location, 0, 0, 0, sensors);
+    }
+
+    public DroneSpec(double maxBatteryPower, Vector batteryUsage, Vector location, ArrayList<SensorConf> sensors) {
+        this(DroneType.DEFAULT, maxBatteryPower, batteryUsage, location, 0, 0, 0, sensors);
     }
 
     public DroneSpec(DroneType type, double maxBatteryPower, Vector batteryUsage, Vector location,
@@ -70,10 +82,28 @@ public class DroneSpec extends JSONAble implements RemoteSpecification {
             new ArrayList<SensorConf>());
     }
 
+    public DroneSpec(double maxBatteryPower, Vector batteryUsage, Vector location,
+            double maxVelocity, double maxAccleration, double maxJerk) {
+        this(DroneType.DEFAULT, maxBatteryPower, batteryUsage, location, maxVelocity, maxAccleration, maxJerk,
+            new ArrayList<SensorConf>());
+    }
+
     public DroneSpec(DroneType type, double maxBatteryPower, Vector batteryUsage, Vector location,
             double maxVelocity, double maxAccleration, double maxJerk, SensorConf[] sensors) {
         this(type, maxBatteryPower, batteryUsage, location, maxVelocity, maxAccleration, maxJerk,
             new ArrayList<SensorConf>(Arrays.asList(sensors)));
+    }
+
+    public DroneSpec(double maxBatteryPower, Vector batteryUsage, Vector location,
+            double maxVelocity, double maxAccleration, double maxJerk, SensorConf[] sensors) {
+        this(DroneType.DEFAULT, maxBatteryPower, batteryUsage, location, maxVelocity, maxAccleration, maxJerk,
+            new ArrayList<SensorConf>(Arrays.asList(sensors)));
+    }
+
+    public DroneSpec(double maxBatteryPower, Vector batteryUsage, Vector location,
+            double maxVelocity, double maxAccleration, double maxJerk, ArrayList<SensorConf> sensors) {
+        this(DroneType.DEFAULT, maxBatteryPower, batteryUsage, location, maxVelocity, maxAccleration, maxJerk,
+            sensors);
     }
 
     public DroneSpec(DroneType type, double maxBatteryPower, Vector batteryUsage, Vector location,
@@ -235,8 +265,8 @@ public class DroneSpec extends JSONAble implements RemoteSpecification {
         json.put(DroneSpec.DRONE_MAX_ACCELERATION, this.maxAcceleration);
         json.put(DroneSpec.DRONE_MAX_JERK, this.maxJerk);
         JSONArrayBuilder jsonSensors = JSONBuilder.Array();
-        for (SensorConf spec : this.sensors) {
-            jsonSensors.put(spec.toJSON());
+        for (SensorConf conf : this.sensors) {
+            jsonSensors.put(conf.toJSON());
         }
         json.put(DroneSpec.DRONE_SENSORS, jsonSensors.toJSON());
         return json.toJSON();
