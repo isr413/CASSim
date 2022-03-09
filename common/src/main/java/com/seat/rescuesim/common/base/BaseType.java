@@ -1,6 +1,6 @@
 package com.seat.rescuesim.common.base;
 
-import com.seat.rescuesim.common.util.SerializableEnum;
+import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable enumeration to denote types of Bases. */
 public enum BaseType implements SerializableEnum {

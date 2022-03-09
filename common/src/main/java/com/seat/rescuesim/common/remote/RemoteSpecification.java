@@ -1,7 +1,7 @@
 package com.seat.rescuesim.common.remote;
 
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.util.SerializableEnum;
+import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** An abstract interface to represent serializable prototypes. */
 public interface RemoteSpecification {

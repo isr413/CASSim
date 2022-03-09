@@ -1,6 +1,6 @@
 package com.seat.rescuesim.common.drone;
 
-import com.seat.rescuesim.common.util.SerializableEnum;
+import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable enumeration to denote types of Drones. */
 public enum DroneType implements SerializableEnum {
