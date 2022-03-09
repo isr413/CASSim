@@ -1,8 +1,10 @@
-package com.seat.rescuesim.common;
+package com.seat.rescuesim.client;
 
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.seat.rescuesim.common.Scenario;
+import com.seat.rescuesim.common.Snapshot;
 import com.seat.rescuesim.common.base.BaseConf;
 import com.seat.rescuesim.common.drone.DroneConf;
 import com.seat.rescuesim.common.map.Map;
