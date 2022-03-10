@@ -23,15 +23,15 @@ public class Debugger {
     }
 
     public void info(String msg) {
-        System.out.println(Debugger.ANSI_GREEN + "ERR: " + msg + Debugger.ANSI_RESET);
+        System.out.println(Debugger.ANSI_GREEN + "INFO: " + msg + Debugger.ANSI_RESET);
     }
 
     public void state(String msg) {
-        System.out.println(Debugger.ANSI_BLUE + "ERR: " + msg + Debugger.ANSI_RESET);
+        System.out.println(Debugger.ANSI_BLUE + "STATE: " + msg + Debugger.ANSI_RESET);
     }
 
     public void warn(String msg) {
-        System.out.println(Debugger.ANSI_YELLOW + "ERR: " + msg + Debugger.ANSI_RESET);
+        System.out.println(Debugger.ANSI_YELLOW + "WARN: " + msg + Debugger.ANSI_RESET);
     }
 
 }
