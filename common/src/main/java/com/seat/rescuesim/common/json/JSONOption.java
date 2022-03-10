@@ -100,6 +100,17 @@ public class JSONOption {
         return "None";
     }
 
+    /** Returns the String representation of the option being wrapped (pretty printed). */
+    public String toString(int tabSize) {
+        if (this.isSomeArray()) {
+            return this.arrayOption.toString(tabSize);
+        }
+        if (this.isSomeObject()) {
+            return this.objectOption.toString(tabSize);
+        }
+        return "None";
+    }
+
     /** JSONOption implementation of the JSONArray interface. */
     static class JSONArrayOption implements JSONArray {
 
@@ -237,6 +248,11 @@ public class JSONOption {
         /** Returns the String representation of the JSONArray. */
         public String toString() {
             return this.json.toString();
+        }
+
+        /** Returns the String representation of the JSONArray (pretty printed). */
+        public String toString(int tabSize) {
+            return this.json.toString(tabSize);
         }
 
     }
@@ -383,6 +399,11 @@ public class JSONOption {
         /** Returns the String representation of the JSONObject. */
         public String toString() {
             return this.json.toString();
+        }
+
+        /** Returns the String representation of the JSONObject (pretty printed). */
+        public String toString(int tabSize) {
+            return this.json.toString(tabSize);
         }
 
     }

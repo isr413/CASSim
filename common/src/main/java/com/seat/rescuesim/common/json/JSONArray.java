@@ -56,4 +56,7 @@ public interface JSONArray {
     /** Returns the String representation of the JSONArray. */
     String toString();
 
+    /** Returns the String representation of the JSONArray (pretty printed). */
+    String toString(int tabSize);
+
 }

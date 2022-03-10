@@ -59,4 +59,7 @@ public interface JSONObject {
     /** Returns the String representation of the JSONObject. */
     String toString();
 
+    /** Returns the String representation of the JSONObject (pretty printed). */
+    String toString(int tabSize);
+
 }
