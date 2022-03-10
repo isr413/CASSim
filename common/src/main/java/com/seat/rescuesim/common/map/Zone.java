@@ -49,9 +49,14 @@ public class Zone extends JSONAble {
         this.type = ZoneType.values()[json.getInt(Zone.ZONE_TYPE)];
         this.location = new Vector(json.getJSONArray(Zone.ZONE_LOCATION));
         this.size = json.getInt(Zone.ZONE_SIZE);
-        JSONArray fields = json.getJSONArray(Zone.ZONE_FIELDS);
-        this.ground = new Field(fields.getJSONArray(0));
-        this.aerial = new Field(fields.getJSONArray(1));
+        if (json.hasKey(Zone.ZONE_FIELDS)) {
+            JSONArray fields = json.getJSONArray(Zone.ZONE_FIELDS);
+            this.ground = new Field(fields.getJSONArray(0));
+            this.aerial = new Field(fields.getJSONArray(1));
+        } else {
+            this.ground = new Field();
+            this.aerial = new Field();
+        }
     }
 
     public Field getAerialField() {
@@ -74,7 +79,7 @@ public class Zone extends JSONAble {
         return this.size;
     }
 
-    public ZoneType getZoneType() {
+    public ZoneType getType() {
         return this.type;
     }
 
@@ -83,10 +88,12 @@ public class Zone extends JSONAble {
         json.put(Zone.ZONE_TYPE, this.type.getType());
         json.put(Zone.ZONE_LOCATION, this.location.toJSON());
         json.put(Zone.ZONE_SIZE, this.size);
-        JSONArrayBuilder fields = JSONBuilder.Array();
-        fields.put(this.ground.toJSON());
-        fields.put(this.aerial.toJSON());
-        json.put(Zone.ZONE_FIELDS, fields.toJSON());
+        if (!this.ground.getType().equals(FieldType.NONE) || !this.aerial.getType().equals(FieldType.NONE)) {
+            JSONArrayBuilder fields = JSONBuilder.Array();
+            fields.put(this.ground.toJSON());
+            fields.put(this.aerial.toJSON());
+            json.put(Zone.ZONE_FIELDS, fields.toJSON());
+        }
         return json.toJSON();
     }
 
