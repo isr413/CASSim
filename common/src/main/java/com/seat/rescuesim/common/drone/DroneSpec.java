@@ -14,7 +14,7 @@ public class DroneSpec extends KineticRemoteSpec {
     private static final String DRONE_TYPE = "drone_type";
 
     public static DroneSpec None() {
-        return new DroneSpec(DroneType.NONE, null, 0, new Vector(), new ArrayList<SensorConf>(), 0, 0, 0);
+        return new DroneSpec(DroneType.NONE, new Vector(), 0, new Vector(), new ArrayList<SensorConf>(), 0, 0, 0);
     }
 
     public static DroneSpec Static(Vector location) {

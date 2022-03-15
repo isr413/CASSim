@@ -27,8 +27,8 @@ public class DroneState extends KineticRemoteState {
         super(encoding);
     }
 
-    public DroneState(DroneType type, String remoteID, Vector location, double battery,
-            ArrayList<SensorState> sensors, Vector velocity, Vector acceleration) {
+    public DroneState(DroneType type, String remoteID, Vector location, double battery, ArrayList<SensorState> sensors,
+            Vector velocity, Vector acceleration) {
         super(RemoteType.DRONE, remoteID, location, battery, sensors, velocity, acceleration);
         this.type = type;
     }
