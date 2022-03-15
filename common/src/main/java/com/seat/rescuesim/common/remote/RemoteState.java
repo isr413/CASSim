@@ -55,7 +55,7 @@ public abstract class RemoteState extends JSONAble {
             ArrayList<SensorState> sensors) {
         this(type, remoteID, location, battery, new HashMap<String, SensorState>());
         for (SensorState sensor : sensors) {
-
+            this.sensors.put(sensor.getRemoteID(), sensor);
         }
     }
 
@@ -84,6 +84,14 @@ public abstract class RemoteState extends JSONAble {
         }
     }
 
+    public double getBattery() {
+        return this.battery;
+    }
+
+    public Vector getLocation() {
+        return this.location;
+    }
+
     public String getLabel() {
         return String.format("%s%s", this.remoteID, this.type.getLabel());
     }
@@ -96,7 +104,35 @@ public abstract class RemoteState extends JSONAble {
         return this.type;
     }
 
+    public SensorState getSensorWithID(String sensorID) {
+        if (!this.hasSensorWithID(sensorID)) {
+            Debugger.logger.err(String.format("No sensor %s found on remote %s", sensorID, this.remoteID));
+            return null;
+        }
+        return this.sensors.get(sensorID);
+    }
+
+    public ArrayList<SensorState> getSensors() {
+        return new ArrayList<SensorState>(this.sensors.values());
+    }
+
     public abstract SerializableEnum getSpecType();
+
+    public boolean hasSensorWithID(String sensorID) {
+        return this.sensors.containsKey(sensorID);
+    }
+
+    public boolean hasSensors() {
+        return !this.sensors.isEmpty();
+    }
+
+    public boolean isDisabled() {
+        return !this.isEnabled();
+    }
+
+    public boolean isEnabled() {
+        return this.battery > 0;
+    }
 
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
@@ -108,7 +144,9 @@ public abstract class RemoteState extends JSONAble {
     public abstract JSONOption toJSON();
 
     public boolean equals(RemoteState state) {
-        return this.type.equals(state.type) && this.remoteID.equals(state.remoteID);
+        return this.type.equals(state.type) && this.remoteID.equals(state.remoteID) &&
+            this.location.equals(state.location) && this.battery == state.battery &&
+            this.sensors.equals(state.sensors);
     }
 
 }

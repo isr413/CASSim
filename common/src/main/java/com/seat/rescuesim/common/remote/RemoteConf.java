@@ -1,6 +1,5 @@
 package com.seat.rescuesim.common.remote;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.seat.rescuesim.common.json.*;
