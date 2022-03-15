@@ -5,7 +5,7 @@ import java.util.HashSet;
 import com.seat.rescuesim.common.json.*;
 
 /** A serializable configuration of a Sensor.  */
-public class SensorConf extends JSONAble {
+public class SensorConfig extends JSONAble {
     private static final String COUNT = "count";
     private static final String SENSOR_IDS = "sensor_ids";
     private static final String SPEC = "spec";
@@ -14,19 +14,19 @@ public class SensorConf extends JSONAble {
     private HashSet<String> sensorIDs;
     private SensorSpec spec;
 
-    public SensorConf(JSONObject json) {
+    public SensorConfig(JSONObject json) {
         super(json);
     }
 
-    public SensorConf(JSONOption option) {
+    public SensorConfig(JSONOption option) {
         super(option);
     }
 
-    public SensorConf(String encoding) {
+    public SensorConfig(String encoding) {
         super(encoding);
     }
 
-    public SensorConf(SensorSpec spec, int count) {
+    public SensorConfig(SensorSpec spec, int count) {
         this.spec = spec;
         this.count = count;
         this.sensorIDs = new HashSet<>();
@@ -35,11 +35,11 @@ public class SensorConf extends JSONAble {
         }
     }
 
-    public SensorConf(SensorSpec spec, ArrayList<String> sensorIDs) {
+    public SensorConfig(SensorSpec spec, ArrayList<String> sensorIDs) {
         this(spec, new HashSet<String>(sensorIDs));
     }
 
-    public SensorConf(SensorSpec spec, HashSet<String> sensorIDs) {
+    public SensorConfig(SensorSpec spec, HashSet<String> sensorIDs) {
         this.spec = spec;
         this.count = sensorIDs.size();
         this.sensorIDs = sensorIDs;
@@ -47,10 +47,10 @@ public class SensorConf extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) {
-        this.spec = new SensorSpec(json.getJSONObject(SensorConf.SPEC));
-        this.count = json.getInt(SensorConf.COUNT);
+        this.spec = new SensorSpec(json.getJSONObject(SensorConfig.SPEC));
+        this.count = json.getInt(SensorConfig.COUNT);
         this.sensorIDs = new HashSet<>();
-        JSONArray jsonSensors = json.getJSONArray(SensorConf.SENSOR_IDS);
+        JSONArray jsonSensors = json.getJSONArray(SensorConfig.SENSOR_IDS);
         for (int i = 0; i < jsonSensors.length(); i++) {
             this.sensorIDs.add(jsonSensors.getString(i));
         }
@@ -82,17 +82,17 @@ public class SensorConf extends JSONAble {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(SensorConf.SPEC, this.spec.toJSON());
-        json.put(SensorConf.COUNT, this.count);
+        json.put(SensorConfig.SPEC, this.spec.toJSON());
+        json.put(SensorConfig.COUNT, this.count);
         JSONArrayBuilder jsonSensors = JSONBuilder.Array();
         for (String sensorID : this.sensorIDs) {
             jsonSensors.put(sensorID);
         }
-        json.put(SensorConf.SENSOR_IDS, jsonSensors.toJSON());
+        json.put(SensorConfig.SENSOR_IDS, jsonSensors.toJSON());
         return json.toJSON();
     }
 
-    public boolean equals(SensorConf conf) {
+    public boolean equals(SensorConfig conf) {
         return this.spec.equals(conf.spec) && this.count == conf.count && this.sensorIDs.equals(conf.sensorIDs);
     }
 

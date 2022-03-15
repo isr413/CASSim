@@ -6,7 +6,7 @@ import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.KineticRemoteSpec;
 import com.seat.rescuesim.common.remote.RemoteType;
-import com.seat.rescuesim.common.sensor.SensorConf;
+import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable specification of a Drone Remote. */
 public class DroneSpec extends KineticRemoteSpec {
@@ -14,26 +14,26 @@ public class DroneSpec extends KineticRemoteSpec {
     private static final String DRONE_TYPE = "drone_type";
 
     public static DroneSpec None() {
-        return new DroneSpec(DroneType.NONE, new Vector(), 0, new Vector(), new ArrayList<SensorConf>(), 0, 0, 0);
+        return new DroneSpec(DroneType.NONE, new Vector(), 0, new Vector(), new ArrayList<SensorConfig>(), 0, 0, 0);
     }
 
     public static DroneSpec Static(Vector location) {
-        return new DroneSpec(DroneType.DEFAULT, location, 1, new Vector(), new ArrayList<SensorConf>(), 0, 0, 0);
+        return new DroneSpec(DroneType.DEFAULT, location, 1, new Vector(), new ArrayList<SensorConfig>(), 0, 0, 0);
     }
 
     public static DroneSpec StaticWithSensors(Vector location, double maxBatteryPower, Vector batteryUsage,
-            ArrayList<SensorConf> sensors) {
+            ArrayList<SensorConfig> sensors) {
         return new DroneSpec(DroneType.DEFAULT, location, maxBatteryPower, batteryUsage, sensors, 0, 0, 0);
     }
 
     public static DroneSpec Kinetic(Vector location, double maxBatteryPower, Vector batteryUsage,
             double maxVelocity, double maxAcceleration, double maxJerk) {
-        return new DroneSpec(DroneType.DEFAULT, location, maxBatteryPower, batteryUsage, new ArrayList<SensorConf>(),
+        return new DroneSpec(DroneType.DEFAULT, location, maxBatteryPower, batteryUsage, new ArrayList<SensorConfig>(),
             maxVelocity, maxAcceleration, maxJerk);
     }
 
     public static DroneSpec KineticWithSensors(Vector location, double maxBatteryPower, Vector batteryUsage,
-            ArrayList<SensorConf> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
+            ArrayList<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
         return new DroneSpec(DroneType.DEFAULT, location, maxBatteryPower, batteryUsage, sensors, maxVelocity,
             maxAcceleration, maxJerk);
     }
@@ -54,7 +54,7 @@ public class DroneSpec extends KineticRemoteSpec {
     }
 
     public DroneSpec(DroneType type, Vector location, double maxBatteryPower, Vector batteryUsage,
-            ArrayList<SensorConf> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
+            ArrayList<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
         super(RemoteType.DRONE, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
         this.type = type;
         this.batteryUsage = batteryUsage;

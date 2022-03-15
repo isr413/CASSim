@@ -3,37 +3,37 @@ package com.seat.rescuesim.common.victim;
 import java.util.ArrayList;
 import java.util.HashSet;
 import com.seat.rescuesim.common.json.*;
-import com.seat.rescuesim.common.remote.RemoteConf;
+import com.seat.rescuesim.common.remote.RemoteConfig;
 import com.seat.rescuesim.common.remote.RemoteType;
 
 /** A serializable configuration of a Victim Remote. */
-public class VictimConf extends RemoteConf {
+public class VictimConfig extends RemoteConfig {
 
-    public static VictimConf None() {
-        return new VictimConf(VictimSpec.None(), 0, false);
+    public static VictimConfig None() {
+        return new VictimConfig(VictimSpec.None(), 0, false);
     }
 
-    public VictimConf(JSONObject json) {
+    public VictimConfig(JSONObject json) {
         super(json);
     }
 
-    public VictimConf(JSONOption option) {
+    public VictimConfig(JSONOption option) {
         super(option);
     }
 
-    public VictimConf(String encoding) {
+    public VictimConfig(String encoding) {
         super(encoding);
     }
 
-    public VictimConf(VictimSpec spec, int count, boolean dynamic) {
+    public VictimConfig(VictimSpec spec, int count, boolean dynamic) {
         super(RemoteType.VICTIM, spec, count, dynamic);
     }
 
-    public VictimConf(VictimSpec spec, ArrayList<String> remoteIDs, boolean dynamic) {
+    public VictimConfig(VictimSpec spec, ArrayList<String> remoteIDs, boolean dynamic) {
         super(RemoteType.VICTIM, spec, remoteIDs, dynamic);
     }
 
-    public VictimConf(VictimSpec spec, HashSet<String> remoteIDs, boolean dynamic) {
+    public VictimConfig(VictimSpec spec, HashSet<String> remoteIDs, boolean dynamic) {
         super(RemoteType.VICTIM, spec, remoteIDs, dynamic);
     }
 

@@ -6,31 +6,31 @@ import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.KineticRemoteSpec;
 import com.seat.rescuesim.common.remote.RemoteType;
-import com.seat.rescuesim.common.sensor.SensorConf;
+import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable specification of a Victim. */
 public class VictimSpec extends KineticRemoteSpec {
     private static final String VICTIM_TYPE = "victim_type";
 
     public static VictimSpec None() {
-        return new VictimSpec(VictimType.NONE, new Vector(), 0, new ArrayList<SensorConf>(), 0, 0, 0);
+        return new VictimSpec(VictimType.NONE, new Vector(), 0, new ArrayList<SensorConfig>(), 0, 0, 0);
     }
 
     public static VictimSpec Static(Vector location) {
-        return new VictimSpec(VictimType.DEFAULT, location, 1, new ArrayList<SensorConf>(), 0, 0, 0);
+        return new VictimSpec(VictimType.DEFAULT, location, 1, new ArrayList<SensorConfig>(), 0, 0, 0);
     }
 
-    public static VictimSpec StaticWithSensors(Vector location, double maxBatteryPower, ArrayList<SensorConf> sensors) {
+    public static VictimSpec StaticWithSensors(Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
         return new VictimSpec(VictimType.DEFAULT, location, maxBatteryPower, sensors, 0, 0, 0);
     }
 
     public static VictimSpec Kinetic(Vector location, double maxBatteryPower, Vector batteryUsage, double maxVelocity,
             double maxAcceleration, double maxJerk) {
-        return new VictimSpec(VictimType.DEFAULT, location, maxBatteryPower, new ArrayList<SensorConf>(),
+        return new VictimSpec(VictimType.DEFAULT, location, maxBatteryPower, new ArrayList<SensorConfig>(),
             maxVelocity, maxAcceleration, maxJerk);
     }
 
-    public static VictimSpec KineticWithSensors(Vector location, double maxBatteryPower, ArrayList<SensorConf> sensors,
+    public static VictimSpec KineticWithSensors(Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors,
             double maxVelocity, double maxAcceleration, double maxJerk) {
         return new VictimSpec(VictimType.DEFAULT, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration,
             maxJerk);
@@ -50,7 +50,7 @@ public class VictimSpec extends KineticRemoteSpec {
         super(encoding);
     }
 
-    public VictimSpec(VictimType type, Vector location, double maxBatteryPower, ArrayList<SensorConf> sensors,
+    public VictimSpec(VictimType type, Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors,
             double maxVelocity, double maxAcceleration, double maxJerk) {
         super(RemoteType.VICTIM, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
         this.type = type;

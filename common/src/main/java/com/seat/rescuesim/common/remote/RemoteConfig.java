@@ -8,7 +8,7 @@ import com.seat.rescuesim.common.util.Debugger;
 import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable Remote configuration. */
-public abstract class RemoteConf extends JSONAble {
+public abstract class RemoteConfig extends JSONAble {
     private static final String COUNT = "count";
     private static final String IS_DYNAMIC = "is_dynamic";
     private static final String REMOTE_IDS = "remote_ids";
@@ -16,19 +16,19 @@ public abstract class RemoteConf extends JSONAble {
     private static final String SPEC = "spec";
 
     public static RemoteType decodeRemoteType(JSONObject json) {
-        return RemoteType.values()[json.getInt(RemoteConf.REMOTE_TYPE)];
+        return RemoteType.values()[json.getInt(RemoteConfig.REMOTE_TYPE)];
     }
 
     public static RemoteType decodeRemoteType(JSONOption option) {
         if (option.isSomeObject()) {
-            return RemoteConf.decodeRemoteType(option.someObject());
+            return RemoteConfig.decodeRemoteType(option.someObject());
         }
         Debugger.logger.err(String.format("Cannot decode remote type of %s", option.toString()));
         return RemoteType.NONE;
     }
 
     public static RemoteType decodeRemoteType(String encoding) {
-        return RemoteConf.decodeRemoteType(JSONOption.String(encoding));
+        return RemoteConfig.decodeRemoteType(JSONOption.String(encoding));
     }
 
     protected int count;
@@ -37,19 +37,19 @@ public abstract class RemoteConf extends JSONAble {
     protected RemoteSpec spec;
     protected RemoteType type;
 
-    public RemoteConf(JSONObject json) {
+    public RemoteConfig(JSONObject json) {
         super(json);
     }
 
-    public RemoteConf(JSONOption option) {
+    public RemoteConfig(JSONOption option) {
         super(option);
     }
 
-    public RemoteConf(String encoding) {
+    public RemoteConfig(String encoding) {
         super(encoding);
     }
 
-    public RemoteConf(RemoteType type, RemoteSpec spec, int count, boolean dynamic) {
+    public RemoteConfig(RemoteType type, RemoteSpec spec, int count, boolean dynamic) {
         this.type = type;
         this.spec = spec;
         this.count = count;
@@ -60,11 +60,11 @@ public abstract class RemoteConf extends JSONAble {
         }
     }
 
-    public RemoteConf(RemoteType type, RemoteSpec spec, ArrayList<String> remoteIDs, boolean dynamic) {
+    public RemoteConfig(RemoteType type, RemoteSpec spec, ArrayList<String> remoteIDs, boolean dynamic) {
         this(type, spec, new HashSet<String>(remoteIDs), dynamic);
     }
 
-    public RemoteConf(RemoteType type, RemoteSpec spec, HashSet<String> remoteIDs, boolean dynamic) {
+    public RemoteConfig(RemoteType type, RemoteSpec spec, HashSet<String> remoteIDs, boolean dynamic) {
         this.type = type;
         this.spec = spec;
         this.count = remoteIDs.size();
@@ -74,15 +74,15 @@ public abstract class RemoteConf extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) {
-        this.type = RemoteType.values()[json.getInt(RemoteConf.REMOTE_TYPE)];
-        this.decodeSpec(json.getJSONObject(RemoteConf.SPEC));
-        this.count = json.getInt(RemoteConf.COUNT);
+        this.type = RemoteType.values()[json.getInt(RemoteConfig.REMOTE_TYPE)];
+        this.decodeSpec(json.getJSONObject(RemoteConfig.SPEC));
+        this.count = json.getInt(RemoteConfig.COUNT);
         this.remoteIDs = new HashSet<>();
-        JSONArray jsonRemotes = json.getJSONArray(RemoteConf.REMOTE_IDS);
+        JSONArray jsonRemotes = json.getJSONArray(RemoteConfig.REMOTE_IDS);
         for (int i = 0; i < jsonRemotes.length(); i++) {
             this.remoteIDs.add(jsonRemotes.getString(i));
         }
-        this.dynamic = json.getBoolean(RemoteConf.IS_DYNAMIC);
+        this.dynamic = json.getBoolean(RemoteConfig.IS_DYNAMIC);
     }
 
     protected abstract void decodeSpec(JSONObject jsonSpec);
@@ -125,19 +125,19 @@ public abstract class RemoteConf extends JSONAble {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(RemoteConf.REMOTE_TYPE, this.type.getType());
-        json.put(RemoteConf.SPEC, this.spec.toJSON());
-        json.put(RemoteConf.COUNT, this.count);
+        json.put(RemoteConfig.REMOTE_TYPE, this.type.getType());
+        json.put(RemoteConfig.SPEC, this.spec.toJSON());
+        json.put(RemoteConfig.COUNT, this.count);
         JSONArrayBuilder jsonRemotes = JSONBuilder.Array();
         for (String remoteID : this.remoteIDs) {
             jsonRemotes.put(remoteID);
         }
-        json.put(RemoteConf.REMOTE_IDS, jsonRemotes.toJSON());
-        json.put(RemoteConf.IS_DYNAMIC, this.dynamic);
+        json.put(RemoteConfig.REMOTE_IDS, jsonRemotes.toJSON());
+        json.put(RemoteConfig.IS_DYNAMIC, this.dynamic);
         return json.toJSON();
     }
 
-    public boolean equals(RemoteConf conf) {
+    public boolean equals(RemoteConfig conf) {
         return this.type.equals(conf.type) && this.spec.equals(conf.spec) && this.count == conf.count &&
             this.remoteIDs.equals(conf.remoteIDs) && this.dynamic == conf.dynamic;
     }

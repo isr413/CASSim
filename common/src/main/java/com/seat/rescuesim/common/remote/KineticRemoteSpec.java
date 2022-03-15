@@ -6,7 +6,7 @@ import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.sensor.SensorConf;
+import com.seat.rescuesim.common.sensor.SensorConfig;
 import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable specification of a kinetic Remote. */
@@ -32,7 +32,7 @@ public abstract class KineticRemoteSpec extends RemoteSpec {
     }
 
     public KineticRemoteSpec(RemoteType type, Vector location, double maxBatteryPower,
-            ArrayList<SensorConf> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
+            ArrayList<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
         super(type, location, maxBatteryPower, sensors);
         this.maxVelocity = maxVelocity;
         this.maxAcceleration = maxAcceleration;

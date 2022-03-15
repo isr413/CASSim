@@ -6,21 +6,21 @@ import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteSpec;
 import com.seat.rescuesim.common.remote.RemoteType;
-import com.seat.rescuesim.common.sensor.SensorConf;
+import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable specification of a Base Remote. */
 public class BaseSpec extends RemoteSpec {
     private static final String BASE_TYPE = "base_type";
 
     public static BaseSpec None() {
-        return new BaseSpec(BaseType.NONE, new Vector(), 0, new ArrayList<SensorConf>());
+        return new BaseSpec(BaseType.NONE, new Vector(), 0, new ArrayList<SensorConfig>());
     }
 
     public static BaseSpec Static(Vector location) {
-        return new BaseSpec(BaseType.DEFAULT, location, 1, new ArrayList<SensorConf>());
+        return new BaseSpec(BaseType.DEFAULT, location, 1, new ArrayList<SensorConfig>());
     }
 
-    public static BaseSpec StaticWithSensors(Vector location, double maxBatteryPower, ArrayList<SensorConf> sensors) {
+    public static BaseSpec StaticWithSensors(Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
         return new BaseSpec(BaseType.DEFAULT, location, maxBatteryPower, sensors);
     }
 
@@ -38,7 +38,7 @@ public class BaseSpec extends RemoteSpec {
         super(encoding);
     }
 
-    public BaseSpec(BaseType type, Vector location, double maxBatteryPower, ArrayList<SensorConf> sensors) {
+    public BaseSpec(BaseType type, Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
         super(RemoteType.BASE, location, maxBatteryPower, sensors);
         this.type = type;
     }
