@@ -95,7 +95,7 @@ public class Map extends JSONAble {
         return String.format("<(%d, %d)>", this.width, this.height);
     }
 
-    public MapType getType() {
+    public MapType getMapType() {
         return this.type;
     }
 

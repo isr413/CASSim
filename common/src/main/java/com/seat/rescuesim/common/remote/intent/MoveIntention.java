@@ -39,8 +39,8 @@ public class MoveIntention extends Intention {
         return this.jerk;
     }
 
-    public boolean hasNonZeroJerk() {
-        return this.jerk.getX() != 0 || this.jerk.getY() != 0 || this.jerk.getZ() != 0;
+    public boolean hasJerk() {
+        return this.jerk.getMagnitude() > 0;
     }
 
     @Override

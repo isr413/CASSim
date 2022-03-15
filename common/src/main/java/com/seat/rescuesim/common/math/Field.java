@@ -64,6 +64,10 @@ public class Field extends JSONAble {
         this.jerk = new Vector(json.getJSONArray(3));
     }
 
+    public FieldType getFieldType() {
+        return this.type;
+    }
+
     public Vector getJerk() {
         return this.jerk;
     }
@@ -74,10 +78,6 @@ public class Field extends JSONAble {
 
     public Vector getPoint() {
         return this.point;
-    }
-
-    public FieldType getType() {
-        return this.type;
     }
 
     public JSONOption toJSON() {

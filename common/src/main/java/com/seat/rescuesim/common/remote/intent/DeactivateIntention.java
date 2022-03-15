@@ -1,7 +1,6 @@
 package com.seat.rescuesim.common.remote.intent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 
 import com.seat.rescuesim.common.json.*;
@@ -28,10 +27,6 @@ public class DeactivateIntention extends Intention {
         this(new HashSet<String>());
     }
 
-    public DeactivateIntention(String[] sensors) {
-        this(new ArrayList<String>(Arrays.asList(sensors)));
-    }
-
     public DeactivateIntention(ArrayList<String> sensors) {
         this(new HashSet<String>());
         for (String sensor : sensors) {
@@ -40,7 +35,7 @@ public class DeactivateIntention extends Intention {
     }
 
     public DeactivateIntention(HashSet<String> sensors) {
-        super(IntentionType.ACTIVATE);
+        super(IntentionType.DEACTIVATE);
         this.deactivations = sensors;
     }
 
@@ -56,7 +51,7 @@ public class DeactivateIntention extends Intention {
 
     public boolean addDeactivation(String sensor) {
         if (this.hasDeactivationOfSensor(sensor)) {
-            Debugger.logger.warn(String.format("Sensor %s is already intended to be activated", sensor));
+            Debugger.logger.warn(String.format("Sensor %s is already intended to be deactivated", sensor));
             return true;
         }
         this.deactivations.add(sensor);
@@ -67,17 +62,17 @@ public class DeactivateIntention extends Intention {
         return this.deactivations;
     }
 
-    public boolean hasDeactivations() {
-        return !this.deactivations.isEmpty();
-    }
-
     public boolean hasDeactivationOfSensor(String sensor) {
         return this.deactivations.contains(sensor);
     }
 
+    public boolean hasDeactivations() {
+        return !this.deactivations.isEmpty();
+    }
+
     public boolean removeDeactivation(String sensor) {
         if (!this.hasDeactivationOfSensor(sensor)) {
-            Debugger.logger.warn(String.format("Sensor %s is not intended to be activated", sensor));
+            Debugger.logger.warn(String.format("Sensor %s is not intended to be deactivated", sensor));
             return true;
         }
         this.deactivations.remove(sensor);

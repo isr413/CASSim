@@ -5,8 +5,9 @@ import com.seat.rescuesim.common.math.*;
 
 /** Represents the single cubic zone within the map grid. */
 public class Zone extends JSONAble {
+    private static final String ZONE_AERIAL = "aerial_field";
+    private static final String ZONE_GROUND = "ground_field";
     private static final String ZONE_LOCATION = "location";
-    private static final String ZONE_FIELDS = "fields";
     private static final String ZONE_SIZE = "size";
     private static final String ZONE_TYPE = "type";
 
@@ -49,13 +50,15 @@ public class Zone extends JSONAble {
         this.type = ZoneType.values()[json.getInt(Zone.ZONE_TYPE)];
         this.location = new Vector(json.getJSONArray(Zone.ZONE_LOCATION));
         this.size = json.getInt(Zone.ZONE_SIZE);
-        if (json.hasKey(Zone.ZONE_FIELDS)) {
-            JSONArray fields = json.getJSONArray(Zone.ZONE_FIELDS);
-            this.ground = new Field(fields.getJSONArray(0));
-            this.aerial = new Field(fields.getJSONArray(1));
+        if (json.hasKey(Zone.ZONE_AERIAL)) {
+            this.aerial = new Field(json.getJSONArray(Zone.ZONE_AERIAL));
+        } else {
+            this.aerial = new Field();
+        }
+        if (json.hasKey(Zone.ZONE_GROUND)) {
+            this.ground = new Field(json.getJSONArray(Zone.ZONE_GROUND));
         } else {
             this.ground = new Field();
-            this.aerial = new Field();
         }
     }
 
@@ -83,16 +86,24 @@ public class Zone extends JSONAble {
         return this.type;
     }
 
+    public boolean hasAerialField() {
+        return !this.aerial.getFieldType().equals(FieldType.NONE);
+    }
+
+    public boolean hasGroundField() {
+        return !this.ground.getFieldType().equals(FieldType.NONE);
+    }
+
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(Zone.ZONE_TYPE, this.type.getType());
         json.put(Zone.ZONE_LOCATION, this.location.toJSON());
         json.put(Zone.ZONE_SIZE, this.size);
-        if (!this.ground.getType().equals(FieldType.NONE) || !this.aerial.getType().equals(FieldType.NONE)) {
-            JSONArrayBuilder fields = JSONBuilder.Array();
-            fields.put(this.ground.toJSON());
-            fields.put(this.aerial.toJSON());
-            json.put(Zone.ZONE_FIELDS, fields.toJSON());
+        if (this.hasAerialField()) {
+            json.put(Zone.ZONE_AERIAL, this.aerial.toJSON());
+        }
+        if (this.hasGroundField()) {
+            json.put(Zone.ZONE_GROUND, this.ground.toJSON());
         }
         return json.toJSON();
     }

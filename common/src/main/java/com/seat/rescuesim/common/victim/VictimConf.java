@@ -9,6 +9,10 @@ import com.seat.rescuesim.common.remote.RemoteType;
 /** A serializable configuration of a Victim Remote. */
 public class VictimConf extends RemoteConf {
 
+    public static VictimConf None() {
+        return new VictimConf(VictimSpec.None(), 0, false);
+    }
+
     public VictimConf(JSONObject json) {
         super(json);
     }
@@ -44,6 +48,10 @@ public class VictimConf extends RemoteConf {
 
     public VictimType getSpecType() {
         return (VictimType) this.spec.getSpecType();
+    }
+
+    public boolean hasSpec() {
+        return !this.getSpecType().equals(VictimType.NONE);
     }
 
 }

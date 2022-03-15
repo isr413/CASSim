@@ -62,11 +62,11 @@ public abstract class RemoteController extends JSONAble {
     }
 
     public boolean addIntention(Intention intent) {
-        if (this.hasIntentionWithType(intent.getType())) {
+        if (this.hasIntentionWithType(intent.getIntentionType())) {
             Debugger.logger.err(String.format("Remote %s already has intention %s", this.remoteID, intent.getLabel()));
             return this.hasIntention(intent);
         }
-        this.intentions.put(intent.getType(), intent);
+        this.intentions.put(intent.getIntentionType(), intent);
         return true;
     }
 
@@ -99,7 +99,8 @@ public abstract class RemoteController extends JSONAble {
     }
 
     public boolean hasIntention(Intention intent) {
-        return this.hasIntentionWithType(intent.getType()) && this.intentions.get(intent.getType()).equals(intent);
+        return this.hasIntentionWithType(intent.getIntentionType()) &&
+            this.intentions.get(intent.getIntentionType()).equals(intent);
     }
 
     public boolean hasIntentions() {
@@ -115,7 +116,7 @@ public abstract class RemoteController extends JSONAble {
             Debugger.logger.warn(String.format("Remote %s has no intention for %s", this.remoteID, type.getLabel()));
             return true;
         }
-        this.intentions.remove(intent.getType());
+        this.intentions.remove(intent.getIntentionType());
         return true;
     }
 

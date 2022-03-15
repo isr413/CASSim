@@ -9,6 +9,10 @@ import com.seat.rescuesim.common.remote.RemoteType;
 /** A serializable configuration of a Base Remote. */
 public class BaseConf extends RemoteConf {
 
+    public static BaseConf None() {
+        return new BaseConf(BaseSpec.None(), 0, false);
+    }
+
     public BaseConf(JSONObject json) {
         super(json);
     }
@@ -44,6 +48,10 @@ public class BaseConf extends RemoteConf {
 
     public BaseType getSpecType() {
         return (BaseType) this.spec.getSpecType();
+    }
+
+    public boolean hasSpec() {
+        return !this.getSpecType().equals(BaseType.NONE);
     }
 
 }

@@ -1,7 +1,6 @@
 package com.seat.rescuesim.common.remote.intent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 
 import com.seat.rescuesim.common.json.*;
@@ -26,10 +25,6 @@ public class ActivateIntention extends Intention {
 
     public ActivateIntention() {
         this(new HashSet<String>());
-    }
-
-    public ActivateIntention(String[] sensors) {
-        this(new ArrayList<String>(Arrays.asList(sensors)));
     }
 
     public ActivateIntention(ArrayList<String> sensors) {
@@ -64,12 +59,12 @@ public class ActivateIntention extends Intention {
         return this.activations;
     }
 
-    public boolean hasActivations() {
-        return !this.activations.isEmpty();
-    }
-
     public boolean hasActivationOfSensor(String sensor) {
         return this.activations.contains(sensor);
+    }
+
+    public boolean hasActivations() {
+        return !this.activations.isEmpty();
     }
 
     public boolean removeActivation(String sensor) {

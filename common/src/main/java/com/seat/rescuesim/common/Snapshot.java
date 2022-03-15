@@ -9,7 +9,6 @@ import com.seat.rescuesim.common.drone.DroneState;
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.remote.RemoteState;
 import com.seat.rescuesim.common.remote.RemoteType;
-import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.util.Debugger;
 import com.seat.rescuesim.common.victim.VictimState;
 
@@ -17,7 +16,7 @@ import com.seat.rescuesim.common.victim.VictimState;
 public class Snapshot extends JSONAble {
     private static final String ACTIVE_REMOTES = "active_remotes";
     private static final String HASH = "hash";
-    private static final String REMOTES = "remotes";
+    private static final String REMOTE_IDS = "remote_ids";
     private static final String SCENARIO_ID = "scenario_id";
     private static final String STATE = "state";
     private static final String STATUS = "status";
@@ -26,7 +25,7 @@ public class Snapshot extends JSONAble {
 
     private HashSet<String> activeRemotes;
     private String hash;
-    private HashSet<String> remotes;
+    private HashSet<String> remoteIDs;
     private String scenarioID;
     private HashMap<String, RemoteState> state;
     private SnapStatus status;
@@ -45,19 +44,19 @@ public class Snapshot extends JSONAble {
         super(encoding);
     }
 
-    public Snapshot(String hash, String scenarioID, double stepSize, HashSet<String> remotes,
+    public Snapshot(String hash, String scenarioID, double stepSize, HashSet<String> remoteIDs,
             HashMap<String, RemoteState> state) {
-        this(hash, scenarioID, SnapStatus.START, 0, stepSize, remotes, remotes, state);
+        this(hash, scenarioID, SnapStatus.START, 0, stepSize, remoteIDs, remoteIDs, state);
     }
 
     public Snapshot(String hash, String scenarioID, SnapStatus status, double time, double stepSize,
-            HashSet<String> remotes, HashSet<String> activeRemotes, HashMap<String, RemoteState> state) {
+            HashSet<String> remoteIDs, HashSet<String> activeRemotes, HashMap<String, RemoteState> state) {
         this.hash = hash;
         this.scenarioID = scenarioID;
         this.status = status;
         this.time = time;
         this.stepSize = stepSize;
-        this.remotes = remotes;
+        this.remoteIDs = remoteIDs;
         this.activeRemotes = activeRemotes;
         this.state = state;
     }
@@ -69,10 +68,10 @@ public class Snapshot extends JSONAble {
         this.status = SnapStatus.values()[json.getInt(Snapshot.STATUS)];
         this.time = json.getDouble(Snapshot.TIME);
         this.stepSize = json.getDouble(Snapshot.STEP_SIZE);
-        this.remotes = new HashSet<>();
-        JSONArray jsonRemotes = json.getJSONArray(Snapshot.REMOTES);
+        this.remoteIDs = new HashSet<>();
+        JSONArray jsonRemotes = json.getJSONArray(Snapshot.REMOTE_IDS);
         for (int i = 0; i < jsonRemotes.length(); i++) {
-            this.remotes.add(jsonRemotes.getString(i));
+            this.remoteIDs.add(jsonRemotes.getString(i));
         }
         this.activeRemotes = new HashSet<>();
         JSONArray jsonActiveRemotes = json.getJSONArray(Snapshot.ACTIVE_REMOTES);
@@ -90,11 +89,6 @@ public class Snapshot extends JSONAble {
                     break;
                 case DRONE:
                     state = new DroneState(jsonState.getJSONObject(i));
-                    break;
-                case NONE:
-                    break;
-                case SENSOR:
-                    state = new SensorState(jsonState.getJSONObject(i));
                     break;
                 case VICTIM:
                     state = new VictimState(jsonState.getJSONObject(i));
@@ -116,16 +110,16 @@ public class Snapshot extends JSONAble {
         return this.hash;
     }
 
-    public ArrayList<String> getRemotes() {
-        return new ArrayList<String>(this.remotes);
+    public ArrayList<String> getRemoteIDs() {
+        return new ArrayList<String>(this.remoteIDs);
     }
 
-    public RemoteState getRemoteState(String remote) {
-        if (!this.hasRemoteState(remote)) {
-            Debugger.logger.err(String.format("No state for remote %s", remote));
+    public RemoteState getRemoteState(String remoteID) {
+        if (!this.hasStateWithID(remoteID)) {
+            Debugger.logger.err(String.format("No state for remote %s", remoteID));
             return null;
         }
-        return this.state.get(remote);
+        return this.state.get(remoteID);
     }
 
     public String getScenarioID() {
@@ -148,24 +142,24 @@ public class Snapshot extends JSONAble {
         return this.time;
     }
 
-    public boolean hasActiveRemote(String remote) {
-        return this.activeRemotes.contains(remote);
+    public boolean hasActiveRemoteWithID(String remoteID) {
+        return this.activeRemotes.contains(remoteID);
     }
 
     public boolean hasActiveRemotes() {
         return !this.activeRemotes.isEmpty();
     }
 
-    public boolean hasRemote(String remote) {
-        return this.remotes.contains(remote);
+    public boolean hasRemoteWithID(String remoteID) {
+        return this.remoteIDs.contains(remoteID);
     }
 
     public boolean hasRemotes() {
-        return !this.remotes.isEmpty();
+        return !this.remoteIDs.isEmpty();
     }
 
-    public boolean hasRemoteState(String remote) {
-        return this.state.containsKey(remote);
+    public boolean hasStateWithID(String remoteID) {
+        return this.state.containsKey(remoteID);
     }
 
     public boolean hasState() {
@@ -180,10 +174,10 @@ public class Snapshot extends JSONAble {
         json.put(Snapshot.TIME, this.time);
         json.put(Snapshot.STEP_SIZE, this.stepSize);
         JSONArrayBuilder jsonRemotes = JSONBuilder.Array();
-        for (String remote : this.remotes) {
+        for (String remote : this.remoteIDs) {
             jsonRemotes.put(remote);
         }
-        json.put(Snapshot.REMOTES, jsonRemotes.toJSON());
+        json.put(Snapshot.REMOTE_IDS, jsonRemotes.toJSON());
         JSONArrayBuilder jsonActiveRemotes = JSONBuilder.Array();
         for (String remote : this.activeRemotes) {
             jsonActiveRemotes.put(remote);

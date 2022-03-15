@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common.remote.intent;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.seat.rescuesim.common.json.JSONObject;
@@ -13,12 +14,20 @@ public class Intent {
         return new ActivateIntention();
     }
 
+    public static Intention Activate(ArrayList<String> sensors) {
+        return new ActivateIntention(sensors);
+    }
+
     public static Intention Activate(HashSet<String> sensors) {
         return new ActivateIntention(sensors);
     }
 
     public static Intention Deactive() {
         return new DeactivateIntention();
+    }
+
+    public static Intention Deactivate(ArrayList<String> sensors) {
+        return new DeactivateIntention(sensors);
     }
 
     public static Intention Deactivate(HashSet<String> sensors) {
@@ -54,7 +63,7 @@ public class Intent {
     }
 
     public static Intention Some(JSONObject json) {
-        IntentionType type = Intention.decodeType(json);
+        IntentionType type = Intention.decodeIntentionType(json);
         switch (type) {
             case ACTIVATE:
                 return new ActivateIntention(json);
@@ -66,8 +75,6 @@ public class Intent {
                 return new GotoIntention(json);
             case MOVE:
                 return new MoveIntention(json);
-            case NONE:
-                return new NoneIntention();
             case SHUTDOWN:
                 return new ShutdownIntention();
             case STARTUP:
@@ -75,7 +82,7 @@ public class Intent {
             case STOP:
                 return new StopIntention();
             default:
-                return null;
+                return new NoneIntention();
         }
     }
 
@@ -92,11 +99,11 @@ public class Intent {
     }
 
     public static Intention Startup() {
-        return new DoneIntention();
+        return new StartupIntention();
     }
 
     public static Intention Stop() {
-        return new DoneIntention();
+        return new StopIntention();
     }
 
 }

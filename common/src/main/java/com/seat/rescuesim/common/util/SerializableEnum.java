@@ -3,9 +3,6 @@ package com.seat.rescuesim.common.util;
 /** An interface to support serializable enums. */
 public interface SerializableEnum {
 
-    /** Must be implemented to return the enum's type (enum constant). */
-    int getType();
-
     /** Returns the String encoding of the enum. */
     default String encode() {
         return String.valueOf(this.getType());
@@ -20,5 +17,8 @@ public interface SerializableEnum {
     default String getLabel() {
         return String.format("<%d>", this.getType());
     }
+
+    /** Must be implemented to return the enum's type (enum constant). */
+    int getType();
 
 }

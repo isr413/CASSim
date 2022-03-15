@@ -9,6 +9,10 @@ import com.seat.rescuesim.common.remote.RemoteType;
 /** A serializable configuration of a Drone Remote. */
 public class DroneConf extends RemoteConf {
 
+    public static DroneConf None() {
+        return new DroneConf(DroneSpec.None(), 0, false);
+    }
+
     public DroneConf(JSONObject json) {
         super(json);
     }
@@ -44,6 +48,10 @@ public class DroneConf extends RemoteConf {
 
     public DroneType getSpecType() {
         return (DroneType) this.spec.getSpecType();
+    }
+
+    public boolean hasSpec() {
+        return !this.getSpecType().equals(DroneType.NONE);
     }
 
 }

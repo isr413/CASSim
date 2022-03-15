@@ -178,27 +178,33 @@ public class Scenario extends JSONAble {
         this.disasterScale = json.getDouble(Scenario.DISASTER_SCALE);
         this.missionLength = json.getInt(Scenario.MISSION_LENGTH);
         this.stepSize = json.getDouble(Scenario.STEP_SIZE);
-        JSONArray jsonVictims = json.getJSONArray(Scenario.VICTIM_CONF);
         this.victimConf = new ArrayList<>();
-        for (int i = 0; i < jsonVictims.length(); i++) {
-            this.victimConf.add(new VictimConf(jsonVictims.getJSONObject(i)));
+        if (json.hasKey(Scenario.VICTIM_CONF)) {
+            JSONArray jsonVictims = json.getJSONArray(Scenario.VICTIM_CONF);
+            for (int i = 0; i < jsonVictims.length(); i++) {
+                this.victimConf.add(new VictimConf(jsonVictims.getJSONObject(i)));
+            }
         }
-        JSONArray jsonBases = json.getJSONArray(Scenario.BASE_CONF);
         this.baseConf = new ArrayList<>();
-        for (int i = 0; i < jsonBases.length(); i++) {
-            this.baseConf.add(new BaseConf(jsonBases.getJSONObject(i)));
+        if (json.hasKey(Scenario.BASE_CONF)) {
+            JSONArray jsonBases = json.getJSONArray(Scenario.BASE_CONF);
+            for (int i = 0; i < jsonBases.length(); i++) {
+                this.baseConf.add(new BaseConf(jsonBases.getJSONObject(i)));
+            }
         }
-        JSONArray jsonDrones = json.getJSONArray(Scenario.DRONE_CONF);
         this.droneConf = new ArrayList<>();
-        for (int i = 0; i < jsonDrones.length(); i++) {
-            this.droneConf.add(new DroneConf(jsonDrones.getJSONObject(i)));
+        if (json.hasKey(Scenario.DRONE_CONF)) {
+            JSONArray jsonDrones = json.getJSONArray(Scenario.DRONE_CONF);
+            for (int i = 0; i < jsonDrones.length(); i++) {
+                this.droneConf.add(new DroneConf(jsonDrones.getJSONObject(i)));
+            }
         }
         this.countBases();
         this.countDrones();
         this.countVictims();
     }
 
-    public ArrayList<BaseConf> getBaseConfiguration() {
+    public ArrayList<BaseConf> getBaseConf() {
         return this.baseConf;
     }
 
@@ -206,7 +212,7 @@ public class Scenario extends JSONAble {
         return this.disasterScale;
     }
 
-    public ArrayList<DroneConf> getDroneConfiguration() {
+    public ArrayList<DroneConf> getDroneConf() {
         return this.droneConf;
     }
 
@@ -242,8 +248,20 @@ public class Scenario extends JSONAble {
         return this.stepSize;
     }
 
-    public ArrayList<VictimConf> getVictimConfiguration() {
+    public ArrayList<VictimConf> getVictimConf() {
         return this.victimConf;
+    }
+
+    public boolean hasBaseConf() {
+        return !this.baseConf.isEmpty();
+    }
+
+    public boolean hasDroneConf() {
+        return !this.droneConf.isEmpty();
+    }
+
+    public boolean hasVictimConf() {
+        return !this.victimConf.isEmpty();
     }
 
     public JSONOption toJSON() {
@@ -255,23 +273,29 @@ public class Scenario extends JSONAble {
         json.put(Scenario.MISSION_LENGTH, this.missionLength);
         json.put(Scenario.STEP_SIZE, this.stepSize);
         json.put(Scenario.NUM_VICTIMS, this.numVictims);
-        JSONArrayBuilder jsonVictims = JSONBuilder.Array();
-        for (VictimConf conf : this.victimConf) {
-            jsonVictims.put(conf.toJSON());
+        if (this.hasVictimConf()) {
+            JSONArrayBuilder jsonVictims = JSONBuilder.Array();
+            for (VictimConf conf : this.victimConf) {
+                jsonVictims.put(conf.toJSON());
+            }
+            json.put(Scenario.VICTIM_CONF, jsonVictims.toJSON());
         }
-        json.put(Scenario.VICTIM_CONF, jsonVictims.toJSON());
         json.put(Scenario.NUM_BASES, this.numBases);
-        JSONArrayBuilder jsonBases = JSONBuilder.Array();
-        for (BaseConf conf : this.baseConf) {
-            jsonBases.put(conf.toJSON());
+        if (this.hasBaseConf()) {
+            JSONArrayBuilder jsonBases = JSONBuilder.Array();
+            for (BaseConf conf : this.baseConf) {
+                jsonBases.put(conf.toJSON());
+            }
+            json.put(Scenario.BASE_CONF, jsonBases.toJSON());
         }
-        json.put(Scenario.BASE_CONF, jsonBases.toJSON());
         json.put(Scenario.NUM_DRONES, this.numDrones);
-        JSONArrayBuilder jsonDrones = JSONBuilder.Array();
-        for (DroneConf conf : this.droneConf) {
-            jsonDrones.put(conf.toJSON());
+        if (this.hasDroneConf()) {
+            JSONArrayBuilder jsonDrones = JSONBuilder.Array();
+            for (DroneConf conf : this.droneConf) {
+                jsonDrones.put(conf.toJSON());
+            }
+            json.put(Scenario.DRONE_CONF, jsonDrones.toJSON());
         }
-        json.put(Scenario.DRONE_CONF, jsonDrones.toJSON());
         return json.toJSON();
     }
 
