@@ -42,7 +42,7 @@ public class BaseConf extends RemoteConf {
         this.spec = new BaseSpec(jsonSpec);
     }
 
-    public BaseSpec getSpecification() {
+    public BaseSpec getSpec() {
         return (BaseSpec) this.spec;
     }
 

@@ -42,7 +42,7 @@ public class VictimConf extends RemoteConf {
         this.spec = new VictimSpec(jsonSpec);
     }
 
-    public VictimSpec getSpecification() {
+    public VictimSpec getSpec() {
         return (VictimSpec) this.spec;
     }
 

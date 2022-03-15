@@ -42,7 +42,7 @@ public class DroneConf extends RemoteConf {
         this.spec = new DroneSpec(jsonSpec);
     }
 
-    public DroneSpec getSpecification() {
+    public DroneSpec getSpec() {
         return (DroneSpec) this.spec;
     }
 
