@@ -10,6 +10,8 @@ import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable specification of a Victim. */
 public class VictimSpec extends KineticRemoteSpec {
+    private static final String SPEED_MEAN = "speed_mean";
+    private static final String SPEED_STDDEV = "speed_stddev";
     private static final String VICTIM_TYPE = "victim_type";
 
     public static VictimSpec None() {
@@ -25,17 +27,19 @@ public class VictimSpec extends KineticRemoteSpec {
     }
 
     public static VictimSpec Kinetic(Vector location, double maxBatteryPower, Vector batteryUsage, double maxVelocity,
-            double maxAcceleration, double maxJerk) {
+            double maxAcceleration, double maxJerk, double mean, double stddev) {
         return new VictimSpec(VictimType.DEFAULT, location, maxBatteryPower, new ArrayList<SensorConfig>(),
-            maxVelocity, maxAcceleration, maxJerk);
+            maxVelocity, maxAcceleration, maxJerk, mean, stddev);
     }
 
     public static VictimSpec KineticWithSensors(Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors,
-            double maxVelocity, double maxAcceleration, double maxJerk) {
+            double maxVelocity, double maxAcceleration, double maxJerk, double mean, double stddev) {
         return new VictimSpec(VictimType.DEFAULT, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration,
-            maxJerk);
+            maxJerk, mean, stddev);
     }
 
+    private double speedMean;
+    private double speedStddev;
     private VictimType type;
 
     public VictimSpec(JSONObject json) {
@@ -52,14 +56,23 @@ public class VictimSpec extends KineticRemoteSpec {
 
     public VictimSpec(VictimType type, Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors,
             double maxVelocity, double maxAcceleration, double maxJerk) {
+        this(type, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk, 1, 0);
+    }
+
+    public VictimSpec(VictimType type, Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors,
+            double maxVelocity, double maxAcceleration, double maxJerk, double mean, double stddev) {
         super(RemoteType.VICTIM, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
         this.type = type;
+        this.speedMean = mean;
+        this.speedStddev = stddev;
     }
 
     @Override
     protected void decode(JSONObject json) {
         super.decode(json);
         this.type = VictimType.values()[json.getInt(VictimSpec.VICTIM_TYPE)];
+        this.speedMean = json.getDouble(VictimSpec.SPEED_MEAN);
+        this.speedStddev = json.getDouble(VictimSpec.SPEED_STDDEV);
     }
 
     @Override
@@ -71,14 +84,25 @@ public class VictimSpec extends KineticRemoteSpec {
         return this.type;
     }
 
+    public double getSpeedMean() {
+        return this.speedMean;
+    }
+
+    public double getSpeedStddev() {
+        return this.speedStddev;
+    }
+
     public JSONOption toJSON() {
         JSONObjectBuilder json = super.getJSONBuilder();
         json.put(VictimSpec.VICTIM_TYPE, this.type.getType());
+        json.put(VictimSpec.SPEED_MEAN, this.speedMean);
+        json.put(VictimSpec.SPEED_STDDEV, this.speedStddev);
         return json.toJSON();
     }
 
     public boolean equals(VictimSpec spec) {
-        return super.equals(spec) && this.type.equals(spec.type);
+        return super.equals(spec) && this.type.equals(spec.type) && this.speedMean == spec.speedMean &&
+            this.speedStddev == spec.speedStddev;
     }
 
 }
