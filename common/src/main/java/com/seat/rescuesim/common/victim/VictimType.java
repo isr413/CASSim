@@ -1,6 +1,6 @@
 package com.seat.rescuesim.common.victim;
 
-import com.seat.rescuesim.common.json.SerializableEnum;
+import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable enumeration to denote types of Victims. */
 public enum VictimType implements SerializableEnum {

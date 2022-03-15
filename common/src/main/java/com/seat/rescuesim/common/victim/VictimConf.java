@@ -3,15 +3,11 @@ package com.seat.rescuesim.common.victim;
 import java.util.ArrayList;
 import java.util.HashSet;
 import com.seat.rescuesim.common.json.*;
-import com.seat.rescuesim.common.remote.RemoteConfiguration;
+import com.seat.rescuesim.common.remote.RemoteConf;
 import com.seat.rescuesim.common.remote.RemoteType;
 
-/** A serializable class to represent the configuration of Victim Remotes. */
-public class VictimConf extends RemoteConfiguration {
-
-    public static VictimConf None() {
-        return new VictimConf();
-    }
+/** A serializable configuration of a Victim Remote. */
+public class VictimConf extends RemoteConf {
 
     public VictimConf(JSONObject json) {
         super(json);
@@ -25,48 +21,24 @@ public class VictimConf extends RemoteConfiguration {
         super(encoding);
     }
 
-    public VictimConf() {
-        super();
+    public VictimConf(VictimSpec spec, int count, boolean dynamic) {
+        super(RemoteType.VICTIM, spec, count, dynamic);
     }
 
-    public VictimConf(VictimSpec spec) {
-        super(RemoteType.VICTIM, spec);
+    public VictimConf(VictimSpec spec, ArrayList<String> remoteIDs, boolean dynamic) {
+        super(RemoteType.VICTIM, spec, remoteIDs, dynamic);
     }
 
-    public VictimConf(VictimSpec spec, String[] remotes) {
-        super(RemoteType.VICTIM, spec, remotes);
-    }
-
-    public VictimConf(VictimSpec spec, ArrayList<String> remotes) {
-        super(RemoteType.VICTIM, spec, remotes);
-    }
-
-    public VictimConf(VictimSpec spec, HashSet<String> remotes) {
-        super(RemoteType.VICTIM, spec, remotes);
-    }
-
-    public VictimConf(VictimSpec spec, int count) {
-        super(RemoteType.VICTIM, spec, count);
-    }
-
-    public VictimConf(VictimSpec spec, boolean dynamic) {
-        super(RemoteType.VICTIM, spec, dynamic);
-    }
-
-    public VictimConf(VictimSpec spec, String[] remotes, boolean dynamic) {
-        super(RemoteType.VICTIM, spec, remotes, dynamic);
-    }
-
-    public VictimConf(VictimSpec spec, ArrayList<String> remotes, boolean dynamic) {
-        super(RemoteType.VICTIM, spec, remotes, dynamic);
-    }
-
-    public VictimConf(VictimSpec spec, HashSet<String> remotes, boolean dynamic) {
-        super(RemoteType.VICTIM, spec, remotes, dynamic);
+    public VictimConf(VictimSpec spec, HashSet<String> remoteIDs, boolean dynamic) {
+        super(RemoteType.VICTIM, spec, remoteIDs, dynamic);
     }
 
     public VictimSpec getSpecification() {
         return (VictimSpec) this.spec;
+    }
+
+    public VictimType getSpecType() {
+        return (VictimType) this.spec.getSpecType();
     }
 
     @Override
