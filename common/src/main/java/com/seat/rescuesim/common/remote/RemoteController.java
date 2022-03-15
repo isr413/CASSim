@@ -15,9 +15,9 @@ public abstract class RemoteController extends JSONAble {
     private static final String REMOTE_ID = "remote_id";
     private static final String REMOTE_TYPE = "remote_type";
 
-    private HashMap<IntentionType, Intention> intentions;
-    private String remoteID;
-    private RemoteType type;
+    protected HashMap<IntentionType, Intention> intentions;
+    protected String remoteID;
+    protected RemoteType type;
 
     public RemoteController(JSONObject json) {
         super(json);

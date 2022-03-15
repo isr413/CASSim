@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common.remote;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.seat.rescuesim.common.json.*;
@@ -57,6 +58,10 @@ public abstract class RemoteConf extends JSONAble {
         for (int i = 0; i < count; i++) {
             this.remoteIDs.add(String.format("%s:(%d)", spec.getLabel(), i));
         }
+    }
+
+    public RemoteConf(RemoteType type, RemoteSpec spec, ArrayList<String> remoteIDs, boolean dynamic) {
+        this(type, spec, new HashSet<String>(remoteIDs), dynamic);
     }
 
     public RemoteConf(RemoteType type, RemoteSpec spec, HashSet<String> remoteIDs, boolean dynamic) {

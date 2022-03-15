@@ -83,12 +83,12 @@ public abstract class KineticRemoteSpec extends RemoteSpec {
         return this.maxVelocity != Double.POSITIVE_INFINITY;
     }
 
-    public boolean isActive() {
-        return this.hasAcceleration() && this.hasJerk() && this.hasVelocity();
+    public boolean isKinetic() {
+        return this.hasVelocity() && this.hasAcceleration() && this.hasJerk();
     }
 
-    public boolean isInactive() {
-        return !this.isActive();
+    public boolean isStatic() {
+        return !this.isKinetic();
     }
 
     public abstract SerializableEnum getSpecType();

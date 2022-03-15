@@ -33,11 +33,11 @@ public abstract class RemoteState extends JSONAble {
         return RemoteState.decodeType(JSONOption.String(encoding));
     }
 
-    private double battery;
-    private Vector location;
+    protected double battery;
+    protected Vector location;
     protected String remoteID;
     protected RemoteType type;
-    private HashMap<String, SensorState> sensors;
+    protected HashMap<String, SensorState> sensors;
 
     public RemoteState(JSONObject json) {
         super(json);
