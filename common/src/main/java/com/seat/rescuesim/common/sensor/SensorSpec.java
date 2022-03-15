@@ -85,7 +85,7 @@ public class SensorSpec extends JSONAble {
         return this.range;
     }
 
-    public SensorType getType() {
+    public SensorType getSpecType() {
         return this.type;
     }
 

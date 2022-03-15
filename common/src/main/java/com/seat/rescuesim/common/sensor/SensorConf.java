@@ -69,7 +69,7 @@ public class SensorConf extends JSONAble {
     }
 
     public SensorType getSpecType() {
-        return this.spec.getType();
+        return this.spec.getSpecType();
     }
 
     public boolean hasSensorWithID(String sensorID) {

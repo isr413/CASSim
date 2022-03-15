@@ -8,7 +8,7 @@ import com.seat.rescuesim.common.remote.KineticRemoteSpec;
 import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.sensor.SensorConf;
 
-/** A serializable specification of a Drone. */
+/** A serializable specification of a Drone Remote. */
 public class DroneSpec extends KineticRemoteSpec {
     private static final String DRONE_BATTERY_USAGE = "battery_usage";
     private static final String DRONE_TYPE = "drone_type";

@@ -8,9 +8,9 @@ import com.seat.rescuesim.common.remote.RemoteSpec;
 import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.sensor.SensorConf;
 
-/** A serializable specification of a Base. */
+/** A serializable specification of a Base Remote. */
 public class BaseSpec extends RemoteSpec {
-    private static final String BASE_TYPE = "drone_type";
+    private static final String BASE_TYPE = "base_type";
 
     public static BaseSpec None() {
         return new BaseSpec(BaseType.NONE, new Vector(), 0, new ArrayList<SensorConf>());
@@ -51,7 +51,7 @@ public class BaseSpec extends RemoteSpec {
 
     @Override
     public String getLabel() {
-        return String.format("d%s", this.type.getLabel());
+        return String.format("b%s", this.type.getLabel());
     }
 
     public BaseType getSpecType() {

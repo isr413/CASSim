@@ -3,8 +3,8 @@ package com.seat.rescuesim.common.sensor;
 import com.seat.rescuesim.common.json.*;
 
 public class SensorState extends JSONAble {
-    private static final String SENSOR_ID = "sensor_id";
     private static final String SENSOR_DATA = "data";
+    private static final String SENSOR_ID = "sensor_id";
     private static final String SENSOR_TYPE = "sensor_type";
 
     private String data;
@@ -52,7 +52,7 @@ public class SensorState extends JSONAble {
         return this.sensorID;
     }
 
-    public SensorType getType() {
+    public SensorType getSpecType() {
         return this.type;
     }
 
