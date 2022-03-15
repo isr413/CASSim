@@ -7,7 +7,7 @@ import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.util.Debugger;
 import com.seat.rescuesim.common.util.SerializableEnum;
 
-/** Serializable Remote configurations. */
+/** A serializable Remote configuration. */
 public abstract class RemoteConf extends JSONAble {
     private static final String COUNT = "count";
     private static final String IS_DYNAMIC = "is_dynamic";
@@ -75,7 +75,7 @@ public abstract class RemoteConf extends JSONAble {
     @Override
     protected void decode(JSONObject json) {
         this.type = RemoteType.values()[json.getInt(RemoteConf.REMOTE_TYPE)];
-        this.decodeSpecification(json.getJSONObject(RemoteConf.SPEC));
+        this.decodeSpec(json.getJSONObject(RemoteConf.SPEC));
         this.count = json.getInt(RemoteConf.COUNT);
         this.remoteIDs = new HashSet<>();
         JSONArray jsonRemotes = json.getJSONArray(RemoteConf.REMOTE_IDS);
@@ -85,7 +85,7 @@ public abstract class RemoteConf extends JSONAble {
         this.dynamic = json.getBoolean(RemoteConf.IS_DYNAMIC);
     }
 
-    protected abstract void decodeSpecification(JSONObject jsonSpec);
+    protected abstract void decodeSpec(JSONObject jsonSpec);
 
     public int getCount() {
         return this.count;
@@ -95,24 +95,24 @@ public abstract class RemoteConf extends JSONAble {
         return this.remoteIDs;
     }
 
-    public RemoteSpec getSpec() {
-        return this.spec;
-    }
-
     public RemoteType getRemoteType() {
         return this.type;
+    }
+
+    public RemoteSpec getSpec() {
+        return this.spec;
     }
 
     public SerializableEnum getSpecType() {
         return this.spec.getSpecType();
     }
 
-    public boolean hasRemoteWithID(String remoteID) {
-        return this.remoteIDs.contains(remoteID);
-    }
-
     public boolean hasRemotes() {
         return this.count > 0;
+    }
+
+    public boolean hasRemoteWithID(String remoteID) {
+        return this.remoteIDs.contains(remoteID);
     }
 
     public boolean isDynamic() {

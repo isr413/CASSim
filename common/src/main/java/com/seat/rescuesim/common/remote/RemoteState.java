@@ -9,7 +9,7 @@ import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.util.Debugger;
 import com.seat.rescuesim.common.util.SerializableEnum;
 
-/** A serializable class to represent a snapshot of a Remote. */
+/** A serializable snapshot of a Remote. */
 public abstract class RemoteState extends JSONAble {
     private static final String BATTERY = "battery";
     private static final String LOCATION = "location";
@@ -36,8 +36,8 @@ public abstract class RemoteState extends JSONAble {
     protected double battery;
     protected Vector location;
     protected String remoteID;
-    protected RemoteType type;
     protected HashMap<String, SensorState> sensors;
+    protected RemoteType type;
 
     public RemoteState(JSONObject json) {
         super(json);
@@ -88,12 +88,12 @@ public abstract class RemoteState extends JSONAble {
         return this.battery;
     }
 
-    public Vector getLocation() {
-        return this.location;
-    }
-
     public String getLabel() {
         return String.format("%s%s", this.remoteID, this.type.getLabel());
+    }
+
+    public Vector getLocation() {
+        return this.location;
     }
 
     public String getRemoteID() {
@@ -104,16 +104,16 @@ public abstract class RemoteState extends JSONAble {
         return this.type;
     }
 
+    public ArrayList<SensorState> getSensors() {
+        return new ArrayList<SensorState>(this.sensors.values());
+    }
+
     public SensorState getSensorWithID(String sensorID) {
         if (!this.hasSensorWithID(sensorID)) {
             Debugger.logger.err(String.format("No sensor %s found on remote %s", sensorID, this.remoteID));
             return null;
         }
         return this.sensors.get(sensorID);
-    }
-
-    public ArrayList<SensorState> getSensors() {
-        return new ArrayList<SensorState>(this.sensors.values());
     }
 
     public abstract SerializableEnum getSpecType();
@@ -138,6 +138,15 @@ public abstract class RemoteState extends JSONAble {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(RemoteState.REMOTE_TYPE, this.type.getType());
         json.put(RemoteState.REMOTE_ID, this.remoteID);
+        json.put(RemoteState.LOCATION, this.location.toJSON());
+        json.put(RemoteState.BATTERY, this.battery);
+        if (this.hasSensors()) {
+            JSONArrayBuilder jsonSensors = JSONBuilder.Array();
+            for (SensorState sensor : this.sensors.values()) {
+                jsonSensors.put(sensor.toJSON());
+            }
+            json.put(RemoteState.SENSORS, jsonSensors.toJSON());
+        }
         return json;
     }
 

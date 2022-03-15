@@ -33,17 +33,17 @@ public class VictimConf extends RemoteConf {
         super(RemoteType.VICTIM, spec, remoteIDs, dynamic);
     }
 
+    @Override
+    protected void decodeSpec(JSONObject jsonSpec) {
+        this.spec = new VictimSpec(jsonSpec);
+    }
+
     public VictimSpec getSpecification() {
         return (VictimSpec) this.spec;
     }
 
     public VictimType getSpecType() {
         return (VictimType) this.spec.getSpecType();
-    }
-
-    @Override
-    protected void decodeSpecification(JSONObject jsonSpec) {
-        this.spec = new VictimSpec(jsonSpec);
     }
 
 }

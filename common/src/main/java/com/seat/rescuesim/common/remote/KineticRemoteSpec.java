@@ -9,7 +9,7 @@ import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorConf;
 import com.seat.rescuesim.common.util.SerializableEnum;
 
-/** Serializable specification of a kinetic Remote. */
+/** A serializable specification of a kinetic Remote. */
 public abstract class KineticRemoteSpec extends RemoteSpec {
     private static final String MAX_ACCELERATION = "max_acceleration";
     private static final String MAX_JERK = "max_jerk";

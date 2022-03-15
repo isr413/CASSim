@@ -33,17 +33,17 @@ public class BaseConf extends RemoteConf {
         super(RemoteType.BASE, spec, remoteIDs, dynamic);
     }
 
+    @Override
+    protected void decodeSpec(JSONObject jsonSpec) {
+        this.spec = new BaseSpec(jsonSpec);
+    }
+
     public BaseSpec getSpecification() {
         return (BaseSpec) this.spec;
     }
 
     public BaseType getSpecType() {
         return (BaseType) this.spec.getSpecType();
-    }
-
-    @Override
-    protected void decodeSpecification(JSONObject jsonSpec) {
-        this.spec = new BaseSpec(jsonSpec);
     }
 
 }

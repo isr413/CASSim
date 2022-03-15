@@ -33,17 +33,17 @@ public class DroneConf extends RemoteConf {
         super(RemoteType.DRONE, spec, remoteIDs, dynamic);
     }
 
+    @Override
+    protected void decodeSpec(JSONObject jsonSpec) {
+        this.spec = new DroneSpec(jsonSpec);
+    }
+
     public DroneSpec getSpecification() {
         return (DroneSpec) this.spec;
     }
 
     public DroneType getSpecType() {
         return (DroneType) this.spec.getSpecType();
-    }
-
-    @Override
-    protected void decodeSpecification(JSONObject jsonSpec) {
-        this.spec = new DroneSpec(jsonSpec);
     }
 
 }

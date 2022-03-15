@@ -94,7 +94,7 @@ public abstract class RemoteController extends JSONAble {
         return this.remoteID;
     }
 
-    public RemoteType getType() {
+    public RemoteType getRemoteType() {
         return this.type;
     }
 

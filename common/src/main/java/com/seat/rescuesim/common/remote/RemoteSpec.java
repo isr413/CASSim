@@ -76,12 +76,12 @@ public abstract class RemoteSpec extends JSONAble {
         return this.location;
     }
 
-    public RemoteType getRemoteType() {
-        return this.type;
-    }
-
     public double getMaxBatteryPower() {
         return this.maxBatteryPower;
+    }
+
+    public RemoteType getRemoteType() {
+        return this.type;
     }
 
     public SensorConf getSensor(int idx) {
@@ -92,7 +92,11 @@ public abstract class RemoteSpec extends JSONAble {
         return this.sensors.get(idx);
     }
 
-    public SensorConf getSensor(String sensorID) {
+    public ArrayList<SensorConf> getSensors() {
+        return this.sensors;
+    }
+
+    public SensorConf getSensorWithID(String sensorID) {
         for (SensorConf conf : this.sensors) {
             if (conf.hasSensorWithID(sensorID)) {
                 return conf;
@@ -102,14 +106,10 @@ public abstract class RemoteSpec extends JSONAble {
         return null;
     }
 
-    public ArrayList<SensorConf> getSensors() {
-        return this.sensors;
-    }
-
     public ArrayList<SensorConf> getSensorsWithType(SensorType type) {
         ArrayList<SensorConf> confs = new ArrayList<>();
         for (SensorConf conf : this.sensors) {
-            if (conf.getSpec().getType().equals(type)) {
+            if (conf.getSpecType().equals(type)) {
                 confs.add(conf);
             }
         }
@@ -120,8 +120,14 @@ public abstract class RemoteSpec extends JSONAble {
         return confs;
     }
 
+    public abstract SerializableEnum getSpecType();
+
     public boolean hasSensor(int idx) {
         return 0 <= idx && idx < this.sensors.size();
+    }
+
+    public boolean hasSensors() {
+        return !this.sensors.isEmpty();
     }
 
     public boolean hasSensorWithID(String sensorID) {
@@ -133,13 +139,9 @@ public abstract class RemoteSpec extends JSONAble {
         return false;
     }
 
-    public boolean hasSensors() {
-        return !this.sensors.isEmpty();
-    }
-
     public boolean hasSensorWithType(SensorType type) {
         for (SensorConf conf : this.sensors) {
-            if (conf.getSpec().getType().equals(type)) {
+            if (conf.getSpecType().equals(type)) {
                 return true;
             }
         }
@@ -153,8 +155,6 @@ public abstract class RemoteSpec extends JSONAble {
     public boolean isEnabled() {
         return this.maxBatteryPower > 0;
     }
-
-    public abstract SerializableEnum getSpecType();
 
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
