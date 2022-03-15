@@ -1,14 +1,13 @@
 package com.seat.rescuesim.common.remote;
 
-import com.seat.rescuesim.common.json.SerializableEnum;
+import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable enumeration to denote types of Remotes. */
 public enum RemoteType implements SerializableEnum {
     NONE(0),
     BASE(1),
     DRONE(2),
-    SENSOR(3),
-    VICTIM(4);
+    VICTIM(3);
 
     private int type;
 

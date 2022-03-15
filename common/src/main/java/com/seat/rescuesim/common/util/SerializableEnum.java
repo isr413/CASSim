@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common.json;
+package com.seat.rescuesim.common.util;
 
 /** An interface to support serializable enums. */
 public interface SerializableEnum {

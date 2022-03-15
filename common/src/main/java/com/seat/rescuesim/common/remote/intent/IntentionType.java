@@ -1,6 +1,6 @@
 package com.seat.rescuesim.common.remote.intent;
 
-import com.seat.rescuesim.common.json.SerializableEnum;
+import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable enumeration to denote types of intents. */
 public enum IntentionType implements SerializableEnum {
