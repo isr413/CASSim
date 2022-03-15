@@ -1,42 +1,95 @@
 package com.seat.rescuesim.simserver.sim;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import com.seat.rescuesim.common.Scenario;
-import com.seat.rescuesim.common.victim.VictimConf;
+import com.seat.rescuesim.common.ScenarioConfig;
+import com.seat.rescuesim.common.map.Map;
+import com.seat.rescuesim.common.remote.intent.Intention;
+import com.seat.rescuesim.common.victim.VictimConfig;
 import com.seat.rescuesim.common.victim.VictimSpec;
+import com.seat.rescuesim.simserver.util.Random;
 
 public class SimScenario {
 
-    private Scenario scenarioConfig;
-    private HashMap<String, SimVictim> remoteVictims;
-    private HashMap<String, SimVictim> simVictims;
+    private ScenarioConfig config;
+    private HashMap<String, SimVictim> dynamicVictims;
+    private HashMap<String, SimVictim> passiveVictims;
+    private Random rng;
 
-    public SimScenario(Scenario scenario) {
-        this.scenarioConfig = scenario;
+    public SimScenario(ScenarioConfig config) {
+        this(config, new Random(config.getSeed()));
+    }
+
+    public SimScenario(ScenarioConfig config, Random rng) {
+        this.config = config;
+        this.rng = rng;
         this.initVictims();
     }
 
     private void initVictims() {
-        this.simVictims = new HashMap<>();
-        this.remoteVictims = new HashMap<>();
-        for (VictimConf conf : this.scenarioConfig.getVictimConfiguration()) {
-            VictimSpec spec = conf.getSpecification();
-            Iterator<String> remotes = conf.getRemotes().iterator();
-            for (int i = 0; i < conf.getCount(); i++) {
-                String label = (i < conf.getRemotes().size()) ? remotes.next() : String.format("v<%d>", i);
-                if (conf.isDynamic()) {
-                    this.remoteVictims.put(label, new SimVictim(label, spec));
+        this.dynamicVictims = new HashMap<>();
+        this.passiveVictims = new HashMap<>();
+        for (VictimConfig victimConfig : this.config.getVictimConfig()) {
+            VictimSpec victimSpec = victimConfig.getSpec();
+            Iterator<String> remoteIDs = victimConfig.getRemoteIDs().iterator();
+            for (int i = 0; i < victimConfig.getCount(); i++) {
+                String label = (i < victimConfig.getRemoteIDs().size()) ? remoteIDs.next() : String.format("v<%d>", i);
+                if (victimConfig.isDynamic()) {
+                    this.dynamicVictims.put(label, new SimVictim(label, victimSpec, this.rng,
+                        this.rng.getRandomLocation2D(this.getMapWidth(), this.getMapHeight()),
+                        this.rng.getRandomSpeed2D(victimSpec.getSpeedMean(), victimSpec.getSpeedStddev())));
                 } else {
-                    this.simVictims.put(label, new SimVictim(label, spec));
+                    this.passiveVictims.put(label, new SimVictim(label, victimSpec, this.rng,
+                        this.rng.getRandomLocation2D(this.getMapWidth(), this.getMapHeight()),
+                        this.rng.getRandomSpeed2D(victimSpec.getSpeedMean(), victimSpec.getSpeedStddev())));
                 }
             }
         }
     }
 
+    public Map getMap() {
+        return this.config.getMap();
+    }
+
+    public int getMapHeight() {
+        return this.getMap().getHeight() * this.getMap().getZoneSize();
+    }
+
+    public int getMapWidth() {
+        return this.getMap().getWidth() * this.getMap().getZoneSize();
+    }
+
     public String getScenarioID() {
-        return this.scenarioConfig.getScenarioID();
+        return this.config.getScenarioID();
+    }
+
+    public void update() {
+        this.update(null, this.config.getStepSize());
+    }
+
+    public void update(double stepSize) {
+        this.update(null, stepSize);
+    }
+
+    public void update(HashMap<String, ArrayList<Intention>> intentions, double stepSize) {
+        if (intentions == null || intentions.isEmpty()) {
+            for (SimVictim victim : this.dynamicVictims.values()) {
+                victim.update(stepSize);
+            }
+        } else {
+            for (SimVictim victim : this.dynamicVictims.values()) {
+                if (intentions.containsKey(victim.getVictimID())) {
+                    victim.update(intentions.get(victim.getVictimID()), stepSize);
+                } else {
+                    victim.update(stepSize);
+                }
+            }
+        }
+        for (SimVictim victim : this.passiveVictims.values()) {
+            victim.update(stepSize);
+        }
     }
 
 }
