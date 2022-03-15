@@ -1,10 +1,9 @@
 package com.seat.rescuesim.common.sensor;
 
 import com.seat.rescuesim.common.json.*;
-import com.seat.rescuesim.common.remote.RemoteSpecification;
 
 /** A serializable Sensor Prototype. */
-public class SensorSpec extends JSONAble implements RemoteSpecification {
+public class SensorSpec extends JSONAble {
     private static final String SENSOR_ACCURACY = "accuracy";
     private static final String SENSOR_BATTERY_USAGE = "battery_usage";
     private static final String SENSOR_DELAY = "delay";

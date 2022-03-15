@@ -1,15 +1,15 @@
 package com.seat.rescuesim.common.sensor;
 
 import com.seat.rescuesim.common.json.*;
-import com.seat.rescuesim.common.remote.RemoteState;
-import com.seat.rescuesim.common.remote.RemoteType;
 
-public class SensorState extends RemoteState {
-    private static final String DATA_FORMAT = "format";
+public class SensorState extends JSONAble {
+    private static final String SENSOR_ID = "sensor_id";
     private static final String SENSOR_DATA = "data";
+    private static final String SENSOR_TYPE = "sensor_type";
 
     private String data;
-    private String format;
+    protected String sensorID;
+    protected SensorType type;
 
     public SensorState(JSONObject json) {
         super(json);
@@ -23,24 +23,24 @@ public class SensorState extends RemoteState {
         super(encoding);
     }
 
-    public SensorState(String remote, String data) {
-        this(remote, data, "");
+    public SensorState(SensorType type, String sensorID) {
+        this(type, sensorID, "");
     }
 
-    public SensorState(String remote, String data, String format) {
-        super(RemoteType.SENSOR, remote);
+    public SensorState(SensorType type, String sensorID, String data) {
+        this.type = type;
+        this.sensorID = sensorID;
         this.data = data;
-        this.format = format;
     }
 
     @Override
     protected void decode(JSONObject json) {
-        super.decode(json);
+        this.type = SensorType.values()[json.getInt(SensorState.SENSOR_TYPE)];
+        this.sensorID = json.getString(SensorState.SENSOR_ID);
         if (json.hasKey(SensorState.SENSOR_DATA)) {
             this.data = json.getString(SensorState.SENSOR_DATA);
-        }
-        if (json.hasKey(SensorState.DATA_FORMAT)) {
-            this.format = json.getString(SensorState.DATA_FORMAT);
+        } else {
+            this.data = "";
         }
     }
 
@@ -48,32 +48,31 @@ public class SensorState extends RemoteState {
         return this.data;
     }
 
-    public String getDataFormat() {
-        return this.format;
+    public String getSensorID() {
+        return this.sensorID;
+    }
+
+    public SensorType getType() {
+        return this.type;
     }
 
     public boolean hasData() {
         return !this.data.isEmpty();
     }
 
-    public boolean hasDataFormat() {
-        return !this.format.isEmpty();
-    }
-
     @Override
     public JSONOption toJSON() {
-        JSONObjectBuilder json = super.getJSONBuilder();
+        JSONObjectBuilder json = JSONBuilder.Object();
+        json.put(SensorState.SENSOR_TYPE, this.type.getType());
+        json.put(SensorState.SENSOR_ID, this.sensorID);
         if (this.hasData()) {
             json.put(SensorState.SENSOR_DATA, this.data);
-        }
-        if (this.hasDataFormat()) {
-            json.put(SensorState.DATA_FORMAT, this.format);
         }
         return json.toJSON();
     }
 
     public boolean equals(SensorState state) {
-        return this.data.equals(state.data);
+        return this.type.equals(state.type) && this.sensorID.equals(state.sensorID) && this.data.equals(state.data);
     }
 
 }

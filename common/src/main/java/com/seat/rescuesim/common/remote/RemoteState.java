@@ -55,7 +55,7 @@ public abstract class RemoteState extends JSONAble {
             ArrayList<SensorState> sensors) {
         this(type, remoteID, location, battery, new HashMap<String, SensorState>());
         for (SensorState sensor : sensors) {
-            this.sensors.put(sensor.getRemoteID(), sensor);
+            this.sensors.put(sensor.getSensorID(), sensor);
         }
     }
 
@@ -79,7 +79,7 @@ public abstract class RemoteState extends JSONAble {
             JSONArray jsonState = json.getJSONArray(RemoteState.SENSORS);
             for (int i = 0; i < jsonState.length(); i++) {
                 SensorState state = new SensorState(jsonState.getJSONObject(i));
-                this.sensors.put(state.getRemoteID(), state);
+                this.sensors.put(state.getSensorID(), state);
             }
         }
     }

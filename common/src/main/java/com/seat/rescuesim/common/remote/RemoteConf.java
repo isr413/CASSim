@@ -77,8 +77,8 @@ public abstract class RemoteConf extends JSONAble {
         this.type = RemoteType.values()[json.getInt(RemoteConf.REMOTE_TYPE)];
         this.decodeSpecification(json.getJSONObject(RemoteConf.SPEC));
         this.count = json.getInt(RemoteConf.COUNT);
-        JSONArray jsonRemotes = json.getJSONArray(RemoteConf.REMOTE_IDS);
         this.remoteIDs = new HashSet<>();
+        JSONArray jsonRemotes = json.getJSONArray(RemoteConf.REMOTE_IDS);
         for (int i = 0; i < jsonRemotes.length(); i++) {
             this.remoteIDs.add(jsonRemotes.getString(i));
         }
@@ -95,7 +95,7 @@ public abstract class RemoteConf extends JSONAble {
         return this.remoteIDs;
     }
 
-    public RemoteSpec getSpecification() {
+    public RemoteSpec getSpec() {
         return this.spec;
     }
 

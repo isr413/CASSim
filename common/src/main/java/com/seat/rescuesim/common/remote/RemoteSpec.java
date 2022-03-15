@@ -94,7 +94,7 @@ public abstract class RemoteSpec extends JSONAble {
 
     public SensorConf getSensor(String sensorID) {
         for (SensorConf conf : this.sensors) {
-            if (conf.hasRemoteWithID(sensorID)) {
+            if (conf.hasSensorWithID(sensorID)) {
                 return conf;
             }
         }
@@ -109,7 +109,7 @@ public abstract class RemoteSpec extends JSONAble {
     public ArrayList<SensorConf> getSensorsWithType(SensorType type) {
         ArrayList<SensorConf> confs = new ArrayList<>();
         for (SensorConf conf : this.sensors) {
-            if (conf.getSpecification().getType().equals(type)) {
+            if (conf.getSpec().getType().equals(type)) {
                 confs.add(conf);
             }
         }
@@ -126,7 +126,7 @@ public abstract class RemoteSpec extends JSONAble {
 
     public boolean hasSensorWithID(String sensorID) {
         for (SensorConf conf : this.sensors) {
-            if (conf.hasRemoteWithID(sensorID)) {
+            if (conf.hasSensorWithID(sensorID)) {
                 return true;
             }
         }
@@ -139,7 +139,7 @@ public abstract class RemoteSpec extends JSONAble {
 
     public boolean hasSensorWithType(SensorType type) {
         for (SensorConf conf : this.sensors) {
-            if (conf.getSpecification().getType().equals(type)) {
+            if (conf.getSpec().getType().equals(type)) {
                 return true;
             }
         }
