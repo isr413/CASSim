@@ -1,6 +1,6 @@
 package com.seat.rescuesim.common.map;
 
-import com.seat.rescuesim.common.json.SerializableEnum;
+import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable enumeration to denote types of Zones. */
 public enum ZoneType implements SerializableEnum {
