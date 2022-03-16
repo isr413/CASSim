@@ -3,21 +3,21 @@ package com.seat.rescuesim.client;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.seat.rescuesim.common.Scenario;
+import com.seat.rescuesim.common.ScenarioConfig;
 import com.seat.rescuesim.common.Snapshot;
-import com.seat.rescuesim.common.base.BaseConf;
-import com.seat.rescuesim.common.drone.DroneConf;
+import com.seat.rescuesim.common.base.BaseConfig;
+import com.seat.rescuesim.common.drone.DroneConfig;
 import com.seat.rescuesim.common.map.Map;
-import com.seat.rescuesim.common.remote.Remote;
-import com.seat.rescuesim.common.victim.VictimConf;
+import com.seat.rescuesim.common.remote.RemoteController;
+import com.seat.rescuesim.common.victim.VictimConfig;
 
 public interface Application {
 
-    ArrayList<BaseConf> getBaseConfigurations();
+    ArrayList<BaseConfig> getBaseConfigurations();
 
     double getDisasterScale();
 
-    ArrayList<DroneConf> getDroneConfigurations();
+    ArrayList<DroneConfig> getDroneConfigurations();
 
     Map getMap();
 
@@ -29,8 +29,8 @@ public interface Application {
         return new Random().nextLong();
     }
 
-    default Scenario getScenario() {
-        return new Scenario(
+    default ScenarioConfig getScenarioConfig() {
+        return new ScenarioConfig(
             getScenarioID(),
             getSeed(),
             getMap(),
@@ -45,10 +45,10 @@ public interface Application {
 
     double getStepSize();
 
-    ArrayList<VictimConf> getVictimConfigurations();
+    ArrayList<VictimConfig> getVictimConfigurations();
 
     void run();
 
-    ArrayList<Remote> update(Snapshot snap);
+    ArrayList<RemoteController> update(Snapshot snap);
 
 }
