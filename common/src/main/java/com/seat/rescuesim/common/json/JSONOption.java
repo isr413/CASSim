@@ -3,6 +3,33 @@ package com.seat.rescuesim.common.json;
 /** An option class to wrap JSONArray and JSONObject interface types. */
 public class JSONOption {
 
+    /** Returns true if the input string is a JSON encoding. */
+    public static boolean isJSON(String encoding) {
+        if (encoding.isEmpty() || encoding.isBlank()) {
+            return false;
+        }
+        int i = 0; int j = encoding.length()-1;
+        while (JSONOption.isQuoted(encoding, i, j)) {
+            i++;
+            j--;
+        }
+        if (j <= i) {
+            return false;
+        }
+        return (encoding.charAt(i) == '[' && encoding.charAt(j) == ']') ||
+            (encoding.charAt(i) == '{' && encoding.charAt(j) == '}');
+    }
+
+    private static boolean isQuoted(String encoding, int i, int j) {
+        if (encoding.isEmpty() || encoding.isBlank()) {
+            return false;
+        }
+        if (i < 0 || encoding.length() <= i || j < 0 || encoding.length() <= j || j <= i) {
+            return false;
+        }
+        return (encoding.charAt(i) == '\'' || encoding.charAt(i) == '"') && encoding.charAt(i) == encoding.charAt(j);
+    }
+
     /** Returns an option wrapper for the JSONArray interface type. */
     public static JSONOption Array(JSONArray json) {
         return new JSONOption(json);
@@ -20,18 +47,22 @@ public class JSONOption {
 
     /** Returns an option wrapper for the JSONArray or JSONObject interace types based on the encoding. */
     public static JSONOption String(String encoding) {
-        if (!encoding.isEmpty() && ((encoding.charAt(0) == '"' && encoding.charAt(encoding.length()-1) == '"')
-                || (encoding.charAt(0) == '\'' && encoding.charAt(encoding.length()-1) == '\''))) {
-            encoding = encoding.substring(0, encoding.length()-1);
-        }
-        if (encoding.isEmpty()) {
+        if (encoding.isEmpty() || encoding.isBlank()) {
             return JSONOption.None();
         }
-        if (encoding.charAt(0) == '[' && encoding.charAt(encoding.length()-1) == ']') {
-            return new JSONOption(new JSONArrayOption(encoding));
+        int i = 0; int j = encoding.length()-1;
+        while (JSONOption.isQuoted(encoding, i, j)) {
+            i++;
+            j--;
         }
-        if (encoding.charAt(0) == '{' && encoding.charAt(encoding.length()-1) == '}') {
-            return new JSONOption(new JSONObjectOption(encoding));
+        if (j <= i) {
+            return JSONOption.None();
+        }
+        if (encoding.charAt(i) == '[' && encoding.charAt(j) == ']') {
+            return new JSONOption(new JSONArrayOption(encoding.substring(i, j+1)));
+        }
+        if (encoding.charAt(i) == '{' && encoding.charAt(j) == '}') {
+            return new JSONOption(new JSONObjectOption(encoding.substring(i, j+1)));
         }
         return JSONOption.None();
     }
