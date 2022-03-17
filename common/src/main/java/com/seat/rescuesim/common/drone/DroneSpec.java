@@ -41,15 +41,15 @@ public class DroneSpec extends KineticRemoteSpec {
     private Vector batteryUsage; // [static (hovering), horizontal movement, vertical movement]
     private DroneType type;
 
-    public DroneSpec(JSONObject json) {
+    public DroneSpec(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public DroneSpec(JSONOption option) {
+    public DroneSpec(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public DroneSpec(String encoding) {
+    public DroneSpec(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -61,7 +61,7 @@ public class DroneSpec extends KineticRemoteSpec {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.type = DroneType.values()[json.getInt(DroneSpec.DRONE_TYPE)];
         this.batteryUsage = new Vector(json.getJSONArray(DroneSpec.DRONE_BATTERY_USAGE));

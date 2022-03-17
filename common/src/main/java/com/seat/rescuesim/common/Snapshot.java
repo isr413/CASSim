@@ -32,15 +32,15 @@ public class Snapshot extends JSONAble {
     private double stepSize;
     private double time;
 
-    public Snapshot(JSONObject json) {
+    public Snapshot(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public Snapshot(JSONOption option) {
+    public Snapshot(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public Snapshot(String encoding) {
+    public Snapshot(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -62,7 +62,7 @@ public class Snapshot extends JSONAble {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         this.hash = json.getString(Snapshot.HASH);
         this.scenarioID = json.getString(Snapshot.SCENARIO_ID);
         this.status = SnapStatus.values()[json.getInt(Snapshot.STATUS)];

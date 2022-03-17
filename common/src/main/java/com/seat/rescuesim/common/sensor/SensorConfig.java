@@ -14,15 +14,15 @@ public class SensorConfig extends JSONAble {
     private HashSet<String> sensorIDs;
     private SensorSpec spec;
 
-    public SensorConfig(JSONObject json) {
+    public SensorConfig(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public SensorConfig(JSONOption option) {
+    public SensorConfig(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public SensorConfig(String encoding) {
+    public SensorConfig(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -46,7 +46,7 @@ public class SensorConfig extends JSONAble {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         this.spec = new SensorSpec(json.getJSONObject(SensorConfig.SPEC));
         this.count = json.getInt(SensorConfig.COUNT);
         this.sensorIDs = new HashSet<>();

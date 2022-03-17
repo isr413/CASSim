@@ -120,8 +120,10 @@ public class JSONOption {
         return this.objectOption;
     }
 
-    /** Returns the String representation of the option being wrapped. */
-    public String toString() {
+    /** Returns the String representation of the option being wrapped.
+     * @throws JSONException if the JSONOption cannot be converted to a JSON string
+     */
+    public String toString() throws JSONException {
         if (this.isSomeArray()) {
             return this.arrayOption.toString();
         }
@@ -131,7 +133,9 @@ public class JSONOption {
         return "None";
     }
 
-    /** Returns the String representation of the option being wrapped (pretty printed). */
+    /** Returns the String representation of the option being wrapped (pretty printed).
+     * @throws JSONException if the JSONOption cannot be converted to a JSON string
+     */
     public String toString(int tabSize) {
         if (this.isSomeArray()) {
             return this.arrayOption.toString(tabSize);
@@ -155,18 +159,17 @@ public class JSONOption {
             this.json = new org.json.JSONArray(encoding);
         }
 
-        /** Throws an IndexOutOfBoundsException if the idx is out of bounds. */
-        private void assertBounds(int idx) throws IndexOutOfBoundsException {
+        /** Throws a JSONException if the idx is out of bounds. */
+        private void assertBounds(int idx) throws JSONException {
             if (idx < 0 || this.json.length() <= idx) {
-                throw new IndexOutOfBoundsException(idx);
+                throw new JSONException(new IndexOutOfBoundsException(idx).toString());
             }
         }
 
         /** Returns the boolean value at index idx.
-         * @throws IndexOutOfBoundsException if the idx is out of bounds
-         * @throws JSONException if the value at idx cannot be converted to a boolean
+         * @throws JSONException if the value at idx cannot be converted to a boolean or is out of bounds
          */
-        public boolean getBoolean(int idx) throws IndexOutOfBoundsException, JSONException {
+        public boolean getBoolean(int idx) throws JSONException {
             this.assertBounds(idx);
             try {
                 return this.json.getBoolean(idx);
@@ -176,10 +179,9 @@ public class JSONOption {
         }
 
         /** Returns the double value at index idx.
-         * @throws IndexOutOfBoundsException if the idx is out of bounds
-         * @throws JSONException if the value at idx cannot be converted to a double
+         * @throws JSONException if the value at idx cannot be converted to a double or is out of bounds
          */
-        public double getDouble(int idx) throws IndexOutOfBoundsException, JSONException {
+        public double getDouble(int idx) throws JSONException {
             this.assertBounds(idx);
             try {
                 return this.json.getDouble(idx);
@@ -189,10 +191,9 @@ public class JSONOption {
         }
 
         /** Returns the int value at index idx.
-         * @throws IndexOutOfBoundsException if the idx is out of bounds
-         * @throws JSONException if the value at idx cannot be converted to an int
+         * @throws JSONException if the value at idx cannot be converted to an int or is out of bounds
          */
-        public int getInt(int idx) throws IndexOutOfBoundsException, JSONException {
+        public int getInt(int idx) throws JSONException {
             this.assertBounds(idx);
             try {
                 return this.json.getInt(idx);
@@ -202,10 +203,9 @@ public class JSONOption {
         }
 
         /** Returns an Object at index idx that implements the JSONArray interface.
-         * @throws IndexOutOfBoundsException if the idx is out of bounds
-         * @throws JSONException if the value at idx cannot be converted to a JSONArray
+         * @throws JSONException if the value at idx cannot be converted to a JSONArray or is out of bounds
          */
-        public JSONArray getJSONArray(int idx) throws IndexOutOfBoundsException, JSONException {
+        public JSONArray getJSONArray(int idx) throws JSONException {
             this.assertBounds(idx);
             try {
                 return new JSONArrayOption(this.json.getJSONArray(idx));
@@ -215,10 +215,9 @@ public class JSONOption {
         }
 
         /** Returns an Object at index idx that implements the JSONObject interface.
-         * @throws IndexOutOfBoundsException if the idx is out of bounds
-         * @throws JSONException if the value at idx cannot be converted to a JSONsObject
+         * @throws JSONException if the value at idx cannot be converted to a JSONObject or is out of bounds
          */
-        public JSONObject getJSONObject(int idx) throws IndexOutOfBoundsException, JSONException {
+        public JSONObject getJSONObject(int idx) throws JSONException {
             this.assertBounds(idx);
             try {
                 return new JSONObjectOption(this.json.getJSONObject(idx));
@@ -228,10 +227,9 @@ public class JSONOption {
         }
 
         /** Returns a JSONOption wrapper for the Object at index idx.
-         * @throws IndexOutOfBoundsException if the idx is out of bounds
-         * @throws JSONException if the value at idx cannot be converted to a JSONOption
+         * @throws JSONException if the value at idx cannot be converted to a JSONOption or is out of bounds
          */
-        public JSONOption getJSONOption(int idx) throws IndexOutOfBoundsException, JSONException {
+        public JSONOption getJSONOption(int idx) throws JSONException {
             this.assertBounds(idx);
             try {
                 if (this.json.get(idx) instanceof org.json.JSONArray) {
@@ -247,10 +245,9 @@ public class JSONOption {
         }
 
         /** Returns the long value at index idx.
-         * @throws IndexOutOfBoundsException if the idx is out of bounds
-         * @throws JSONException if the value at idx cannot be converted to an int
+         * @throws JSONException if the value at idx cannot be converted to a long or is out of bounds
          */
-        public long getLong(int idx) throws IndexOutOfBoundsException, JSONException {
+        public long getLong(int idx) throws JSONException {
             this.assertBounds(idx);
             try {
                 return this.json.getLong(idx);
@@ -260,9 +257,9 @@ public class JSONOption {
         }
 
         /** Returns the String representation of the value at index idx.
-         * @throws IndexOutOfBoundsException if the idx is out of bounds
+         * @throws JSONException if the idx is out of bounds
          */
-        public String getString(int idx) throws IndexOutOfBoundsException {
+        public String getString(int idx) throws JSONException {
             this.assertBounds(idx);
             try {
                 return this.json.getString(idx);
@@ -276,12 +273,16 @@ public class JSONOption {
             return this.json.length();
         }
 
-        /** Returns the String representation of the JSONArray. */
+        /** Returns the String representation of the JSONArray.
+         * @throws JSONException if the JSONArray cannot be converted to a JSON string
+         */
         public String toString() {
             return this.json.toString();
         }
 
-        /** Returns the String representation of the JSONArray (pretty printed). */
+        /** Returns the String representation of the JSONArray (pretty printed).
+         * @throws JSONException if the JSONArray cannot be converted to a JSON string
+         */
         public String toString(int tabSize) {
             return this.json.toString(tabSize);
         }
@@ -301,18 +302,17 @@ public class JSONOption {
             this.json = new org.json.JSONObject(encoding);
         }
 
-        /** Throws an IndexOutOfBoundsException if the key is not in the JSONObject. */
-        private void assertContains(String key) throws IndexOutOfBoundsException {
+        /** Throws a JSONException if the key is not in the JSONObject. */
+        private void assertContains(String key) throws JSONException {
             if (!this.json.has(key)) {
-                throw new IndexOutOfBoundsException(String.format("%s not found in JSONObject.", key));
+                throw new JSONException(String.format("%s not found in JSONObject.", key));
             }
         }
 
         /** Returns the boolean value associated with the key.
-         * @throws IndexOutOfBoundsException if the Object has no such key
-         * @throws JSONException if the value associated with the key cannot be converted to a boolean
+         * @throws JSONException if the value associated with the key cannot be converted to a boolean or no such key
          */
-        public boolean getBoolean(String key) throws IndexOutOfBoundsException, JSONException {
+        public boolean getBoolean(String key) throws JSONException {
             this.assertContains(key);
             try {
                 return this.json.getBoolean(key);
@@ -322,10 +322,9 @@ public class JSONOption {
         }
 
         /** Returns the double value associated with the key.
-         * @throws IndexOutOfBoundsException if the Object has no such key
-         * @throws JSONException if the value associated with the key cannot be converted to a double
+         * @throws JSONException if the value associated with the key cannot be converted to a double or no such key
          */
-        public double getDouble(String key) throws IndexOutOfBoundsException, JSONException {
+        public double getDouble(String key) throws JSONException {
             this.assertContains(key);
             try {
                 return this.json.getDouble(key);
@@ -335,10 +334,9 @@ public class JSONOption {
         }
 
         /** Returns the int value associated with the key.
-         * @throws IndexOutOfBoundsException if the Object has no such key
-         * @throws JSONException if the value associated with the key cannot be converted to an int
+         * @throws JSONException if the value associated with the key cannot be converted to an int or no such key
          */
-        public int getInt(String key) throws IndexOutOfBoundsException, JSONException {
+        public int getInt(String key) throws JSONException {
             this.assertContains(key);
             try {
                 return this.json.getInt(key);
@@ -348,10 +346,9 @@ public class JSONOption {
         }
 
         /** Returns an Object associated with the key that implements the JSONArray interface.
-         * @throws IndexOutOfBoundsException if the Object has no such key
-         * @throws JSONException if the value associated with the key cannot be converted to a JSONArray
+         * @throws JSONException if the value associated with the key cannot be converted to a JSONArray or no such key
          */
-        public JSONArray getJSONArray(String key) throws IndexOutOfBoundsException, JSONException {
+        public JSONArray getJSONArray(String key) throws JSONException {
             this.assertContains(key);
             try {
                 return new JSONArrayOption(this.json.getJSONArray(key));
@@ -361,10 +358,9 @@ public class JSONOption {
         }
 
         /** Returns an Object associated with the key that implements the JSONObject interface.
-         * @throws IndexOutOfBoundsException if the Object has no such key
-         * @throws JSONException if the value associated with the key cannot be converted to a JSONObject
+         * @throws JSONException if the value associated with the key cannot be converted to a JSONObject or no such key
          */
-        public JSONObject getJSONObject(String key) throws IndexOutOfBoundsException, JSONException {
+        public JSONObject getJSONObject(String key) throws JSONException {
             this.assertContains(key);
             try {
                 return new JSONObjectOption(this.json.getJSONObject(key));
@@ -374,10 +370,9 @@ public class JSONOption {
         }
 
         /** Returns a JSONOption wrapper for the Object associated with the key.
-         * @throws IndexOutOfBoundsException if the Object has no such key
-         * @throws JSONException if the value associated with the key cannot be converted to a JSONOption
+         * @throws JSONException if the value associated with the key cannot be converted to a JSONOption or no such key
          */
-        public JSONOption getJSONOption(String key) throws IndexOutOfBoundsException, JSONException {
+        public JSONOption getJSONOption(String key) throws JSONException {
             this.assertContains(key);
             try {
                 if (this.json.get(key) instanceof org.json.JSONArray) {
@@ -393,10 +388,9 @@ public class JSONOption {
         }
 
         /** Returns the long value associated with the key.
-         * @throws IndexOutOfBoundsException if the Object has no such key
-         * @throws JSONException if the value associated with the key cannot be converted to an int
+         * @throws JSONException if the value associated with the key cannot be converted to a long or no such key
          */
-        public long getLong(String key) throws IndexOutOfBoundsException, JSONException {
+        public long getLong(String key) throws JSONException {
             this.assertContains(key);
             try {
                 return this.json.getLong(key);
@@ -406,9 +400,9 @@ public class JSONOption {
         }
 
         /** Returns the String representation of the value associated with the key.
-         * @throws IndexOutOfBoundsException if the Object has no such key
+         * @throws JSONException if the Object has no such key
          */
-        public String getString(String key) throws IndexOutOfBoundsException {
+        public String getString(String key) throws JSONException {
             this.assertContains(key);
             try {
                 return this.json.getString(key);
@@ -427,12 +421,16 @@ public class JSONOption {
             return this.json.length();
         }
 
-        /** Returns the String representation of the JSONObject. */
+        /** Returns the String representation of the JSONObject.
+         * @throws JSONException if the JSONObject cannot be converted to a JSON string
+         */
         public String toString() {
             return this.json.toString();
         }
 
-        /** Returns the String representation of the JSONObject (pretty printed). */
+        /** Returns the String representation of the JSONObject (pretty printed).
+         * @throws JSONException if the JSONObject cannot be converted to a JSON string
+         */
         public String toString(int tabSize) {
             return this.json.toString(tabSize);
         }

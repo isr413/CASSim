@@ -17,11 +17,11 @@ public abstract class RemoteState extends JSONAble {
     private static final String REMOTE_TYPE = "remote_type";
     private static final String SENSORS = "sensors";
 
-    public static RemoteType decodeType(JSONObject json) {
+    public static RemoteType decodeType(JSONObject json) throws JSONException {
         return RemoteType.values()[json.getInt(RemoteState.REMOTE_TYPE)];
     }
 
-    public static RemoteType decodeType(JSONOption option) {
+    public static RemoteType decodeType(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
             return RemoteState.decodeType(option.someObject());
         }
@@ -29,7 +29,7 @@ public abstract class RemoteState extends JSONAble {
         return null;
     }
 
-    public static RemoteType decodeType(String encoding) {
+    public static RemoteType decodeType(String encoding) throws JSONException {
         return RemoteState.decodeType(JSONOption.String(encoding));
     }
 
@@ -39,15 +39,15 @@ public abstract class RemoteState extends JSONAble {
     protected HashMap<String, SensorState> sensors;
     protected RemoteType type;
 
-    public RemoteState(JSONObject json) {
+    public RemoteState(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public RemoteState(JSONOption option) {
+    public RemoteState(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public RemoteState(String encoding) {
+    public RemoteState(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -69,7 +69,7 @@ public abstract class RemoteState extends JSONAble {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         this.type = RemoteType.values()[json.getInt(RemoteState.REMOTE_TYPE)];
         this.remoteID = json.getString(RemoteState.REMOTE_ID);
         this.location = new Vector(json.getJSONArray(RemoteState.LOCATION));

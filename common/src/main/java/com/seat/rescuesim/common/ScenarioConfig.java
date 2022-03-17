@@ -38,15 +38,15 @@ public class ScenarioConfig extends JSONAble {
     private double stepSize;
     private ArrayList<VictimConfig> victimConfig;
 
-    public ScenarioConfig(JSONObject json) {
+    public ScenarioConfig(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public ScenarioConfig(JSONOption option) {
+    public ScenarioConfig(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public ScenarioConfig(String encoding) {
+    public ScenarioConfig(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -171,7 +171,7 @@ public class ScenarioConfig extends JSONAble {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         this.scenarioID = json.getString(ScenarioConfig.SCENARIO_ID);
         this.seed = json.getLong(ScenarioConfig.SEED);
         this.map = new Map(json.getJSONObject(ScenarioConfig.MAP));

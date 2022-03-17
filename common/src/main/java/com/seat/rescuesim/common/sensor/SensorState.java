@@ -11,15 +11,15 @@ public class SensorState extends JSONAble {
     protected String sensorID;
     protected SensorType type;
 
-    public SensorState(JSONObject json) {
+    public SensorState(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public SensorState(JSONOption option) {
+    public SensorState(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public SensorState(String encoding) {
+    public SensorState(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -34,7 +34,7 @@ public class SensorState extends JSONAble {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         this.type = SensorType.values()[json.getInt(SensorState.SENSOR_TYPE)];
         this.sensorID = json.getString(SensorState.SENSOR_ID);
         if (json.hasKey(SensorState.SENSOR_DATA)) {

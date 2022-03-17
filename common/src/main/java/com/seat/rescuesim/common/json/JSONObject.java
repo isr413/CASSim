@@ -4,51 +4,44 @@ package com.seat.rescuesim.common.json;
 public interface JSONObject {
 
     /** Returns the boolean value associated with the key.
-     * @throws IndexOutOfBoundsException if the Object has no such key
-     * @throws JSONException if the value associated with the key cannot be converted to a boolean
+     * @throws JSONException if the value associated with the key cannot be converted to a boolean or no such key
      */
-    boolean getBoolean(String key) throws IndexOutOfBoundsException, JSONException;
+    boolean getBoolean(String key) throws JSONException;
 
     /** Returns the double value associated with the key.
-     * @throws IndexOutOfBoundsException if the Object has no such key
-     * @throws JSONException if the value associated with the key cannot be converted to a double
+     * @throws JSONException if the value associated with the key cannot be converted to a double or no such key
      */
-    double getDouble(String key) throws IndexOutOfBoundsException, JSONException;
+    double getDouble(String key) throws JSONException;
 
     /** Returns the int value associated with the key.
-     * @throws IndexOutOfBoundsException if the Object has no such key
-     * @throws JSONException if the value associated with the key cannot be converted to an int
+     * @throws JSONException if the value associated with the key cannot be converted to an int or no such key
      */
-    int getInt(String key) throws IndexOutOfBoundsException, JSONException;
+    int getInt(String key) throws JSONException;
 
     /** Returns an Object associated with the key that implements the JSONArray interface.
-     * @throws IndexOutOfBoundsException if the Object has no such key
-     * @throws JSONException if the value associated with the key cannot be converted to a JSONArray
+     * @throws JSONException if the value associated with the key cannot be converted to a JSONArray or no such key
      */
-    JSONArray getJSONArray(String key) throws IndexOutOfBoundsException, JSONException;
+    JSONArray getJSONArray(String key) throws JSONException;
 
     /** Returns an Object associated with the key that implements the JSONObject interface.
-     * @throws IndexOutOfBoundsException if the Object has no such key
-     * @throws JSONException if the value associated with the key cannot be converted to a JSONObject
+     * @throws JSONException if the value associated with the key cannot be converted to a JSONObject or no such key
      */
-    JSONObject getJSONObject(String key) throws IndexOutOfBoundsException, JSONException;
+    JSONObject getJSONObject(String key) throws JSONException;
 
     /** Returns a JSONOption wrapper for the Object associated with the key.
-     * @throws IndexOutOfBoundsException if the Object has no such key
-     * @throws JSONException if the value associated with the key cannot be converted to a JSONOption
+     * @throws JSONException if the value associated with the key cannot be converted to a JSONOption or no such key
      */
-    JSONOption getJSONOption(String key) throws IndexOutOfBoundsException, JSONException;
+    JSONOption getJSONOption(String key) throws JSONException;
 
     /** Returns the long value associated with the key.
-     * @throws IndexOutOfBoundsException if the Object has no such key
-     * @throws JSONException if the value associated with the key cannot be converted to an int
+     * @throws JSONException if the value associated with the key cannot be converted to a long or no such key
      */
-    long getLong(String key) throws IndexOutOfBoundsException, JSONException;
+    long getLong(String key) throws JSONException;
 
     /** Returns the String representation of the value associated with the key.
-     * @throws IndexOutOfBoundsException if the Object has no such key
+     * @throws JSONException if the Object has no such key
      */
-    String getString(String key) throws IndexOutOfBoundsException;
+    String getString(String key) throws JSONException;
 
     /** Returns true if the JSONObject contains the specified key. */
     boolean hasKey(String key);
@@ -56,10 +49,14 @@ public interface JSONObject {
     /** Returns the number of key-value pairs stored in the JSONObject. */
     int size();
 
-    /** Returns the String representation of the JSONObject. */
-    String toString();
+    /** Returns the String representation of the JSONObject.
+     * @throws JSONException if the JSONObject cannot be converted to a JSON string
+     */
+    String toString() throws JSONException;;
 
-    /** Returns the String representation of the JSONObject (pretty printed). */
-    String toString(int tabSize);
+    /** Returns the String representation of the JSONObject (pretty printed).
+     * @throws JSONException if the JSONObject cannot be converted to a JSON string
+     */
+    String toString(int tabSize) throws JSONException;;
 
 }

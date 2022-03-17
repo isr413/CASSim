@@ -25,15 +25,15 @@ public class Field extends JSONAble {
     private Vector point;
     private FieldType type;
 
-    public Field(JSONArray json) {
+    public Field(JSONArray json) throws JSONException {
         super(json);
     }
 
-    public Field(JSONOption option) {
+    public Field(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public Field(String encoding) {
+    public Field(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -57,7 +57,7 @@ public class Field extends JSONAble {
     }
 
     @Override
-    protected void decode(JSONArray json) {
+    protected void decode(JSONArray json) throws JSONException {
         this.type = FieldType.values()[json.getInt(0)];
         this.point = new Vector(json.getJSONArray(1));
         this.magnitude = json.getDouble(2);

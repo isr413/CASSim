@@ -13,15 +13,15 @@ public class VictimConfig extends RemoteConfig {
         return new VictimConfig(VictimSpec.None(), 0, false);
     }
 
-    public VictimConfig(JSONObject json) {
+    public VictimConfig(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public VictimConfig(JSONOption option) {
+    public VictimConfig(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public VictimConfig(String encoding) {
+    public VictimConfig(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -38,7 +38,7 @@ public class VictimConfig extends RemoteConfig {
     }
 
     @Override
-    protected void decodeSpec(JSONObject jsonSpec) {
+    protected void decodeSpec(JSONObject jsonSpec) throws JSONException {
         this.spec = new VictimSpec(jsonSpec);
     }
 

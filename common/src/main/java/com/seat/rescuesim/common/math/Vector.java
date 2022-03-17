@@ -146,17 +146,17 @@ public class Vector extends JSONAble {
     private double z; // Z-axis (+ increases elevation; - decreases elevation)
 
     /** JSONAble constructor for JSONArray interface type. */
-    public Vector(JSONArray json) {
+    public Vector(JSONArray json) throws JSONException {
         super(json);
     }
 
     /** JSONAble constructor for JSONOption. */
-    public Vector(JSONOption option) {
+    public Vector(JSONOption option) throws JSONException {
         super(option);
     }
 
     /** JSONAble constructor for String encoding. */
-    public Vector(String encoding) {
+    public Vector(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -184,7 +184,7 @@ public class Vector extends JSONAble {
 
     /** Decodes the JSONArray. */
     @Override
-    protected void decode(JSONArray json) {
+    protected void decode(JSONArray json) throws JSONException {
         this.x = json.getDouble(0);
         this.y = json.getDouble(1);
         this.z = json.getDouble(2);

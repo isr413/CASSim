@@ -16,11 +16,11 @@ public abstract class RemoteSpec extends JSONAble {
     private static final String REMOTE_TYPE = "remote_type";
     private static final String SENSORS = "sensors";
 
-    public static RemoteType decodeRemoteType(JSONObject json) {
+    public static RemoteType decodeRemoteType(JSONObject json) throws JSONException {
         return RemoteType.values()[json.getInt(RemoteSpec.REMOTE_TYPE)];
     }
 
-    public static RemoteType decodeRemoteType(JSONOption option) {
+    public static RemoteType decodeRemoteType(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
             return RemoteSpec.decodeRemoteType(option.someObject());
         }
@@ -28,7 +28,7 @@ public abstract class RemoteSpec extends JSONAble {
         return RemoteType.NONE;
     }
 
-    public static RemoteType decodeRemoteType(String encoding) {
+    public static RemoteType decodeRemoteType(String encoding) throws JSONException {
         return RemoteSpec.decodeRemoteType(JSONOption.String(encoding));
     }
 
@@ -37,15 +37,15 @@ public abstract class RemoteSpec extends JSONAble {
     protected ArrayList<SensorConfig> sensors;
     protected RemoteType type;
 
-    public RemoteSpec(JSONObject json) {
+    public RemoteSpec(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public RemoteSpec(JSONOption option) {
+    public RemoteSpec(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public RemoteSpec(String encoding) {
+    public RemoteSpec(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -57,7 +57,7 @@ public abstract class RemoteSpec extends JSONAble {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         this.type = RemoteType.values()[json.getInt(RemoteSpec.REMOTE_TYPE)];
         this.location = new Vector(json.getJSONArray(RemoteSpec.LOCATION));
         this.maxBatteryPower = json.getDouble(RemoteSpec.MAX_BATTERY);

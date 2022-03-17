@@ -19,15 +19,15 @@ public abstract class RemoteController extends JSONAble {
     protected String remoteID;
     protected RemoteType type;
 
-    public RemoteController(JSONObject json) {
+    public RemoteController(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public RemoteController(JSONOption option) {
+    public RemoteController(JSONOption option) throws JSONException{
         super(option);
     }
 
-    public RemoteController(String encoding) {
+    public RemoteController(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -49,7 +49,7 @@ public abstract class RemoteController extends JSONAble {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         this.type = RemoteType.values()[json.getInt(RemoteController.REMOTE_TYPE)];
         this.remoteID = json.getString(RemoteController.REMOTE_ID);
         this.intentions = new HashMap<>();

@@ -15,15 +15,15 @@ public class DroneState extends KineticRemoteState {
 
     private DroneType type;
 
-    public DroneState(JSONObject json) {
+    public DroneState(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public DroneState(JSONOption option) {
+    public DroneState(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public DroneState(String encoding) {
+    public DroneState(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -40,7 +40,7 @@ public class DroneState extends KineticRemoteState {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.type = DroneType.values()[json.getInt(DroneState.DRONE_TYPE)];
     }

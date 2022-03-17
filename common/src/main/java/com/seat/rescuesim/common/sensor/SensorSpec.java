@@ -16,15 +16,15 @@ public class SensorSpec extends JSONAble {
     private double range;
     private SensorType type;
 
-    public SensorSpec(JSONObject json) {
+    public SensorSpec(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public SensorSpec(JSONOption option) {
+    public SensorSpec(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public SensorSpec(String encoding) {
+    public SensorSpec(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -57,7 +57,7 @@ public class SensorSpec extends JSONAble {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         this.type = SensorType.values()[json.getInt(SensorSpec.SENSOR_TYPE)];
         this.accuracy = json.getDouble(SensorSpec.SENSOR_ACCURACY);
         this.range = json.getDouble(SensorSpec.SENSOR_RANGE);

@@ -42,15 +42,15 @@ public class VictimSpec extends KineticRemoteSpec {
     private double speedStddev;
     private VictimType type;
 
-    public VictimSpec(JSONObject json) {
+    public VictimSpec(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public VictimSpec(JSONOption option) {
+    public VictimSpec(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public VictimSpec(String encoding) {
+    public VictimSpec(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -68,7 +68,7 @@ public class VictimSpec extends KineticRemoteSpec {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.type = VictimType.values()[json.getInt(VictimSpec.VICTIM_TYPE)];
         this.speedMean = json.getDouble(VictimSpec.SPEED_MEAN);

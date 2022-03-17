@@ -17,15 +17,15 @@ public class Zone extends JSONAble {
     private int size;
     private ZoneType type;
 
-    public Zone(JSONObject json) {
+    public Zone(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public Zone(JSONOption option) {
+    public Zone(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public Zone(String encoding) {
+    public Zone(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -46,7 +46,7 @@ public class Zone extends JSONAble {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         this.type = ZoneType.values()[json.getInt(Zone.ZONE_TYPE)];
         this.location = new Vector(json.getJSONArray(Zone.ZONE_LOCATION));
         this.size = json.getInt(Zone.ZONE_SIZE);

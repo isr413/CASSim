@@ -15,15 +15,15 @@ public class VictimState extends KineticRemoteState {
 
     private VictimType type;
 
-    public VictimState(JSONObject json) {
+    public VictimState(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public VictimState(JSONOption option) {
+    public VictimState(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public VictimState(String encoding) {
+    public VictimState(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -40,7 +40,7 @@ public class VictimState extends KineticRemoteState {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.type = VictimType.values()[json.getInt(VictimState.VICTIM_TYPE)];
     }

@@ -81,9 +81,18 @@ public class JSONBuilder {
             return JSONOption.Array(new JSONOption.JSONArrayOption(this.json));
         }
 
-        /** Returns the String representation of the JSONArray. */
+        /** Returns the String representation of the JSONArray.
+         * @throws JSONException if the JSONArray cannot be converted to a JSON string
+         */
         public String toString() {
             return this.json.toString();
+        }
+
+        /** Returns the String representation of the JSONArray (pretty printed).
+         * @throws JSONException if the JSONArray cannot be converted to a JSON string
+         */
+        public String toString(int tabSize) {
+            return this.json.toString(tabSize);
         }
 
     }
@@ -156,9 +165,18 @@ public class JSONBuilder {
             return JSONOption.Object(new JSONOption.JSONObjectOption(this.json));
         }
 
-        /** Returns the String representation of the JSONObject. */
+        /** Returns the String representation of the JSONObject.
+         * @throws JSONException if the JSONObject cannot be converted to a JSON string
+         */
         public String toString() {
             return this.json.toString();
+        }
+
+        /** Returns the String representation of the JSONObject (pretty printed).
+         * @throws JSONException if the JSONObject cannot be converted to a JSON string
+         */
+        public String toString(int tabSize) {
+            return this.json.toString(tabSize);
         }
 
     }

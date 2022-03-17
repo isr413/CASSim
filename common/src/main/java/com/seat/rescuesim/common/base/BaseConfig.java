@@ -13,15 +13,15 @@ public class BaseConfig extends RemoteConfig {
         return new BaseConfig(BaseSpec.None(), 0, false);
     }
 
-    public BaseConfig(JSONObject json) {
+    public BaseConfig(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public BaseConfig(JSONOption option) {
+    public BaseConfig(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public BaseConfig(String encoding) {
+    public BaseConfig(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -38,7 +38,7 @@ public class BaseConfig extends RemoteConfig {
     }
 
     @Override
-    protected void decodeSpec(JSONObject jsonSpec) {
+    protected void decodeSpec(JSONObject jsonSpec) throws JSONException {
         this.spec = new BaseSpec(jsonSpec);
     }
 

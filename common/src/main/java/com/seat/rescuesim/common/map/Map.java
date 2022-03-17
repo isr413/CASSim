@@ -17,15 +17,15 @@ public class Map extends JSONAble {
     private int width;      // number of zones in each row of the grid
     private int zoneSize;   // zones in the same map grid must have a uniform size
 
-    public Map(JSONObject json) {
+    public Map(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public Map(JSONOption option) {
+    public Map(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public Map(String encoding) {
+    public Map(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -66,7 +66,7 @@ public class Map extends JSONAble {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         this.type = MapType.values()[json.getInt(Map.MAP_TYPE)];
         this.width = json.getInt(Map.MAP_WIDTH);
         this.height = json.getInt(Map.MAP_HEIGHT);

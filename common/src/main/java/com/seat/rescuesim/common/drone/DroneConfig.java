@@ -13,15 +13,15 @@ public class DroneConfig extends RemoteConfig {
         return new DroneConfig(DroneSpec.None(), 0, false);
     }
 
-    public DroneConfig(JSONObject json) {
+    public DroneConfig(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public DroneConfig(JSONOption option) {
+    public DroneConfig(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public DroneConfig(String encoding) {
+    public DroneConfig(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -38,7 +38,7 @@ public class DroneConfig extends RemoteConfig {
     }
 
     @Override
-    protected void decodeSpec(JSONObject jsonSpec) {
+    protected void decodeSpec(JSONObject jsonSpec) throws JSONException {
         this.spec = new DroneSpec(jsonSpec);
     }
 

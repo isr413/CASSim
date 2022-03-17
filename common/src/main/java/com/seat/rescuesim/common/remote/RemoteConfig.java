@@ -15,11 +15,11 @@ public abstract class RemoteConfig extends JSONAble {
     private static final String REMOTE_TYPE = "remote_type";
     private static final String SPEC = "spec";
 
-    public static RemoteType decodeRemoteType(JSONObject json) {
+    public static RemoteType decodeRemoteType(JSONObject json) throws JSONException {
         return RemoteType.values()[json.getInt(RemoteConfig.REMOTE_TYPE)];
     }
 
-    public static RemoteType decodeRemoteType(JSONOption option) {
+    public static RemoteType decodeRemoteType(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
             return RemoteConfig.decodeRemoteType(option.someObject());
         }
@@ -27,7 +27,7 @@ public abstract class RemoteConfig extends JSONAble {
         return RemoteType.NONE;
     }
 
-    public static RemoteType decodeRemoteType(String encoding) {
+    public static RemoteType decodeRemoteType(String encoding) throws JSONException {
         return RemoteConfig.decodeRemoteType(JSONOption.String(encoding));
     }
 
@@ -37,15 +37,15 @@ public abstract class RemoteConfig extends JSONAble {
     protected RemoteSpec spec;
     protected RemoteType type;
 
-    public RemoteConfig(JSONObject json) {
+    public RemoteConfig(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public RemoteConfig(JSONOption option) {
+    public RemoteConfig(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public RemoteConfig(String encoding) {
+    public RemoteConfig(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -73,7 +73,7 @@ public abstract class RemoteConfig extends JSONAble {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         this.type = RemoteType.values()[json.getInt(RemoteConfig.REMOTE_TYPE)];
         this.decodeSpec(json.getJSONObject(RemoteConfig.SPEC));
         this.count = json.getInt(RemoteConfig.COUNT);

@@ -26,15 +26,15 @@ public class BaseSpec extends RemoteSpec {
 
     private BaseType type;
 
-    public BaseSpec(JSONObject json) {
+    public BaseSpec(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public BaseSpec(JSONOption option) {
+    public BaseSpec(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public BaseSpec(String encoding) {
+    public BaseSpec(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -44,7 +44,7 @@ public class BaseSpec extends RemoteSpec {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.type = BaseType.values()[json.getInt(BaseSpec.BASE_TYPE)];
     }

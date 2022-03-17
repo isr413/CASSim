@@ -15,15 +15,15 @@ public class BaseState extends RemoteState {
 
     private BaseType type;
 
-    public BaseState(JSONObject json) {
+    public BaseState(JSONObject json) throws JSONException {
         super(json);
     }
 
-    public BaseState(JSONOption option) {
+    public BaseState(JSONOption option) throws JSONException {
         super(option);
     }
 
-    public BaseState(String encoding) {
+    public BaseState(String encoding) throws JSONException {
         super(encoding);
     }
 
@@ -39,7 +39,7 @@ public class BaseState extends RemoteState {
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.type = BaseType.values()[json.getInt(BaseState.BASE_TYPE)];
     }
