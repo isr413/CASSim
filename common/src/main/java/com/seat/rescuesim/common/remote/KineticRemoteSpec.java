@@ -59,6 +59,18 @@ public abstract class KineticRemoteSpec extends RemoteSpec {
         }
     }
 
+    public double getMaxAcceleration() {
+        return this.maxAcceleration;
+    }
+
+    public double getMaxJerk() {
+        return this.maxJerk;
+    }
+
+    public double getMaxVelocity() {
+        return this.maxVelocity;
+    }
+
     public boolean hasAcceleration() {
         return this.maxAcceleration > 0;
     }
