@@ -33,7 +33,7 @@ public class Random {
     }
 
     public double getRandomPoint(int x) {
-        return this.rng.nextGaussian() * x;
+        return this.rng.nextDouble() * x;
     }
 
     public Vector getRandomSpeed2D(double speed) {
