@@ -8,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import com.seat.rescuesim.common.ScenarioConfig;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.util.Debugger;
 import com.seat.rescuesim.simserver.sim.SimException;
 import com.seat.rescuesim.simserver.sim.SimScenario;
@@ -28,14 +29,17 @@ public class App {
         return server;
     }
 
-    private static ScenarioConfig getScenarioConfigBlocking(BufferedReader in) throws IOException {
+    private static ScenarioConfig getScenarioConfigBlocking(BufferedReader in) throws IOException, SimException {
         Debugger.logger.info("Waiting for scenario config...");
         while (true) {
             if (in.ready()) {
-                String message = in.readLine();
-                ScenarioConfig config = new ScenarioConfig(message);
-                Debugger.logger.info(String.format("Received scenario <%s>", config.getScenarioID()));
-                return config;
+                String scenarioEncoding = in.readLine();
+                if (!JSONOption.isJSON(scenarioEncoding)) {
+                    throw new SimException(scenarioEncoding);
+                }
+                ScenarioConfig scenarioConfig = new ScenarioConfig(scenarioEncoding);
+                Debugger.logger.info(String.format("Received scenario <%s>", scenarioConfig.getScenarioID()));
+                return scenarioConfig;
             }
         }
     }

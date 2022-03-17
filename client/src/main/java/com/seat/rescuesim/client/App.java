@@ -1,11 +1,14 @@
 package com.seat.rescuesim.client;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
 import com.seat.rescuesim.client.core.CoreException;
+import com.seat.rescuesim.client.java3d.Main;
 import com.seat.rescuesim.client.sandbox.ACSOS;
 import com.seat.rescuesim.client.util.ArgsParser;
 import com.seat.rescuesim.common.util.Debugger;
@@ -37,18 +40,24 @@ public class App {
         return client;
     }
 
+    private static void runApplicationSync(Application app, BufferedReader in, PrintWriter out) throws CoreException {
+        Debugger.logger.info(String.format("Sending scenario <%s> ...", app.getScenarioID()));
+        out.println(app.getScenarioConfig().encode());
+    }
+
     public static void main(String[] args) {
         Socket socket = null;
+        BufferedReader in = null;
         PrintWriter out = null;
         try {
             Debugger.logger.info("Starting client ...");
             ArgsParser parser = new ArgsParser(args);
             socket = getClientSocket(parser);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
             Debugger.logger.info("Loading application ...");
             Application app = getApplication(args);
-            Debugger.logger.info(String.format("Sending scenario <%s> ...", app.getScenarioID()));
-            out.println(app.getScenarioConfig().encode());
+            runApplicationSync(app, in, out);
             socket.close();
         } catch (IOException e) {
             System.err.println(e);

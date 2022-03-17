@@ -76,12 +76,12 @@ public class SimScenario {
 
     public void update(HashMap<String, ArrayList<Intention>> intentions, double stepSize) {
         if (intentions == null || intentions.isEmpty()) {
-            Debugger.logger.info(String.format("Updating remotes %s", this.dynamicVictims.keySet().toString()));
+            Debugger.logger.info(String.format("Updating dynamic remotes %s", this.dynamicVictims.keySet().toString()));
             for (SimVictim victim : this.dynamicVictims.values()) {
                 victim.update(stepSize);
             }
         } else {
-            Debugger.logger.info(String.format("Updating remotes %s", this.dynamicVictims.keySet().toString()));
+            Debugger.logger.info(String.format("Updating dynamic remotes %s", this.dynamicVictims.keySet().toString()));
             for (SimVictim victim : this.dynamicVictims.values()) {
                 if (intentions.containsKey(victim.getVictimID())) {
                     victim.update(intentions.get(victim.getVictimID()), stepSize);
@@ -90,7 +90,7 @@ public class SimScenario {
                 }
             }
         }
-        Debugger.logger.info(String.format("Updating remotes %s", this.passiveVictims.keySet().toString()));
+        Debugger.logger.info(String.format("Updating passive remotes %s", this.passiveVictims.keySet().toString()));
         for (SimVictim victim : this.passiveVictims.values()) {
             victim.update(stepSize);
         }
