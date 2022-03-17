@@ -25,11 +25,6 @@ public class Vector extends JSONAble {
         return Math.acos((a.x*b.x + a.y*b.y + a.z*b.z) / (a.getMagnitude() * b.getMagnitude()));
     }
 
-    /** Returns the dot product of the provided vectors. */
-    public static double dot(Vector a, Vector b) {
-        return a.x*b.x + a.y*b.y + a.z*b.z;
-    }
-
     /** Returns the cross product of the provided vectors. */
     public static Vector cross(Vector a, Vector b) {
         return new Vector(
@@ -37,6 +32,16 @@ public class Vector extends JSONAble {
             a.z*b.x - a.x*b.z,
             a.x*b.y - a.y*b.x
         );
+    }
+
+    /** Returns the Euclidean distance between the two vectors. */
+    public static double dist(Vector a, Vector b) {
+        return Math.sqrt(Math.pow(b.x-a.x, 2) + Math.pow(b.y-a.y, 2) + Math.pow(b.z-a.z, 2));
+    }
+
+    /** Returns the dot product of the provided vectors. */
+    public static double dot(Vector a, Vector b) {
+        return a.x*b.x + a.y*b.y + a.z*b.z;
     }
 
     /** Returns the 2D vector with the provided magnitude at the provided angle. */
@@ -116,6 +121,14 @@ public class Vector extends JSONAble {
     /** Returns a new vector that has the components of a scaled by the components of b. */
     public static Vector scaleNonUniform(Vector a, Vector b) {
         return new Vector(a.x*b.x, a.y*b.y, a.z*b.z);
+    }
+
+    /** Returns the slope between the vectors. */
+    public static double slope(Vector a, Vector b) {
+        if (b.x == a.x) {
+            return (b.y >= a.y) ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
+        }
+        return (b.y - a.y) / (b.x - a.x);
     }
 
     /** Returns a new vector that has the square root of the components of a. */
