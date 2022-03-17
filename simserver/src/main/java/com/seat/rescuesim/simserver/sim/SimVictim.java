@@ -9,70 +9,33 @@ import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.victim.VictimSpec;
 import com.seat.rescuesim.common.victim.VictimState;
 
-public class SimVictim {
-
-    private Vector acceleration;
-    private double battery;
-    private String label;
-    private Vector location;
-    private VictimSpec spec;
-    private Vector velocity;
+public class SimVictim extends KineticSimAsset {
 
     public SimVictim(String label, VictimSpec spec, Vector location) {
-        this(label, spec, location, new Vector());
+        super(label, spec, location);
+    }
+
+    public SimVictim(String label, VictimSpec spec, Vector location, double battery) {
+        super(label, spec, location, battery);
     }
 
     public SimVictim(String label, VictimSpec spec, Vector location, Vector velocity) {
-        this.label = label;
-        this.spec = spec;
-        this.location = location;
+        super(label, spec, location);
         this.velocity = velocity;
-        this.acceleration = new Vector();
-        this.battery = this.spec.getMaxBatteryPower();
     }
 
-    public Vector getAcceleration() {
-        return this.acceleration;
-    }
-
-    public double getBattery() {
-        return this.battery;
-    }
-
-    public String getLabel() {
-        return this.label;
-    }
-
-    public Vector getLocation() {
-        return this.location;
-    }
-
-    public Vector getNextLocation() {
-        return this.getNextLocation(new Vector());
-    }
-
-    public Vector getNextLocation(Vector jerk) {
-        if (this.spec.getMaxJerk() < jerk.getMagnitude()) {
-            jerk = Vector.scale(jerk.getUnitVector(), this.spec.getMaxJerk());
-        }
-        Vector nextAcceleration = Vector.add(this.acceleration, jerk);
-        if (this.spec.getMaxAcceleration() < nextAcceleration.getMagnitude()) {
-            nextAcceleration = Vector.scale(nextAcceleration.getUnitVector(), this.spec.getMaxAcceleration());
-        }
-        Vector nextVelocity = Vector.add(this.velocity, nextAcceleration);
-        if (this.spec.getMaxVelocity() < nextVelocity.getMagnitude()) {
-            nextVelocity = Vector.scale(nextVelocity.getUnitVector(), this.spec.getMaxVelocity());
-        }
-        return Vector.add(this.location, nextVelocity);
+    public SimVictim(String label, VictimSpec spec, Vector location, double battery, Vector velocity,
+            Vector acceleration) {
+        super(label, spec, location, battery, velocity, acceleration);
     }
 
     public VictimSpec getSpec() {
-        return this.spec;
+        return (VictimSpec) this.spec;
     }
 
     public VictimState getState() {
         return new VictimState(
-            this.spec.getSpecType(),
+            this.getSpec().getSpecType(),
             this.label,
             this.location,
             this.battery,
@@ -82,35 +45,7 @@ public class SimVictim {
         );
     }
 
-    public Vector getVelocity() {
-        return this.velocity;
-    }
-
-    public String getVictimID() {
-        return this.getLabel();
-    }
-
-    public void setAcceleration(Vector acceleration) {
-        this.acceleration = acceleration;
-    }
-
-    public void setBattery(double battery) {
-        this.battery = battery;
-    }
-
-    public void setLocation(Vector location) {
-        this.location = location;
-    }
-
-    public void setVelocity(Vector velocity) {
-        this.velocity = velocity;
-    }
-
-    public VictimState update(double stepSize) {
-        return this.update(null, stepSize);
-    }
-
-    public VictimState update(ArrayList<Intention> intentions, double stepSize) {
+    public VictimState update(ArrayList<Intention> intentions, double stepSize) throws SimException {
         if (intentions == null || intentions.isEmpty() ||
                 (intentions.size() == 1 && intentions.get(0).equals(Intent.None()))) {
             this.velocity = Vector.add(this.velocity, Vector.scale(this.acceleration, stepSize));

@@ -27,6 +27,7 @@ public class SimScenario {
     private HashMap<String, SimVictim> dynamicVictims;
     private HashMap<String, SimVictim> passiveVictims;
     private Random rng;
+    private SnapStatus status;
     private double time;
 
     public SimScenario(ScenarioConfig config) {
@@ -37,6 +38,7 @@ public class SimScenario {
         this.config = config;
         this.rng = rng;
         this.time = 0;
+        this.status = SnapStatus.START;
         this.allRemotes = new HashSet<>();
         this.activeRemotes = new HashSet<>();
         this.dynamicVictims = new HashMap<>();
@@ -63,9 +65,6 @@ public class SimScenario {
                 victim.getLocation().toString(), victim.getLabel()));
             return;
         }
-        System.out.println(String.format("%f %f %f", prevLocation.getX(), prevLocation.getY(), prevLocation.getZ()));
-        System.out.println(String.format("%f %f %f", victim.getLocation().getX(), victim.getLocation().getY(), victim.getLocation().getZ()));
-        System.out.println(String.format("%f %f %f", bounce.getX(), bounce.getY(), bounce.getZ()));
         victim.setLocation(bounce);
         Vector newVelocity = Vector.scale(Vector.subtract(bounce, impactPoint).getUnitVector(),
             victim.getVelocity().getMagnitude());
@@ -192,36 +191,24 @@ public class SimScenario {
         return this.config.getScenarioID();
     }
 
+    public SnapStatus getSnapStatus() {
+        return this.status;
+    }
+
     public Snapshot getSnapshot() {
-        HashMap<String, RemoteState> state = null;
-        SnapStatus status = SnapStatus.NONE;
-        try {
-            state = this.getState();
-            if (this.time == 0) {
-                status = SnapStatus.START;
-            } else if (this.time < this.getMissionLength()) {
-                status = SnapStatus.IN_PROGRESS;
-            } else {
-                status = SnapStatus.DONE;
-            }
-        } catch (SimException e) {
-            Debugger.logger.err(e.toString());
-            state = new HashMap<>();
-            status = SnapStatus.ERROR;
-        }
         return new Snapshot(
             LocalTime.now().toString(),
             this.getScenarioID(),
-            status,
+            this.status,
             this.time,
             this.getStepSize(),
             this.allRemotes,
             this.activeRemotes,
-            state
+            this.getState()
         );
     }
 
-    private HashMap<String, RemoteState> getState() throws SimException {
+    private HashMap<String, RemoteState> getState() {
         HashMap<String, RemoteState> state = new HashMap<>();
         for (String remoteID : this.passiveVictims.keySet()) {
             state.put(remoteID, this.passiveVictims.get(remoteID).getState());
@@ -240,15 +227,15 @@ public class SimScenario {
         return this.time;
     }
 
-    public Snapshot update() {
+    public Snapshot update() throws SimException {
         return this.update(null, this.config.getStepSize());
     }
 
-    public Snapshot update(double stepSize) {
+    public Snapshot update(double stepSize) throws SimException {
         return this.update(null, stepSize);
     }
 
-    public Snapshot update(HashMap<String, ArrayList<Intention>> intentions, double stepSize) {
+    public Snapshot update(HashMap<String, ArrayList<Intention>> intentions, double stepSize) throws SimException {
         this.time += stepSize;
         if (intentions == null || intentions.isEmpty()) {
             Debugger.logger.info(String.format("Updating dynamic remotes %s", this.dynamicVictims.keySet().toString()));
@@ -258,8 +245,8 @@ public class SimScenario {
         } else {
             Debugger.logger.info(String.format("Updating dynamic remotes %s", this.dynamicVictims.keySet().toString()));
             for (SimVictim victim : this.dynamicVictims.values()) {
-                if (intentions.containsKey(victim.getVictimID())) {
-                    victim.update(intentions.get(victim.getVictimID()), stepSize);
+                if (intentions.containsKey(victim.getAssetID())) {
+                    victim.update(intentions.get(victim.getAssetID()), stepSize);
                 } else {
                     victim.update(stepSize);
                 }
