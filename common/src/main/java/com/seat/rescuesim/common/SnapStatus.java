@@ -4,10 +4,11 @@ import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable enumeration to denote types of Snapshot statuses. */
 public enum SnapStatus implements SerializableEnum {
-    DONE(0),
-    START(1),
-    IN_PROGRESS(2),
-    ERROR(3);
+    NONE(0),
+    DONE(1),
+    START(2),
+    IN_PROGRESS(3),
+    ERROR(4);
 
     private int type;
 

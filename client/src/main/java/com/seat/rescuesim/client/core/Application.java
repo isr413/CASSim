@@ -1,4 +1,4 @@
-package com.seat.rescuesim.client;
+package com.seat.rescuesim.client.core;
 
 import java.util.ArrayList;
 import java.util.Random;

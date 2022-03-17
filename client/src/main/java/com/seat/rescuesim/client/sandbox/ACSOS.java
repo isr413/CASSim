@@ -2,7 +2,7 @@ package com.seat.rescuesim.client.sandbox;
 
 import java.util.ArrayList;
 
-import com.seat.rescuesim.client.Application;
+import com.seat.rescuesim.client.core.Application;
 import com.seat.rescuesim.common.Snapshot;
 import com.seat.rescuesim.common.base.BaseConfig;
 import com.seat.rescuesim.common.base.BaseSpec;

@@ -8,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import com.seat.rescuesim.common.ScenarioConfig;
+import com.seat.rescuesim.common.Snapshot;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.util.Debugger;
 import com.seat.rescuesim.simserver.sim.SimException;
@@ -25,12 +26,12 @@ public class App {
             port = args.getInt(PORT_PARAM);
         }
         ServerSocket server = new ServerSocket(port);
-        Debugger.logger.info(String.format("Listening on port=%d", port));
+        Debugger.logger.info(String.format("Listening on port=%d ...", port));
         return server;
     }
 
     private static ScenarioConfig getScenarioConfigBlocking(BufferedReader in) throws IOException, SimException {
-        Debugger.logger.info("Waiting for scenario config...");
+        Debugger.logger.info("Waiting for scenario config ...");
         while (true) {
             if (in.ready()) {
                 String scenarioEncoding = in.readLine();
@@ -38,7 +39,7 @@ public class App {
                     throw new SimException(scenarioEncoding);
                 }
                 ScenarioConfig scenarioConfig = new ScenarioConfig(scenarioEncoding);
-                Debugger.logger.info(String.format("Received scenario <%s>", scenarioConfig.getScenarioID()));
+                Debugger.logger.state(String.format("Received scenario <%s>", scenarioConfig.getScenarioID()));
                 return scenarioConfig;
             }
         }
@@ -48,15 +49,21 @@ public class App {
             PrintWriter out) throws IOException, SimException {
         Debugger.logger.info(String.format("Running scenario <%s> ...", config.getScenarioID()));
         SimScenario scenario = new SimScenario(config);
+        Snapshot snap = scenario.getSnapshot();
+        Debugger.logger.info(String.format("Sending initial snap <%s>", snap.getHash()));
+        out.println(snap.encode());
         double time = 0.0;
-        while (time < config.getMissionLength()) {
-            Debugger.logger.info(String.format("Updating scenario <%s> for time=%.2f", config.getScenarioID(), time));
-            time += config.getStepSize();
-            if (config.getMissionLength() < time) {
-                scenario.update(time - config.getMissionLength());
+        while (time < scenario.getMissionLength()) {
+            time += scenario.getStepSize();
+            Debugger.logger.info(String.format("Updating scenario <%s> for time=%.2f ...", scenario.getScenarioID(),
+                time));
+            if (scenario.getMissionLength() < time) {
+                snap = scenario.update(scenario.getMissionLength() + scenario.getStepSize() - time);
             } else {
-                scenario.update(config.getStepSize());
+                snap = scenario.update(scenario.getStepSize());
             }
+            Debugger.logger.info(String.format("Sending snap <%s>", snap.getHash()));
+            out.println(snap.encode());
         }
     }
 
@@ -66,7 +73,7 @@ public class App {
         BufferedReader in = null;
         PrintWriter out = null;
         try {
-            Debugger.logger.info("Sim server starting...");
+            Debugger.logger.info("Sim server starting ...");
             ArgsParser argsParser = new ArgsParser(args);
             server = getServerSocketBlocking(argsParser);
             client = server.accept();
