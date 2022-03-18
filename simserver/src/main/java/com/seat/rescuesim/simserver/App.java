@@ -90,13 +90,14 @@ public class App {
                 Debugger.logger.info(String.format("Updating scenario <%s> for time=%.2f ...", scenario.getScenarioID(),
                     time + scenario.getStepSize()));
                 if (scenario.getMissionLength() < time + scenario.getStepSize()) {
-                    snap = scenario.update(intentions, scenario.getMissionLength() - time);
+                    scenario.update(intentions, scenario.getMissionLength() - time);
                     time = scenario.getMissionLength();
                 } else {
-                    snap = scenario.update(intentions, scenario.getStepSize());
+                    scenario.update(intentions, scenario.getStepSize());
                     time += scenario.getStepSize();
                 }
                 Debugger.logger.info(String.format("Sending snap <%s> ...", snap.getHash()));
+                snap = scenario.getSnapshot();
                 out.println(snap.encode());
             } catch (IOException e) {
                 System.err.println(e);

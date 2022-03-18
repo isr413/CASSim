@@ -51,27 +51,27 @@ public class SimScenario {
             nextLocation.getY() <= this.getMapHeight();
     }
 
-    public void enforceBounds(SimVictim victim, Vector prevLocation) {
-        int impactType = this.getImpactType(prevLocation, victim.getLocation());
-        Vector impactPoint = this.getImpactPoint(prevLocation, victim.getLocation(), impactType);
+    public void enforceBounds(KineticSimRemote remote, Vector prevLocation) {
+        int impactType = this.getImpactType(prevLocation, remote.getLocation());
+        Vector impactPoint = this.getImpactPoint(prevLocation, remote.getLocation(), impactType);
         if (impactPoint == null) {
             Debugger.logger.err(String.format("Could not compute bounce location for %s on victim %s",
-                victim.getLocation().toString(), victim.getLabel()));
+                remote.getLocation().toString(), remote.getLabel()));
             return;
         }
-        Vector bounce = this.getBounceLocation(impactPoint, victim.getLocation(), impactType);
+        Vector bounce = this.getBounceLocation(impactPoint, remote.getLocation(), impactType);
         if (bounce == null) {
             Debugger.logger.err(String.format("Could not compute bounce location for %s on victim %s",
-                victim.getLocation().toString(), victim.getLabel()));
+                remote.getLocation().toString(), remote.getLabel()));
             return;
         }
-        victim.setLocation(bounce);
+        remote.setLocation(bounce);
         Vector newVelocity = Vector.scale(Vector.subtract(bounce, impactPoint).getUnitVector(),
-            victim.getVelocity().getMagnitude());
-        victim.setVelocity(newVelocity);
+            remote.getVelocity().getMagnitude());
+        remote.setVelocity(newVelocity);
         Vector newAcceleration = Vector.scale(Vector.subtract(bounce, impactPoint).getUnitVector(),
-            victim.getAcceleration().getMagnitude());
-        victim.setAcceleration(newAcceleration);
+            remote.getAcceleration().getMagnitude());
+        remote.setAcceleration(newAcceleration);
     }
 
     private Vector getBounceLocation(Vector impactPoint, Vector nextLocation, int impactType) {
@@ -227,47 +227,83 @@ public class SimScenario {
         return this.time;
     }
 
-    public Snapshot update() throws SimException {
-        return this.update(null, this.config.getStepSize());
+    public boolean hasActiveRemotes() {
+        return !this.activeRemotes.isEmpty();
     }
 
-    public Snapshot update(double stepSize) throws SimException {
-        return this.update(null, stepSize);
+    public boolean hasActiveRemoteWithID(String remoteID) {
+        return this.activeRemotes.contains(remoteID);
     }
 
-    public Snapshot update(HashMap<String, ArrayList<Intention>> intentions, double stepSize) throws SimException {
-        this.time += stepSize;
+    public boolean hasError() {
+        return this.status.equals(SnapStatus.ERROR);
+    }
+
+    public boolean hasRemotes() {
+        return !this.allRemotes.isEmpty();
+    }
+
+    public boolean hasRemoteWithID(String remoteID) {
+        return this.allRemotes.contains(remoteID);
+    }
+
+    public boolean isDone() {
+        return this.status.equals(SnapStatus.DONE);
+    }
+
+    public boolean isInProgress() {
+        return this.status.equals(SnapStatus.START) || this.status.equals(SnapStatus.IN_PROGRESS);
+    }
+
+    private void updateDynamicRemotes(ArrayList<SimRemote> remotes, HashMap<String, ArrayList<Intention>> intentions,
+            double stepSize) throws SimException {
+        Debugger.logger.info(String.format("Updating dynamic remotes %s", remotes.toString()));
         if (intentions == null || intentions.isEmpty()) {
-            Debugger.logger.info(String.format("Updating dynamic remotes %s", this.dynamicVictims.keySet().toString()));
-            for (SimVictim victim : this.dynamicVictims.values()) {
-                victim.update(stepSize);
+            for (SimRemote remote : remotes) {
+                remote.update(stepSize);
             }
         } else {
-            Debugger.logger.info(String.format("Updating dynamic remotes %s", this.dynamicVictims.keySet().toString()));
-            for (SimVictim victim : this.dynamicVictims.values()) {
-                if (intentions.containsKey(victim.getAssetID())) {
-                    victim.update(intentions.get(victim.getAssetID()), stepSize);
+            for (SimRemote remote : remotes) {
+                if (intentions.containsKey(remote.getRemoteID())) {
+                    remote.update(intentions.get(remote.getRemoteID()), stepSize);
                 } else {
-                    victim.update(stepSize);
+                    remote.update(stepSize);
                 }
             }
         }
-        Debugger.logger.info(String.format("Updating passive remotes %s", this.passiveVictims.keySet().toString()));
-        for (SimVictim victim : this.passiveVictims.values()) {
-            Vector location = victim.getLocation();
+    }
+
+    private void updatePassiveRemotes(ArrayList<SimRemote> remotes, HashMap<String, ArrayList<Intention>> intentions,
+            double stepSize) throws SimException {
+        Debugger.logger.info(String.format("Updating passive remotes %s", remotes.toString()));
+        for (SimRemote remote : remotes) {
+            Vector location = remote.getLocation();
             if (!this.boundsCheck(location)) {
-                Debugger.logger.err(String.format("Victim %s out of bounds at %s",
-                    victim.getLabel(), location.toString()));
+                Debugger.logger.err(String.format("Remote %s out of bounds at %s", remote.getLabel(),
+                    location.toString()));
                 continue;
             }
-            ArrayList<Intention> victimIntentions = new ArrayList<>();
-            victimIntentions.add(Intent.None());
-            victim.update(victimIntentions, stepSize);
-            if (!this.boundsCheck(victim.getLocation())) {
-                this.enforceBounds(victim, location);
+            ArrayList<Intention> remoteIntentions = new ArrayList<>();
+            remoteIntentions.add(Intent.None());
+            remote.update(remoteIntentions, stepSize);
+            if (remote.isKinetic() && !this.boundsCheck(remote.getLocation())) {
+                this.enforceBounds((KineticSimRemote) remote, location);
             }
         }
-        return this.getSnapshot();
+    }
+
+    public void update() throws SimException {
+        this.update(null, this.config.getStepSize());
+    }
+
+    public void update(double stepSize) throws SimException {
+        this.update(null, stepSize);
+    }
+
+    public void update(HashMap<String, ArrayList<Intention>> intentions, double stepSize) throws SimException {
+        this.time += stepSize;
+        this.updateDynamicRemotes(new ArrayList<SimRemote>(this.dynamicVictims.values()), intentions, stepSize);
+        this.updatePassiveRemotes(new ArrayList<SimRemote>(this.passiveVictims.values()), intentions, stepSize);
     }
 
 }
