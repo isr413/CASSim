@@ -10,10 +10,26 @@ import com.seat.rescuesim.common.remote.intent.IntentionType;
 import com.seat.rescuesim.common.util.Debugger;
 
 /** A serializable class to assign intentions to a Remote. */
-public abstract class RemoteController extends JSONAble {
+public class RemoteController extends JSONAble {
     private static final String INTENTIONS = "intentions";
     private static final String REMOTE_ID = "remote_id";
     private static final String REMOTE_TYPE = "remote_type";
+
+    public static RemoteType decodeRemoteType(JSONObject json) throws JSONException {
+        return RemoteType.values()[json.getInt(RemoteController.REMOTE_TYPE)];
+    }
+
+    public static RemoteType decodeRemoteType(JSONOption option) throws JSONException {
+        if (option.isSomeObject()) {
+            return RemoteController.decodeRemoteType(option.someObject());
+        }
+        Debugger.logger.err(String.format("Cannot decode remote type of %s", option.toString()));
+        return RemoteType.NONE;
+    }
+
+    public static RemoteType decodeRemoteType(String encoding) throws JSONException {
+        return RemoteController.decodeRemoteType(JSONOption.String(encoding));
+    }
 
     protected HashMap<IntentionType, Intention> intentions;
     protected String remoteID;
