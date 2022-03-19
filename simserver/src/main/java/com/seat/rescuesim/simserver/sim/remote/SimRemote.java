@@ -1,4 +1,4 @@
-package com.seat.rescuesim.simserver.sim;
+package com.seat.rescuesim.simserver.sim.remote;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +19,8 @@ import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.sensor.SensorType;
 import com.seat.rescuesim.common.util.Debugger;
 import com.seat.rescuesim.common.util.SerializableEnum;
+import com.seat.rescuesim.simserver.sim.SimException;
+import com.seat.rescuesim.simserver.sim.sensor.SimSensor;
 
 public abstract class SimRemote {
 
@@ -49,7 +51,7 @@ public abstract class SimRemote {
             Iterator<String> sensorIDs = sensorConfig.getSensorIDs().iterator();
             for (int i = 0; i < sensorConfig.getCount(); i++) {
                 String label = (i < sensorConfig.getSensorIDs().size()) ? sensorIDs.next() : String.format("s<%d>", i);
-                this.allSensors.put(label, new SimSensor(label, sensorSpec));
+                this.allSensors.put(label, new SimSensor(sensorSpec, label));
             }
         }
     }

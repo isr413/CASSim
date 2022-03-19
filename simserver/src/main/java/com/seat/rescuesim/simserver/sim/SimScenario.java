@@ -18,6 +18,9 @@ import com.seat.rescuesim.common.remote.intent.Intention;
 import com.seat.rescuesim.common.util.Debugger;
 import com.seat.rescuesim.common.victim.VictimConfig;
 import com.seat.rescuesim.common.victim.VictimSpec;
+import com.seat.rescuesim.simserver.sim.remote.KineticSimRemote;
+import com.seat.rescuesim.simserver.sim.remote.SimRemote;
+import com.seat.rescuesim.simserver.sim.remote.SimVictim;
 import com.seat.rescuesim.simserver.util.Random;
 
 public class SimScenario {

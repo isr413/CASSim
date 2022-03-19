@@ -1,4 +1,4 @@
-package com.seat.rescuesim.simserver.sim;
+package com.seat.rescuesim.simserver.sim.remote;
 
 import com.seat.rescuesim.common.victim.VictimSpec;
 import com.seat.rescuesim.common.victim.VictimState;

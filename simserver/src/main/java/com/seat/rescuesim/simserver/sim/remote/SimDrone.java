@@ -1,9 +1,10 @@
-package com.seat.rescuesim.simserver.sim;
+package com.seat.rescuesim.simserver.sim.remote;
 
 import com.seat.rescuesim.common.drone.DroneSpec;
 import com.seat.rescuesim.common.drone.DroneState;
 import com.seat.rescuesim.common.drone.DroneType;
 import com.seat.rescuesim.common.remote.RemoteController;
+import com.seat.rescuesim.simserver.sim.SimException;
 
 public class SimDrone extends KineticSimRemote {
 

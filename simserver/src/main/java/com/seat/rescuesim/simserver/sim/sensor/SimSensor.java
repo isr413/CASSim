@@ -1,4 +1,4 @@
-package com.seat.rescuesim.simserver.sim;
+package com.seat.rescuesim.simserver.sim.sensor;
 
 import com.seat.rescuesim.common.sensor.SensorSpec;
 import com.seat.rescuesim.common.sensor.SensorState;
@@ -9,9 +9,9 @@ public class SimSensor {
     private String label;
     private SensorSpec spec;
 
-    public SimSensor(String label, SensorSpec spec) {
-        this.label = label;
+    public SimSensor(SensorSpec spec, String label) {
         this.spec = spec;
+        this.label = label;
     }
 
     public double getAccuracy() {

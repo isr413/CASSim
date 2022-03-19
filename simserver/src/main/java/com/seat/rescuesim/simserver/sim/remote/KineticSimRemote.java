@@ -1,4 +1,4 @@
-package com.seat.rescuesim.simserver.sim;
+package com.seat.rescuesim.simserver.sim.remote;
 
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.KineticRemoteSpec;
@@ -7,6 +7,7 @@ import com.seat.rescuesim.common.remote.RemoteController;
 import com.seat.rescuesim.common.remote.intent.IntentionType;
 import com.seat.rescuesim.common.remote.intent.GotoIntention;
 import com.seat.rescuesim.common.remote.intent.MoveIntention;
+import com.seat.rescuesim.simserver.sim.SimException;
 
 public abstract class KineticSimRemote extends SimRemote {
 
