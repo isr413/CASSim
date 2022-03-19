@@ -11,6 +11,7 @@ import com.seat.rescuesim.common.SnapStatus;
 import com.seat.rescuesim.common.Snapshot;
 import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.math.Vector;
+import com.seat.rescuesim.common.remote.RemoteController;
 import com.seat.rescuesim.common.remote.RemoteState;
 import com.seat.rescuesim.common.remote.intent.Intent;
 import com.seat.rescuesim.common.remote.intent.Intention;
@@ -255,56 +256,65 @@ public class SimScenario {
         return this.status.equals(SnapStatus.START) || this.status.equals(SnapStatus.IN_PROGRESS);
     }
 
-    private void updateDynamicRemotes(ArrayList<SimRemote> remotes, HashMap<String, ArrayList<Intention>> intentions,
+    private void updateDynamicRemotes(ArrayList<SimRemote> remotes, HashMap<String, RemoteController> intentions,
             double stepSize) throws SimException {
-        Debugger.logger.info(String.format("Updating dynamic remotes %s", remotes.toString()));
-        if (intentions == null || intentions.isEmpty()) {
-            for (SimRemote remote : remotes) {
+        Debugger.logger.info(String.format("Updating dynamic remotes %s ...", remotes.toString()));
+        for (SimRemote remote : remotes) {
+            // TODO: add map effects
+            if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
+                remote.update(intentions.get(remote.getRemoteID()), stepSize);
+            } else {
                 remote.update(stepSize);
             }
-        } else {
-            for (SimRemote remote : remotes) {
-                if (intentions.containsKey(remote.getRemoteID())) {
-                    remote.update(intentions.get(remote.getRemoteID()), stepSize);
-                } else {
-                    remote.update(stepSize);
-                }
+            if (!this.boundsCheck(remote.getLocation())) {
+                Debugger.logger.err(String.format("Remote %s out of bounds at %s", remote.getLabel(),
+                    remote.getLocation().toString()));
+                this.status = SnapStatus.ERROR;
+            }
+            if (remote.isInactive() && this.hasActiveRemoteWithID(remote.getRemoteID())) {
+                this.activeRemotes.remove(remote.getRemoteID());
+            } else if (remote.isActive() && !this.hasActiveRemoteWithID(remote.getRemoteID())) {
+                this.activeRemotes.add(remote.getRemoteID());
             }
         }
     }
 
-    private void updatePassiveRemotes(ArrayList<SimRemote> remotes, HashMap<String, ArrayList<Intention>> intentions,
+    private void updatePassiveRemotes(ArrayList<SimRemote> remotes, HashMap<String, RemoteController> intentions,
             double stepSize) throws SimException {
-        Debugger.logger.info(String.format("Updating passive remotes %s", remotes.toString()));
+        Debugger.logger.info(String.format("Updating passive remotes %s ...", remotes.toString()));
         for (SimRemote remote : remotes) {
-            Vector location = remote.getLocation();
-            if (!this.boundsCheck(location)) {
-                Debugger.logger.err(String.format("Remote %s out of bounds at %s", remote.getLabel(),
-                    location.toString()));
+            if (intentions.containsKey(remote.getRemoteID())) {
+                remote.update(intentions.get(remote.getRemoteID()), stepSize);
                 continue;
             }
-            ArrayList<Intention> remoteIntentions = new ArrayList<>();
-            if (remote.isActive() && remote.hasInactiveSensors()) {
-                remoteIntentions.add(Intent.Activate(remote.getInactiveSensorIDs()));
-            } else if (remote.isInactive() && remote.hasActiveSensors()) {
-                remoteIntentions.add(Intent.Deactivate(remote.getActiveSensorIDs()));
+            RemoteController controller = new RemoteController(remote.getRemoteType(), remote.getRemoteID());
+            if (this.status.equals(SnapStatus.START) && remote.isActive() && remote.hasInactiveSensors()) {
+                controller.addIntention(Intent.Activate(remote.getInactiveSensorIDs()));
             }
-            if (remote.isActive() && remote.isKinetic()) {
-                remoteIntentions.add(
-                    Intent.Goto(
-                        Vector.scale(
-                            this.rng.getRandomDirection2D(),
-                            ((KineticSimRemote) remote).getVelocity().getMagnitude()
+            if (remote.isInactive() && remote.hasActiveSensors()) {
+                controller.addIntention(Intent.Deactivate(remote.getActiveSensorIDs()));
+            }
+            Vector location = remote.getLocation();
+            if (this.boundsCheck(location)) {
+                if (remote.isActive() && remote.isKinetic()) {
+                    controller.addIntention(
+                        Intent.Goto(
+                            Vector.scale(
+                                this.rng.getRandomDirection2D(),
+                                ((KineticSimRemote) remote).getVelocity().getMagnitude()
+                            )
                         )
-                    )
-                );
-            }
-            if (intentions.isEmpty()) {
-                remoteIntentions.add(Intent.None());
+                    );
+                }
+            } else {
+                Debugger.logger.err(String.format("Remote %s out of bounds at %s", remote.getLabel(),
+                    location.toString()));
+                remote.update(controller, stepSize);
+                this.status = SnapStatus.ERROR;
+                continue;
             }
             // TODO: add map effects
-            // TODO: remove inactive remotes
-            remote.update(remoteIntentions, stepSize);
+            remote.update(controller, stepSize);
             if (remote.isKinetic() && !this.boundsCheck(remote.getLocation())) {
                 this.enforceBounds((KineticSimRemote) remote, location);
             }
@@ -319,10 +329,22 @@ public class SimScenario {
         this.update(null, stepSize);
     }
 
-    public void update(HashMap<String, ArrayList<Intention>> intentions, double stepSize) throws SimException {
+    public void update(HashMap<String, RemoteController> intentions, double stepSize) throws SimException {
         this.time += stepSize;
+        if (this.status.equals(SnapStatus.DONE)) {
+            return;
+        }
+        if (this.status.equals(SnapStatus.ERROR)) {
+            this.status = SnapStatus.IN_PROGRESS;
+        }
         this.updateDynamicRemotes(new ArrayList<SimRemote>(this.dynamicVictims.values()), intentions, stepSize);
         this.updatePassiveRemotes(new ArrayList<SimRemote>(this.passiveVictims.values()), intentions, stepSize);
+        if (this.status.equals(SnapStatus.START)) {
+            this.status = SnapStatus.IN_PROGRESS;
+        }
+        if (this.getMissionLength() <= this.time) {
+            this.status = SnapStatus.DONE;
+        }
     }
 
 }

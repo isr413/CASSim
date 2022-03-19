@@ -7,6 +7,7 @@ import java.util.Iterator;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteSpec;
 import com.seat.rescuesim.common.remote.RemoteState;
+import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.remote.intent.ActivateIntention;
 import com.seat.rescuesim.common.remote.intent.DeactivateIntention;
 import com.seat.rescuesim.common.remote.intent.Intention;
@@ -179,6 +180,10 @@ public abstract class SimRemote {
             sensors.add(this.getSensorWithID(sensorID));
         }
         return sensors;
+    }
+
+    public RemoteType getRemoteType() {
+        return this.spec.getRemoteType();
     }
 
     public HashSet<String> getSensorIDs() {
