@@ -1,41 +1,38 @@
 package com.seat.rescuesim.simserver.sim;
 
-import java.util.ArrayList;
-
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.KineticRemoteSpec;
 import com.seat.rescuesim.common.remote.KineticRemoteState;
-import com.seat.rescuesim.common.remote.intent.Intention;
+import com.seat.rescuesim.common.remote.RemoteController;
+import com.seat.rescuesim.common.remote.intent.IntentionType;
 import com.seat.rescuesim.common.remote.intent.GotoIntention;
 import com.seat.rescuesim.common.remote.intent.MoveIntention;
-import com.seat.rescuesim.common.util.Debugger;
 
 public abstract class KineticSimRemote extends SimRemote {
 
     protected Vector acceleration;
     protected Vector velocity;
 
-    public KineticSimRemote(String label, KineticRemoteSpec spec, Vector location) {
-        super(label, spec, location);
+    public KineticSimRemote(KineticRemoteSpec spec, String label) {
+        super(spec, label);
         this.velocity = new Vector();
         this.acceleration = new Vector();
-    }
-
-    public KineticSimRemote(String label, KineticRemoteSpec spec, Vector location, double battery) {
-        super(label, spec, location, battery);
-        this.velocity = new Vector();
-        this.acceleration = new Vector();
-    }
-
-    public KineticSimRemote(String label, KineticRemoteSpec spec, Vector location, double battery, Vector velocity,
-            Vector acceleration) {
-        super(label, spec, location, battery);
-        this.velocity = velocity;
-        this.acceleration = acceleration;
     }
 
     public Vector getAcceleration() {
         return this.acceleration;
+    }
+
+    public double getMaxAcceleration() {
+        return this.getSpec().getMaxAcceleration();
+    }
+
+    public double getMaxJerk() {
+        return this.getSpec().getMaxJerk();
+    }
+
+    public double getMaxVelocity() {
+        return this.getSpec().getMaxVelocity();
     }
 
     public Vector getNextLocation(double stepSize) {
@@ -43,16 +40,16 @@ public abstract class KineticSimRemote extends SimRemote {
     }
 
     public Vector getNextLocation(Vector jerk, double stepSize) {
-        if (this.getSpec().getMaxJerk() < jerk.getMagnitude()) {
-            jerk = Vector.scale(jerk.getUnitVector(), this.getSpec().getMaxJerk());
+        if (this.getMaxJerk() < jerk.getMagnitude()) {
+            jerk = Vector.scale(jerk.getUnitVector(), this.getMaxJerk());
         }
         Vector nextAcceleration = Vector.add(this.acceleration, Vector.scale(jerk, stepSize));
-        if (this.getSpec().getMaxAcceleration() < nextAcceleration.getMagnitude()) {
-            nextAcceleration = Vector.scale(nextAcceleration.getUnitVector(), this.getSpec().getMaxAcceleration());
+        if (this.getMaxAcceleration() < nextAcceleration.getMagnitude()) {
+            nextAcceleration = Vector.scale(nextAcceleration.getUnitVector(), this.getMaxAcceleration());
         }
         Vector nextVelocity = Vector.add(this.velocity, Vector.scale(this.acceleration, stepSize));
-        if (this.getSpec().getMaxVelocity() < nextVelocity.getMagnitude()) {
-            nextVelocity = Vector.scale(nextVelocity.getUnitVector(), this.getSpec().getMaxVelocity());
+        if (this.getMaxVelocity() < nextVelocity.getMagnitude()) {
+            nextVelocity = Vector.scale(nextVelocity.getUnitVector(), this.getMaxVelocity());
         }
         return Vector.add(this.location, Vector.scale(this.velocity, stepSize));
     }
@@ -72,80 +69,62 @@ public abstract class KineticSimRemote extends SimRemote {
         return true;
     }
 
-    public void setAcceleration(Vector acceleration) {
+    public void setAcceleration(Vector acceleration) throws SimException {
         if (this.getSpec().getMaxAcceleration() < acceleration.getMagnitude()) {
-            Debugger.logger.err(String.format("Acceleration exceeds max acceleration of remote %s",
-                this.getRemoteID()));
+            throw new SimException(String.format("Remote %s cannot set acceleration to %s", this.getRemoteID(),
+                acceleration.toString()));
         }
         this.acceleration = acceleration;
     }
 
-    public void setVelocity(Vector velocity) {
+    public void setVelocity(Vector velocity) throws SimException {
         if (this.getSpec().getMaxVelocity() < velocity.getMagnitude()) {
-            Debugger.logger.err(String.format("Velocity exceeds max velocity of remote %s", this.getRemoteID()));
+            throw new SimException(String.format("Remote %s cannot set velocity to %s", this.getRemoteID(),
+                velocity.toString()));
         }
         this.velocity = velocity;
     }
 
     @Override
-    public void update(ArrayList<Intention> intentions, double stepSize) throws SimException {
-        super.update(intentions, stepSize);
-        boolean moved = false;
-        if (intentions != null) {
-            for (Intention intent : intentions) {
-                switch (intent.getIntentionType()) {
-                    case DONE:
-                    case SHUTDOWN:
-                    case STOP:
-                        if (!moved) {
-                            this.updateVelocityTo(new Vector(), stepSize);
-                            this.updateLocation(this.velocity, stepSize);
-                            moved = true;
-                        } else {
-                            Debugger.logger.err(String.format("Remote %s has already moved", this.getRemoteID()));
-                        }
-                        continue;
-                    case GOTO:
-                        if (!moved) {
-                            this.updateLocationTo(
-                                ((GotoIntention) intent).getLocation(),
-                                ((GotoIntention) intent).getMaxVelocity(),
-                                ((GotoIntention) intent).getMaxAcceleration(),
-                                ((GotoIntention) intent).getMaxJerk()
-                            );
-                            moved = true;
-                        } else {
-                            Debugger.logger.err(String.format("Remote %s has already moved", this.getRemoteID()));
-                        }
-                        continue;
-                    case MOVE:
-                        if (!moved) {
-                            this.updateAcceleration(((MoveIntention) intent).getJerk(), stepSize);
-                            this.updateVelocity(this.acceleration, stepSize);
-                            this.updateLocation(this.velocity, stepSize);
-                            moved = true;
-                        } else {
-                            Debugger.logger.err(String.format("Remote %s has already moved", this.getRemoteID()));
-                        }
-                        continue;
-                    default:
-                        continue;
-                }
-            }
+    public void update(RemoteController controller, double stepSize) throws SimException {
+        super.update(controller, stepSize);
+        if (this.isInactive() || this.isDone()) {
+            this.updateVelocityTo(new Vector(), stepSize);
+            this.updateLocation(this.velocity, stepSize);
+            return;
         }
-        if (!moved) {
+        if (controller != null) {
+            if (controller.hasIntentionWithType(IntentionType.DONE) ||
+                    controller.hasIntentionWithType(IntentionType.SHUTDOWN) ||
+                    controller.hasIntentionWithType(IntentionType.STOP)) {
+                this.updateVelocityTo(new Vector(), stepSize);
+                this.updateLocation(this.velocity, stepSize);
+            } else if (controller.hasIntentionWithType(IntentionType.GOTO)) {
+                GotoIntention intent = (GotoIntention) controller.getIntentionWithType(IntentionType.GOTO);
+                this.updateLocationTo(intent.getLocation(), intent.getMaxVelocity(), intent.getMaxAcceleration(),
+                    intent.getMaxJerk());
+            } else if (controller.hasIntentionWithType(IntentionType.MOVE)) {
+                MoveIntention intent = (MoveIntention) controller.getIntentionWithType(IntentionType.MOVE);
+                this.updateAcceleration(intent.getJerk(), stepSize);
+                this.updateVelocity(this.acceleration, stepSize);
+                this.updateLocation(this.velocity, stepSize);
+            } else {
+                this.updateVelocity(this.acceleration, stepSize);
+                this.updateLocation(this.velocity, stepSize);
+            }
+        } else {
             this.updateVelocity(this.acceleration, stepSize);
             this.updateLocation(this.velocity, stepSize);
         }
     }
 
     protected void updateAcceleration(Vector delta, double stepSize) {
-        if (this.getSpec().getMaxJerk() < delta.getMagnitude()) {
-            delta = Vector.scale(delta.getUnitVector(), this.getSpec().getMaxJerk());
+        if (this.getMaxJerk() < delta.getMagnitude()) {
+            delta = Vector.scale(delta.getUnitVector(), this.getMaxJerk());
         }
         this.acceleration = Vector.add(this.acceleration, Vector.scale(delta, stepSize));
-        if (this.getSpec().getMaxAcceleration() < this.acceleration.getMagnitude()) {
-            this.acceleration = Vector.scale(this.acceleration.getUnitVector(), this.getSpec().getMaxAcceleration());
+        if (this.getMaxAcceleration() < this.acceleration.getMagnitude()) {
+            this.acceleration = Vector.scale(this.acceleration.getUnitVector(), this.getMaxAcceleration());
         }
     }
 
@@ -192,12 +171,12 @@ public abstract class KineticSimRemote extends SimRemote {
     }
 
     protected void updateVelocity(Vector delta, double stepSize) {
-        if (this.getSpec().getMaxAcceleration() < delta.getMagnitude()) {
-            delta = Vector.scale(delta.getUnitVector(), this.getSpec().getMaxAcceleration());
+        if (this.getMaxAcceleration() < delta.getMagnitude()) {
+            delta = Vector.scale(delta.getUnitVector(), this.getMaxAcceleration());
         }
         this.velocity = Vector.add(this.velocity, Vector.scale(delta, stepSize));
-        if (this.getSpec().getMaxVelocity() < this.velocity.getMagnitude()) {
-            this.velocity = Vector.scale(this.velocity.getUnitVector(), this.getSpec().getMaxVelocity());
+        if (this.getMaxVelocity() < this.velocity.getMagnitude()) {
+            this.velocity = Vector.scale(this.velocity.getUnitVector(), this.getMaxVelocity());
         }
     }
 

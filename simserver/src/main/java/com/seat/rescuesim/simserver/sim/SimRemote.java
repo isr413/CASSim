@@ -29,10 +29,10 @@ public abstract class SimRemote {
     protected Vector location;
     protected RemoteSpec spec;
 
-    public SimRemote(RemoteSpec spec, String label, Vector location) {
+    public SimRemote(RemoteSpec spec, String label) {
         this.spec = spec;
         this.label = label;
-        this.location = location;
+        this.location = spec.getLocation();
         this.battery = spec.getMaxBatteryPower();
         this.allSensors = new HashMap<>();
         this.activeSensors = new HashMap<>();
@@ -328,8 +328,8 @@ public abstract class SimRemote {
                 this.setActive();
             }
             if (controller.hasIntentionWithType(IntentionType.ACTIVATE)) {
-                Intention intent = controller.getIntentionWithType(IntentionType.ACTIVATE);
-                this.activateSensors(((ActivateIntention) intent).getActivations());
+                ActivateIntention intent = (ActivateIntention) controller.getIntentionWithType(IntentionType.ACTIVATE);
+                this.activateSensors(intent.getActivations());
             }
             if (controller.hasIntentionWithType(IntentionType.DEACTIVATE)) {
                 Intention intent = controller.getIntentionWithType(IntentionType.DEACTIVATE);
