@@ -284,9 +284,21 @@ public class SimScenario {
                 continue;
             }
             ArrayList<Intention> remoteIntentions = new ArrayList<>();
-            remoteIntentions.add(Intent.None());
-            // TODO: add random movement
+            if (remote.isActive() && remote.isKinetic()) {
+                remoteIntentions.add(
+                    Intent.Goto(
+                        Vector.scale(
+                            this.rng.getRandomDirection2D(),
+                            ((KineticSimRemote) remote).getVelocity().getMagnitude()
+                        )
+                    )
+                );
+            } else {
+                remoteIntentions.add(Intent.None());
+            }
             // TODO: add map effects
+            // TODO: remove inactive remotes
+            // TODO: activate all sensors on passive remotes
             remote.update(remoteIntentions, stepSize);
             if (remote.isKinetic() && !this.boundsCheck(remote.getLocation())) {
                 this.enforceBounds((KineticSimRemote) remote, location);
