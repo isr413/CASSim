@@ -284,6 +284,11 @@ public class SimScenario {
                 continue;
             }
             ArrayList<Intention> remoteIntentions = new ArrayList<>();
+            if (remote.isActive() && remote.hasInactiveSensors()) {
+                remoteIntentions.add(Intent.Activate(remote.getInactiveSensorIDs()));
+            } else if (remote.isInactive() && remote.hasActiveSensors()) {
+                remoteIntentions.add(Intent.Deactivate(remote.getActiveSensorIDs()));
+            }
             if (remote.isActive() && remote.isKinetic()) {
                 remoteIntentions.add(
                     Intent.Goto(
@@ -293,12 +298,12 @@ public class SimScenario {
                         )
                     )
                 );
-            } else {
+            }
+            if (intentions.isEmpty()) {
                 remoteIntentions.add(Intent.None());
             }
             // TODO: add map effects
             // TODO: remove inactive remotes
-            // TODO: activate all sensors on passive remotes
             remote.update(remoteIntentions, stepSize);
             if (remote.isKinetic() && !this.boundsCheck(remote.getLocation())) {
                 this.enforceBounds((KineticSimRemote) remote, location);

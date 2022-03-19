@@ -57,6 +57,10 @@ public abstract class SimRemote {
         }
     }
 
+    public boolean activateSensors() {
+        return this.activateSensors(this.getInactiveSensorIDs());
+    }
+
     public boolean activateSensors(ArrayList<String> sensorIDs) {
         return this.activateSensors(new HashSet<String>(sensorIDs));
     }
@@ -81,6 +85,10 @@ public abstract class SimRemote {
         }
         this.activeSensors.put(sensorID, this.allSensors.get(sensorID));
         return true;
+    }
+
+    public boolean deactivateSensors() {
+        return this.deactivateSensors(this.getActiveSensorIDs());
     }
 
     public boolean deactivateSensors(ArrayList<String> sensorIDs) {
@@ -155,6 +163,24 @@ public abstract class SimRemote {
         return this.activeSensors.get(sensorID);
     }
 
+    public HashSet<String> getInactiveSensorIDs() {
+        HashSet<String> sensorIDs = this.getSensorIDs();
+        for (String sensorID : sensorIDs) {
+            if (this.hasActiveSensorWithID(sensorID)) {
+                sensorIDs.remove(sensorID);
+            }
+        }
+        return sensorIDs;
+    }
+
+    public ArrayList<SimSensor> getInactiveSensors() {
+        ArrayList<SimSensor> sensors = new ArrayList<>();
+        for (String sensorID : this.getInactiveSensorIDs()) {
+            sensors.add(this.getSensorWithID(sensorID));
+        }
+        return sensors;
+    }
+
     public HashSet<String> getSensorIDs() {
         return new HashSet<String>(this.allSensors.keySet());
     }
@@ -206,6 +232,10 @@ public abstract class SimRemote {
             }
         }
         return false;
+    }
+
+    public boolean hasInactiveSensors() {
+        return this.activeSensors.size() < this.allSensors.size();
     }
 
     public boolean hasSensors() {
