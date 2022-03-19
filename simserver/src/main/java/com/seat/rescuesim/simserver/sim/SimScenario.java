@@ -285,6 +285,8 @@ public class SimScenario {
             }
             ArrayList<Intention> remoteIntentions = new ArrayList<>();
             remoteIntentions.add(Intent.None());
+            // TODO: add random movement
+            // TODO: add map effects
             remote.update(remoteIntentions, stepSize);
             if (remote.isKinetic() && !this.boundsCheck(remote.getLocation())) {
                 this.enforceBounds((KineticSimRemote) remote, location);

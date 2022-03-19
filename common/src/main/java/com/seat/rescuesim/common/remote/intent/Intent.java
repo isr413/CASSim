@@ -42,12 +42,16 @@ public class Intent {
         return new GotoIntention(location);
     }
 
-    public static Intention Goto(Vector location, double maxAcceleration) {
-        return new GotoIntention(location, maxAcceleration);
+    public static Intention Goto(Vector location, double maxVelocity) {
+        return new GotoIntention(location, maxVelocity);
     }
 
-    public static Intention Goto(Vector location, double maxAcceleration, double maxVelocity) {
-        return new GotoIntention(location, maxAcceleration, maxVelocity);
+    public static Intention Goto(Vector location, double maxVelocity, double maxAcceleration) {
+        return new GotoIntention(location, maxVelocity, maxAcceleration);
+    }
+
+    public static Intention Goto(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
+        return new GotoIntention(location, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public static Intention Move(Vector jerk) {

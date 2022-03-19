@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.KineticRemoteSpec;
 import com.seat.rescuesim.common.remote.KineticRemoteState;
-import com.seat.rescuesim.common.remote.intent.Intent;
 import com.seat.rescuesim.common.remote.intent.Intention;
 import com.seat.rescuesim.common.remote.intent.GotoIntention;
 import com.seat.rescuesim.common.remote.intent.MoveIntention;
@@ -91,38 +90,52 @@ public abstract class KineticSimRemote extends SimRemote {
     @Override
     public void update(ArrayList<Intention> intentions, double stepSize) throws SimException {
         super.update(intentions, stepSize);
-        if (intentions == null || intentions.isEmpty() ||
-                (intentions.size() == 1 && intentions.get(0).equals(Intent.None()))) {
+        boolean moved = false;
+        if (intentions != null) {
+            for (Intention intent : intentions) {
+                switch (intent.getIntentionType()) {
+                    case DONE:
+                    case SHUTDOWN:
+                    case STOP:
+                        if (!moved) {
+                            this.updateVelocityTo(new Vector(), stepSize);
+                            this.updateLocation(this.velocity, stepSize);
+                            moved = true;
+                        } else {
+                            Debugger.logger.err(String.format("Remote %s has already moved", this.getRemoteID()));
+                        }
+                        continue;
+                    case GOTO:
+                        if (!moved) {
+                            this.updateLocationTo(
+                                ((GotoIntention) intent).getLocation(),
+                                ((GotoIntention) intent).getMaxVelocity(),
+                                ((GotoIntention) intent).getMaxAcceleration(),
+                                ((GotoIntention) intent).getMaxJerk()
+                            );
+                            moved = true;
+                        } else {
+                            Debugger.logger.err(String.format("Remote %s has already moved", this.getRemoteID()));
+                        }
+                        continue;
+                    case MOVE:
+                        if (!moved) {
+                            this.updateAcceleration(((MoveIntention) intent).getJerk(), stepSize);
+                            this.updateVelocity(this.acceleration, stepSize);
+                            this.updateLocation(this.velocity, stepSize);
+                            moved = true;
+                        } else {
+                            Debugger.logger.err(String.format("Remote %s has already moved", this.getRemoteID()));
+                        }
+                        continue;
+                    default:
+                        continue;
+                }
+            }
+        }
+        if (!moved) {
             this.updateVelocity(this.acceleration, stepSize);
             this.updateLocation(this.velocity, stepSize);
-            return;
-        }
-        for (Intention intent : intentions) {
-            switch (intent.getIntentionType()) {
-                case DONE:
-                case STOP:
-                    this.updateVelocity(this.acceleration, stepSize);
-                    this.updateLocation(this.velocity, stepSize);
-                    continue;
-                case SHUTDOWN:
-                    this.updateVelocityTo(new Vector(), stepSize);
-                    this.updateLocation(this.velocity, stepSize);
-                    continue;
-                case MOVE:
-                    this.updateAcceleration(((MoveIntention) intent).getJerk(), stepSize);
-                    this.updateVelocity(this.acceleration, stepSize);
-                    this.updateLocation(this.velocity, stepSize);
-                    continue;
-                case GOTO:
-                    this.updateLocationTo(
-                        ((GotoIntention) intent).getLocation(),
-                        ((GotoIntention) intent).getMaxVelocity(),
-                        ((GotoIntention) intent).getMaxAcceleration()
-                    );
-                    continue;
-                default:
-                    continue;
-            }
         }
     }
 

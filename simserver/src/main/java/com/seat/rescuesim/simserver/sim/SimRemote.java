@@ -7,6 +7,8 @@ import java.util.Iterator;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteSpec;
 import com.seat.rescuesim.common.remote.RemoteState;
+import com.seat.rescuesim.common.remote.intent.ActivateIntention;
+import com.seat.rescuesim.common.remote.intent.DeactivateIntention;
 import com.seat.rescuesim.common.remote.intent.Intention;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 import com.seat.rescuesim.common.sensor.SensorSpec;
@@ -15,6 +17,7 @@ import com.seat.rescuesim.common.util.Debugger;
 
 public abstract class SimRemote {
 
+    protected boolean active;
     protected HashMap<String, SimSensor> activeSensors;
     protected HashMap<String, SimSensor> allSensors;
     protected double battery;
@@ -38,6 +41,7 @@ public abstract class SimRemote {
         this.battery = battery;
         this.allSensors = new HashMap<>();
         this.activeSensors = new HashMap<>();
+        this.active = true;
         this.initSensors();
         this.activateSensors(sensorIDs);
     }
@@ -222,7 +226,7 @@ public abstract class SimRemote {
     }
 
     public boolean isActive() {
-        return this.battery > 0;
+        return this.active && this.battery > 0;
     }
 
     public boolean isInactive() {
@@ -252,7 +256,38 @@ public abstract class SimRemote {
         this.update(null, stepSize);
     }
 
-    public void update(ArrayList<Intention> intentions, double stepSize) throws SimException {}
+    public void update(ArrayList<Intention> intentions, double stepSize) throws SimException {
+        if (intentions != null) {
+            for (Intention intent : intentions) {
+                switch (intent.getIntentionType()) {
+                    case ACTIVATE:
+                        this.activateSensors(((ActivateIntention) intent).getActivations());
+                        continue;
+                    case DEACTIVATE:
+                        this.deactivateSensors(((DeactivateIntention) intent).getDeactivations());
+                        continue;
+                    case DONE:
+                        this.active = false;
+                        continue;
+                    case SHUTDOWN:
+                        this.deactivateSensors(this.getActiveSensorIDs());
+                        this.active = false;
+                        continue;
+                    case STARTUP:
+                        this.active = true;
+                        continue;
+                    default:
+                        continue;
+                }
+            }
+        }
+        double batteryUsage = 0;
+        for (SimSensor sensor : this.activeSensors.values()) {
+            batteryUsage += sensor.getBatteryUsage();
+        }
+        this.updateBattery(batteryUsage, stepSize);
+        return;
+    }
 
     protected void updateBattery(double usage, double stepSize) {
         this.battery += usage * stepSize;
