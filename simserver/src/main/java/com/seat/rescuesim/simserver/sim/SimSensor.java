@@ -1,6 +1,7 @@
 package com.seat.rescuesim.simserver.sim;
 
 import com.seat.rescuesim.common.sensor.SensorSpec;
+import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.sensor.SensorType;
 
 public class SimSensor {
@@ -33,12 +34,21 @@ public class SimSensor {
         return this.spec.getSensorRange();
     }
 
+    public String getSensorID() {
+        return this.getLabel();
+    }
+
     public SensorType getSensorType() {
         return this.spec.getSpecType();
     }
 
     public SensorSpec getSpec() {
         return this.spec;
+    }
+
+    public SensorState getState() {
+        // TODO: get data
+        return new SensorState(this.getSensorType(), this.getSensorID(), "");
     }
 
     public boolean hasAccuracy() {

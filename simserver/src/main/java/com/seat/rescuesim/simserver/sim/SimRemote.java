@@ -15,8 +15,10 @@ import com.seat.rescuesim.common.remote.intent.Intention;
 import com.seat.rescuesim.common.remote.intent.IntentionType;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 import com.seat.rescuesim.common.sensor.SensorSpec;
+import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.sensor.SensorType;
 import com.seat.rescuesim.common.util.Debugger;
+import com.seat.rescuesim.common.util.SerializableEnum;
 
 public abstract class SimRemote {
 
@@ -209,6 +211,14 @@ public abstract class SimRemote {
         return new ArrayList<SimSensor>(this.allSensors.values());
     }
 
+    public ArrayList<SensorState> getSensorState() {
+        ArrayList<SensorState> state = new ArrayList<>();
+        for (SimSensor sensor : this.allSensors.values()) {
+            state.add(sensor.getState());
+        }
+        return state;
+    }
+
     public ArrayList<SimSensor> getSensorsWithType(SensorType type) {
         ArrayList<SimSensor> sensors = new ArrayList<>();
         for (SimSensor sensor : this.allSensors.values()) {
@@ -232,6 +242,10 @@ public abstract class SimRemote {
 
     public RemoteSpec getSpec() {
         return this.spec;
+    }
+
+    public SerializableEnum getSpecType() {
+        return this.spec.getSpecType();
     }
 
     public abstract RemoteState getState();
