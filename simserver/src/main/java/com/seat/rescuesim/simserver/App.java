@@ -99,6 +99,10 @@ public class App {
                 Debugger.logger.info(String.format("Sending snap <%s> ...", snap.getHash()));
                 snap = scenario.getSnapshot();
                 out.println(snap.encode());
+                if (scenario.isDone()) {
+                    Debugger.logger.state(String.format("Scenario <%s> is done", scenario.getScenarioID()));
+                    break;
+                }
             } catch (IOException e) {
                 System.err.println(e);
                 if (out != null) {
