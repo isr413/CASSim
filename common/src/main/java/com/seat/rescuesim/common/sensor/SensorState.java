@@ -1,28 +1,11 @@
 package com.seat.rescuesim.common.sensor;
 
 import com.seat.rescuesim.common.json.*;
-import com.seat.rescuesim.common.util.Debugger;
 
 public abstract class SensorState extends JSONAble {
     private static final String ACTIVE = "active";
     private static final String SENSOR_ID = "sensor_id";
-    private static final String SENSOR_TYPE = "sensor_type";
-
-    public static SensorType decodeSensorType(JSONObject json) throws JSONException {
-        return SensorType.values()[json.getInt(SensorState.SENSOR_TYPE)];
-    }
-
-    public static SensorType decodeSensorType(JSONOption option) throws JSONException {
-        if (option.isSomeObject()) {
-            return SensorState.decodeSensorType(option.someObject());
-        }
-        Debugger.logger.err(String.format("Cannot decode sensor type of %s", option.toString()));
-        return null;
-    }
-
-    public static SensorType decodeSensorType(String encoding) throws JSONException {
-        return SensorState.decodeSensorType(JSONOption.String(encoding));
-    }
+    private static final String SENSOR_TYPE = SensorFactory.SENSOR_TYPE;
 
     protected boolean active;
     protected String sensorID;

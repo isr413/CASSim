@@ -8,7 +8,7 @@ public class SensorSpec extends JSONAble {
     private static final String SENSOR_BATTERY_USAGE = "battery_usage";
     private static final String SENSOR_DELAY = "delay";
     private static final String SENSOR_RANGE = "range";
-    private static final String SENSOR_TYPE = "sensor_type";
+    private static final String SENSOR_TYPE = SensorFactory.SENSOR_TYPE;
 
     private double accuracy;
     private double batteryUsage;
