@@ -20,7 +20,9 @@ import com.seat.rescuesim.common.sensor.SensorType;
 import com.seat.rescuesim.common.util.Debugger;
 import com.seat.rescuesim.common.util.SerializableEnum;
 import com.seat.rescuesim.simserver.sim.SimException;
+import com.seat.rescuesim.simserver.sim.SimScenario;
 import com.seat.rescuesim.simserver.sim.sensor.SimSensor;
+import com.seat.rescuesim.simserver.sim.sensor.SimSensorFactory;
 
 public abstract class SimRemote {
 
@@ -51,7 +53,10 @@ public abstract class SimRemote {
             Iterator<String> sensorIDs = sensorConfig.getSensorIDs().iterator();
             for (int i = 0; i < sensorConfig.getCount(); i++) {
                 String label = (i < sensorConfig.getSensorIDs().size()) ? sensorIDs.next() : String.format("s<%d>", i);
-                this.allSensors.put(label, new SimSensor(sensorSpec, label));
+                SimSensor sensor = SimSensorFactory.getSimSensor(sensorSpec, label);
+                if (sensor != null) {
+                    this.allSensors.put(label, sensor);
+                }
             }
         }
     }
@@ -134,26 +139,6 @@ public abstract class SimRemote {
         return true;
     }
 
-    public double getBattery() {
-        return this.battery;
-    }
-
-    public String getLabel() {
-        return this.label;
-    }
-
-    public Vector getLocation() {
-        return this.location;
-    }
-
-    public double getMaxBatteryPower() {
-        return this.spec.getMaxBatteryPower();
-    }
-
-    public String getRemoteID() {
-        return this.getLabel();
-    }
-
     public HashSet<String> getActiveSensorIDs() {
         return new HashSet<String>(this.activeSensors.keySet());
     }
@@ -183,6 +168,10 @@ public abstract class SimRemote {
         return this.activeSensors.get(sensorID);
     }
 
+    public double getBattery() {
+        return this.battery;
+    }
+
     public HashSet<String> getInactiveSensorIDs() {
         HashSet<String> sensorIDs = new HashSet<>();
         for (String sensorID : this.allSensors.keySet()) {
@@ -201,6 +190,46 @@ public abstract class SimRemote {
         return sensors;
     }
 
+    public ArrayList<SimSensor> getInactiveSensorsWithType(SensorType type) {
+        ArrayList<SimSensor> sensors = new ArrayList<>();
+        for (SimSensor sensor : this.allSensors.values()) {
+            if (this.hasActiveSensorWithID(sensor.getSensorID())) {
+                continue;
+            }
+            if (sensor.getSensorType().equals(type)) {
+                sensors.add(sensor);
+            }
+        }
+        if (sensors.isEmpty()) {
+            Debugger.logger.warn(String.format("Remote %s has no inactive sensors with type %s", this.getRemoteID(),
+                type.getLabel()));
+        }
+        return sensors;
+    }
+
+    public SimSensor getInactiveSensorWithID(String sensorID) throws SimException {
+        if (!this.hasInactiveSensorWithID(sensorID)) {
+            throw new SimException(String.format("Remote %s has no inactive sensor %s", this.getRemoteID(), sensorID));
+        }
+        return this.allSensors.get(sensorID);
+    }
+
+    public String getLabel() {
+        return this.label;
+    }
+
+    public Vector getLocation() {
+        return this.location;
+    }
+
+    public double getMaxBatteryPower() {
+        return this.spec.getMaxBatteryPower();
+    }
+
+    public String getRemoteID() {
+        return this.getLabel();
+    }
+
     public RemoteType getRemoteType() {
         return this.spec.getRemoteType();
     }
@@ -215,7 +244,7 @@ public abstract class SimRemote {
 
     public ArrayList<SensorState> getSensorState() {
         ArrayList<SensorState> state = new ArrayList<>();
-        for (SimSensor sensor : this.allSensors.values()) {
+        for (SimSensor sensor : this.activeSensors.values()) {
             state.add(sensor.getState());
         }
         return state;
@@ -271,6 +300,22 @@ public abstract class SimRemote {
 
     public boolean hasInactiveSensors() {
         return this.activeSensors.size() < this.allSensors.size();
+    }
+
+    public boolean hasInactiveSensorWithID(String sensorID) {
+        return this.hasSensorWithID(sensorID) && !this.hasActiveSensorWithID(sensorID);
+    }
+
+    public boolean hasInactiveSensorWithType(SensorType type) {
+        for (SimSensor sensor : this.activeSensors.values()) {
+            if (this.hasActiveSensorWithID(sensor.getSensorID())) {
+                continue;
+            }
+            if (sensor.getSensorType().equals(type)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean hasSensors() {
@@ -331,11 +376,11 @@ public abstract class SimRemote {
         this.location = location;
     }
 
-    public void update(double stepSize) throws SimException {
-        this.update(null, stepSize);
+    public void update(SimScenario scenario, double stepSize) throws SimException {
+        this.update(scenario, null, stepSize);
     }
 
-    public void update(RemoteController controller, double stepSize) throws SimException {
+    public void update(SimScenario scenario, RemoteController controller, double stepSize) throws SimException {
         if (this.isDone()) {
             return;
         }
@@ -357,16 +402,16 @@ public abstract class SimRemote {
             if (controller.hasIntentionWithType(IntentionType.DONE)) {
                 this.setDone();
             }
-        }
-        if (this.isInactive() || this.isDone()) {
-            return;
+            if (this.isInactive() || this.isDone()) {
+                return;
+            }
         }
         double batteryUsage = 0;
         for (SimSensor sensor : this.activeSensors.values()) {
+            sensor.update(scenario, this, stepSize);
             batteryUsage += sensor.getBatteryUsage();
         }
         this.updateBattery(batteryUsage, stepSize);
-        return;
     }
 
     protected void updateBattery(double usage, double stepSize) {

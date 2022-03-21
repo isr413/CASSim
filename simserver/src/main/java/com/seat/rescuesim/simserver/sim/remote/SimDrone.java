@@ -5,6 +5,7 @@ import com.seat.rescuesim.common.drone.DroneState;
 import com.seat.rescuesim.common.drone.DroneType;
 import com.seat.rescuesim.common.remote.RemoteController;
 import com.seat.rescuesim.simserver.sim.SimException;
+import com.seat.rescuesim.simserver.sim.SimScenario;
 
 public class SimDrone extends KineticSimRemote {
 
@@ -33,8 +34,8 @@ public class SimDrone extends KineticSimRemote {
     }
 
     @Override
-    public void update(RemoteController controller, double stepSize) throws SimException {
-        super.update(controller, stepSize);
+    public void update(SimScenario scenario, RemoteController controller, double stepSize) throws SimException {
+        super.update(scenario, controller, stepSize);
         if (this.isInactive() || this.isDone()) {
             return;
         }

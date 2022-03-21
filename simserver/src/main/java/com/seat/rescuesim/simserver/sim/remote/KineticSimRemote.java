@@ -8,6 +8,7 @@ import com.seat.rescuesim.common.remote.intent.IntentionType;
 import com.seat.rescuesim.common.remote.intent.GotoIntention;
 import com.seat.rescuesim.common.remote.intent.MoveIntention;
 import com.seat.rescuesim.simserver.sim.SimException;
+import com.seat.rescuesim.simserver.sim.SimScenario;
 
 public abstract class KineticSimRemote extends SimRemote {
 
@@ -87,32 +88,32 @@ public abstract class KineticSimRemote extends SimRemote {
     }
 
     @Override
-    public void update(RemoteController controller, double stepSize) throws SimException {
-        super.update(controller, stepSize);
+    public void update(SimScenario scenario, RemoteController controller, double stepSize) throws SimException {
+        super.update(scenario, controller, stepSize);
         if (this.isInactive() || this.isDone()) {
             this.updateVelocityTo(new Vector(), stepSize);
             this.updateLocation(this.velocity, stepSize);
             return;
         }
-        if (controller != null) {
-            if (controller.hasIntentionWithType(IntentionType.DONE) ||
-                    controller.hasIntentionWithType(IntentionType.SHUTDOWN) ||
-                    controller.hasIntentionWithType(IntentionType.STOP)) {
-                this.updateVelocityTo(new Vector(), stepSize);
-                this.updateLocation(this.velocity, stepSize);
-            } else if (controller.hasIntentionWithType(IntentionType.GOTO)) {
-                GotoIntention intent = (GotoIntention) controller.getIntentionWithType(IntentionType.GOTO);
-                this.updateLocationTo(intent.getLocation(), intent.getMaxVelocity(), intent.getMaxAcceleration(),
-                    intent.getMaxJerk());
-            } else if (controller.hasIntentionWithType(IntentionType.MOVE)) {
-                MoveIntention intent = (MoveIntention) controller.getIntentionWithType(IntentionType.MOVE);
-                this.updateAcceleration(intent.getJerk(), stepSize);
-                this.updateVelocity(this.acceleration, stepSize);
-                this.updateLocation(this.velocity, stepSize);
-            } else {
-                this.updateVelocity(this.acceleration, stepSize);
-                this.updateLocation(this.velocity, stepSize);
-            }
+        if (controller == null) {
+            this.updateVelocity(this.acceleration, stepSize);
+            this.updateLocation(this.velocity, stepSize);
+            return;
+        }
+        if (controller.hasIntentionWithType(IntentionType.DONE) ||
+                controller.hasIntentionWithType(IntentionType.SHUTDOWN) ||
+                controller.hasIntentionWithType(IntentionType.STOP)) {
+            this.updateVelocityTo(new Vector(), stepSize);
+            this.updateLocation(this.velocity, stepSize);
+        } else if (controller.hasIntentionWithType(IntentionType.GOTO)) {
+            GotoIntention intent = (GotoIntention) controller.getIntentionWithType(IntentionType.GOTO);
+            this.updateLocationTo(intent.getLocation(), intent.getMaxVelocity(), intent.getMaxAcceleration(),
+                intent.getMaxJerk());
+        } else if (controller.hasIntentionWithType(IntentionType.MOVE)) {
+            MoveIntention intent = (MoveIntention) controller.getIntentionWithType(IntentionType.MOVE);
+            this.updateAcceleration(intent.getJerk(), stepSize);
+            this.updateVelocity(this.acceleration, stepSize);
+            this.updateLocation(this.velocity, stepSize);
         } else {
             this.updateVelocity(this.acceleration, stepSize);
             this.updateLocation(this.velocity, stepSize);
