@@ -3,15 +3,20 @@ package com.seat.rescuesim.simserver.sim.sensor;
 import com.seat.rescuesim.common.sensor.SensorSpec;
 import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.sensor.SensorType;
+import com.seat.rescuesim.simserver.sim.SimException;
+import com.seat.rescuesim.simserver.sim.SimScenario;
+import com.seat.rescuesim.simserver.sim.remote.SimRemote;
 
-public class SimSensor {
+public abstract class SimSensor {
 
-    private String label;
-    private SensorSpec spec;
+    protected boolean active;
+    protected String label;
+    protected SensorSpec spec;
 
     public SimSensor(SensorSpec spec, String label) {
         this.spec = spec;
         this.label = label;
+        this.active = false;
     }
 
     public double getAccuracy() {
@@ -46,10 +51,7 @@ public class SimSensor {
         return this.spec;
     }
 
-    public SensorState getState() {
-        // TODO: get data
-        return new SensorState(this.getSensorType(), this.getSensorID(), "");
-    }
+    public abstract SensorState getState();
 
     public boolean hasAccuracy() {
         return this.spec.getSensorAccuracy() > 0;
@@ -75,12 +77,32 @@ public class SimSensor {
         return this.spec.getSensorRange() > 0;
     }
 
+    public boolean isActive() {
+        return this.active;
+    }
+
+    public boolean isInactive() {
+        return !this.isActive();
+    }
+
+    public void setActive() {
+        this.active = true;
+    }
+
+    public void setInactive() {
+        this.active = false;
+    }
+
     public String toString() {
         return this.getLabel();
     }
 
-    public boolean equals(SimSensor sensor) {
-        return this.label.equals(sensor.label) && this.spec.equals(sensor.spec);
+    public void update(SimScenario scenario, SimRemote remote, double stepSize) throws SimException {
+        if (this.isActive() && remote.isInactive()) {
+            this.setInactive();
+        } else if (this.isInactive() && remote.isActive()) {
+            this.setActive();
+        }
     }
 
 }
