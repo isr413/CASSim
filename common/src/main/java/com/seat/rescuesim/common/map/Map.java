@@ -83,11 +83,60 @@ public class Map extends JSONAble {
         }
     }
 
+    public Vector bounceLocation(Vector location, Vector nextLocation) {
+        if (this.isInbounds(nextLocation)) {
+            return null;
+        }
+        Vector edgePoint = this.edgePointBetween(location, nextLocation);
+        double deltaX = nextLocation.getX() - edgePoint.getX();
+        double deltaY = nextLocation.getY() - edgePoint.getY();
+        if ((edgePoint.getX() == 0 || edgePoint.getX() == this.getWidth()) &&
+                (edgePoint.getY() == 0 || edgePoint.getY() == this.getHeight())) {
+            return new Vector(edgePoint.getX() - deltaX, edgePoint.getY() - deltaY);
+        } else if (edgePoint.getY() == 0 || edgePoint.getY() == this.getHeight()) {
+            return new Vector(edgePoint.getX() + deltaX, edgePoint.getY() - deltaY);
+        } else {
+            return new Vector(edgePoint.getX() - deltaX, edgePoint.getY() + deltaY);
+        }
+    }
+
+    public Vector edgePointBetween(Vector location, Vector nextLocation) {
+        if (this.isInbounds(nextLocation)) {
+            return null;
+        }
+        double slope = Vector.slope(location, nextLocation);
+        if (nextLocation.getX() < 0 && nextLocation.getY() < 0) {
+            return new Vector(0, 0);
+        } else if (this.getWidth() < nextLocation.getX() && nextLocation.getY() < 0) {
+            return new Vector(this.getWidth(), 0);
+        } else if (nextLocation.getY() < 0) {
+            double deltaX = (Double.isFinite(slope) && slope != 0) ? (0 - location.getY()) / slope : 0;
+            return new Vector(location.getX() + deltaX, 0);
+        } else if (this.getWidth() < nextLocation.getX() && this.getHeight() < nextLocation.getY()) {
+            return new Vector(this.getWidth(), this.getHeight());
+        } else if (this.getWidth() < nextLocation.getX()) {
+            double deltaY = (Double.isFinite(slope)) ? (this.getWidth() - location.getX()) * slope : 0;
+            return new Vector(this.getWidth(), location.getY() + deltaY);
+        } else if (nextLocation.getX() < 0 && this.getHeight() < nextLocation.getY()) {
+            return new Vector(0, this.getWidth());
+        } else if (this.getHeight() < nextLocation.getY()) {
+            double deltaX = (Double.isFinite(slope) && slope != 0) ? (this.getHeight()-location.getY()) / slope : 0;
+            return new Vector(location.getX() + deltaX, this.getHeight());
+        } else {
+            double deltaY = (Double.isFinite(slope)) ? (0 - location.getX()) * slope : 0;
+            return new Vector(0, location.getY() + deltaY);
+        }
+    }
+
     public Zone[][] getGrid() {
         return this.grid;
     }
 
     public int getHeight() {
+        return this.height * this.zoneSize;
+    }
+
+    public int getHeightUnits() {
         return this.height;
     }
 
@@ -100,6 +149,10 @@ public class Map extends JSONAble {
     }
 
     public int getWidth() {
+        return this.width * this.zoneSize;
+    }
+
+    public int getWidthUnits() {
         return this.width;
     }
 
@@ -132,6 +185,15 @@ public class Map extends JSONAble {
 
     public int getZoneSize() {
         return this.zoneSize;
+    }
+
+    public boolean isInbounds(Vector location) {
+        return 0 <= location.getX() && location.getX() <= this.getWidth() && 0 <= location.getY() &&
+            location.getY() <= this.getHeight();
+    }
+
+    public boolean isOutOfBounds(Vector location) {
+        return !this.isInbounds(location);
     }
 
     public JSONOption toJSON() {
