@@ -56,12 +56,12 @@ public class App {
 
     private static HashMap<String, RemoteController> getRemoteIntentionsBlocking(SimScenario scenario,
             BufferedReader in) throws IOException, JSONException {
-        if (!scenario.hasActiveRemotes()) {
-            Debugger.logger.info(String.format("No active remotes for <%s>", scenario.getScenarioID()));
+        if (!scenario.hasRemotes()) {
+            Debugger.logger.info(String.format("No remotes for <%s>", scenario.getScenarioID()));
             return new HashMap<>();
         }
         Debugger.logger.info(String.format("Waiting for intentions for remotes %s ...",
-            scenario.getActiveRemotes().toString()));
+            scenario.getActiveDynamicRemoteIDs().toString()));
         String encoding = getInputBlocking(in);
         HashMap<String, RemoteController> controllers = new HashMap<>();
         JSONArray json = JSONOption.String(encoding).someArray();
