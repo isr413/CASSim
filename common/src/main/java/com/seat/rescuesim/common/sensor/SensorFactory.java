@@ -4,10 +4,9 @@ import com.seat.rescuesim.common.json.*;
 import org.json.JSONException;
 
 public class SensorFactory {
-    static final String SENSOR_TYPE = "sensor_type";
 
     public static SensorType decodeSensorType(JSONObject json) throws JSONException {
-        return SensorType.values()[json.getInt(SensorFactory.SENSOR_TYPE)];
+        return SensorType.values()[json.getInt(SensorConst.TYPE)];
     }
 
     public static SensorType decodeSensorType(JSONOption option) throws JSONException {

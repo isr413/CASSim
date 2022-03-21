@@ -3,9 +3,6 @@ package com.seat.rescuesim.common.sensor;
 import com.seat.rescuesim.common.json.*;
 
 public abstract class SensorState extends JSONAble {
-    private static final String ACTIVE = "active";
-    private static final String SENSOR_ID = "sensor_id";
-    private static final String SENSOR_TYPE = SensorFactory.SENSOR_TYPE;
 
     protected boolean active;
     protected String sensorID;
@@ -31,9 +28,9 @@ public abstract class SensorState extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = SensorType.values()[json.getInt(SensorState.SENSOR_TYPE)];
-        this.sensorID = json.getString(SensorState.SENSOR_ID);
-        this.active = json.getBoolean(SensorState.ACTIVE);
+        this.type = SensorType.values()[json.getInt(SensorConst.TYPE)];
+        this.sensorID = json.getString(SensorConst.SENSOR_ID);
+        this.active = json.getBoolean(SensorConst.ACTIVE);
     }
 
     public String getSensorID() {
@@ -54,9 +51,9 @@ public abstract class SensorState extends JSONAble {
 
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(SensorState.SENSOR_TYPE, this.type.getType());
-        json.put(SensorState.SENSOR_ID, this.sensorID);
-        json.put(SensorState.ACTIVE, this.active);
+        json.put(SensorConst.TYPE, this.type.getType());
+        json.put(SensorConst.SENSOR_ID, this.sensorID);
+        json.put(SensorConst.ACTIVE, this.active);
         return json;
     }
 

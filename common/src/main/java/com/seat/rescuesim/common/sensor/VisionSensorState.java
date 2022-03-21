@@ -11,7 +11,6 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 
 public class VisionSensorState extends SensorState {
-    private static final String OBSERVATIONS = "observations";
 
     private HashSet<String> observations;
 
@@ -43,8 +42,8 @@ public class VisionSensorState extends SensorState {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        if (json.hasKey(VisionSensorState.OBSERVATIONS)) {
-            JSONArray jsonObservations = json.getJSONArray(VisionSensorState.OBSERVATIONS);
+        if (json.hasKey(SensorConst.OBSERVATIONS)) {
+            JSONArray jsonObservations = json.getJSONArray(SensorConst.OBSERVATIONS);
             for (int i = 0; i < jsonObservations.length(); i++) {
                 this.observations.add(jsonObservations.getString(i));
             }
@@ -70,7 +69,7 @@ public class VisionSensorState extends SensorState {
             for (String remoteID : this.observations) {
                 jsonObservations.put(remoteID);
             }
-            json.put(VisionSensorState.OBSERVATIONS, jsonObservations.toJSON());
+            json.put(SensorConst.OBSERVATIONS, jsonObservations.toJSON());
         }
         return json.toJSON();
     }

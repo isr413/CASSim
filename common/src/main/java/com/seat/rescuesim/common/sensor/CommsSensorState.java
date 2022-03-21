@@ -11,7 +11,6 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 
 public class CommsSensorState extends SensorState {
-    private static final String CONNECTIONS = "connections";
 
     private HashSet<String> connections;
 
@@ -43,8 +42,8 @@ public class CommsSensorState extends SensorState {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        if (json.hasKey(CommsSensorState.CONNECTIONS)) {
-            JSONArray jsonConnections = json.getJSONArray(CommsSensorState.CONNECTIONS);
+        if (json.hasKey(SensorConst.CONNECTIONS)) {
+            JSONArray jsonConnections = json.getJSONArray(SensorConst.CONNECTIONS);
             for (int i = 0; i < jsonConnections.length(); i++) {
                 this.connections.add(jsonConnections.getString(i));
             }
@@ -70,7 +69,7 @@ public class CommsSensorState extends SensorState {
             for (String remoteID : this.connections) {
                 jsonObservations.put(remoteID);
             }
-            json.put(CommsSensorState.CONNECTIONS, jsonObservations.toJSON());
+            json.put(SensorConst.CONNECTIONS, jsonObservations.toJSON());
         }
         return json.toJSON();
     }

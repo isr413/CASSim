@@ -6,9 +6,8 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 
 public class MonitorSensorState extends SensorState {
-    private static final String REMOTE_ID = "remote_id";
 
-    private String remoteID;
+    private String monitorID;
 
     public MonitorSensorState(JSONObject json) throws JSONException {
         super(json);
@@ -26,33 +25,33 @@ public class MonitorSensorState extends SensorState {
         this(type, sensorID, false, "");
     }
 
-    public MonitorSensorState(SensorType type, String sensorID, boolean active, String remoteID) {
+    public MonitorSensorState(SensorType type, String sensorID, boolean active, String monitorID) {
         super(type, sensorID, active);
-        this.remoteID = remoteID;
+        this.monitorID = monitorID;
     }
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        if (json.hasKey(MonitorSensorState.REMOTE_ID)) {
-            this.remoteID = json.getString(MonitorSensorState.REMOTE_ID);
+        if (json.hasKey(SensorConst.MONITOR_ID)) {
+            this.monitorID = json.getString(SensorConst.MONITOR_ID);
         } else {
-            this.remoteID = "";
+            this.monitorID = "";
         }
     }
 
-    public String getRemoteID() {
-        return this.remoteID;
+    public String getMonitorID() {
+        return this.monitorID;
     }
 
-    public boolean hasRemoteID() {
-        return !(this.remoteID == null || this.remoteID.isEmpty() || this.remoteID.isBlank());
+    public boolean hasMonitorID() {
+        return !(this.monitorID == null || this.monitorID.isEmpty() || this.monitorID.isBlank());
     }
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        if (this.hasRemoteID()) {
-            json.put(MonitorSensorState.REMOTE_ID, this.remoteID);
+        if (this.hasMonitorID()) {
+            json.put(SensorConst.MONITOR_ID, this.monitorID);
         }
         return json.toJSON();
     }

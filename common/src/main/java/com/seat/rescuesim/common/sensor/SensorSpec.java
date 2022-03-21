@@ -4,11 +4,6 @@ import com.seat.rescuesim.common.json.*;
 
 /** A serializable Sensor Prototype. */
 public class SensorSpec extends JSONAble {
-    private static final String SENSOR_ACCURACY = "accuracy";
-    private static final String SENSOR_BATTERY_USAGE = "battery_usage";
-    private static final String SENSOR_DELAY = "delay";
-    private static final String SENSOR_RANGE = "range";
-    private static final String SENSOR_TYPE = SensorFactory.SENSOR_TYPE;
 
     private double accuracy;
     private double batteryUsage;
@@ -58,11 +53,11 @@ public class SensorSpec extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = SensorType.values()[json.getInt(SensorSpec.SENSOR_TYPE)];
-        this.accuracy = json.getDouble(SensorSpec.SENSOR_ACCURACY);
-        this.range = json.getDouble(SensorSpec.SENSOR_RANGE);
-        this.batteryUsage = json.getDouble(SensorSpec.SENSOR_BATTERY_USAGE);
-        this.delay = json.getDouble(SensorSpec.SENSOR_DELAY);
+        this.type = SensorType.values()[json.getInt(SensorConst.TYPE)];
+        this.accuracy = json.getDouble(SensorConst.ACCURACY);
+        this.range = json.getDouble(SensorConst.RANGE);
+        this.batteryUsage = json.getDouble(SensorConst.BATTERY_USAGE);
+        this.delay = json.getDouble(SensorConst.DELAY);
     }
 
     public double getBatteryUsage() {
@@ -91,11 +86,11 @@ public class SensorSpec extends JSONAble {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(SensorSpec.SENSOR_TYPE, this.type.getType());
-        json.put(SensorSpec.SENSOR_RANGE, this.range);
-        json.put(SensorSpec.SENSOR_ACCURACY, this.accuracy);
-        json.put(SensorSpec.SENSOR_BATTERY_USAGE, this.batteryUsage);
-        json.put(SensorSpec.SENSOR_DELAY, this.delay);
+        json.put(SensorConst.TYPE, this.type.getType());
+        json.put(SensorConst.RANGE, this.range);
+        json.put(SensorConst.ACCURACY, this.accuracy);
+        json.put(SensorConst.BATTERY_USAGE, this.batteryUsage);
+        json.put(SensorConst.DELAY, this.delay);
         return json.toJSON();
     }
 
