@@ -12,6 +12,7 @@ import com.seat.rescuesim.common.util.RemoteFactory;
 /** A serializable class to represent a single snapshot of the current sim state. */
 public class Snapshot extends JSONAble {
     private static final String ACTIVE_REMOTES = "active_remotes";
+    private static final String DYNAMIC_REMOTES = "dynamic_remotes";
     private static final String HASH = "hash";
     private static final String REMOTE_IDS = "remote_ids";
     private static final String SCENARIO_ID = "scenario_id";
@@ -21,6 +22,7 @@ public class Snapshot extends JSONAble {
     private static final String TIME = "time";
 
     private HashSet<String> activeRemotes;
+    private HashSet<String> dynamicRemotes;
     private String hash;
     private HashSet<String> remoteIDs;
     private String scenarioID;
@@ -43,11 +45,13 @@ public class Snapshot extends JSONAble {
 
     public Snapshot(String hash, String scenarioID, double stepSize, HashSet<String> remoteIDs,
             HashMap<String, RemoteState> state) {
-        this(hash, scenarioID, SnapStatus.START, 0, stepSize, remoteIDs, remoteIDs, state);
+        this(hash, scenarioID, SnapStatus.START, 0, stepSize, remoteIDs, new HashSet<String>(remoteIDs),
+            new HashSet<String>(remoteIDs), state);
     }
 
     public Snapshot(String hash, String scenarioID, SnapStatus status, double time, double stepSize,
-            HashSet<String> remoteIDs, HashSet<String> activeRemotes, HashMap<String, RemoteState> state) {
+            HashSet<String> remoteIDs, HashSet<String> activeRemotes, HashSet<String> dynamicRemotes,
+            HashMap<String, RemoteState> state) {
         this.hash = hash;
         this.scenarioID = scenarioID;
         this.status = status;
@@ -55,6 +59,7 @@ public class Snapshot extends JSONAble {
         this.stepSize = stepSize;
         this.remoteIDs = remoteIDs;
         this.activeRemotes = activeRemotes;
+        this.dynamicRemotes = dynamicRemotes;
         this.state = state;
     }
 
@@ -66,14 +71,25 @@ public class Snapshot extends JSONAble {
         this.time = json.getDouble(Snapshot.TIME);
         this.stepSize = json.getDouble(Snapshot.STEP_SIZE);
         this.remoteIDs = new HashSet<>();
-        JSONArray jsonRemotes = json.getJSONArray(Snapshot.REMOTE_IDS);
-        for (int i = 0; i < jsonRemotes.length(); i++) {
-            this.remoteIDs.add(jsonRemotes.getString(i));
+        if (json.hasKey(Snapshot.REMOTE_IDS)) {
+            JSONArray jsonRemotes = json.getJSONArray(Snapshot.REMOTE_IDS);
+            for (int i = 0; i < jsonRemotes.length(); i++) {
+                this.remoteIDs.add(jsonRemotes.getString(i));
+            }
         }
         this.activeRemotes = new HashSet<>();
-        JSONArray jsonActiveRemotes = json.getJSONArray(Snapshot.ACTIVE_REMOTES);
-        for (int i = 0; i < jsonActiveRemotes.length(); i++) {
-            this.activeRemotes.add(jsonActiveRemotes.getString(i));
+        if (json.hasKey(Snapshot.ACTIVE_REMOTES)) {
+            JSONArray jsonActiveRemotes = json.getJSONArray(Snapshot.ACTIVE_REMOTES);
+            for (int i = 0; i < jsonActiveRemotes.length(); i++) {
+                this.activeRemotes.add(jsonActiveRemotes.getString(i));
+            }
+        }
+        this.dynamicRemotes = new HashSet<>();
+        if (json.hasKey(Snapshot.DYNAMIC_REMOTES)) {
+            JSONArray jsonDynamicRemotes = json.getJSONArray(Snapshot.DYNAMIC_REMOTES);
+            for (int i = 0; i < jsonDynamicRemotes.length(); i++) {
+                this.dynamicRemotes.add(jsonDynamicRemotes.getString(i));
+            }
         }
         this.state = new HashMap<>();
         JSONArray jsonState = json.getJSONArray(Snapshot.STATE);
@@ -83,16 +99,20 @@ public class Snapshot extends JSONAble {
         }
     }
 
-    public ArrayList<String> getActiveRemotes() {
-        return new ArrayList<String>(this.activeRemotes);
+    public HashSet<String> getActiveRemotes() {
+        return this.activeRemotes;
+    }
+
+    public HashSet<String> getDynamicRemotes() {
+        return this.dynamicRemotes;
     }
 
     public String getHash() {
         return this.hash;
     }
 
-    public ArrayList<String> getRemoteIDs() {
-        return new ArrayList<String>(this.remoteIDs);
+    public HashSet<String> getRemoteIDs() {
+        return this.remoteIDs;
     }
 
     public RemoteState getRemoteState(String remoteID) {
@@ -131,6 +151,14 @@ public class Snapshot extends JSONAble {
         return !this.activeRemotes.isEmpty();
     }
 
+    public boolean hasDynamicRemoteWithID(String remoteID) {
+        return this.dynamicRemotes.contains(remoteID);
+    }
+
+    public boolean hasDynamicRemotes() {
+        return !this.dynamicRemotes.isEmpty();
+    }
+
     public boolean hasRemoteWithID(String remoteID) {
         return this.remoteIDs.contains(remoteID);
     }
@@ -154,16 +182,27 @@ public class Snapshot extends JSONAble {
         json.put(Snapshot.STATUS, this.status.getType());
         json.put(Snapshot.TIME, this.time);
         json.put(Snapshot.STEP_SIZE, this.stepSize);
-        JSONArrayBuilder jsonRemotes = JSONBuilder.Array();
-        for (String remote : this.remoteIDs) {
-            jsonRemotes.put(remote);
+        if (this.hasRemotes()) {
+            JSONArrayBuilder jsonRemotes = JSONBuilder.Array();
+            for (String remote : this.remoteIDs) {
+                jsonRemotes.put(remote);
+            }
+            json.put(Snapshot.REMOTE_IDS, jsonRemotes.toJSON());
         }
-        json.put(Snapshot.REMOTE_IDS, jsonRemotes.toJSON());
-        JSONArrayBuilder jsonActiveRemotes = JSONBuilder.Array();
-        for (String remote : this.activeRemotes) {
-            jsonActiveRemotes.put(remote);
+        if (this.hasActiveRemotes()) {
+            JSONArrayBuilder jsonActiveRemotes = JSONBuilder.Array();
+            for (String remote : this.activeRemotes) {
+                jsonActiveRemotes.put(remote);
+            }
+            json.put(Snapshot.ACTIVE_REMOTES, jsonActiveRemotes.toJSON());
         }
-        json.put(Snapshot.ACTIVE_REMOTES, jsonActiveRemotes.toJSON());
+        if (this.hasDynamicRemotes()) {
+            JSONArrayBuilder jsonDynamicRemotes = JSONBuilder.Array();
+            for (String remote : this.dynamicRemotes) {
+                jsonDynamicRemotes.put(remote);
+            }
+            json.put(Snapshot.DYNAMIC_REMOTES, jsonDynamicRemotes.toJSON());
+        }
         JSONArrayBuilder jsonState = JSONBuilder.Array();
         for (RemoteState state : this.state.values()) {
             jsonState.put(state.toJSON());
