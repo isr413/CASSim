@@ -5,9 +5,9 @@ import java.util.HashMap;
 
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.sensor.SensorFactory;
 import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.util.Debugger;
+import com.seat.rescuesim.common.util.SensorFactory;
 import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable snapshot of a Remote. */

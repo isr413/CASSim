@@ -1,6 +1,12 @@
-package com.seat.rescuesim.common.sensor;
+package com.seat.rescuesim.common.util;
 
 import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.sensor.CommsSensorState;
+import com.seat.rescuesim.common.sensor.MonitorSensorState;
+import com.seat.rescuesim.common.sensor.SensorConst;
+import com.seat.rescuesim.common.sensor.SensorState;
+import com.seat.rescuesim.common.sensor.SensorType;
+import com.seat.rescuesim.common.sensor.VisionSensorState;
 import org.json.JSONException;
 
 public class SensorFactory {
