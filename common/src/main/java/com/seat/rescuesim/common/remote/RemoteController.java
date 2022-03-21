@@ -11,25 +11,6 @@ import com.seat.rescuesim.common.util.Debugger;
 
 /** A serializable class to assign intentions to a Remote. */
 public class RemoteController extends JSONAble {
-    private static final String INTENTIONS = "intentions";
-    private static final String REMOTE_ID = "remote_id";
-    private static final String REMOTE_TYPE = "remote_type";
-
-    public static RemoteType decodeRemoteType(JSONObject json) throws JSONException {
-        return RemoteType.values()[json.getInt(RemoteController.REMOTE_TYPE)];
-    }
-
-    public static RemoteType decodeRemoteType(JSONOption option) throws JSONException {
-        if (option.isSomeObject()) {
-            return RemoteController.decodeRemoteType(option.someObject());
-        }
-        Debugger.logger.err(String.format("Cannot decode remote type of %s", option.toString()));
-        return RemoteType.NONE;
-    }
-
-    public static RemoteType decodeRemoteType(String encoding) throws JSONException {
-        return RemoteController.decodeRemoteType(JSONOption.String(encoding));
-    }
 
     protected HashMap<IntentionType, Intention> intentions;
     protected String remoteID;
@@ -66,11 +47,11 @@ public class RemoteController extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = RemoteType.values()[json.getInt(RemoteController.REMOTE_TYPE)];
-        this.remoteID = json.getString(RemoteController.REMOTE_ID);
+        this.type = RemoteType.values()[json.getInt(RemoteConst.REMOTE_TYPE)];
+        this.remoteID = json.getString(RemoteConst.REMOTE_ID);
         this.intentions = new HashMap<>();
-        if (json.hasKey(RemoteController.INTENTIONS)) {
-            JSONArray jsonIntentions = json.getJSONArray(RemoteController.INTENTIONS);
+        if (json.hasKey(RemoteConst.INTENTIONS)) {
+            JSONArray jsonIntentions = json.getJSONArray(RemoteConst.INTENTIONS);
             for (int i = 0; i < jsonIntentions.length(); i++) {
                 this.addIntention(Intent.Some(jsonIntentions.getJSONObject(i)));
             }
@@ -147,14 +128,14 @@ public class RemoteController extends JSONAble {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(RemoteController.REMOTE_TYPE, this.type.getType());
-        json.put(RemoteController.REMOTE_ID, this.remoteID);
+        json.put(RemoteConst.REMOTE_TYPE, this.type.getType());
+        json.put(RemoteConst.REMOTE_ID, this.remoteID);
         if (this.hasIntentions()) {
             JSONArrayBuilder jsonIntentions = JSONBuilder.Array();
             for (Intention intent : this.intentions.values()) {
                 jsonIntentions.put(intent.toJSON());
             }
-            json.put(RemoteController.INTENTIONS, jsonIntentions.toJSON());
+            json.put(RemoteConst.INTENTIONS, jsonIntentions.toJSON());
         }
         return json.toJSON();
     }

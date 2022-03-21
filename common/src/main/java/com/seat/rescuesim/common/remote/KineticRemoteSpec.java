@@ -9,9 +9,6 @@ import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable specification of a kinetic Remote. */
 public abstract class KineticRemoteSpec extends RemoteSpec {
-    private static final String MAX_ACCELERATION = "max_acceleration";
-    private static final String MAX_JERK = "max_jerk";
-    private static final String MAX_VELOCITY = "max_velocity";
 
     protected double maxAcceleration;
     protected double maxJerk;
@@ -40,18 +37,18 @@ public abstract class KineticRemoteSpec extends RemoteSpec {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        if (json.hasKey(KineticRemoteSpec.MAX_VELOCITY)) {
-            this.maxVelocity = json.getDouble(KineticRemoteSpec.MAX_VELOCITY);
+        if (json.hasKey(RemoteConst.MAX_VELOCITY)) {
+            this.maxVelocity = json.getDouble(RemoteConst.MAX_VELOCITY);
         } else {
             this.maxVelocity = Double.POSITIVE_INFINITY;
         }
-        if (json.hasKey(KineticRemoteSpec.MAX_ACCELERATION)) {
-            this.maxAcceleration = json.getDouble(KineticRemoteSpec.MAX_ACCELERATION);
+        if (json.hasKey(RemoteConst.MAX_ACCELERATION)) {
+            this.maxAcceleration = json.getDouble(RemoteConst.MAX_ACCELERATION);
         } else {
             this.maxAcceleration = Double.POSITIVE_INFINITY;
         }
-        if (json.hasKey(KineticRemoteSpec.MAX_JERK)) {
-            this.maxJerk = json.getDouble(KineticRemoteSpec.MAX_JERK);
+        if (json.hasKey(RemoteConst.MAX_JERK)) {
+            this.maxJerk = json.getDouble(RemoteConst.MAX_JERK);
         } else {
             this.maxJerk = Double.POSITIVE_INFINITY;
         }
@@ -107,13 +104,13 @@ public abstract class KineticRemoteSpec extends RemoteSpec {
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
         if (this.hasMaxAcceleration()) {
-            json.put(KineticRemoteSpec.MAX_VELOCITY, this.maxVelocity);
+            json.put(RemoteConst.MAX_VELOCITY, this.maxVelocity);
         }
         if (this.hasMaxJerk()) {
-            json.put(KineticRemoteSpec.MAX_ACCELERATION, this.maxAcceleration);
+            json.put(RemoteConst.MAX_ACCELERATION, this.maxAcceleration);
         }
         if (this.hasMaxVelocity()) {
-            json.put(KineticRemoteSpec.MAX_JERK, this.maxJerk);
+            json.put(RemoteConst.MAX_JERK, this.maxJerk);
         }
         return json;
     }

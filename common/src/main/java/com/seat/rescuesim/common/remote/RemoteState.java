@@ -12,27 +12,6 @@ import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable snapshot of a Remote. */
 public abstract class RemoteState extends JSONAble {
-    private static final String BATTERY = "battery";
-    private static final String LOCATION = "location";
-    private static final String REMOTE_ID = "remote_id";
-    private static final String REMOTE_TYPE = "remote_type";
-    private static final String SENSORS = "sensors";
-
-    public static RemoteType decodeType(JSONObject json) throws JSONException {
-        return RemoteType.values()[json.getInt(RemoteState.REMOTE_TYPE)];
-    }
-
-    public static RemoteType decodeType(JSONOption option) throws JSONException {
-        if (option.isSomeObject()) {
-            return RemoteState.decodeType(option.someObject());
-        }
-        Debugger.logger.err(String.format("Cannot decode remote type of %s", option.toString()));
-        return null;
-    }
-
-    public static RemoteType decodeType(String encoding) throws JSONException {
-        return RemoteState.decodeType(JSONOption.String(encoding));
-    }
 
     protected double battery;
     protected Vector location;
@@ -71,13 +50,13 @@ public abstract class RemoteState extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = RemoteType.values()[json.getInt(RemoteState.REMOTE_TYPE)];
-        this.remoteID = json.getString(RemoteState.REMOTE_ID);
-        this.location = new Vector(json.getJSONArray(RemoteState.LOCATION));
-        this.battery = json.getDouble(RemoteState.BATTERY);
+        this.type = RemoteType.values()[json.getInt(RemoteConst.REMOTE_TYPE)];
+        this.remoteID = json.getString(RemoteConst.REMOTE_ID);
+        this.location = new Vector(json.getJSONArray(RemoteConst.LOCATION));
+        this.battery = json.getDouble(RemoteConst.BATTERY);
         this.sensors = new HashMap<>();
-        if (json.hasKey(RemoteState.SENSORS)) {
-            JSONArray jsonState = json.getJSONArray(RemoteState.SENSORS);
+        if (json.hasKey(RemoteConst.SENSORS)) {
+            JSONArray jsonState = json.getJSONArray(RemoteConst.SENSORS);
             for (int i = 0; i < jsonState.length(); i++) {
                 SensorState state = SensorFactory.decodeSensorState(jsonState.getJSONObject(i));
                 this.sensors.put(state.getSensorID(), state);
@@ -137,16 +116,16 @@ public abstract class RemoteState extends JSONAble {
 
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(RemoteState.REMOTE_TYPE, this.type.getType());
-        json.put(RemoteState.REMOTE_ID, this.remoteID);
-        json.put(RemoteState.LOCATION, this.location.toJSON());
-        json.put(RemoteState.BATTERY, this.battery);
+        json.put(RemoteConst.REMOTE_TYPE, this.type.getType());
+        json.put(RemoteConst.REMOTE_ID, this.remoteID);
+        json.put(RemoteConst.LOCATION, this.location.toJSON());
+        json.put(RemoteConst.BATTERY, this.battery);
         if (this.hasSensors()) {
             JSONArrayBuilder jsonSensors = JSONBuilder.Array();
             for (SensorState sensor : this.sensors.values()) {
                 jsonSensors.put(sensor.toJSON());
             }
-            json.put(RemoteState.SENSORS, jsonSensors.toJSON());
+            json.put(RemoteConst.SENSORS, jsonSensors.toJSON());
         }
         return json;
     }

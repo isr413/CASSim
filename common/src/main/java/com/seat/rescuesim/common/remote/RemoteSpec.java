@@ -11,26 +11,6 @@ import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable specification of a Remote. */
 public abstract class RemoteSpec extends JSONAble {
-    private static final String LOCATION = "location";
-    private static final String MAX_BATTERY = "max_battery";
-    private static final String REMOTE_TYPE = "remote_type";
-    private static final String SENSORS = "sensors";
-
-    public static RemoteType decodeRemoteType(JSONObject json) throws JSONException {
-        return RemoteType.values()[json.getInt(RemoteSpec.REMOTE_TYPE)];
-    }
-
-    public static RemoteType decodeRemoteType(JSONOption option) throws JSONException {
-        if (option.isSomeObject()) {
-            return RemoteSpec.decodeRemoteType(option.someObject());
-        }
-        Debugger.logger.err(String.format("Cannot decode remote type of %s", option.toString()));
-        return RemoteType.NONE;
-    }
-
-    public static RemoteType decodeRemoteType(String encoding) throws JSONException {
-        return RemoteSpec.decodeRemoteType(JSONOption.String(encoding));
-    }
 
     protected Vector location;
     protected double maxBatteryPower;
@@ -58,12 +38,12 @@ public abstract class RemoteSpec extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = RemoteType.values()[json.getInt(RemoteSpec.REMOTE_TYPE)];
-        this.location = new Vector(json.getJSONArray(RemoteSpec.LOCATION));
-        this.maxBatteryPower = json.getDouble(RemoteSpec.MAX_BATTERY);
+        this.type = RemoteType.values()[json.getInt(RemoteConst.REMOTE_TYPE)];
+        this.location = new Vector(json.getJSONArray(RemoteConst.LOCATION));
+        this.maxBatteryPower = json.getDouble(RemoteConst.MAX_BATTERY);
         this.sensors = new ArrayList<>();
-        if (json.hasKey(RemoteSpec.SENSORS)) {
-            JSONArray jsonSensors = json.getJSONArray(RemoteSpec.SENSORS);
+        if (json.hasKey(RemoteConst.SENSORS)) {
+            JSONArray jsonSensors = json.getJSONArray(RemoteConst.SENSORS);
             for (int i = 0; i < jsonSensors.length(); i++) {
                 this.sensors.add(new SensorConfig(jsonSensors.getJSONObject(i)));
             }
@@ -158,15 +138,15 @@ public abstract class RemoteSpec extends JSONAble {
 
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(RemoteSpec.REMOTE_TYPE, this.type.getType());
-        json.put(RemoteSpec.LOCATION, this.location.toJSON());
-        json.put(RemoteSpec.MAX_BATTERY, this.maxBatteryPower);
+        json.put(RemoteConst.REMOTE_TYPE, this.type.getType());
+        json.put(RemoteConst.LOCATION, this.location.toJSON());
+        json.put(RemoteConst.MAX_BATTERY, this.maxBatteryPower);
         if (this.hasSensors()) {
             JSONArrayBuilder jsonSensors = JSONBuilder.Array();
             for (SensorConfig conf : this.sensors) {
                 jsonSensors.put(conf.toJSON());
             }
-            json.put(RemoteSpec.SENSORS, jsonSensors.toJSON());
+            json.put(RemoteConst.SENSORS, jsonSensors.toJSON());
         }
         return json;
     }

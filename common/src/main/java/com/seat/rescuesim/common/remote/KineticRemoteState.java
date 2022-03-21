@@ -10,8 +10,6 @@ import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable state of a kinetic Remote. */
 public abstract class KineticRemoteState extends RemoteState {
-    private static final String ACCELERATION = "acceleration";
-    private static final String VELOCITY = "velocity";
 
     public KineticRemoteState(JSONObject json) throws JSONException {
         super(json);
@@ -45,8 +43,8 @@ public abstract class KineticRemoteState extends RemoteState {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.velocity = new Vector(json.getJSONArray(KineticRemoteState.VELOCITY));
-        this.acceleration = new Vector(json.getJSONArray(KineticRemoteState.ACCELERATION));
+        this.velocity = new Vector(json.getJSONArray(RemoteConst.VELOCITY));
+        this.acceleration = new Vector(json.getJSONArray(RemoteConst.ACCELERATION));
     }
 
     public Vector getAcceleration() {
@@ -78,8 +76,8 @@ public abstract class KineticRemoteState extends RemoteState {
     @Override
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(KineticRemoteState.VELOCITY, this.velocity.toJSON());
-        json.put(KineticRemoteState.ACCELERATION, this.acceleration.toJSON());
+        json.put(RemoteConst.VELOCITY, this.velocity.toJSON());
+        json.put(RemoteConst.ACCELERATION, this.acceleration.toJSON());
         return json;
     }
 
