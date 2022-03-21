@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.seat.rescuesim.common.ScenarioConfig;
@@ -15,7 +14,6 @@ import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.remote.RemoteController;
-import com.seat.rescuesim.common.remote.intent.Intention;
 import com.seat.rescuesim.common.util.Debugger;
 import com.seat.rescuesim.simserver.sim.SimException;
 import com.seat.rescuesim.simserver.sim.SimScenario;
@@ -56,7 +54,7 @@ public class App {
         return scenarioConfig;
     }
 
-    private static HashMap<String, ArrayList<Intention>> getRemoteIntentionsBlocking(SimScenario scenario,
+    private static HashMap<String, RemoteController> getRemoteIntentionsBlocking(SimScenario scenario,
             BufferedReader in) throws IOException, JSONException {
         if (!scenario.hasActiveRemotes()) {
             Debugger.logger.info(String.format("No active remotes for <%s>", scenario.getScenarioID()));
@@ -65,16 +63,16 @@ public class App {
         Debugger.logger.info(String.format("Waiting for intentions for remotes %s ...",
             scenario.getActiveRemotes().toString()));
         String encoding = getInputBlocking(in);
-        HashMap<String, ArrayList<Intention>> intentions = new HashMap<>();
+        HashMap<String, RemoteController> controllers = new HashMap<>();
         JSONArray json = JSONOption.String(encoding).someArray();
         for (int i = 0; i < json.length(); i++) {
             RemoteController controller = new RemoteController(json.getJSONObject(i));
             if (controller.hasIntentions()) {
-                intentions.put(controller.getRemoteID(), controller.getIntentions());
+                controllers.put(controller.getRemoteID(), controller);
             }
         }
-        Debugger.logger.state(String.format("Received intentions for remotes %s ...", intentions.keySet().toString()));
-        return intentions;
+        Debugger.logger.state(String.format("Received intentions for remotes %s ...", controllers.keySet().toString()));
+        return controllers;
     }
 
     private static void runScenarioSync(ScenarioConfig config, BufferedReader in, PrintWriter out) {
@@ -86,14 +84,14 @@ public class App {
         double time = 0.0;
         while (time < scenario.getMissionLength()) {
             try {
-                HashMap<String, ArrayList<Intention>> intentions = getRemoteIntentionsBlocking(scenario, in);
+                HashMap<String, RemoteController> controllers = getRemoteIntentionsBlocking(scenario, in);
                 Debugger.logger.info(String.format("Updating scenario <%s> for time=%.2f ...", scenario.getScenarioID(),
                     time + scenario.getStepSize()));
                 if (scenario.getMissionLength() < time + scenario.getStepSize()) {
-                    scenario.update(intentions, scenario.getMissionLength() - time);
+                    scenario.update(controllers, scenario.getMissionLength() - time);
                     time = scenario.getMissionLength();
                 } else {
-                    scenario.update(intentions, scenario.getStepSize());
+                    scenario.update(controllers, scenario.getStepSize());
                     time += scenario.getStepSize();
                 }
                 Debugger.logger.info(String.format("Sending snap <%s> ...", snap.getHash()));
