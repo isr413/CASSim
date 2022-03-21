@@ -28,7 +28,7 @@ public abstract class SensorState extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = SensorType.values()[json.getInt(SensorConst.TYPE)];
+        this.type = SensorType.values()[json.getInt(SensorConst.SENSOR_TYPE)];
         this.sensorID = json.getString(SensorConst.SENSOR_ID);
         this.active = json.getBoolean(SensorConst.ACTIVE);
     }
@@ -51,7 +51,7 @@ public abstract class SensorState extends JSONAble {
 
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(SensorConst.TYPE, this.type.getType());
+        json.put(SensorConst.SENSOR_TYPE, this.type.getType());
         json.put(SensorConst.SENSOR_ID, this.sensorID);
         json.put(SensorConst.ACTIVE, this.active);
         return json;

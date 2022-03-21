@@ -12,7 +12,7 @@ import org.json.JSONException;
 public class SensorFactory {
 
     public static SensorType decodeSensorType(JSONObject json) throws JSONException {
-        return SensorType.values()[json.getInt(SensorConst.TYPE)];
+        return SensorType.values()[json.getInt(SensorConst.SENSOR_TYPE)];
     }
 
     public static SensorType decodeSensorType(JSONOption option) throws JSONException {

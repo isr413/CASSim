@@ -53,7 +53,7 @@ public class SensorSpec extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = SensorType.values()[json.getInt(SensorConst.TYPE)];
+        this.type = SensorType.values()[json.getInt(SensorConst.SENSOR_TYPE)];
         this.accuracy = json.getDouble(SensorConst.ACCURACY);
         this.range = json.getDouble(SensorConst.RANGE);
         this.batteryUsage = json.getDouble(SensorConst.BATTERY_USAGE);
@@ -86,7 +86,7 @@ public class SensorSpec extends JSONAble {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(SensorConst.TYPE, this.type.getType());
+        json.put(SensorConst.SENSOR_TYPE, this.type.getType());
         json.put(SensorConst.RANGE, this.range);
         json.put(SensorConst.ACCURACY, this.accuracy);
         json.put(SensorConst.BATTERY_USAGE, this.batteryUsage);

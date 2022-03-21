@@ -12,6 +12,6 @@ public class SensorConst {
     public static final String RANGE = "range";
     public static final String SENSOR_ID = "sensor_id";
     public static final String SENSOR_IDS = "sensor_ids";
+    public static final String SENSOR_TYPE = "sensor_type";
     public static final String SPEC = "spec";
-    public static final String TYPE = "sensor_type";
 }
