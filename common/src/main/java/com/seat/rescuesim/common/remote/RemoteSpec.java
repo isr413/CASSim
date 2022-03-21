@@ -29,6 +29,14 @@ public abstract class RemoteSpec extends JSONAble {
         super(encoding);
     }
 
+    public RemoteSpec(RemoteType type) {
+        this(type, null, 1, new ArrayList<SensorConfig>());
+    }
+
+    public RemoteSpec(RemoteType type, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+        this(type, null, maxBatteryPower, sensors);
+    }
+
     public RemoteSpec(RemoteType type, Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
         this.type = type;
         this.location = location;
@@ -39,7 +47,11 @@ public abstract class RemoteSpec extends JSONAble {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.type = RemoteType.values()[json.getInt(RemoteConst.REMOTE_TYPE)];
-        this.location = new Vector(json.getJSONArray(RemoteConst.LOCATION));
+        if (json.hasKey(RemoteConst.LOCATION)) {
+            this.location = new Vector(json.getJSONArray(RemoteConst.LOCATION));
+        } else {
+            this.location = null;
+        }
         this.maxBatteryPower = json.getDouble(RemoteConst.MAX_BATTERY);
         this.sensors = new ArrayList<>();
         if (json.hasKey(RemoteConst.SENSORS)) {
@@ -102,6 +114,10 @@ public abstract class RemoteSpec extends JSONAble {
 
     public abstract SerializableEnum getSpecType();
 
+    public boolean hasLocation() {
+        return this.location != null;
+    }
+
     public boolean hasSensor(int idx) {
         return 0 <= idx && idx < this.sensors.size();
     }
@@ -139,7 +155,9 @@ public abstract class RemoteSpec extends JSONAble {
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(RemoteConst.REMOTE_TYPE, this.type.getType());
-        json.put(RemoteConst.LOCATION, this.location.toJSON());
+        if (this.hasLocation()) {
+            json.put(RemoteConst.LOCATION, this.location.toJSON());
+        }
         json.put(RemoteConst.MAX_BATTERY, this.maxBatteryPower);
         if (this.hasSensors()) {
             JSONArrayBuilder jsonSensors = JSONBuilder.Array();
