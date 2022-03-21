@@ -81,20 +81,14 @@ public class Snapshot extends JSONAble {
         this.state = new HashMap<>();
         JSONArray jsonState = json.getJSONArray(Snapshot.STATE);
         for (int i = 0; i < jsonState.length(); i++) {
-            RemoteType type = RemoteState.decodeType(jsonState.getJSONObject(i));
+            RemoteType remoteType = RemoteState.decodeType(jsonState.getJSONObject(i));
             RemoteState state = null;
-            switch (type) {
-                case BASE:
-                    state = new BaseState(jsonState.getJSONObject(i));
-                    break;
-                case DRONE:
-                    state = new DroneState(jsonState.getJSONObject(i));
-                    break;
-                case VICTIM:
-                    state = new VictimState(jsonState.getJSONObject(i));
-                    break;
-                default:
-                    break;
+            if (remoteType.equals(RemoteType.BASE)) {
+                state = new BaseState(jsonState.getJSONObject(i));
+            } else if (remoteType.equals(RemoteType.DRONE)) {
+                state = new DroneState(jsonState.getJSONObject(i));
+            } else if (remoteType.equals(RemoteType.VICTIM)) {
+                state = new VictimState(jsonState.getJSONObject(i));
             }
             if (state != null) {
                 this.state.put(state.getRemoteID(), state);

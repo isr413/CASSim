@@ -1,13 +1,28 @@
 package com.seat.rescuesim.common.sensor;
 
 import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.util.Debugger;
 
-public class SensorState extends JSONAble {
-    private static final String SENSOR_DATA = "data";
+public abstract class SensorState extends JSONAble {
     private static final String SENSOR_ID = "sensor_id";
     private static final String SENSOR_TYPE = "sensor_type";
 
-    private String data;
+    public static SensorType decodeSensorType(JSONObject json) throws JSONException {
+        return SensorType.values()[json.getInt(SensorState.SENSOR_TYPE)];
+    }
+
+    public static SensorType decodeSensorType(JSONOption option) throws JSONException {
+        if (option.isSomeObject()) {
+            return SensorState.decodeSensorType(option.someObject());
+        }
+        Debugger.logger.err(String.format("Cannot decode sensor type of %s", option.toString()));
+        return null;
+    }
+
+    public static SensorType decodeSensorType(String encoding) throws JSONException {
+        return SensorState.decodeSensorType(JSONOption.String(encoding));
+    }
+
     protected String sensorID;
     protected SensorType type;
 
@@ -24,28 +39,14 @@ public class SensorState extends JSONAble {
     }
 
     public SensorState(SensorType type, String sensorID) {
-        this(type, sensorID, "");
-    }
-
-    public SensorState(SensorType type, String sensorID, String data) {
         this.type = type;
         this.sensorID = sensorID;
-        this.data = data;
     }
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.type = SensorType.values()[json.getInt(SensorState.SENSOR_TYPE)];
         this.sensorID = json.getString(SensorState.SENSOR_ID);
-        if (json.hasKey(SensorState.SENSOR_DATA)) {
-            this.data = json.getString(SensorState.SENSOR_DATA);
-        } else {
-            this.data = "";
-        }
-    }
-
-    public String getData() {
-        return this.data;
     }
 
     public String getSensorID() {
@@ -56,23 +57,17 @@ public class SensorState extends JSONAble {
         return this.type;
     }
 
-    public boolean hasData() {
-        return !this.data.isEmpty();
-    }
-
-    @Override
-    public JSONOption toJSON() {
+    protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(SensorState.SENSOR_TYPE, this.type.getType());
         json.put(SensorState.SENSOR_ID, this.sensorID);
-        if (this.hasData()) {
-            json.put(SensorState.SENSOR_DATA, this.data);
-        }
-        return json.toJSON();
+        return json;
     }
 
+    public abstract JSONOption toJSON();
+
     public boolean equals(SensorState state) {
-        return this.type.equals(state.type) && this.sensorID.equals(state.sensorID) && this.data.equals(state.data);
+        return this.type.equals(state.type) && this.sensorID.equals(state.sensorID);
     }
 
 }

@@ -5,7 +5,11 @@ import java.util.HashMap;
 
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.Vector;
+import com.seat.rescuesim.common.sensor.CommsSensorState;
+import com.seat.rescuesim.common.sensor.MonitorSensorState;
 import com.seat.rescuesim.common.sensor.SensorState;
+import com.seat.rescuesim.common.sensor.SensorType;
+import com.seat.rescuesim.common.sensor.VisionSensorState;
 import com.seat.rescuesim.common.util.Debugger;
 import com.seat.rescuesim.common.util.SerializableEnum;
 
@@ -78,8 +82,18 @@ public abstract class RemoteState extends JSONAble {
         if (json.hasKey(RemoteState.SENSORS)) {
             JSONArray jsonState = json.getJSONArray(RemoteState.SENSORS);
             for (int i = 0; i < jsonState.length(); i++) {
-                SensorState state = new SensorState(jsonState.getJSONObject(i));
-                this.sensors.put(state.getSensorID(), state);
+                SensorType sensorType = SensorState.decodeSensorType(jsonState.getJSONObject(i));
+                SensorState state = null;
+                if (sensorType.equals(SensorType.Comms)) {
+                    state = new CommsSensorState(jsonState.getJSONObject(i));
+                } else if (sensorType.equals(SensorType.Monitor)) {
+                    state = new MonitorSensorState(jsonState.getJSONObject(i));
+                } else if (sensorType.equals(SensorType.Vision)) {
+                    state = new VisionSensorState(jsonState.getJSONObject(i));
+                }
+                if (state != null) {
+                    this.sensors.put(state.getSensorID(), state);
+                }
             }
         }
     }
