@@ -7,36 +7,35 @@ import com.seat.rescuesim.common.base.BaseConfig;
 import com.seat.rescuesim.common.drone.DroneConfig;
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.map.Map;
+import com.seat.rescuesim.common.remote.RemoteConfig;
+import com.seat.rescuesim.common.remote.RemoteType;
+import com.seat.rescuesim.common.util.RemoteFactory;
 import com.seat.rescuesim.common.victim.VictimConfig;
 
 /** A serializable class to store scenario configurations. */
 public class ScenarioConfig extends JSONAble {
-    private static final String BASE_CONFIG = "base_config";
     private static final String DEFAULT_ID = "default";
     private static final String DISASTER_SCALE = "disaster_scale";
-    private static final String DRONE_CONFIG = "drone_config";
     private static final String MAP = "map";
     private static final String MISSION_LENGTH = "mission_length";
     private static final String NUM_BASES = "num_bases";
     private static final String NUM_DRONES = "num_drones";
     private static final String NUM_VICTIMS = "num_victims";
+    private static final String REMOTE_CONFIG = "remote_config";
     private static final String SCENARIO_ID = "scenario_id";
     private static final String SEED = "seed";
     private static final String STEP_SIZE = "step_size";
-    private static final String VICTIM_CONFIG = "victim_config";
 
-    private ArrayList<BaseConfig> baseConfig;
     private double disasterScale;
-    private ArrayList<DroneConfig> droneConfig;
     private Map map;
     private int missionLength;
     private int numBases;
     private int numDrones;
     private int numVictims;
+    private ArrayList<RemoteConfig> remoteConfig;
     private String scenarioID;
     private long seed;
     private double stepSize;
-    private ArrayList<VictimConfig> victimConfig;
 
     public ScenarioConfig(JSONObject json) throws JSONException {
         super(json);
@@ -52,98 +51,46 @@ public class ScenarioConfig extends JSONAble {
 
     //-- Constructors for scenarios with no victims and no drones --//
     public ScenarioConfig(Map map, int missionLength, double stepSize) {
-        this(ScenarioConfig.DEFAULT_ID, map, 0, missionLength, stepSize, new ArrayList<VictimConfig>(),
-            new ArrayList<BaseConfig>(), new ArrayList<DroneConfig>());
+        this(ScenarioConfig.DEFAULT_ID, map, 0, missionLength, stepSize, new ArrayList<RemoteConfig>());
     }
 
     public ScenarioConfig(String scenarioID, Map map, int missionLength, double stepSize) {
-        this(scenarioID, map, 0, missionLength, stepSize, new ArrayList<VictimConfig>(),
-            new ArrayList<BaseConfig>(), new ArrayList<DroneConfig>());
+        this(scenarioID, map, 0, missionLength, stepSize, new ArrayList<RemoteConfig>());
     }
 
     public ScenarioConfig(long seed, Map map, int missionLength, double stepSize) {
-        this(ScenarioConfig.DEFAULT_ID, seed, map, 0, missionLength, stepSize, new ArrayList<VictimConfig>(),
-            new ArrayList<BaseConfig>(), new ArrayList<DroneConfig>());
+        this(ScenarioConfig.DEFAULT_ID, seed, map, 0, missionLength, stepSize, new ArrayList<RemoteConfig>());
     }
 
     public ScenarioConfig(String scenarioID, long seed, Map map, int missionLength, double stepSize) {
-        this(scenarioID, seed, map, 0, missionLength, stepSize, new ArrayList<VictimConfig>(),
-            new ArrayList<BaseConfig>(), new ArrayList<DroneConfig>());
+        this(scenarioID, seed, map, 0, missionLength, stepSize, new ArrayList<RemoteConfig>());
     }
 
-    //-- Constructors for scenarios with victims and no drones --//
-    public ScenarioConfig(Map map, int missionLength, double stepSize, ArrayList<VictimConfig> victimConfig) {
-        this(ScenarioConfig.DEFAULT_ID, map, 0, missionLength, stepSize, victimConfig,
-            new ArrayList<BaseConfig>(), new ArrayList<DroneConfig>());
-    }
-
-    public ScenarioConfig(String scenarioID, Map map, int missionLength, double stepSize, ArrayList<VictimConfig> victimConfig) {
-        this(scenarioID, map, 0, missionLength, stepSize, victimConfig,
-            new ArrayList<BaseConfig>(), new ArrayList<DroneConfig>());
-    }
-
-    public ScenarioConfig(long seed, Map map, int missionLength, double stepSize, ArrayList<VictimConfig> victimConfig) {
-        this(ScenarioConfig.DEFAULT_ID, seed, map, 0, missionLength, stepSize, victimConfig,
-            new ArrayList<BaseConfig>(), new ArrayList<DroneConfig>());
-    }
-
-    public ScenarioConfig(String scenarioID, long seed, Map map, int missionLength, double stepSize,
-            ArrayList<VictimConfig> victimConfig) {
-        this(scenarioID, seed, map, 0, missionLength, stepSize, victimConfig,
-            new ArrayList<BaseConfig>(), new ArrayList<DroneConfig>());
-    }
-
-    //-- Constructors for scenarios with victims and drones but no base --//
-    public ScenarioConfig(Map map, int missionLength, double stepSize, ArrayList<VictimConfig> victimConfig,
-            ArrayList<DroneConfig> droneConfig) {
-        this(ScenarioConfig.DEFAULT_ID, map, 0, missionLength, stepSize, victimConfig, new ArrayList<BaseConfig>(), droneConfig);
-    }
-
-    public ScenarioConfig(String scenarioID, Map map, int missionLength, double stepSize,
-            ArrayList<VictimConfig> victimConfig, ArrayList<DroneConfig> droneConfig) {
-        this(scenarioID, map, 0, missionLength, stepSize, victimConfig, new ArrayList<BaseConfig>(), droneConfig);
-    }
-
-    public ScenarioConfig(long seed, Map map, int missionLength, double stepSize, ArrayList<VictimConfig> victimConfig,
-            ArrayList<DroneConfig> droneConfig) {
-        this(ScenarioConfig.DEFAULT_ID, seed, map, 0, missionLength, stepSize, victimConfig, new ArrayList<BaseConfig>(),
-            droneConfig);
-    }
-
-    public ScenarioConfig(String scenarioID, long seed, Map map, int missionLength, double stepSize,
-            ArrayList<VictimConfig> victimConfig, ArrayList<DroneConfig> droneConfig) {
-        this(scenarioID, seed, map, 0, missionLength, stepSize, victimConfig, new ArrayList<BaseConfig>(), droneConfig);
-    }
-
-    //-- Constructors for scenarios with victims, drones, and a base --//
+    //-- Constructors for scenarios with victims, drones, and/or a base --//
     public ScenarioConfig(Map map, double disasterScale, int missionLength, double stepSize,
-            ArrayList<VictimConfig> victimConfig, ArrayList<BaseConfig> baseConfig, ArrayList<DroneConfig> droneConfig) {
-        this(ScenarioConfig.DEFAULT_ID, map, disasterScale, missionLength, stepSize, victimConfig, baseConfig, droneConfig);
+            ArrayList<RemoteConfig> remoteConfig) {
+        this(ScenarioConfig.DEFAULT_ID, map, disasterScale, missionLength, stepSize, remoteConfig);
     }
 
     public ScenarioConfig(String scenarioID, Map map, double disasterScale, int missionLength, double stepSize,
-            ArrayList<VictimConfig> victimConfig, ArrayList<BaseConfig> baseConfig, ArrayList<DroneConfig> droneConfig) {
-        this(scenarioID, new Random().nextLong(), map, disasterScale, missionLength, stepSize, victimConfig,
-            baseConfig, droneConfig);
+            ArrayList<RemoteConfig> remoteConfig) {
+        this(scenarioID, new Random().nextLong(), map, disasterScale, missionLength, stepSize, remoteConfig);
     }
 
     public ScenarioConfig(long seed, Map map, double disasterScale, int missionLength, double stepSize,
-            ArrayList<VictimConfig> victimConfig, ArrayList<BaseConfig> baseConfig, ArrayList<DroneConfig> droneConfig) {
-        this(ScenarioConfig.DEFAULT_ID, seed, map, disasterScale, missionLength, stepSize, victimConfig, baseConfig, droneConfig);
+            ArrayList<RemoteConfig> remoteConfig) {
+        this(ScenarioConfig.DEFAULT_ID, seed, map, disasterScale, missionLength, stepSize, remoteConfig);
     }
 
     public ScenarioConfig(String scenarioID, long seed, Map map, double disasterScale, int missionLength,
-            double stepSize, ArrayList<VictimConfig> victimConfig, ArrayList<BaseConfig> baseConfig,
-            ArrayList<DroneConfig> droneConfig) {
+            double stepSize, ArrayList<RemoteConfig> remoteConfig) {
         this.scenarioID = scenarioID;
         this.seed = seed;
         this.map = map;
         this.disasterScale = disasterScale;
         this.missionLength = missionLength;
         this.stepSize = stepSize;
-        this.victimConfig = victimConfig;
-        this.baseConfig = baseConfig;
-        this.droneConfig = droneConfig;
+        this.remoteConfig = remoteConfig;
         this.countBases();
         this.countDrones();
         this.countVictims();
@@ -151,22 +98,28 @@ public class ScenarioConfig extends JSONAble {
 
     private void countBases() {
         this.numBases = 0;
-        for (BaseConfig conf : baseConfig) {
-            this.numBases += conf.getCount();
+        for (RemoteConfig config : this.remoteConfig) {
+            if (config.getRemoteType().equals(RemoteType.BASE)) {
+                this.numBases += config.getCount();
+            }
         }
     }
 
     private void countDrones() {
         this.numDrones = 0;
-        for (DroneConfig conf : droneConfig) {
-            this.numDrones += conf.getCount();
+        for (RemoteConfig config : this.remoteConfig) {
+            if (config.getRemoteType().equals(RemoteType.DRONE)) {
+                this.numDrones += config.getCount();
+            }
         }
     }
 
     private void countVictims() {
         this.numVictims = 0;
-        for (VictimConfig conf : victimConfig) {
-            this.numVictims += conf.getCount();
+        for (RemoteConfig config : this.remoteConfig) {
+            if (config.getRemoteType().equals(RemoteType.VICTIM)) {
+                this.numVictims += config.getCount();
+            }
         }
     }
 
@@ -178,25 +131,11 @@ public class ScenarioConfig extends JSONAble {
         this.disasterScale = json.getDouble(ScenarioConfig.DISASTER_SCALE);
         this.missionLength = json.getInt(ScenarioConfig.MISSION_LENGTH);
         this.stepSize = json.getDouble(ScenarioConfig.STEP_SIZE);
-        this.victimConfig = new ArrayList<>();
-        if (json.hasKey(ScenarioConfig.VICTIM_CONFIG)) {
-            JSONArray jsonVictims = json.getJSONArray(ScenarioConfig.VICTIM_CONFIG);
-            for (int i = 0; i < jsonVictims.length(); i++) {
-                this.victimConfig.add(new VictimConfig(jsonVictims.getJSONObject(i)));
-            }
-        }
-        this.baseConfig = new ArrayList<>();
-        if (json.hasKey(ScenarioConfig.BASE_CONFIG)) {
-            JSONArray jsonBases = json.getJSONArray(ScenarioConfig.BASE_CONFIG);
-            for (int i = 0; i < jsonBases.length(); i++) {
-                this.baseConfig.add(new BaseConfig(jsonBases.getJSONObject(i)));
-            }
-        }
-        this.droneConfig = new ArrayList<>();
-        if (json.hasKey(ScenarioConfig.DRONE_CONFIG)) {
-            JSONArray jsonDrones = json.getJSONArray(ScenarioConfig.DRONE_CONFIG);
+        this.remoteConfig = new ArrayList<>();
+        if (json.hasKey(ScenarioConfig.REMOTE_CONFIG)) {
+            JSONArray jsonDrones = json.getJSONArray(ScenarioConfig.REMOTE_CONFIG);
             for (int i = 0; i < jsonDrones.length(); i++) {
-                this.droneConfig.add(new DroneConfig(jsonDrones.getJSONObject(i)));
+                this.remoteConfig.add(RemoteFactory.decodeRemoteConfig(jsonDrones.getJSONObject(i)));
             }
         }
         this.countBases();
@@ -204,16 +143,28 @@ public class ScenarioConfig extends JSONAble {
         this.countVictims();
     }
 
-    public ArrayList<BaseConfig> getBaseConfig() {
-        return this.baseConfig;
+    public ArrayList<BaseConfig> getBases() {
+        ArrayList<BaseConfig> baseConfig = new ArrayList<>();
+        for (RemoteConfig config : this.remoteConfig) {
+            if (config.getRemoteType().equals(RemoteType.BASE)) {
+                baseConfig.add((BaseConfig) config);
+            }
+        }
+        return baseConfig;
     }
 
     public double getDisasterScale() {
         return this.disasterScale;
     }
 
-    public ArrayList<DroneConfig> getDroneConfig() {
-        return this.droneConfig;
+    public ArrayList<DroneConfig> getDrones() {
+        ArrayList<DroneConfig> droneConfig = new ArrayList<>();
+        for (RemoteConfig config : this.remoteConfig) {
+            if (config.getRemoteType().equals(RemoteType.DRONE)) {
+                droneConfig.add((DroneConfig) config);
+            }
+        }
+        return droneConfig;
     }
 
     public Map getMap() {
@@ -236,6 +187,10 @@ public class ScenarioConfig extends JSONAble {
         return this.numVictims;
     }
 
+    public ArrayList<RemoteConfig> getRemotes() {
+        return this.remoteConfig;
+    }
+
     public String getScenarioID() {
         return this.scenarioID;
     }
@@ -248,20 +203,30 @@ public class ScenarioConfig extends JSONAble {
         return this.stepSize;
     }
 
-    public ArrayList<VictimConfig> getVictimConfig() {
-        return this.victimConfig;
+    public ArrayList<VictimConfig> getVictims() {
+        ArrayList<VictimConfig> victimConfig = new ArrayList<>();
+        for (RemoteConfig config : this.remoteConfig) {
+            if (config.getRemoteType().equals(RemoteType.VICTIM)) {
+                victimConfig.add((VictimConfig) config);
+            }
+        }
+        return victimConfig;
     }
 
-    public boolean hasBaseConfig() {
-        return !this.baseConfig.isEmpty();
+    public boolean hasBases() {
+        return this.numBases > 0;
     }
 
-    public boolean hasDroneConfig() {
-        return !this.droneConfig.isEmpty();
+    public boolean hasDrones() {
+        return this.numDrones > 0;
     }
 
-    public boolean hasVictimConfig() {
-        return !this.victimConfig.isEmpty();
+    public boolean hasRemotes() {
+        return !this.remoteConfig.isEmpty();
+    }
+
+    public boolean hasVictims() {
+        return this.numVictims > 0;
     }
 
     public JSONOption toJSON() {
@@ -273,36 +238,21 @@ public class ScenarioConfig extends JSONAble {
         json.put(ScenarioConfig.MISSION_LENGTH, this.missionLength);
         json.put(ScenarioConfig.STEP_SIZE, this.stepSize);
         json.put(ScenarioConfig.NUM_VICTIMS, this.numVictims);
-        if (this.hasVictimConfig()) {
-            JSONArrayBuilder jsonVictims = JSONBuilder.Array();
-            for (VictimConfig conf : this.victimConfig) {
-                jsonVictims.put(conf.toJSON());
-            }
-            json.put(ScenarioConfig.VICTIM_CONFIG, jsonVictims.toJSON());
-        }
         json.put(ScenarioConfig.NUM_BASES, this.numBases);
-        if (this.hasBaseConfig()) {
-            JSONArrayBuilder jsonBases = JSONBuilder.Array();
-            for (BaseConfig conf : this.baseConfig) {
-                jsonBases.put(conf.toJSON());
-            }
-            json.put(ScenarioConfig.BASE_CONFIG, jsonBases.toJSON());
-        }
         json.put(ScenarioConfig.NUM_DRONES, this.numDrones);
-        if (this.hasDroneConfig()) {
-            JSONArrayBuilder jsonDrones = JSONBuilder.Array();
-            for (DroneConfig conf : this.droneConfig) {
-                jsonDrones.put(conf.toJSON());
+        if (this.hasRemotes()) {
+            JSONArrayBuilder jsonRemotes = JSONBuilder.Array();
+            for (RemoteConfig config : this.remoteConfig) {
+                jsonRemotes.put(config.toJSON());
             }
-            json.put(ScenarioConfig.DRONE_CONFIG, jsonDrones.toJSON());
+            json.put(ScenarioConfig.REMOTE_CONFIG, jsonRemotes.toJSON());
         }
         return json.toJSON();
     }
 
     public boolean equals(ScenarioConfig config) {
         return this.map.equals(config.map) && this.disasterScale == config.disasterScale &&
-            this.missionLength == config.missionLength && this.victimConfig.equals(config.victimConfig) &
-            this.baseConfig.equals(config.baseConfig) && this.droneConfig.equals(config.droneConfig);
+            this.missionLength == config.missionLength && this.remoteConfig.equals(config.remoteConfig);
     }
 
 }
