@@ -89,7 +89,7 @@ public class SimVision extends SimSensor {
             if (this.observations.size()+1 >= scenario.getRemotes().size()) {
                 return;
             }
-            for (String remoteID : scenario.getRemotes()) {
+            for (String remoteID : scenario.getRemoteIDs()) {
                 if (remote.getRemoteID().equals(remoteID)) {
                     continue;
                 }
@@ -99,7 +99,7 @@ public class SimVision extends SimSensor {
             }
             return;
         }
-        for (String remoteID : scenario.getRemotes()) {
+        for (String remoteID : scenario.getRemoteIDs()) {
             if (remoteID.equals(remote.getRemoteID())) {
                 continue;
             }

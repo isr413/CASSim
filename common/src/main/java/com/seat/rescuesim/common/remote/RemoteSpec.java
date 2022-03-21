@@ -152,6 +152,14 @@ public abstract class RemoteSpec extends JSONAble {
         return this.maxBatteryPower > 0;
     }
 
+    public boolean isKinetic() {
+        return false;
+    }
+
+    public boolean isStatic() {
+        return true;
+    }
+
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(RemoteConst.REMOTE_TYPE, this.type.getType());

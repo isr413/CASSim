@@ -11,25 +11,26 @@ import com.seat.rescuesim.common.SnapStatus;
 import com.seat.rescuesim.common.Snapshot;
 import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.math.Vector;
+import com.seat.rescuesim.common.remote.RemoteConfig;
 import com.seat.rescuesim.common.remote.RemoteController;
+import com.seat.rescuesim.common.remote.RemoteSpec;
 import com.seat.rescuesim.common.remote.RemoteState;
+import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.remote.intent.Intent;
-import com.seat.rescuesim.common.remote.intent.Intention;
 import com.seat.rescuesim.common.util.Debugger;
-import com.seat.rescuesim.common.victim.VictimConfig;
 import com.seat.rescuesim.common.victim.VictimSpec;
 import com.seat.rescuesim.simserver.sim.remote.KineticSimRemote;
 import com.seat.rescuesim.simserver.sim.remote.SimRemote;
+import com.seat.rescuesim.simserver.sim.remote.SimRemoteFactory;
 import com.seat.rescuesim.simserver.sim.remote.SimVictim;
 import com.seat.rescuesim.simserver.util.Random;
 
 public class SimScenario {
 
-    private HashSet<String> activeRemotes;
-    private HashSet<String> allRemotes;
+    private HashMap<String, SimRemote> activeRemotes;
+    private HashMap<String, SimRemote> allRemotes;
     private ScenarioConfig config;
-    private HashMap<String, SimVictim> dynamicVictims;
-    private HashMap<String, SimVictim> passiveVictims;
+    private HashMap<String, SimRemote> dynamicRemotes;
     private Random rng;
     private SnapStatus status;
     private double time;
@@ -43,132 +44,100 @@ public class SimScenario {
         this.rng = rng;
         this.time = 0;
         this.status = SnapStatus.START;
-        this.allRemotes = new HashSet<>();
-        this.activeRemotes = new HashSet<>();
-        this.dynamicVictims = new HashMap<>();
-        this.passiveVictims = new HashMap<>();
-        this.initVictims();
+        this.allRemotes = new HashMap<>();
+        this.activeRemotes = new HashMap<>();
+        this.dynamicRemotes = new HashMap<>();
+        this.initRemotes();
     }
 
-    private boolean boundsCheck(Vector nextLocation) {
-        return 0 <= nextLocation.getX() && nextLocation.getX() <= this.getMapWidth() && 0 <= nextLocation.getY() &&
-            nextLocation.getY() <= this.getMapHeight();
-    }
-
-    public void enforceBounds(KineticSimRemote remote, Vector prevLocation) {
-        int impactType = this.getImpactType(prevLocation, remote.getLocation());
-        Vector impactPoint = this.getImpactPoint(prevLocation, remote.getLocation(), impactType);
-        if (impactPoint == null) {
+    private void enforceBounds(KineticSimRemote remote, Vector prevLocation) {
+        if (this.getMap().isInbounds(remote.getLocation())) {
+            return;
+        }
+        Vector edgePoint = this.getMap().edgePointBetween(prevLocation, remote.getLocation());
+        if (edgePoint == null) {
             Debugger.logger.err(String.format("Could not compute bounce location for %s on victim %s",
                 remote.getLocation().toString(), remote.getLabel()));
             return;
         }
-        Vector bounce = this.getBounceLocation(impactPoint, remote.getLocation(), impactType);
+        Vector bounce = this.getMap().bounceLocation(prevLocation, remote.getLocation());
         if (bounce == null) {
             Debugger.logger.err(String.format("Could not compute bounce location for %s on victim %s",
                 remote.getLocation().toString(), remote.getLabel()));
             return;
         }
         remote.setLocation(bounce);
-        Vector newVelocity = Vector.scale(Vector.subtract(bounce, impactPoint).getUnitVector(),
+        Vector newVelocity = Vector.scale(Vector.subtract(bounce, edgePoint).getUnitVector(),
             remote.getVelocity().getMagnitude());
         remote.setVelocity(newVelocity);
-        Vector newAcceleration = Vector.scale(Vector.subtract(bounce, impactPoint).getUnitVector(),
+        Vector newAcceleration = Vector.scale(Vector.subtract(bounce, edgePoint).getUnitVector(),
             remote.getAcceleration().getMagnitude());
         remote.setAcceleration(newAcceleration);
     }
 
-    private Vector getBounceLocation(Vector impactPoint, Vector nextLocation, int impactType) {
-        double deltaX = nextLocation.getX() - impactPoint.getX();
-        double deltaY = nextLocation.getY() - impactPoint.getY();
-        switch (impactType) {
-            case 0:
-            case 2:
-            case 4:
-            case 6:
-                return new Vector(impactPoint.getX() - deltaX, impactPoint.getY() - deltaY);
-            case 1:
-            case 5:
-                return new Vector(impactPoint.getX() + deltaX, impactPoint.getY() - deltaY);
-            case 3:
-            case 7:
-                return new Vector(impactPoint.getX() - deltaX, impactPoint.getY() + deltaY);
-            default:
-                return null;
-        }
-    }
-
-    private Vector getImpactPoint(Vector location, Vector nextLocation, int impactType) {
-        double slope = Vector.slope(location, nextLocation);
-        switch (impactType) {
-            case 0:
-                return new Vector(0, 0);
-            case 2:
-                return new Vector(this.getMapWidth(), 0);
-            case 1:
-                double deltaX = (Double.isFinite(slope) && slope != 0) ? (0 - location.getY()) / slope : 0;
-                return new Vector(location.getX() + deltaX, 0);
-            case 4:
-                return new Vector(this.getMapWidth(), this.getMapHeight());
-            case 3:
-                double deltaY = (Double.isFinite(slope)) ? (this.getMapWidth() - location.getX()) * slope : 0;
-                return new Vector(this.getMapWidth(), location.getY() + deltaY);
-            case 6:
-                return new Vector(0, this.getMapHeight());
-            case 5:
-                deltaX = (Double.isFinite(slope) && slope != 0) ? (this.getMapHeight()-location.getY()) / slope : 0;
-                return new Vector(location.getX() + deltaX, this.getMapHeight());
-            case 7:
-                deltaY = (Double.isFinite(slope)) ? (0 - location.getX()) * slope : 0;
-                return new Vector(0, location.getY() + deltaY);
-            default:
-                return null;
-        }
-    }
-
-    public int getImpactType(Vector location, Vector nextLocation) {
-        if (nextLocation.getX() < 0 && nextLocation.getY() < 0) {
-            return 0;
-        } else if (this.getMapWidth() < nextLocation.getX() && nextLocation.getY() < 0) {
-            return 2;
-        } else if (nextLocation.getY() < 0) {
-            return 1;
-        } else if (this.getMapWidth() < nextLocation.getX() && this.getMapHeight() < nextLocation.getY()) {
-            return 4;
-        } else if (this.getMapWidth() < nextLocation.getX()) {
-            return 3;
-        } else if (nextLocation.getX() < 0 && this.getMapHeight() < nextLocation.getY()) {
-            return 6;
-        } else if (this.getMapHeight() < nextLocation.getY()) {
-            return 5;
-        } else {
-            return 7;
-        }
-    }
-
-    private void initVictims() {
-        for (VictimConfig victimConfig : this.config.getVictimConfig()) {
-            VictimSpec victimSpec = victimConfig.getSpec();
-            Iterator<String> remoteIDs = victimConfig.getRemoteIDs().iterator();
-            for (int i = 0; i < victimConfig.getCount(); i++) {
-                String label = (i < victimConfig.getRemoteIDs().size()) ? remoteIDs.next() : String.format("v<%d>", i);
-                this.allRemotes.add(label);
-                if (victimConfig.isDynamic()) {
-                    this.activeRemotes.add(label);
-                    this.dynamicVictims.put(label, new SimVictim(label, victimSpec,
-                        this.rng.getRandomLocation2D(this.getMapWidth(), this.getMapHeight()),
-                        this.rng.getRandomSpeed2D(victimSpec.getSpeedMean(), victimSpec.getSpeedStddev())));
-                } else {
-                    this.passiveVictims.put(label, new SimVictim(label, victimSpec,
-                        this.rng.getRandomLocation2D(this.getMapWidth(), this.getMapHeight()),
-                        this.rng.getRandomSpeed2D(victimSpec.getSpeedMean(), victimSpec.getSpeedStddev())));
+    private void initRemotes() {
+        for (RemoteConfig remoteConfig : this.config.getRemotes()) {
+            RemoteSpec remoteSpec = remoteConfig.getSpec();
+            Iterator<String> remoteIDs = remoteConfig.getRemoteIDs().iterator();
+            for (int i = 0; i < remoteConfig.getCount(); i++) {
+                String label = (i < remoteConfig.getRemoteIDs().size()) ? remoteIDs.next() : String.format("r<%d>", i);
+                SimRemote remote = SimRemoteFactory.getSimRemote(remoteSpec, label);
+                this.allRemotes.put(label, remote);
+                if (remote.isActive()) {
+                    this.activeRemotes.put(label, remote);
+                }
+                if (remoteConfig.isDynamic()) {
+                    this.dynamicRemotes.put(label, remote);
+                }
+                if (!remoteSpec.hasLocation()) {
+                    remote.setLocation(this.rng.getRandomLocation2D(this.getMapWidth(), this.getMapHeight()));
+                }
+                if (remote.isActive() && remoteConfig.isPassive() && remote.isKinetic()) {
+                    if (remoteConfig.getRemoteType().equals(RemoteType.VICTIM)) {
+                        ((SimVictim) remote).setVelocity(this.rng.getRandomSpeed2D(
+                            ((VictimSpec) remoteSpec).getSpeedMean(),
+                            ((VictimSpec) remoteSpec).getSpeedStddev()
+                        ));
+                    } else {
+                        ((KineticSimRemote) remote).setVelocity(this.rng.getRandomSpeed2D(
+                            ((KineticSimRemote) remote).getMaxVelocity()
+                        ));
+                    }
                 }
             }
         }
     }
 
-    public HashSet<String> getActiveRemotes() {
-        return this.activeRemotes;
+    public HashSet<String> getActiveRemoteIDs() {
+        return new HashSet<String>(this.activeRemotes.keySet());
+    }
+
+    public ArrayList<SimRemote> getActiveRemotes() {
+        return new ArrayList<SimRemote>(this.activeRemotes.values());
+    }
+
+    public SimRemote getActiveRemoteWithID(String remoteID) throws SimException {
+        if (!this.hasActiveRemoteWithID(remoteID)) {
+            throw new SimException(String.format("Scenario <%s> has no active remote %s", this.getScenarioID(),
+                remoteID));
+        }
+        return this.activeRemotes.get(remoteID);
+    }
+
+    public HashSet<String> getDynamicRemoteIDs() {
+        return new HashSet<String>(this.dynamicRemotes.keySet());
+    }
+
+    public ArrayList<SimRemote> getDynamicRemotes() {
+        return new ArrayList<SimRemote>(this.dynamicRemotes.values());
+    }
+
+    public SimRemote getDynamicRemoteWithID(String remoteID) throws SimException {
+        if (!this.hasDynamicRemoteWithID(remoteID)) {
+            throw new SimException(String.format("Scenario <%s> has no dynamic remote %s", this.getScenarioID(),
+                remoteID));
+        }
+        return this.dynamicRemotes.get(remoteID);
     }
 
     public Map getMap() {
@@ -176,19 +145,30 @@ public class SimScenario {
     }
 
     public int getMapHeight() {
-        return this.getMap().getHeight() * this.getMap().getZoneSize();
+        return this.getMap().getHeight();
     }
 
     public int getMapWidth() {
-        return this.getMap().getWidth() * this.getMap().getZoneSize();
+        return this.getMap().getWidth();
     }
 
     public int getMissionLength() {
         return this.config.getMissionLength();
     }
 
-    public HashSet<String> getRemotes() {
-        return this.allRemotes;
+    public HashSet<String> getRemoteIDs() {
+        return new HashSet<String>(this.allRemotes.keySet());
+    }
+
+    public ArrayList<SimRemote> getRemotes() {
+        return new ArrayList<SimRemote>(this.allRemotes.values());
+    }
+
+    public SimRemote getRemoteWithID(String remoteID) throws SimException {
+        if (!this.hasRemoteWithID(remoteID)) {
+            throw new SimException(String.format("Scenario <%s> has no remote %s", this.getScenarioID(), remoteID));
+        }
+        return this.allRemotes.get(remoteID);
     }
 
     public String getScenarioID() {
@@ -206,19 +186,17 @@ public class SimScenario {
             this.status,
             this.time,
             this.getStepSize(),
-            this.allRemotes,
-            this.activeRemotes,
+            this.getRemoteIDs(),
+            this.getActiveRemoteIDs(),
+            this.getDynamicRemoteIDs(),
             this.getState()
         );
     }
 
     private HashMap<String, RemoteState> getState() {
         HashMap<String, RemoteState> state = new HashMap<>();
-        for (String remoteID : this.passiveVictims.keySet()) {
-            state.put(remoteID, this.passiveVictims.get(remoteID).getState());
-        }
-        for (String remoteID : this.dynamicVictims.keySet()) {
-            state.put(remoteID, this.dynamicVictims.get(remoteID).getState());
+        for (String remoteID : this.allRemotes.keySet()) {
+            state.put(remoteID, this.allRemotes.get(remoteID).getState());
         }
         return state;
     }
@@ -236,7 +214,15 @@ public class SimScenario {
     }
 
     public boolean hasActiveRemoteWithID(String remoteID) {
-        return this.activeRemotes.contains(remoteID);
+        return this.activeRemotes.containsKey(remoteID);
+    }
+
+    public boolean hasDynamicRemotes() {
+        return !this.dynamicRemotes.isEmpty();
+    }
+
+    public boolean hasDynamicRemoteWithID(String remoteID) {
+        return this.dynamicRemotes.containsKey(remoteID);
     }
 
     public boolean hasError() {
@@ -248,7 +234,7 @@ public class SimScenario {
     }
 
     public boolean hasRemoteWithID(String remoteID) {
-        return this.allRemotes.contains(remoteID);
+        return this.allRemotes.containsKey(remoteID);
     }
 
     public boolean isDone() {
@@ -259,17 +245,17 @@ public class SimScenario {
         return this.status.equals(SnapStatus.START) || this.status.equals(SnapStatus.IN_PROGRESS);
     }
 
-    private void updateDynamicRemotes(ArrayList<SimRemote> remotes, HashMap<String, RemoteController> intentions,
-            double stepSize) throws SimException {
-        Debugger.logger.info(String.format("Updating dynamic remotes %s ...", remotes.toString()));
-        for (SimRemote remote : remotes) {
+    private void updateDynamicRemotes(HashMap<String, RemoteController> intentions, double stepSize)
+            throws SimException {
+        Debugger.logger.info(String.format("Updating remotes %s ...", this.getDynamicRemoteIDs().toString()));
+        for (SimRemote remote : this.dynamicRemotes.values()) {
             // TODO: add map effects
             if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
-                remote.update(intentions.get(remote.getRemoteID()), stepSize);
+                remote.update(this, intentions.get(remote.getRemoteID()), stepSize);
             } else {
-                remote.update(stepSize);
+                remote.update(this, stepSize);
             }
-            if (!this.boundsCheck(remote.getLocation())) {
+            if (this.getMap().isOutOfBounds(remote.getLocation())) {
                 Debugger.logger.err(String.format("Remote %s out of bounds at %s", remote.getLabel(),
                     remote.getLocation().toString()));
                 this.status = SnapStatus.ERROR;
@@ -277,17 +263,20 @@ public class SimScenario {
             if (remote.isInactive() && this.hasActiveRemoteWithID(remote.getRemoteID())) {
                 this.activeRemotes.remove(remote.getRemoteID());
             } else if (remote.isActive() && !this.hasActiveRemoteWithID(remote.getRemoteID())) {
-                this.activeRemotes.add(remote.getRemoteID());
+                this.activeRemotes.put(remote.getRemoteID(), remote);
             }
         }
     }
 
-    private void updatePassiveRemotes(ArrayList<SimRemote> remotes, HashMap<String, RemoteController> intentions,
-            double stepSize) throws SimException {
-        Debugger.logger.info(String.format("Updating passive remotes %s ...", remotes.toString()));
-        for (SimRemote remote : remotes) {
+    private void updatePassiveRemotes(HashMap<String, RemoteController> intentions, double stepSize)
+            throws SimException {
+        Debugger.logger.info("Updating passive remotes ...");
+        for (SimRemote remote : this.activeRemotes.values()) {
+            if (this.hasDynamicRemoteWithID(remote.getRemoteID())) {
+                continue;
+            }
             if (intentions.containsKey(remote.getRemoteID())) {
-                remote.update(intentions.get(remote.getRemoteID()), stepSize);
+                remote.update(this, intentions.get(remote.getRemoteID()), stepSize);
                 continue;
             }
             RemoteController controller = new RemoteController(remote.getRemoteType(), remote.getRemoteID());
@@ -298,7 +287,7 @@ public class SimScenario {
                 controller.addIntention(Intent.Deactivate(remote.getActiveSensorIDs()));
             }
             Vector location = remote.getLocation();
-            if (this.boundsCheck(location)) {
+            if (this.getMap().isInbounds(location)) {
                 if (remote.isActive() && remote.isKinetic()) {
                     controller.addIntention(
                         Intent.Goto(
@@ -312,13 +301,13 @@ public class SimScenario {
             } else {
                 Debugger.logger.err(String.format("Remote %s out of bounds at %s", remote.getLabel(),
                     location.toString()));
-                remote.update(controller, stepSize);
+                remote.update(this, controller, stepSize);
                 this.status = SnapStatus.ERROR;
                 continue;
             }
             // TODO: add map effects
-            remote.update(controller, stepSize);
-            if (remote.isKinetic() && !this.boundsCheck(remote.getLocation())) {
+            remote.update(this, controller, stepSize);
+            if (remote.isKinetic() && this.getMap().isOutOfBounds(remote.getLocation())) {
                 this.enforceBounds((KineticSimRemote) remote, location);
             }
         }
@@ -340,8 +329,8 @@ public class SimScenario {
         if (this.status.equals(SnapStatus.ERROR)) {
             this.status = SnapStatus.IN_PROGRESS;
         }
-        this.updateDynamicRemotes(new ArrayList<SimRemote>(this.dynamicVictims.values()), intentions, stepSize);
-        this.updatePassiveRemotes(new ArrayList<SimRemote>(this.passiveVictims.values()), intentions, stepSize);
+        this.updateDynamicRemotes(intentions, stepSize);
+        this.updatePassiveRemotes(intentions, stepSize);
         if (this.status.equals(SnapStatus.START)) {
             this.status = SnapStatus.IN_PROGRESS;
         }

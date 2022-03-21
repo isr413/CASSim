@@ -90,10 +90,12 @@ public abstract class KineticRemoteSpec extends RemoteSpec {
         return this.maxVelocity != Double.POSITIVE_INFINITY;
     }
 
+    @Override
     public boolean isKinetic() {
         return this.hasVelocity() && this.hasAcceleration() && this.hasJerk();
     }
 
+    @Override
     public boolean isStatic() {
         return !this.isKinetic();
     }

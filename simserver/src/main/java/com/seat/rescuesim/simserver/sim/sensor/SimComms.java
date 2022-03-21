@@ -86,7 +86,7 @@ public class SimComms extends SimSensor {
             return;
         }
         if (!this.hasLimitedRange()) {
-            for (String remoteID : scenario.getRemotes()) {
+            for (String remoteID : scenario.getRemoteIDs()) {
                 if (remote.getRemoteID().equals(remoteID)) {
                     continue;
                 }
@@ -98,7 +98,7 @@ public class SimComms extends SimSensor {
             }
             return;
         }
-        for (String remoteID : scenario.getRemotes()) {
+        for (String remoteID : scenario.getRemoteIDs()) {
             if (remoteID.equals(remote.getRemoteID())) {
                 continue;
             }
