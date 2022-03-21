@@ -11,7 +11,6 @@ import com.seat.rescuesim.common.sensor.SensorState;
 
 /** A serializable Base state. */
 public class BaseState extends RemoteState {
-    private static final String BASE_TYPE = "base_type";
 
     private BaseType type;
 
@@ -41,7 +40,7 @@ public class BaseState extends RemoteState {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.type = BaseType.values()[json.getInt(BaseState.BASE_TYPE)];
+        this.type = BaseType.values()[json.getInt(BaseConst.BASE_TYPE)];
     }
 
     public BaseType getSpecType() {
@@ -50,7 +49,7 @@ public class BaseState extends RemoteState {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(BaseState.BASE_TYPE, this.type.getType());
+        json.put(BaseConst.BASE_TYPE, this.type.getType());
         return json.toJSON();
     }
 

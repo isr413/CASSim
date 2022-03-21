@@ -10,7 +10,6 @@ import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable specification of a Base Remote. */
 public class BaseSpec extends RemoteSpec {
-    private static final String BASE_TYPE = "base_type";
 
     public static BaseSpec None() {
         return new BaseSpec(BaseType.NONE, new Vector(), 0, new ArrayList<SensorConfig>());
@@ -46,7 +45,7 @@ public class BaseSpec extends RemoteSpec {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.type = BaseType.values()[json.getInt(BaseSpec.BASE_TYPE)];
+        this.type = BaseType.values()[json.getInt(BaseConst.BASE_TYPE)];
     }
 
     @Override
@@ -60,7 +59,7 @@ public class BaseSpec extends RemoteSpec {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(BaseSpec.BASE_TYPE, this.type.getType());
+        json.put(BaseConst.BASE_TYPE, this.type.getType());
         return json.toJSON();
     }
 

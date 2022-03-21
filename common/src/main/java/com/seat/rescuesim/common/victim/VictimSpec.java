@@ -10,9 +10,6 @@ import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable specification of a Victim. */
 public class VictimSpec extends KineticRemoteSpec {
-    private static final String SPEED_MEAN = "speed_mean";
-    private static final String SPEED_STDDEV = "speed_stddev";
-    private static final String VICTIM_TYPE = "victim_type";
 
     public static VictimSpec None() {
         return new VictimSpec(VictimType.NONE, new Vector(), 0, new ArrayList<SensorConfig>(), 0, 0, 0);
@@ -70,9 +67,9 @@ public class VictimSpec extends KineticRemoteSpec {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.type = VictimType.values()[json.getInt(VictimSpec.VICTIM_TYPE)];
-        this.speedMean = json.getDouble(VictimSpec.SPEED_MEAN);
-        this.speedStddev = json.getDouble(VictimSpec.SPEED_STDDEV);
+        this.type = VictimType.values()[json.getInt(VictimConst.VICTIM_TYPE)];
+        this.speedMean = json.getDouble(VictimConst.SPEED_MEAN);
+        this.speedStddev = json.getDouble(VictimConst.SPEED_STDDEV);
     }
 
     @Override
@@ -94,9 +91,9 @@ public class VictimSpec extends KineticRemoteSpec {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(VictimSpec.VICTIM_TYPE, this.type.getType());
-        json.put(VictimSpec.SPEED_MEAN, this.speedMean);
-        json.put(VictimSpec.SPEED_STDDEV, this.speedStddev);
+        json.put(VictimConst.VICTIM_TYPE, this.type.getType());
+        json.put(VictimConst.SPEED_MEAN, this.speedMean);
+        json.put(VictimConst.SPEED_STDDEV, this.speedStddev);
         return json.toJSON();
     }
 

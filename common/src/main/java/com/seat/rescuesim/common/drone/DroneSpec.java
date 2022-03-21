@@ -10,8 +10,6 @@ import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable specification of a Drone Remote. */
 public class DroneSpec extends KineticRemoteSpec {
-    private static final String DRONE_BATTERY_USAGE = "battery_usage";
-    private static final String DRONE_TYPE = "drone_type";
 
     public static DroneSpec None() {
         return new DroneSpec(DroneType.NONE, new Vector(), 0, new Vector(), new ArrayList<SensorConfig>(), 0, 0, 0);
@@ -63,8 +61,8 @@ public class DroneSpec extends KineticRemoteSpec {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.type = DroneType.values()[json.getInt(DroneSpec.DRONE_TYPE)];
-        this.batteryUsage = new Vector(json.getJSONArray(DroneSpec.DRONE_BATTERY_USAGE));
+        this.type = DroneType.values()[json.getInt(DroneConst.DRONE_TYPE)];
+        this.batteryUsage = new Vector(json.getJSONArray(DroneConst.BATTERY_USAGE));
     }
 
     public Vector getBatteryUsage() {
@@ -94,8 +92,8 @@ public class DroneSpec extends KineticRemoteSpec {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(DroneSpec.DRONE_TYPE, this.type.getType());
-        json.put(DroneSpec.DRONE_BATTERY_USAGE, this.batteryUsage.toJSON());
+        json.put(DroneConst.DRONE_TYPE, this.type.getType());
+        json.put(DroneConst.BATTERY_USAGE, this.batteryUsage.toJSON());
         return json.toJSON();
     }
 

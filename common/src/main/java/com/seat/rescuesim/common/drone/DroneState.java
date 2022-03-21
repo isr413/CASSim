@@ -11,7 +11,6 @@ import com.seat.rescuesim.common.sensor.SensorState;
 
 /** A serializable Drone state. */
 public class DroneState extends KineticRemoteState {
-    private static final String DRONE_TYPE = "drone_type";
 
     private DroneType type;
 
@@ -42,7 +41,7 @@ public class DroneState extends KineticRemoteState {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.type = DroneType.values()[json.getInt(DroneState.DRONE_TYPE)];
+        this.type = DroneType.values()[json.getInt(DroneConst.DRONE_TYPE)];
     }
 
     public DroneType getSpecType() {
@@ -51,7 +50,7 @@ public class DroneState extends KineticRemoteState {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(DroneState.DRONE_TYPE, this.type.getType());
+        json.put(DroneConst.DRONE_TYPE, this.type.getType());
         return json.toJSON();
     }
 

@@ -11,7 +11,6 @@ import com.seat.rescuesim.common.sensor.SensorState;
 
 /** A serializable Victim state. */
 public class VictimState extends KineticRemoteState {
-    private static final String VICTIM_TYPE = "victim_type";
 
     private VictimType type;
 
@@ -42,7 +41,7 @@ public class VictimState extends KineticRemoteState {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.type = VictimType.values()[json.getInt(VictimState.VICTIM_TYPE)];
+        this.type = VictimType.values()[json.getInt(VictimConst.VICTIM_TYPE)];
     }
 
     public VictimType getSpecType() {
@@ -51,7 +50,7 @@ public class VictimState extends KineticRemoteState {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(VictimState.VICTIM_TYPE, this.type.getType());
+        json.put(VictimConst.VICTIM_TYPE, this.type.getType());
         return json.toJSON();
     }
 
