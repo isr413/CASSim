@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common.sensor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -27,8 +28,16 @@ public class VisionSensorState extends SensorState {
     }
 
     public VisionSensorState(SensorType type, String sensorID) {
-        super(type, sensorID);
-        this.observations = new HashSet<>();
+        this(type, sensorID, false, new HashSet<String>());
+    }
+
+    public VisionSensorState(SensorType type, String sensorID, boolean active, ArrayList<String> observations) {
+        this(type, sensorID, active, new HashSet<String>(observations));
+    }
+
+    public VisionSensorState(SensorType type, String sensorID, boolean active, HashSet<String> observations) {
+        super(type, sensorID, active);
+        this.observations = observations;
     }
 
     @Override
@@ -64,10 +73,6 @@ public class VisionSensorState extends SensorState {
             json.put(VisionSensorState.OBSERVATIONS, jsonObservations.toJSON());
         }
         return json.toJSON();
-    }
-
-    public boolean equals(VisionSensorState state) {
-        return super.equals(state) && this.observations.equals(state.observations);
     }
 
 }

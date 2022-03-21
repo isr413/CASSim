@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common.sensor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -27,8 +28,16 @@ public class CommsSensorState extends SensorState {
     }
 
     public CommsSensorState(SensorType type, String sensorID) {
-        super(type, sensorID);
-        this.connections = new HashSet<>();
+        this(type, sensorID, false, new HashSet<String>());
+    }
+
+    public CommsSensorState(SensorType type, String sensorID, boolean active, ArrayList<String> connections) {
+        this(type, sensorID, active, new HashSet<String>(connections));
+    }
+
+    public CommsSensorState(SensorType type, String sensorID, boolean active, HashSet<String> connections) {
+        super(type, sensorID, active);
+        this.connections = connections;
     }
 
     @Override
@@ -64,10 +73,6 @@ public class CommsSensorState extends SensorState {
             json.put(CommsSensorState.CONNECTIONS, jsonObservations.toJSON());
         }
         return json.toJSON();
-    }
-
-    public boolean equals(CommsSensorState state) {
-        return super.equals(state) && this.connections.equals(state.connections);
     }
 
 }

@@ -22,29 +22,39 @@ public class MonitorSensorState extends SensorState {
         super(encoding);
     }
 
-    public MonitorSensorState(SensorType type, String sensorID, String remoteID) {
-        super(type, sensorID);
+    public MonitorSensorState(SensorType type, String sensorID) {
+        this(type, sensorID, false, "");
+    }
+
+    public MonitorSensorState(SensorType type, String sensorID, boolean active, String remoteID) {
+        super(type, sensorID, active);
         this.remoteID = remoteID;
     }
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.remoteID = json.getString(MonitorSensorState.REMOTE_ID);
+        if (json.hasKey(MonitorSensorState.REMOTE_ID)) {
+            this.remoteID = json.getString(MonitorSensorState.REMOTE_ID);
+        } else {
+            this.remoteID = "";
+        }
     }
 
     public String getRemoteID() {
         return this.remoteID;
     }
 
-    public JSONOption toJSON() {
-        JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(MonitorSensorState.REMOTE_ID, this.remoteID);
-        return json.toJSON();
+    public boolean hasRemoteID() {
+        return !(this.remoteID == null || this.remoteID.isEmpty() || this.remoteID.isBlank());
     }
 
-    public boolean equals(MonitorSensorState state) {
-        return super.equals(state) && this.remoteID.equals(state.remoteID);
+    public JSONOption toJSON() {
+        JSONObjectBuilder json = super.getJSONBuilder();
+        if (this.hasRemoteID()) {
+            json.put(MonitorSensorState.REMOTE_ID, this.remoteID);
+        }
+        return json.toJSON();
     }
 
 }
