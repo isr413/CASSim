@@ -78,6 +78,8 @@ public abstract class KineticRemoteState extends RemoteState {
         JSONObjectBuilder json = super.getJSONBuilder();
         json.put(RemoteConst.VELOCITY, this.velocity.toJSON());
         json.put(RemoteConst.ACCELERATION, this.acceleration.toJSON());
+        System.out.println(this.velocity);
+        System.out.println(this.acceleration);
         return json;
     }
 

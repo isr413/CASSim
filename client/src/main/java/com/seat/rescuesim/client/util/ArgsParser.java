@@ -17,13 +17,11 @@ public class ArgsParser {
         int i = 0;
         while (i < args.length) {
             if (args[i].length() >= 3 && args[i].charAt(0) == '-' && args[i].charAt(1) == '-') {
-                String param = args[i].substring(2);
-                this.parsedArgs.put(param, param);
+                this.parsedArgs.put(args[i], args[i].substring(2));
                 i++;
             } else if (args[i].length() >= 2 && args[i].charAt(0) == '-') {
-                String param = args[i].substring(1);
                 if (i+1 < args.length) {
-                    this.parsedArgs.put(param, args[i+1]);
+                    this.parsedArgs.put(args[i], args[i+1]);
                 } else {
                     Debugger.logger.fatal(String.format("No input arg for parameter %s", args[i]));
                 }

@@ -119,6 +119,7 @@ public abstract class RemoteState extends JSONAble {
         json.put(RemoteConst.REMOTE_TYPE, this.type.getType());
         json.put(RemoteConst.REMOTE_ID, this.remoteID);
         json.put(RemoteConst.LOCATION, this.location.toJSON());
+        System.out.println(this.location);
         json.put(RemoteConst.BATTERY, this.battery);
         if (this.hasSensors()) {
             JSONArrayBuilder jsonSensors = JSONBuilder.Array();

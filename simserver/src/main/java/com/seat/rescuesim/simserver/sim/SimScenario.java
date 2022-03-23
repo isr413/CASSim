@@ -76,6 +76,7 @@ public class SimScenario {
         int numRemotes = 0;
         for (RemoteConfig remoteConfig : this.config.getRemotes()) {
             RemoteSpec remoteSpec = remoteConfig.getSpec();
+            System.out.println(remoteSpec.toString());
             Iterator<String> remoteIDs = remoteConfig.getRemoteIDs().iterator();
             for (int i = 0; i < remoteConfig.getCount(); i++) {
                 String label = (i < remoteConfig.getRemoteIDs().size()) ?

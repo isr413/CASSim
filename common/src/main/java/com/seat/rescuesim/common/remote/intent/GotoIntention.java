@@ -39,7 +39,7 @@ public class GotoIntention extends Intention {
     }
 
     public GotoIntention(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
-        super(IntentionType.MOVE);
+        super(IntentionType.GOTO);
         this.location = location;
         this.maxVelocity = maxVelocity;
         this.maxAcceleration = maxAcceleration;

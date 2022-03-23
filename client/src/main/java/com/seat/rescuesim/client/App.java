@@ -6,14 +6,18 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-
+import java.util.ArrayList;
 import com.seat.rescuesim.client.core.Application;
 import com.seat.rescuesim.client.core.CoreException;
+import com.seat.rescuesim.client.gui.GUIFrame;
 import com.seat.rescuesim.client.sandbox.ACSOS;
 import com.seat.rescuesim.client.util.ArgsParser;
 import com.seat.rescuesim.common.SnapStatus;
 import com.seat.rescuesim.common.Snapshot;
+import com.seat.rescuesim.common.json.JSONArrayBuilder;
+import com.seat.rescuesim.common.json.JSONBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
+import com.seat.rescuesim.common.remote.RemoteController;
 import com.seat.rescuesim.common.util.Debugger;
 
 public class App {
@@ -21,10 +25,18 @@ public class App {
     private static final InetAddress DEFAULT_ADDRESS = InetAddress.getLoopbackAddress();
     private static final int DEFAULT_PORT = 8080;
     private static final String HOST_ARG = "-h";
+    private static final String ID_ARG = "-id";
     private static final String PORT_ARG = "-p";
 
-    private static Application getApplication(String[] args) {
-        return new ACSOS(args);
+    private static Application getApplication(ArgsParser parser, String[] args) throws CoreException {
+        if (!parser.hasParam(ID_ARG)) {
+            throw new CoreException("No application ID has been specified");
+        }
+        if (parser.getString(ID_ARG).equals("ACSOS")) {
+            return new ACSOS(args);
+        } else {
+            throw new CoreException("Unrecognized application ID");
+        }
     }
 
     private static Socket getClientSocket(ArgsParser args) throws IOException {
@@ -47,10 +59,11 @@ public class App {
 
     private static void runApplicationSync(Application app, BufferedReader in,
             PrintWriter out) throws CoreException, IOException {
+        GUIFrame frame = new GUIFrame(app.getScenarioID());
         Debugger.logger.info(String.format("Sending scenario <%s> ...", app.getScenarioID()));
         out.println(app.getScenarioConfig().encode());
-        boolean running = true;
-        do {
+        boolean done = false;
+        while (!done) {
             if (in.ready()) {
                 String snapEncoding = in.readLine();
                 if (!JSONOption.isJSON(snapEncoding)) {
@@ -62,10 +75,21 @@ public class App {
                     throw new CoreException(snapEncoding);
                 }
                 if (snap.getStatus().equals(SnapStatus.DONE)) {
-                    running = false;
+                    done = true;
+                    continue;
                 }
+                Debugger.logger.info("Displaying snap ...");
+                frame.displaySnap(snap);
+                Debugger.logger.info("Getting next action(s) ...");
+                ArrayList<RemoteController> controllers = app.update(snap);
+                JSONArrayBuilder json = JSONBuilder.Array();
+                for (RemoteController controller : controllers) {
+                    json.put(controller.toJSON());
+                }
+                out.println(json.toJSON().toString());
+                Debugger.logger.state("Action(s) sent");
             }
-        } while (running);
+        }
     }
 
     public static void main(String[] args) {
@@ -75,23 +99,23 @@ public class App {
         try {
             Debugger.logger.info("Starting client ...");
             ArgsParser parser = new ArgsParser(args);
+            Application app = getApplication(parser, args);
+            Debugger.logger.state(String.format("Loaded application <%s>", app.getScenarioID()));
             socket = getClientSocket(parser);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
-            Application app = getApplication(args);
-            Debugger.logger.state(String.format("Loaded application <%s>", app.getScenarioID()));
             runApplicationSync(app, in, out);
             socket.close();
         } catch (IOException e) {
-            System.err.println(e);
             if (out != null) {
                 out.println(e.toString());
             }
+            e.printStackTrace();
         } catch (CoreException e) {
-            System.err.println(e);
             if (out != null) {
                 out.println(e.toString());
             }
+            e.printStackTrace();
         }
     }
 

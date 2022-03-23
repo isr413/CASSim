@@ -5,19 +5,13 @@ import java.util.Random;
 
 import com.seat.rescuesim.common.ScenarioConfig;
 import com.seat.rescuesim.common.Snapshot;
-import com.seat.rescuesim.common.base.BaseConfig;
-import com.seat.rescuesim.common.drone.DroneConfig;
 import com.seat.rescuesim.common.map.Map;
+import com.seat.rescuesim.common.remote.RemoteConfig;
 import com.seat.rescuesim.common.remote.RemoteController;
-import com.seat.rescuesim.common.victim.VictimConfig;
 
 public interface Application {
 
-    ArrayList<BaseConfig> getBaseConfigurations();
-
     double getDisasterScale();
-
-    ArrayList<DroneConfig> getDroneConfigurations();
 
     Map getMap();
 
@@ -37,15 +31,13 @@ public interface Application {
             getDisasterScale(),
             getMissionLength(),
             getStepSize(),
-            getVictimConfigurations(),
-            getBaseConfigurations(),
-            getDroneConfigurations()
+            getRemoteConfigs()
         );
     }
 
-    double getStepSize();
+    ArrayList<RemoteConfig> getRemoteConfigs();
 
-    ArrayList<VictimConfig> getVictimConfigurations();
+    double getStepSize();
 
     void run();
 

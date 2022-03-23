@@ -12,6 +12,7 @@ import com.seat.rescuesim.common.drone.DroneSpec;
 import com.seat.rescuesim.common.drone.DroneType;
 import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.math.Vector;
+import com.seat.rescuesim.common.remote.RemoteConfig;
 import com.seat.rescuesim.common.remote.RemoteController;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 import com.seat.rescuesim.common.sensor.SensorSpec;
@@ -66,14 +67,14 @@ public class ACSOS implements Application {
     private SensorSpec getVictimMonitor() {
         return new SensorSpec(
             SensorType.Comms,
-            0,
+            1,
             1,
             0.01,
             0
         );
     }
 
-    public ArrayList<BaseConfig> getBaseConfigurations() {
+    public ArrayList<BaseConfig> getBaseConfigs() {
         ArrayList<SensorConfig> sensors = new ArrayList<>();
         sensors.add(new SensorConfig(this.getLongRangeComms(), 1));
         BaseSpec baseSpec = new BaseSpec(
@@ -91,7 +92,7 @@ public class ACSOS implements Application {
         return 0;
     }
 
-    public ArrayList<DroneConfig> getDroneConfigurations() {
+    public ArrayList<DroneConfig> getDroneConfigs() {
         ArrayList<SensorConfig> sensors = new ArrayList<>();
         sensors.add(new SensorConfig(this.getLongRangeComms(), 1));
         sensors.add(new SensorConfig(this.getBluetoothComms(), 1));
@@ -120,6 +121,14 @@ public class ACSOS implements Application {
         return 27*60;
     }
 
+    public ArrayList<RemoteConfig> getRemoteConfigs() {
+        ArrayList<RemoteConfig> remotes = new ArrayList<>();
+        remotes.addAll(this.getVictimConfigs());
+        remotes.addAll(this.getBaseConfigs());
+        remotes.addAll(this.getDroneConfigs());
+        return remotes;
+    }
+
     public String getScenarioID() {
         return "ACSOS";
     }
@@ -128,7 +137,7 @@ public class ACSOS implements Application {
         return 0.5;
     }
 
-    public ArrayList<VictimConfig> getVictimConfigurations() {
+    public ArrayList<VictimConfig> getVictimConfigs() {
         ArrayList<SensorConfig> sensors = new ArrayList<>();
         sensors.add(new SensorConfig(this.getBluetoothComms(), 1));
         sensors.add(new SensorConfig(this.getVictimMonitor(), 1));

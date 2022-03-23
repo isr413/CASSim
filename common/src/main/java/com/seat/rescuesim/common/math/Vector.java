@@ -265,4 +265,9 @@ public class Vector extends JSONAble {
         return this.x == vec.x && this.y == vec.y && this.z == vec.z;
     }
 
+    @Override
+    public String toString() {
+        return String.format("[%f, %f, %f]", this.x, this.y, this.z);
+    }
+
 }

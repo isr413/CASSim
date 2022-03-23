@@ -115,7 +115,8 @@ public abstract class RemoteSpec extends JSONAble {
     public abstract SerializableEnum getSpecType();
 
     public boolean hasLocation() {
-        return this.location != null;
+        return this.location != null && this.location.getX() != Double.POSITIVE_INFINITY &&
+            this.location.getY() != Double.POSITIVE_INFINITY && this.location.getZ() != Double.POSITIVE_INFINITY;
     }
 
     public boolean hasSensor(int idx) {

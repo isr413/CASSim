@@ -102,20 +102,20 @@ public class App {
                     break;
                 }
             } catch (IOException e) {
-                System.err.println(e);
                 if (out != null) {
                     out.println(e.toString());
                 }
+                e.printStackTrace();
             } catch (JSONException e) {
-                System.err.println(e);
                 if (out != null) {
                     out.println(e.toString());
                 }
+                e.printStackTrace();
             } catch (SimException e) {
-                System.err.println(e);
                 if (out != null) {
                     out.println(e.toString());
                 }
+                e.printStackTrace();
             }
         }
     }
