@@ -5,7 +5,7 @@ import com.seat.rescuesim.common.drone.DroneSpec;
 import com.seat.rescuesim.common.remote.RemoteSpec;
 import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.victim.VictimSpec;
-import com.seat.rescuesim.simserver.sim.SimException;
+import com.seat.rescuesim.simserver.sim.util.SimException;
 
 public class SimRemoteFactory {
 

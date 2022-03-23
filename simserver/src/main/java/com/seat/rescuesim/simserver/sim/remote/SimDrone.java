@@ -4,8 +4,8 @@ import com.seat.rescuesim.common.drone.DroneSpec;
 import com.seat.rescuesim.common.drone.DroneState;
 import com.seat.rescuesim.common.drone.DroneType;
 import com.seat.rescuesim.common.remote.RemoteController;
-import com.seat.rescuesim.simserver.sim.SimException;
 import com.seat.rescuesim.simserver.sim.SimScenario;
+import com.seat.rescuesim.simserver.sim.util.SimException;
 
 public class SimDrone extends KineticSimRemote {
 

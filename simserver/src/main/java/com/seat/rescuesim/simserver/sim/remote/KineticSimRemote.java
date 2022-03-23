@@ -7,8 +7,8 @@ import com.seat.rescuesim.common.remote.RemoteController;
 import com.seat.rescuesim.common.remote.intent.IntentionType;
 import com.seat.rescuesim.common.remote.intent.GotoIntention;
 import com.seat.rescuesim.common.remote.intent.MoveIntention;
-import com.seat.rescuesim.simserver.sim.SimException;
 import com.seat.rescuesim.simserver.sim.SimScenario;
+import com.seat.rescuesim.simserver.sim.util.SimException;
 
 public abstract class KineticSimRemote extends SimRemote {
 
@@ -49,11 +49,11 @@ public abstract class KineticSimRemote extends SimRemote {
         if (this.getMaxAcceleration() < nextAcceleration.getMagnitude()) {
             nextAcceleration = Vector.scale(nextAcceleration.getUnitVector(), this.getMaxAcceleration());
         }
-        Vector nextVelocity = Vector.add(this.velocity, Vector.scale(this.acceleration, stepSize));
+        Vector nextVelocity = Vector.add(this.velocity, Vector.scale(nextAcceleration, stepSize));
         if (this.getMaxVelocity() < nextVelocity.getMagnitude()) {
             nextVelocity = Vector.scale(nextVelocity.getUnitVector(), this.getMaxVelocity());
         }
-        return Vector.add(this.location, Vector.scale(this.velocity, stepSize));
+        return Vector.add(this.location, Vector.scale(nextVelocity, stepSize));
     }
 
     public KineticRemoteSpec getSpec() {

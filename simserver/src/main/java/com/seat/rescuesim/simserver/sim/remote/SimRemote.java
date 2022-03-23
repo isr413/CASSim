@@ -19,10 +19,10 @@ import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.sensor.SensorType;
 import com.seat.rescuesim.common.util.Debugger;
 import com.seat.rescuesim.common.util.SerializableEnum;
-import com.seat.rescuesim.simserver.sim.SimException;
 import com.seat.rescuesim.simserver.sim.SimScenario;
 import com.seat.rescuesim.simserver.sim.sensor.SimSensor;
 import com.seat.rescuesim.simserver.sim.sensor.SimSensorFactory;
+import com.seat.rescuesim.simserver.sim.util.SimException;
 
 public abstract class SimRemote {
 
@@ -40,23 +40,25 @@ public abstract class SimRemote {
         this.label = label;
         this.location = spec.getLocation();
         this.battery = spec.getMaxBatteryPower();
-        this.allSensors = new HashMap<>();
-        this.activeSensors = new HashMap<>();
         this.active = true;
         this.done = false;
         this.initSensors();
     }
 
     private void initSensors() {
+        this.allSensors = new HashMap<>();
+        this.activeSensors = new HashMap<>();
+        int sensorCount = 0;
         for (SensorConfig sensorConfig : this.spec.getSensors()) {
             SensorSpec sensorSpec = sensorConfig.getSpec();
             Iterator<String> sensorIDs = sensorConfig.getSensorIDs().iterator();
             for (int i = 0; i < sensorConfig.getCount(); i++) {
-                String label = (i < sensorConfig.getSensorIDs().size()) ? sensorIDs.next() : String.format("s<%d>", i);
+                String label = (i < sensorConfig.getSensorIDs().size()) ?
+                    sensorIDs.next() :
+                    String.format("%s:(%d)", sensorSpec.getLabel(), sensorCount);
+                sensorCount++;
                 SimSensor sensor = SimSensorFactory.getSimSensor(sensorSpec, label);
-                if (sensor != null) {
-                    this.allSensors.put(label, sensor);
-                }
+                this.allSensors.put(label, sensor);
             }
         }
     }
@@ -351,6 +353,10 @@ public abstract class SimRemote {
         return false;
     }
 
+    public boolean isStatic() {
+        return !this.isKinetic();
+    }
+
     public void setActive() {
         this.active = true;
     }
@@ -402,9 +408,9 @@ public abstract class SimRemote {
             if (controller.hasIntentionWithType(IntentionType.DONE)) {
                 this.setDone();
             }
-            if (this.isInactive() || this.isDone()) {
-                return;
-            }
+        }
+        if (this.isInactive() || this.isDone()) {
+            return;
         }
         double batteryUsage = 0;
         for (SimSensor sensor : this.activeSensors.values()) {
@@ -415,7 +421,7 @@ public abstract class SimRemote {
     }
 
     protected void updateBattery(double usage, double stepSize) {
-        this.battery += usage * stepSize;
+        this.battery -= (usage * stepSize);
         if (this.battery < 0) {
             this.battery = 0;
         }
