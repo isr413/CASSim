@@ -7,6 +7,7 @@ import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.remote.intent.Intent;
 import com.seat.rescuesim.common.remote.intent.Intention;
 import com.seat.rescuesim.common.remote.intent.IntentionType;
+import com.seat.rescuesim.common.util.CoreException;
 import com.seat.rescuesim.common.util.Debugger;
 
 /** A serializable class to assign intentions to a Remote. */
@@ -29,20 +30,9 @@ public class RemoteController extends JSONAble {
     }
 
     public RemoteController(RemoteType type, String remoteID) {
-        this(type, remoteID, new HashMap<IntentionType, Intention>());
-    }
-
-    public RemoteController(RemoteType type, String remoteID, ArrayList<Intention> intentions) {
-        this(type, remoteID, new HashMap<IntentionType, Intention>());
-        for (Intention intent : intentions) {
-            this.addIntention(intent);
-        }
-    }
-
-    public RemoteController(RemoteType type, String remoteID, HashMap<IntentionType, Intention> intentions) {
         this.type = type;
         this.remoteID = remoteID;
-        this.intentions = intentions;
+        this.intentions = new HashMap<>();
     }
 
     @Override
@@ -58,10 +48,13 @@ public class RemoteController extends JSONAble {
         }
     }
 
-    public boolean addIntention(Intention intent) {
+    public boolean addIntention(Intention intent) throws CoreException {
+        if (this.hasIntention(intent)) {
+            return true;
+        }
         if (this.hasIntentionWithType(intent.getIntentionType())) {
-            Debugger.logger.err(String.format("Remote %s already has intention %s", this.remoteID, intent.getLabel()));
-            return this.hasIntention(intent);
+            throw new CoreException(String.format("Remote %s already has intention %s", this.remoteID,
+                intent.getLabel()));
         }
         this.intentions.put(intent.getIntentionType(), intent);
         return true;
@@ -75,10 +68,9 @@ public class RemoteController extends JSONAble {
         return new HashSet<IntentionType>(this.intentions.keySet());
     }
 
-    public Intention getIntentionWithType(IntentionType type) {
+    public Intention getIntentionWithType(IntentionType type) throws CoreException {
         if (!this.hasIntentionWithType(type)) {
-            Debugger.logger.err(String.format("Remote %s has no intention for %s", this.remoteID, type.getLabel()));
-            return null;
+            throw new CoreException(String.format("Remote %s has no intention for %s", this.remoteID, type.getLabel()));
         }
         return this.intentions.get(type);
     }

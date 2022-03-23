@@ -3,10 +3,10 @@ package com.seat.rescuesim.common.remote.intent;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.util.Debugger;
 
 public class Intent {
 
@@ -14,12 +14,11 @@ public class Intent {
         return IntentionType.values()[json.getInt(Intention.INTENTION_TYPE)];
     }
 
-    public static IntentionType decodeIntentionType(JSONOption option) {
+    public static IntentionType decodeIntentionType(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
             return Intent.decodeIntentionType(option.someObject());
         }
-        Debugger.logger.err(String.format("Cannot decode intention type of %s", option.toString()));
-        return null;
+        throw new JSONException(String.format("Cannot decode intention type of %s", option.toString()));
     }
 
     public static IntentionType decodeIntentionType(String encoding) {
@@ -105,12 +104,11 @@ public class Intent {
         }
     }
 
-    public static Intention Some(JSONOption option) {
+    public static Intention Some(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
             return Intent.Some(option.someObject());
         }
-        Debugger.logger.err(String.format("Cannot decode intent from %s", option.toString()));
-        return null;
+        throw new JSONException(String.format("Cannot decode intent from %s", option.toString()));
     }
 
     public static Intention Some(String encoding) {

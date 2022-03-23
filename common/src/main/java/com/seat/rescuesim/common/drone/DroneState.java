@@ -1,7 +1,6 @@
 package com.seat.rescuesim.common.drone;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.Vector;
@@ -26,14 +25,13 @@ public class DroneState extends KineticRemoteState {
         super(encoding);
     }
 
-    public DroneState(DroneType type, String remoteID, Vector location, double battery, ArrayList<SensorState> sensors,
-            Vector velocity, Vector acceleration) {
-        super(RemoteType.DRONE, remoteID, location, battery, sensors, velocity, acceleration);
-        this.type = type;
+    public DroneState(DroneType type, String remoteID, Vector location, double battery, Vector velocity,
+            Vector acceleration) {
+        this(type, remoteID, location, battery, new ArrayList<SensorState>(), velocity, acceleration);
     }
 
-    public DroneState(DroneType type, String remoteID, Vector location, double battery,
-            HashMap<String, SensorState> sensors, Vector velocity, Vector acceleration) {
+    public DroneState(DroneType type, String remoteID, Vector location, double battery, ArrayList<SensorState> sensors,
+            Vector velocity, Vector acceleration) {
         super(RemoteType.DRONE, remoteID, location, battery, sensors, velocity, acceleration);
         this.type = type;
     }

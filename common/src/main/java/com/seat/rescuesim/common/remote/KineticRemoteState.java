@@ -1,7 +1,6 @@
 package com.seat.rescuesim.common.remote;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.Vector;
@@ -26,15 +25,13 @@ public abstract class KineticRemoteState extends RemoteState {
     protected Vector acceleration;
     protected Vector velocity;
 
-    public KineticRemoteState(RemoteType type, String remoteID, Vector location, double battery,
-            ArrayList<SensorState> sensors, Vector velocity, Vector acceleration) {
-        super(type, remoteID, location, battery, sensors);
-        this.velocity = velocity;
-        this.acceleration = acceleration;
+    public KineticRemoteState(RemoteType type, String remoteID, Vector location, double battery, Vector velocity,
+            Vector acceleration) {
+        this(type, remoteID, location, battery, new ArrayList<SensorState>(), velocity, acceleration);
     }
 
     public KineticRemoteState(RemoteType type, String remoteID, Vector location, double battery,
-            HashMap<String, SensorState> sensors, Vector velocity, Vector acceleration) {
+            ArrayList<SensorState> sensors, Vector velocity, Vector acceleration) {
         super(type, remoteID, location, battery, sensors);
         this.velocity = velocity;
         this.acceleration = acceleration;
@@ -78,8 +75,6 @@ public abstract class KineticRemoteState extends RemoteState {
         JSONObjectBuilder json = super.getJSONBuilder();
         json.put(RemoteConst.VELOCITY, this.velocity.toJSON());
         json.put(RemoteConst.ACCELERATION, this.acceleration.toJSON());
-        System.out.println(this.velocity);
-        System.out.println(this.acceleration);
         return json;
     }
 

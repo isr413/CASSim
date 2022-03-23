@@ -6,7 +6,7 @@ import java.util.HashMap;
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorState;
-import com.seat.rescuesim.common.util.Debugger;
+import com.seat.rescuesim.common.util.CoreException;
 import com.seat.rescuesim.common.util.SensorFactory;
 import com.seat.rescuesim.common.util.SerializableEnum;
 
@@ -31,21 +31,20 @@ public abstract class RemoteState extends JSONAble {
         super(encoding);
     }
 
-    public RemoteState(RemoteType type, String remoteID, Vector location, double battery,
-            ArrayList<SensorState> sensors) {
-        this(type, remoteID, location, battery, new HashMap<String, SensorState>());
-        for (SensorState sensor : sensors) {
-            this.sensors.put(sensor.getSensorID(), sensor);
-        }
+    public RemoteState(RemoteType type, String remoteID, Vector location, double battery) {
+        this(type, remoteID, location, battery, new ArrayList<SensorState>());
     }
 
     public RemoteState(RemoteType type, String remoteID, Vector location, double battery,
-            HashMap<String, SensorState> sensors) {
+            ArrayList<SensorState> sensors) {
         this.type = type;
         this.remoteID = remoteID;
         this.location = location;
         this.battery = battery;
-        this.sensors = sensors;
+        this.sensors = new HashMap<>();
+        for (SensorState sensor : sensors) {
+            this.sensors.put(sensor.getSensorID(), sensor);
+        }
     }
 
     @Override
@@ -88,10 +87,9 @@ public abstract class RemoteState extends JSONAble {
         return new ArrayList<SensorState>(this.sensors.values());
     }
 
-    public SensorState getSensorWithID(String sensorID) {
+    public SensorState getSensorWithID(String sensorID) throws CoreException {
         if (!this.hasSensorWithID(sensorID)) {
-            Debugger.logger.err(String.format("No sensor %s found on remote %s", sensorID, this.remoteID));
-            return null;
+            throw new CoreException(String.format("No sensor %s found on remote %s", sensorID, this.remoteID));
         }
         return this.sensors.get(sensorID);
     }
@@ -119,7 +117,6 @@ public abstract class RemoteState extends JSONAble {
         json.put(RemoteConst.REMOTE_TYPE, this.type.getType());
         json.put(RemoteConst.REMOTE_ID, this.remoteID);
         json.put(RemoteConst.LOCATION, this.location.toJSON());
-        System.out.println(this.location);
         json.put(RemoteConst.BATTERY, this.battery);
         if (this.hasSensors()) {
             JSONArrayBuilder jsonSensors = JSONBuilder.Array();

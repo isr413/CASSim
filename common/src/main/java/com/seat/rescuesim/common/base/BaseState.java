@@ -1,7 +1,6 @@
 package com.seat.rescuesim.common.base;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.Vector;
@@ -26,13 +25,11 @@ public class BaseState extends RemoteState {
         super(encoding);
     }
 
-    public BaseState(BaseType type, String remoteID, Vector location, double battery, ArrayList<SensorState> sensors) {
-        super(RemoteType.BASE, remoteID, location, battery, sensors);
-        this.type = type;
+    public BaseState(BaseType type, String remoteID, Vector location, double battery) {
+        this(type, remoteID, location, battery, new ArrayList<SensorState>());
     }
 
-    public BaseState(BaseType type, String remoteID, Vector location, double battery,
-            HashMap<String, SensorState> sensors) {
+    public BaseState(BaseType type, String remoteID, Vector location, double battery, ArrayList<SensorState> sensors) {
         super(RemoteType.BASE, remoteID, location, battery, sensors);
         this.type = type;
     }

@@ -6,6 +6,7 @@ import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 import com.seat.rescuesim.common.sensor.SensorType;
+import com.seat.rescuesim.common.util.CoreException;
 import com.seat.rescuesim.common.util.Debugger;
 import com.seat.rescuesim.common.util.SerializableEnum;
 
@@ -31,6 +32,10 @@ public abstract class RemoteSpec extends JSONAble {
 
     public RemoteSpec(RemoteType type) {
         this(type, null, 1, new ArrayList<SensorConfig>());
+    }
+
+    public RemoteSpec(RemoteType type, Vector location) {
+        this(type, location, 1, new ArrayList<SensorConfig>());
     }
 
     public RemoteSpec(RemoteType type, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
@@ -76,10 +81,9 @@ public abstract class RemoteSpec extends JSONAble {
         return this.type;
     }
 
-    public SensorConfig getSensor(int idx) {
+    public SensorConfig getSensor(int idx) throws CoreException {
         if (idx < 0 || this.sensors.size() <= idx) {
-            Debugger.logger.err(String.format("No sensor at index %d found on spec %s", idx, this.getLabel()));
-            return null;
+            throw new CoreException(String.format("No sensor at index %d found on spec %s", idx, this.getLabel()));
         }
         return this.sensors.get(idx);
     }
@@ -88,14 +92,13 @@ public abstract class RemoteSpec extends JSONAble {
         return this.sensors;
     }
 
-    public SensorConfig getSensorWithID(String sensorID) {
+    public SensorConfig getSensorWithID(String sensorID) throws CoreException {
         for (SensorConfig conf : this.sensors) {
             if (conf.hasSensorWithID(sensorID)) {
                 return conf;
             }
         }
-        Debugger.logger.err(String.format("No sensor with ID %s found on spec %s", sensorID, this.getLabel()));
-        return null;
+        throw new CoreException(String.format("No sensor with ID %s found on spec %s", sensorID, this.getLabel()));
     }
 
     public ArrayList<SensorConfig> getSensorsWithType(SensorType type) {
@@ -106,8 +109,8 @@ public abstract class RemoteSpec extends JSONAble {
             }
         }
         if (confs.isEmpty()) {
-            Debugger.logger.err(String.format("No sensor with type %s found on spec %s",
-                type.getLabel(), this.getLabel()));
+            Debugger.logger.warn(String.format("No sensors with type %s found on spec %s", type.getLabel(),
+                this.getLabel()));
         }
         return confs;
     }
@@ -115,8 +118,7 @@ public abstract class RemoteSpec extends JSONAble {
     public abstract SerializableEnum getSpecType();
 
     public boolean hasLocation() {
-        return this.location != null && this.location.getX() != Double.POSITIVE_INFINITY &&
-            this.location.getY() != Double.POSITIVE_INFINITY && this.location.getZ() != Double.POSITIVE_INFINITY;
+        return this.location != null;
     }
 
     public boolean hasSensor(int idx) {

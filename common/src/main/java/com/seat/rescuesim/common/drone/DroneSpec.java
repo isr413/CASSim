@@ -78,12 +78,12 @@ public class DroneSpec extends KineticRemoteSpec {
         return String.format("d%s", this.type.getLabel());
     }
 
-    public double getStaticBatteryUsage() {
-        return this.batteryUsage.getX();
-    }
-
     public DroneType getSpecType() {
         return this.type;
+    }
+
+    public double getStaticBatteryUsage() {
+        return this.batteryUsage.getX();
     }
 
     public double getVerticalKineticBatteryUsage() {

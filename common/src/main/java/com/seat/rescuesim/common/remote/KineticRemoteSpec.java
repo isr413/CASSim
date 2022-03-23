@@ -26,6 +26,11 @@ public abstract class KineticRemoteSpec extends RemoteSpec {
         super(encoding);
     }
 
+    public KineticRemoteSpec(RemoteType type, Vector location, double maxBatteryPower, double maxVelocity,
+            double maxAcceleration, double maxJerk) {
+        this(type, location, maxBatteryPower, new ArrayList<SensorConfig>(), maxVelocity, maxAcceleration, maxJerk);
+    }
+
     public KineticRemoteSpec(RemoteType type, Vector location, double maxBatteryPower,
             ArrayList<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
         super(type, location, maxBatteryPower, sensors);
