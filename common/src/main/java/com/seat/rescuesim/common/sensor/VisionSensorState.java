@@ -42,6 +42,7 @@ public class VisionSensorState extends SensorState {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
+        this.observations = new HashSet<>();
         if (json.hasKey(SensorConst.OBSERVATIONS)) {
             JSONArray jsonObservations = json.getJSONArray(SensorConst.OBSERVATIONS);
             for (int i = 0; i < jsonObservations.length(); i++) {

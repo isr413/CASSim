@@ -42,6 +42,7 @@ public class CommsSensorState extends SensorState {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
+        this.connections = new HashSet<>();
         if (json.hasKey(SensorConst.CONNECTIONS)) {
             JSONArray jsonConnections = json.getJSONArray(SensorConst.CONNECTIONS);
             for (int i = 0; i < jsonConnections.length(); i++) {

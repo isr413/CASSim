@@ -1,6 +1,7 @@
 package com.seat.rescuesim.common.util;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class ArgsParser {
 
@@ -25,6 +26,10 @@ public class ArgsParser {
                 throw new CoreException(String.format("Unrecognized arg %s", args[i]));
             }
         }
+    }
+
+    public HashSet<String> getArgs() {
+        return new HashSet<String>(this.parsedArgs.values());
     }
 
     public Integer getInt(String param) throws CoreException {
@@ -60,6 +65,10 @@ public class ArgsParser {
         }
     }
 
+    public HashSet<String> getParams() {
+        return new HashSet<String>(this.parsedArgs.keySet());
+    }
+
     public String getString(String param) {
         if (!this.hasParam(param)) {
             throw new CoreException(String.format("No param matching %s", param));
@@ -68,7 +77,7 @@ public class ArgsParser {
     }
 
     public boolean hasParam(String param) {
-        return this.parsedArgs.containsKey(String.format("-%s", param));
+        return this.parsedArgs.containsKey(param);
     }
 
 }
