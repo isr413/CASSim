@@ -14,10 +14,9 @@ import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.remote.RemoteController;
+import com.seat.rescuesim.common.util.ArgsParser;
 import com.seat.rescuesim.common.util.Debugger;
-import com.seat.rescuesim.simserver.sim.SimException;
 import com.seat.rescuesim.simserver.sim.SimScenario;
-import com.seat.rescuesim.simserver.util.ArgsParser;
 
 public class App {
 
@@ -37,9 +36,9 @@ public class App {
     }
 
     private static ServerSocket getServerSocketBlocking(ArgsParser args) throws IOException {
-        int port = DEFAULT_PORT;
-        if (args.hasParam(PORT_PARAM)) {
-            port = args.getInt(PORT_PARAM);
+        int port = App.DEFAULT_PORT;
+        if (args.hasParam(App.PORT_PARAM)) {
+            port = args.getInt(App.PORT_PARAM);
         }
         ServerSocket server = new ServerSocket(port);
         Debugger.logger.info(String.format("Listening on port=%d ...", port));
@@ -48,7 +47,7 @@ public class App {
 
     private static ScenarioConfig getScenarioConfigBlocking(BufferedReader in) throws IOException, JSONException {
         Debugger.logger.info("Waiting for scenario config ...");
-        String encoding = getInputBlocking(in);
+        String encoding = App.getInputBlocking(in);
         ScenarioConfig scenarioConfig = new ScenarioConfig(encoding);
         Debugger.logger.state(String.format("Received scenario <%s>", scenarioConfig.getScenarioID()));
         return scenarioConfig;
@@ -62,7 +61,7 @@ public class App {
         }
         Debugger.logger.info(String.format("Waiting for intentions for remotes %s ...",
             scenario.getActiveDynamicRemoteIDs().toString()));
-        String encoding = getInputBlocking(in);
+        String encoding = App.getInputBlocking(in);
         HashMap<String, RemoteController> controllers = new HashMap<>();
         JSONArray json = JSONOption.String(encoding).someArray();
         for (int i = 0; i < json.length(); i++) {
@@ -84,7 +83,7 @@ public class App {
         double time = 0.0;
         while (time < scenario.getMissionLength()) {
             try {
-                HashMap<String, RemoteController> controllers = getRemoteIntentionsBlocking(scenario, in);
+                HashMap<String, RemoteController> controllers = App.getRemoteIntentionsBlocking(scenario, in);
                 Debugger.logger.info(String.format("Updating scenario <%s> for time=%.2f ...", scenario.getScenarioID(),
                     time + scenario.getStepSize()));
                 if (scenario.getMissionLength() < time + scenario.getStepSize()) {
@@ -101,17 +100,7 @@ public class App {
                     Debugger.logger.state(String.format("Scenario <%s> is done", scenario.getScenarioID()));
                     break;
                 }
-            } catch (IOException e) {
-                if (out != null) {
-                    out.println(e.toString());
-                }
-                e.printStackTrace();
-            } catch (JSONException e) {
-                if (out != null) {
-                    out.println(e.toString());
-                }
-                e.printStackTrace();
-            } catch (SimException e) {
+            } catch (Exception e) {
                 if (out != null) {
                     out.println(e.toString());
                 }
@@ -128,19 +117,14 @@ public class App {
         try {
             Debugger.logger.info("Sim server starting ...");
             ArgsParser argsParser = new ArgsParser(args);
-            server = getServerSocketBlocking(argsParser);
+            server = App.getServerSocketBlocking(argsParser);
             client = server.accept();
             in = new BufferedReader(new InputStreamReader(client.getInputStream()));
             out = new PrintWriter(client.getOutputStream(), true);
-            ScenarioConfig scenarioConfig = getScenarioConfigBlocking(in);
-            runScenarioSync(scenarioConfig, in, out);
+            ScenarioConfig scenarioConfig = App.getScenarioConfigBlocking(in);
+            App.runScenarioSync(scenarioConfig, in, out);
             server.close();
-        } catch (IOException e) {
-            System.err.println(e);
-            if (out != null) {
-                out.println(e.toString());
-            }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             System.err.println(e);
             if (out != null) {
                 out.println(e.toString());
