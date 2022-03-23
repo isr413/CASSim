@@ -1,13 +1,14 @@
 package com.seat.rescuesim.simserver.sim.sensor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorSpec;
 import com.seat.rescuesim.common.sensor.VisionSensorState;
 import com.seat.rescuesim.common.util.Debugger;
-import com.seat.rescuesim.simserver.sim.SimException;
 import com.seat.rescuesim.simserver.sim.SimScenario;
 import com.seat.rescuesim.simserver.sim.remote.SimRemote;
+import com.seat.rescuesim.simserver.sim.util.SimException;
 
 public class SimVision extends SimSensor {
 
@@ -16,6 +17,10 @@ public class SimVision extends SimSensor {
     public SimVision(SensorSpec spec, String label) {
         super(spec, label);
         this.observations = new HashSet<>();
+    }
+
+    public boolean addObservations(ArrayList<String> remoteIDs) {
+        return this.addObservations(new HashSet<String>(remoteIDs));
     }
 
     public boolean addObservations(HashSet<String> remoteIDs) {
@@ -59,6 +64,10 @@ public class SimVision extends SimSensor {
         return this.observations.contains(remoteID);
     }
 
+    public boolean removeObservations(ArrayList<String> remoteIDs) {
+        return this.removeObservations(new HashSet<String>(remoteIDs));
+    }
+
     public boolean removeObservations(HashSet<String> remoteIDs) {
         boolean flag = true;
         for (String remoteID : remoteIDs) {
@@ -82,20 +91,6 @@ public class SimVision extends SimSensor {
         if (remote.isInactive() || remote.isDone() || !this.hasRange()) {
             if (this.hasObservations()) {
                 this.clearObservations();
-            }
-            return;
-        }
-        if (!this.hasLimitedRange()) {
-            if (this.observations.size()+1 >= scenario.getRemotes().size()) {
-                return;
-            }
-            for (String remoteID : scenario.getRemoteIDs()) {
-                if (remote.getRemoteID().equals(remoteID)) {
-                    continue;
-                }
-                if (!this.hasObservationWithID(remoteID)) {
-                    this.addObservationWithID(remoteID);
-                }
             }
             return;
         }

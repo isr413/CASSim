@@ -1,13 +1,14 @@
 package com.seat.rescuesim.simserver.sim.sensor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.CommsSensorState;
 import com.seat.rescuesim.common.sensor.SensorSpec;
 import com.seat.rescuesim.common.util.Debugger;
-import com.seat.rescuesim.simserver.sim.SimException;
 import com.seat.rescuesim.simserver.sim.SimScenario;
 import com.seat.rescuesim.simserver.sim.remote.SimRemote;
+import com.seat.rescuesim.simserver.sim.util.SimException;
 
 public class SimComms extends SimSensor {
 
@@ -16,6 +17,10 @@ public class SimComms extends SimSensor {
     public SimComms(SensorSpec spec, String label) {
         super(spec, label);
         this.connections = new HashSet<>();
+    }
+
+    public boolean addConnections(ArrayList<String> remoteIDs) {
+        return this.addConnections(new HashSet<String>(remoteIDs));
     }
 
     public boolean addConnections(HashSet<String> remoteIDs) {
@@ -59,6 +64,10 @@ public class SimComms extends SimSensor {
         return this.connections.contains(remoteID);
     }
 
+    public boolean removeConnections(ArrayList<String> remoteIDs) {
+        return this.removeConnections(new HashSet<String>(remoteIDs));
+    }
+
     public boolean removeConnections(HashSet<String> remoteIDs) {
         boolean flag = true;
         for (String remoteID : remoteIDs) {
@@ -82,19 +91,6 @@ public class SimComms extends SimSensor {
         if (remote.isInactive() || remote.isDone() || !this.hasRange()) {
             if (this.hasConnections()) {
                 this.clearConnections();
-            }
-            return;
-        }
-        if (!this.hasLimitedRange()) {
-            for (String remoteID : scenario.getRemoteIDs()) {
-                if (remote.getRemoteID().equals(remoteID)) {
-                    continue;
-                }
-                if (!this.hasConnectionWithID(remoteID)) {
-                    if (scenario.getRemoteWithID(remoteID).hasSensorWithType(this.getSensorType())) {
-                        this.connections.add(remoteID);
-                    }
-                }
             }
             return;
         }

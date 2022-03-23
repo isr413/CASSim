@@ -3,9 +3,9 @@ package com.seat.rescuesim.simserver.sim.sensor;
 import com.seat.rescuesim.common.sensor.SensorSpec;
 import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.sensor.SensorType;
-import com.seat.rescuesim.simserver.sim.SimException;
 import com.seat.rescuesim.simserver.sim.SimScenario;
 import com.seat.rescuesim.simserver.sim.remote.SimRemote;
+import com.seat.rescuesim.simserver.sim.util.SimException;
 
 public abstract class SimSensor {
 
@@ -14,9 +14,13 @@ public abstract class SimSensor {
     protected SensorSpec spec;
 
     public SimSensor(SensorSpec spec, String label) {
+        this(spec, label, false);
+    }
+
+    public SimSensor(SensorSpec spec, String label, boolean active) {
         this.spec = spec;
         this.label = label;
-        this.active = false;
+        this.active = active;
     }
 
     public double getAccuracy() {
@@ -70,11 +74,15 @@ public abstract class SimSensor {
     }
 
     public boolean hasLimitedRange() {
-        return this.spec.getSensorRange() != Double.POSITIVE_INFINITY;
+        return this.hasRange() && !this.hasUnlimitedRange();
     }
 
     public boolean hasRange() {
         return this.spec.getSensorRange() > 0;
+    }
+
+    public boolean hasUnlimitedRange() {
+        return this.spec.getSensorRange() == Double.POSITIVE_INFINITY;
     }
 
     public boolean isActive() {
@@ -98,7 +106,7 @@ public abstract class SimSensor {
     }
 
     public void update(SimScenario scenario, SimRemote remote, double stepSize) throws SimException {
-        if (this.isActive() && remote.isInactive()) {
+        if (this.isActive() && (remote.isInactive() || remote.isDone())) {
             this.setInactive();
         } else if (this.isInactive() && remote.isActive()) {
             this.setActive();
