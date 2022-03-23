@@ -8,16 +8,16 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import com.seat.rescuesim.client.core.Application;
-import com.seat.rescuesim.client.core.CoreException;
 import com.seat.rescuesim.client.gui.GUIFrame;
 import com.seat.rescuesim.client.sandbox.ACSOS;
-import com.seat.rescuesim.client.util.ArgsParser;
 import com.seat.rescuesim.common.SnapStatus;
 import com.seat.rescuesim.common.Snapshot;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
 import com.seat.rescuesim.common.json.JSONBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.remote.RemoteController;
+import com.seat.rescuesim.common.util.ArgsParser;
+import com.seat.rescuesim.common.util.CoreException;
 import com.seat.rescuesim.common.util.Debugger;
 
 public class App {
@@ -29,37 +29,39 @@ public class App {
     private static final String PORT_ARG = "-p";
 
     private static Application getApplication(ArgsParser parser, String[] args) throws CoreException {
-        if (!parser.hasParam(ID_ARG)) {
+        System.out.println(parser.getParams().toString());
+        if (!parser.hasParam(App.ID_ARG)) {
             throw new CoreException("No application ID has been specified");
         }
-        if (parser.getString(ID_ARG).equals("ACSOS")) {
+        if (parser.getString(App.ID_ARG).equals("ACSOS")) {
             return new ACSOS(args);
         } else {
             throw new CoreException("Unrecognized application ID");
         }
     }
 
-    private static Socket getClientSocket(ArgsParser args) throws IOException {
-        int port = DEFAULT_PORT;
-        if (args.hasParam(PORT_ARG)) {
-            port = args.getInt(PORT_ARG);
+    private static Socket getClientSocket(ArgsParser parser) throws IOException {
+        int port = App.DEFAULT_PORT;
+        if (parser.hasParam(App.PORT_ARG)) {
+            port = parser.getInt(App.PORT_ARG);
         }
-        if (args.hasParam(HOST_ARG)) {
-            String host = args.getString(HOST_ARG);
+        if (parser.hasParam(App.HOST_ARG)) {
+            String host = parser.getString(App.HOST_ARG);
             Debugger.logger.info(String.format("Connecting to host=%s on port=%d ...", host, port));
             Socket client = new Socket(host, port);
             Debugger.logger.state(String.format("Connected to host=%s on port=%d", host, port));
             return client;
         }
-        Debugger.logger.info(String.format("Connecting to host=%s on port=%d ...", DEFAULT_ADDRESS.toString(), port));
-        Socket client = new Socket(DEFAULT_ADDRESS, port);
-        Debugger.logger.state(String.format("Connected to host=%s on port=%d", DEFAULT_ADDRESS.toString(), port));
+        Debugger.logger.info(String.format("Connecting to host=%s on port=%d ...", App.DEFAULT_ADDRESS.toString(),
+            port));
+        Socket client = new Socket(App.DEFAULT_ADDRESS, port);
+        Debugger.logger.state(String.format("Connected to host=%s on port=%d", App.DEFAULT_ADDRESS.toString(), port));
         return client;
     }
 
     private static void runApplicationSync(Application app, BufferedReader in,
             PrintWriter out) throws CoreException, IOException {
-        GUIFrame frame = new GUIFrame(app.getScenarioID());
+        //GUIFrame frame = new GUIFrame(app.getScenarioID());
         Debugger.logger.info(String.format("Sending scenario <%s> ...", app.getScenarioID()));
         out.println(app.getScenarioConfig().encode());
         boolean done = false;
@@ -70,7 +72,8 @@ public class App {
                     throw new CoreException(snapEncoding);
                 }
                 Snapshot snap = new Snapshot(snapEncoding);
-                Debugger.logger.state(String.format("Received snap <%s> for time=%.2f", snap.getHash(), snap.getTime()));
+                Debugger.logger.state(String.format("Received snap <%s> for time=%.2f", snap.getHash(),
+                    snap.getTime()));
                 if (snap.getStatus().equals(SnapStatus.ERROR)) {
                     throw new CoreException(snapEncoding);
                 }
@@ -79,7 +82,8 @@ public class App {
                     continue;
                 }
                 Debugger.logger.info("Displaying snap ...");
-                frame.displaySnap(snap);
+                //frame.displaySnap(snap);
+                System.out.println(snap);
                 Debugger.logger.info("Getting next action(s) ...");
                 ArrayList<RemoteController> controllers = app.update(snap);
                 JSONArrayBuilder json = JSONBuilder.Array();
@@ -99,19 +103,15 @@ public class App {
         try {
             Debugger.logger.info("Starting client ...");
             ArgsParser parser = new ArgsParser(args);
-            Application app = getApplication(parser, args);
+            Application app = App.getApplication(parser, args);
             Debugger.logger.state(String.format("Loaded application <%s>", app.getScenarioID()));
-            socket = getClientSocket(parser);
+            socket = App.getClientSocket(parser);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
-            runApplicationSync(app, in, out);
+            App.runApplicationSync(app, in, out);
+            Debugger.logger.state(String.format("Scenario <%s> is done", app.getScenarioID()));
             socket.close();
-        } catch (IOException e) {
-            if (out != null) {
-                out.println(e.toString());
-            }
-            e.printStackTrace();
-        } catch (CoreException e) {
+        } catch (Exception e) {
             if (out != null) {
                 out.println(e.toString());
             }
