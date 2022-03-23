@@ -2,6 +2,7 @@ package com.seat.rescuesim.common.map;
 
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.math.*;
+import com.seat.rescuesim.common.util.CoreException;
 
 /** Represents the map grid. */
 public class Map extends JSONAble {
@@ -46,7 +47,7 @@ public class Map extends JSONAble {
     }
 
     public Map(Zone[][] grid, int zoneSize, int mapSize) {
-       this(MapType.DEFAULT, grid, zoneSize, mapSize, mapSize);
+       this(MapType.CUSTOM, grid, zoneSize, mapSize, mapSize);
     }
 
     public Map(MapType type, Zone[][] grid, int zoneSize, int mapSize) {
@@ -54,7 +55,7 @@ public class Map extends JSONAble {
     }
 
     public Map(Zone[][] grid, int zoneSize, int width, int height) {
-        this(MapType.DEFAULT, grid, zoneSize, width, height);
+        this(MapType.CUSTOM, grid, zoneSize, width, height);
     }
 
     public Map(MapType type, Zone[][] grid, int zoneSize, int width, int height) {
@@ -84,10 +85,10 @@ public class Map extends JSONAble {
     }
 
     public Vector bounceLocation(Vector location, Vector nextLocation) {
-        if (this.isInbounds(nextLocation)) {
+        Vector edgePoint = this.edgePointBetween(location, nextLocation);
+        if (edgePoint == null) {
             return null;
         }
-        Vector edgePoint = this.edgePointBetween(location, nextLocation);
         double deltaX = nextLocation.getX() - edgePoint.getX();
         double deltaY = nextLocation.getY() - edgePoint.getY();
         if ((edgePoint.getX() == 0 || edgePoint.getX() == this.getWidth()) &&
@@ -157,29 +158,29 @@ public class Map extends JSONAble {
     }
 
     /** Returns the Zone located at row y, column x.
-     * @throws IndexOutOfBoundsException if the either y or x are out of bounds
+     * @throws CoreException if the either y or x are out of bounds
      */
-    public Zone getZone(int y, int x) throws IndexOutOfBoundsException {
+    public Zone getZone(int y, int x) throws CoreException {
         if (y < 0 || this.height <= y) {
-            throw new IndexOutOfBoundsException(y);
+            throw new CoreException(new IndexOutOfBoundsException(y).toString());
         }
         if (x < 0 || this.width <= x) {
-            throw new IndexOutOfBoundsException(x);
+            throw new CoreException(new IndexOutOfBoundsException(x).toString());
         }
         return this.grid[y][x];
     }
 
     /** Returns the Zone that contains the location with the specified x and y coordinates.
-     * @throws IndexOutOfBoundsException if the either y or x are out of bounds
+     * @throws CoreException if the either y or x are out of bounds
      */
-    public Zone getZoneAtLocation(double x, double y) {
+    public Zone getZoneAtLocation(double x, double y) throws CoreException {
         return this.getZone((int) (y / this.zoneSize), (int) (x / this.zoneSize));
     }
 
     /** Returns the Zone that contains the location with the specified coordinates.
-     * @throws IndexOutOfBoundsException if the vector is out of bounds
+     * @throws CoreException if the vector is out of bounds
      */
-    public Zone getZoneAtLocation(Vector location) {
+    public Zone getZoneAtLocation(Vector location) throws CoreException {
         return this.getZoneAtLocation(location.getX(), location.getY());
     }
 

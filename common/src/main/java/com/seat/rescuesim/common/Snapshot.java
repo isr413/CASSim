@@ -6,7 +6,7 @@ import java.util.HashSet;
 
 import com.seat.rescuesim.common.json.*;
 import com.seat.rescuesim.common.remote.RemoteState;
-import com.seat.rescuesim.common.util.Debugger;
+import com.seat.rescuesim.common.util.CoreException;
 import com.seat.rescuesim.common.util.RemoteFactory;
 
 /** A serializable class to represent a single snapshot of the current sim state. */
@@ -115,10 +115,9 @@ public class Snapshot extends JSONAble {
         return this.remoteIDs;
     }
 
-    public RemoteState getRemoteState(String remoteID) {
+    public RemoteState getRemoteState(String remoteID) throws CoreException {
         if (!this.hasStateWithID(remoteID)) {
-            Debugger.logger.err(String.format("No state for remote %s", remoteID));
-            return null;
+            throw new CoreException(String.format("No state for remote %s", remoteID));
         }
         return this.state.get(remoteID);
     }
