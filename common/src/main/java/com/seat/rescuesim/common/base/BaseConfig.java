@@ -9,10 +9,6 @@ import com.seat.rescuesim.common.remote.RemoteType;
 /** A serializable configuration of a Base Remote. */
 public class BaseConfig extends RemoteConfig {
 
-    public static BaseConfig None() {
-        return new BaseConfig(BaseSpec.None(), 0, false);
-    }
-
     public BaseConfig(JSONObject json) throws JSONException {
         super(json);
     }

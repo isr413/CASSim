@@ -9,10 +9,6 @@ import com.seat.rescuesim.common.remote.RemoteType;
 /** A serializable configuration of a Victim Remote. */
 public class VictimConfig extends RemoteConfig {
 
-    public static VictimConfig None() {
-        return new VictimConfig(VictimSpec.None(), 0, false);
-    }
-
     public VictimConfig(JSONObject json) throws JSONException {
         super(json);
     }

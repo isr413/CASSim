@@ -9,10 +9,6 @@ import com.seat.rescuesim.common.remote.RemoteType;
 /** A serializable configuration of a Drone Remote. */
 public class DroneConfig extends RemoteConfig {
 
-    public static DroneConfig None() {
-        return new DroneConfig(DroneSpec.None(), 0, false);
-    }
-
     public DroneConfig(JSONObject json) throws JSONException {
         super(json);
     }

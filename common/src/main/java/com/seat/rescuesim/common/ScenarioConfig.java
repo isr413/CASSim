@@ -171,6 +171,14 @@ public class ScenarioConfig extends JSONAble {
         return this.map;
     }
 
+    public int getMapHeight() {
+        return this.map.getHeight();
+    }
+
+    public int getMapWidth() {
+        return this.map.getWidth();
+    }
+
     public int getMissionLength() {
         return this.missionLength;
     }

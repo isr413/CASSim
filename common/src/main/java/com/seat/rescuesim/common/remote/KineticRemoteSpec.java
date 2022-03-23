@@ -26,9 +26,46 @@ public abstract class KineticRemoteSpec extends RemoteSpec {
         super(encoding);
     }
 
-    public KineticRemoteSpec(RemoteType type, Vector location, double maxBatteryPower, double maxVelocity,
-            double maxAcceleration, double maxJerk) {
-        this(type, location, maxBatteryPower, new ArrayList<SensorConfig>(), maxVelocity, maxAcceleration, maxJerk);
+    public KineticRemoteSpec(RemoteType type) {
+        this(type, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+    }
+
+    public KineticRemoteSpec(RemoteType type, double maxVelocity, double maxAcceleration, double maxJerk) {
+        super(type);
+        this.maxVelocity = maxVelocity;
+        this.maxAcceleration = maxAcceleration;
+        this.maxJerk = maxJerk;
+    }
+
+    public KineticRemoteSpec(RemoteType type, Vector location) {
+        this(type, location, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+    }
+
+    public KineticRemoteSpec(RemoteType type, Vector location, double maxVelocity, double maxAcceleration,
+            double maxJerk) {
+        super(type, location);
+        this.maxVelocity = maxVelocity;
+        this.maxAcceleration = maxAcceleration;
+        this.maxJerk = maxJerk;
+    }
+
+    public KineticRemoteSpec(RemoteType type, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+        this(type, maxBatteryPower, sensors, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
+            Double.POSITIVE_INFINITY);
+    }
+
+    public KineticRemoteSpec(RemoteType type, double maxBatteryPower, ArrayList<SensorConfig> sensors,
+            double maxVelocity, double maxAcceleration, double maxJerk) {
+        super(type, maxBatteryPower, sensors);
+        this.maxVelocity = maxVelocity;
+        this.maxAcceleration = maxAcceleration;
+        this.maxJerk = maxJerk;
+    }
+
+    public KineticRemoteSpec(RemoteType type, Vector location, double maxBatteryPower,
+            ArrayList<SensorConfig> sensors) {
+        this(type, location, maxBatteryPower, sensors, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
+            Double.POSITIVE_INFINITY);
     }
 
     public KineticRemoteSpec(RemoteType type, Vector location, double maxBatteryPower,
