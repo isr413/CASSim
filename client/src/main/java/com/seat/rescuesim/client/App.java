@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import com.seat.rescuesim.client.core.Application;
 import com.seat.rescuesim.client.gui.GUIFrame;
 import com.seat.rescuesim.client.sandbox.ACSOS;
+import com.seat.rescuesim.client.util.ClientException;
 import com.seat.rescuesim.common.SnapStatus;
 import com.seat.rescuesim.common.Snapshot;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -17,7 +18,6 @@ import com.seat.rescuesim.common.json.JSONBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.remote.RemoteController;
 import com.seat.rescuesim.common.util.ArgsParser;
-import com.seat.rescuesim.common.util.CoreException;
 import com.seat.rescuesim.common.util.Debugger;
 
 public class App {
@@ -28,15 +28,15 @@ public class App {
     private static final String ID_ARG = "-id";
     private static final String PORT_ARG = "-p";
 
-    private static Application getApplication(ArgsParser parser, String[] args) throws CoreException {
+    private static Application getApplication(ArgsParser parser, String[] args) throws ClientException {
         System.out.println(parser.getParams().toString());
         if (!parser.hasParam(App.ID_ARG)) {
-            throw new CoreException("No application ID has been specified");
+            throw new ClientException("No application ID has been specified");
         }
         if (parser.getString(App.ID_ARG).equals("ACSOS")) {
             return new ACSOS(args);
         } else {
-            throw new CoreException("Unrecognized application ID");
+            throw new ClientException("Unrecognized application ID");
         }
     }
 
@@ -60,8 +60,8 @@ public class App {
     }
 
     private static void runApplicationSync(Application app, BufferedReader in,
-            PrintWriter out) throws CoreException, IOException {
-        //GUIFrame frame = new GUIFrame(app.getScenarioID());
+            PrintWriter out) throws ClientException, IOException {
+        GUIFrame frame = new GUIFrame(app.getScenarioID());
         Debugger.logger.info(String.format("Sending scenario <%s> ...", app.getScenarioID()));
         out.println(app.getScenarioConfig().encode());
         boolean done = false;
@@ -69,20 +69,20 @@ public class App {
             if (in.ready()) {
                 String snapEncoding = in.readLine();
                 if (!JSONOption.isJSON(snapEncoding)) {
-                    throw new CoreException(snapEncoding);
+                    throw new ClientException(snapEncoding);
                 }
                 Snapshot snap = new Snapshot(snapEncoding);
                 Debugger.logger.state(String.format("Received snap <%s> for time=%.2f", snap.getHash(),
                     snap.getTime()));
                 if (snap.getStatus().equals(SnapStatus.ERROR)) {
-                    throw new CoreException(snapEncoding);
+                    throw new ClientException(snapEncoding);
                 }
                 if (snap.getStatus().equals(SnapStatus.DONE)) {
                     done = true;
                     continue;
                 }
                 Debugger.logger.info("Displaying snap ...");
-                //frame.displaySnap(snap);
+                frame.displaySnap(snap);
                 System.out.println(snap);
                 Debugger.logger.info("Getting next action(s) ...");
                 ArrayList<RemoteController> controllers = app.update(snap);
