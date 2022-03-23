@@ -370,14 +370,14 @@ public class SimScenario {
                 if (this.getMap().isInbounds(location)) {
                     if (remote.isActive() && remote.isKinetic()) {
                         // TODO: better random walk
-                        controller.addIntention(
+                        /**controller.addIntention(
                             Intent.Goto(
                                 Vector.scale(
                                     this.rng.getRandomDirection2D(),
                                     ((KineticSimRemote) remote).getVelocity().getMagnitude()
                                 )
                             )
-                        );
+                        );*/
                     }
                     // TODO: add map effects
                     // TODO: sensor properties (accuracy, delay, interference, etc.)
