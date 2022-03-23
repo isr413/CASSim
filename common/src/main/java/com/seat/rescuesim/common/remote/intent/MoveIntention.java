@@ -39,6 +39,11 @@ public class MoveIntention extends Intention {
         return this.jerk;
     }
 
+    @Override
+    public String getLabel() {
+        return "<MOVE>";
+    }
+
     public boolean hasJerk() {
         return this.jerk.getMagnitude() > 0;
     }

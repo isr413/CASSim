@@ -6,4 +6,9 @@ public class StopIntention extends Intention {
         super(IntentionType.STOP);
     }
 
+    @Override
+    public String getLabel() {
+        return "<STOP>";
+    }
+
 }

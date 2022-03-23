@@ -10,6 +10,22 @@ import com.seat.rescuesim.common.util.Debugger;
 
 public class Intent {
 
+    public static IntentionType decodeIntentionType(JSONObject json) {
+        return IntentionType.values()[json.getInt(Intention.INTENTION_TYPE)];
+    }
+
+    public static IntentionType decodeIntentionType(JSONOption option) {
+        if (option.isSomeObject()) {
+            return Intent.decodeIntentionType(option.someObject());
+        }
+        Debugger.logger.err(String.format("Cannot decode intention type of %s", option.toString()));
+        return null;
+    }
+
+    public static IntentionType decodeIntentionType(String encoding) {
+        return Intent.decodeIntentionType(JSONOption.String(encoding));
+    }
+
     public static Intention Activate() {
         return new ActivateIntention();
     }
@@ -67,8 +83,7 @@ public class Intent {
     }
 
     public static Intention Some(JSONObject json) {
-        IntentionType type = Intention.decodeIntentionType(json);
-        switch (type) {
+        switch (Intent.decodeIntentionType(json)) {
             case ACTIVATE:
                 return new ActivateIntention(json);
             case DEACTIVATE:

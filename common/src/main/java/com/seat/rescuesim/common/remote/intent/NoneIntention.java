@@ -6,4 +6,9 @@ public class NoneIntention extends Intention {
         super(IntentionType.NONE);
     }
 
+    @Override
+    public String getLabel() {
+        return "<NONE>";
+    }
+
 }

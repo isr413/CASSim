@@ -6,4 +6,9 @@ public class ShutdownIntention extends Intention {
         super(IntentionType.SHUTDOWN);
     }
 
+    @Override
+    public String getLabel() {
+        return "<SHUTDOWN>";
+    }
+
 }

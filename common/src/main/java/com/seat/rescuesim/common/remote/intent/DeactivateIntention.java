@@ -28,10 +28,7 @@ public class DeactivateIntention extends Intention {
     }
 
     public DeactivateIntention(ArrayList<String> sensors) {
-        this(new HashSet<String>());
-        for (String sensor : sensors) {
-            this.addDeactivation(sensor);
-        }
+        this(new HashSet<String>(sensors));
     }
 
     public DeactivateIntention(HashSet<String> sensors) {
@@ -43,9 +40,11 @@ public class DeactivateIntention extends Intention {
     protected void decode(JSONObject json) {
         super.decode(json);
         this.deactivations = new HashSet<>();
-        JSONArray jsonSensors = json.getJSONArray(DeactivateIntention.DEACTIVATIONS);
-        for (int i = 0; i < jsonSensors.length(); i++) {
-            this.addDeactivation(jsonSensors.getString(i));
+        if (json.hasKey(DeactivateIntention.DEACTIVATIONS)) {
+            JSONArray jsonSensors = json.getJSONArray(DeactivateIntention.DEACTIVATIONS);
+            for (int i = 0; i < jsonSensors.length(); i++) {
+                this.addDeactivation(jsonSensors.getString(i));
+            }
         }
     }
 
@@ -60,6 +59,11 @@ public class DeactivateIntention extends Intention {
 
     public HashSet<String> getDeactivations() {
         return this.deactivations;
+    }
+
+    @Override
+    public String getLabel() {
+        return "<DEACTIVATE>";
     }
 
     public boolean hasDeactivationOfSensor(String sensor) {
@@ -82,11 +86,13 @@ public class DeactivateIntention extends Intention {
     @Override
     public JSONOption toJSON() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        JSONArrayBuilder jsonSensors = JSONBuilder.Array();
-        for (String sensor : this.deactivations) {
-            jsonSensors.put(sensor);
+        if (this.hasDeactivations()) {
+            JSONArrayBuilder jsonSensors = JSONBuilder.Array();
+            for (String sensor : this.deactivations) {
+                jsonSensors.put(sensor);
+            }
+            json.put(DeactivateIntention.DEACTIVATIONS, jsonSensors.toJSON());
         }
-        json.put(DeactivateIntention.DEACTIVATIONS, jsonSensors.toJSON());
         return json.toJSON();
     }
 

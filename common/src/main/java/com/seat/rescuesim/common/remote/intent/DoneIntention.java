@@ -6,4 +6,9 @@ public class DoneIntention extends Intention {
         super(IntentionType.DONE);
     }
 
+    @Override
+    public String getLabel() {
+        return "<DONE>";
+    }
+
 }

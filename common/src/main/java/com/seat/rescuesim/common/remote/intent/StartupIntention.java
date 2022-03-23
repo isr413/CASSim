@@ -6,4 +6,9 @@ public class StartupIntention extends Intention {
         super(IntentionType.STARTUP);
     }
 
+    @Override
+    public String getLabel() {
+        return "<STARTUP>";
+    }
+
 }

@@ -40,9 +40,11 @@ public class ActivateIntention extends Intention {
     protected void decode(JSONObject json) {
         super.decode(json);
         this.activations = new HashSet<>();
-        JSONArray jsonSensors = json.getJSONArray(ActivateIntention.ACTIVATIONS);
-        for (int i = 0; i < jsonSensors.length(); i++) {
-            this.addActivation(jsonSensors.getString(i));
+        if (json.hasKey(ActivateIntention.ACTIVATIONS)) {
+            JSONArray jsonSensors = json.getJSONArray(ActivateIntention.ACTIVATIONS);
+            for (int i = 0; i < jsonSensors.length(); i++) {
+                this.addActivation(jsonSensors.getString(i));
+            }
         }
     }
 
@@ -57,6 +59,11 @@ public class ActivateIntention extends Intention {
 
     public HashSet<String> getActivations() {
         return this.activations;
+    }
+
+    @Override
+    public String getLabel() {
+        return "<ACTIVATE>";
     }
 
     public boolean hasActivationOfSensor(String sensor) {
@@ -79,11 +86,13 @@ public class ActivateIntention extends Intention {
     @Override
     public JSONOption toJSON() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        JSONArrayBuilder jsonSensors = JSONBuilder.Array();
-        for (String sensor : this.activations) {
-            jsonSensors.put(sensor);
+        if (this.hasActivations()) {
+            JSONArrayBuilder jsonSensors = JSONBuilder.Array();
+            for (String sensor : this.activations) {
+                jsonSensors.put(sensor);
+            }
+            json.put(ActivateIntention.ACTIVATIONS, jsonSensors.toJSON());
         }
-        json.put(ActivateIntention.ACTIVATIONS, jsonSensors.toJSON());
         return json.toJSON();
     }
 

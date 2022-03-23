@@ -67,6 +67,11 @@ public class GotoIntention extends Intention {
         }
     }
 
+    @Override
+    public String getLabel() {
+        return "<GOTO>";
+    }
+
     public Vector getLocation() {
         return this.location;
     }
