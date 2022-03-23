@@ -4,6 +4,8 @@ import com.seat.rescuesim.common.json.*;
 
 /** A vector triple of doubles for representing points and forces in 2D and 3D space. */
 public class Vector extends JSONAble {
+    private static final double PRECISION = 1_000_000.0;
+
     /** A basis vectors for vectors in 3D space. */
     public static final Vector BASIS_VECTOR = new Vector(1, 1, 1);
     public static final Vector X_BASIS = new Vector(1, 0, 0);
@@ -177,9 +179,9 @@ public class Vector extends JSONAble {
 
     /** Constructs a 3D vector with the provided components. */
     public Vector(double x, double y, double z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.x = (Double.isFinite(x)) ? Math.round(x * Vector.PRECISION) / Vector.PRECISION : x;
+        this.y = (Double.isFinite(y)) ? Math.round(y * Vector.PRECISION) / Vector.PRECISION : y;
+        this.z = (Double.isFinite(z)) ? Math.round(z * Vector.PRECISION) / Vector.PRECISION : z;
     }
 
     /** Decodes the JSONArray. */
