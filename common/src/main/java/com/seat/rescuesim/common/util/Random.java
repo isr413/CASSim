@@ -36,16 +36,26 @@ public class Random {
         return this.rng.nextDouble() * x;
     }
 
-    public Vector getRandomSpeed2D(double speed) {
-        return Vector.scale(this.getRandomDirection2D(), speed);
+    public double getRandomPoint(double x) {
+        return this.rng.nextDouble() * x;
+    }
+
+    public Vector getRandomSpeed2D(double maxSpeed) {
+        if (!Double.isFinite(maxSpeed)) {
+            return this.getRandomDirection2D();
+        }
+        return Vector.scale(this.getRandomDirection2D(), this.getRandomPoint(maxSpeed));
     }
 
     public Vector getRandomSpeed2D(double mean, double stddev) {
         return this.getRandomSpeed2D(this.rng.nextGaussian() * stddev + mean);
     }
 
-    public Vector getRandomSpeed3D(double speed) {
-        return Vector.scale(this.getRandomDirection3D(), speed);
+    public Vector getRandomSpeed3D(double maxSpeed) {
+        if (!Double.isFinite(maxSpeed)) {
+            return this.getRandomDirection2D();
+        }
+        return Vector.scale(this.getRandomDirection3D(), this.getRandomPoint(maxSpeed));
     }
 
     public Vector getRandomSpeed3D(double mean, double stddev) {
