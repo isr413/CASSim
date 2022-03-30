@@ -1,26 +1,22 @@
 package com.seat.rescuesim.common.remote.intent;
 
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONAble;
+import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 
 public abstract class Intention extends JSONAble {
     static final String INTENTION_TYPE = "intention_type";
 
     protected IntentionType type;
 
-    public Intention(JSONObject json) {
-        super(json);
+    public Intention(IntentionType type) {
+        this.type = type;
     }
 
     public Intention(JSONOption option) {
         super(option);
-    }
-
-    public Intention(String encoding) {
-        super(encoding);
-    }
-
-    public Intention(IntentionType type) {
-        this.type = type;
     }
 
     @Override

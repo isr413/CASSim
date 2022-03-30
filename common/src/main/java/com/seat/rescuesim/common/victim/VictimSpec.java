@@ -1,8 +1,10 @@
 package com.seat.rescuesim.common.victim;
 
 import java.util.ArrayList;
-
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.KineticRemoteSpec;
 import com.seat.rescuesim.common.remote.RemoteType;
@@ -12,18 +14,6 @@ import com.seat.rescuesim.common.sensor.SensorConfig;
 public class VictimSpec extends KineticRemoteSpec {
 
     private VictimType type;
-
-    public VictimSpec(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public VictimSpec(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public VictimSpec(String encoding) throws JSONException {
-        super(encoding);
-    }
 
     public VictimSpec(VictimType type) {
         super(RemoteType.VICTIM);
@@ -67,6 +57,10 @@ public class VictimSpec extends KineticRemoteSpec {
             ArrayList<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
         super(RemoteType.VICTIM, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
         this.type = type;
+    }
+
+    public VictimSpec(JSONOption option) throws JSONException {
+        super(option);
     }
 
     @Override

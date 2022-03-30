@@ -2,7 +2,10 @@ package com.seat.rescuesim.common.base;
 
 import java.util.ArrayList;
 
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteState;
 import com.seat.rescuesim.common.remote.RemoteType;
@@ -13,18 +16,6 @@ public class BaseState extends RemoteState {
 
     private BaseType type;
 
-    public BaseState(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public BaseState(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public BaseState(String encoding) throws JSONException {
-        super(encoding);
-    }
-
     public BaseState(BaseType type, String remoteID, Vector location, double battery) {
         this(type, remoteID, location, battery, new ArrayList<SensorState>());
     }
@@ -32,6 +23,10 @@ public class BaseState extends RemoteState {
     public BaseState(BaseType type, String remoteID, Vector location, double battery, ArrayList<SensorState> sensors) {
         super(RemoteType.BASE, remoteID, location, battery, sensors);
         this.type = type;
+    }
+
+    public BaseState(JSONOption option) throws JSONException {
+        super(option);
     }
 
     @Override

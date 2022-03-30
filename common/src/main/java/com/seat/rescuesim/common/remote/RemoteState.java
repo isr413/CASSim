@@ -2,8 +2,14 @@ package com.seat.rescuesim.common.remote;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONAble;
+import com.seat.rescuesim.common.json.JSONArray;
+import com.seat.rescuesim.common.json.JSONArrayBuilder;
+import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.util.CoreException;
@@ -18,18 +24,6 @@ public abstract class RemoteState extends JSONAble {
     protected String remoteID;
     protected HashMap<String, SensorState> sensors;
     protected RemoteType type;
-
-    public RemoteState(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public RemoteState(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public RemoteState(String encoding) throws JSONException {
-        super(encoding);
-    }
 
     public RemoteState(RemoteType type, String remoteID, Vector location, double battery) {
         this(type, remoteID, location, battery, new ArrayList<SensorState>());
@@ -47,17 +41,21 @@ public abstract class RemoteState extends JSONAble {
         }
     }
 
+    public RemoteState(JSONOption option) throws JSONException {
+        super(option);
+    }
+
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.type = RemoteType.values()[json.getInt(RemoteConst.REMOTE_TYPE)];
         this.remoteID = json.getString(RemoteConst.REMOTE_ID);
-        this.location = new Vector(json.getJSONArray(RemoteConst.LOCATION));
+        this.location = new Vector(json.getJSONOption(RemoteConst.LOCATION));
         this.battery = json.getDouble(RemoteConst.BATTERY);
         this.sensors = new HashMap<>();
         if (json.hasKey(RemoteConst.SENSORS)) {
             JSONArray jsonState = json.getJSONArray(RemoteConst.SENSORS);
             for (int i = 0; i < jsonState.length(); i++) {
-                SensorState state = SensorFactory.decodeSensorState(jsonState.getJSONObject(i));
+                SensorState state = SensorFactory.decodeSensorState(jsonState.getJSONOption(i));
                 this.sensors.put(state.getSensorID(), state);
             }
         }

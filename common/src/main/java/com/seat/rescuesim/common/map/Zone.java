@@ -1,7 +1,14 @@
 package com.seat.rescuesim.common.map;
 
-import com.seat.rescuesim.common.json.*;
-import com.seat.rescuesim.common.math.*;
+import com.seat.rescuesim.common.json.JSONAble;
+import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
+import com.seat.rescuesim.common.math.Field;
+import com.seat.rescuesim.common.math.FieldType;
+import com.seat.rescuesim.common.math.Vector;
 
 /** Represents the single cubic zone within the map grid. */
 public class Zone extends JSONAble {
@@ -16,18 +23,6 @@ public class Zone extends JSONAble {
     private Vector location;
     private int size;
     private ZoneType type;
-
-    public Zone(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public Zone(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public Zone(String encoding) throws JSONException {
-        super(encoding);
-    }
 
     public Zone(Vector location, int size) {
         this(ZoneType.OPEN, location, size, new Field(), new Field());
@@ -45,18 +40,22 @@ public class Zone extends JSONAble {
         this.aerial = aerial;
     }
 
+    public Zone(JSONOption option) throws JSONException {
+        super(option);
+    }
+
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.type = ZoneType.values()[json.getInt(Zone.ZONE_TYPE)];
-        this.location = new Vector(json.getJSONArray(Zone.ZONE_LOCATION));
+        this.location = new Vector(json.getJSONOption(Zone.ZONE_LOCATION));
         this.size = json.getInt(Zone.ZONE_SIZE);
         if (json.hasKey(Zone.ZONE_AERIAL)) {
-            this.aerial = new Field(json.getJSONArray(Zone.ZONE_AERIAL));
+            this.aerial = new Field(json.getJSONOption(Zone.ZONE_AERIAL));
         } else {
             this.aerial = new Field();
         }
         if (json.hasKey(Zone.ZONE_GROUND)) {
-            this.ground = new Field(json.getJSONArray(Zone.ZONE_GROUND));
+            this.ground = new Field(json.getJSONOption(Zone.ZONE_GROUND));
         } else {
             this.ground = new Field();
         }

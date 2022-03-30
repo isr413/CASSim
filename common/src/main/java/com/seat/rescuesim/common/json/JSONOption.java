@@ -5,29 +5,43 @@ public class JSONOption {
 
     /** Returns true if the input string is a JSON encoding. */
     public static boolean isJSON(String encoding) {
-        if (encoding.isEmpty() || encoding.isBlank()) {
-            return false;
-        }
-        int i = 0; int j = encoding.length()-1;
-        while (JSONOption.isQuoted(encoding, i, j)) {
-            i++;
-            j--;
-        }
-        if (j <= i) {
-            return false;
-        }
-        return (encoding.charAt(i) == '[' && encoding.charAt(j) == ']') ||
-            (encoding.charAt(i) == '{' && encoding.charAt(j) == '}');
+        return JSONOption.isJSON(encoding, 0, encoding.length()-1);
     }
 
-    private static boolean isQuoted(String encoding, int i, int j) {
-        if (encoding.isEmpty() || encoding.isBlank()) {
-            return false;
-        }
-        if (i < 0 || encoding.length() <= i || j < 0 || encoding.length() <= j || j <= i) {
-            return false;
-        }
-        return (encoding.charAt(i) == '\'' || encoding.charAt(i) == '"') && encoding.charAt(i) == encoding.charAt(j);
+    private static boolean isJSON(String encoding, int i, int j) {
+        return JSONOption.isJSONArray(encoding, i, j) || JSONOption.isJSONObject(encoding, i, j);
+    }
+
+    /** Returns true if the input string is a JSON Array encoding. */
+    public static boolean isJSONArray(String encoding) {
+        return JSONOption.isJSONArray(encoding, 0, encoding.length()-1);
+    }
+
+    private static boolean isJSONArray(String encoding, int i, int j) {
+        return 0 <= i && i < encoding.length() && 0 <= j && j < encoding.length() && i < j &&
+            encoding.charAt(i) == '[' && encoding.charAt(j) == ']';
+    }
+
+    /** Returns true if the input string is a JSON Object encoding. */
+    public static boolean isJSONObject(String encoding) {
+        return JSONOption.isJSONObject(encoding, 0, encoding.length()-1);
+    }
+
+    private static boolean isJSONObject(String encoding, int i, int j) {
+        return 0 <= i && i < encoding.length() && 0 <= j && j < encoding.length() && i < j &&
+            encoding.charAt(i) == '{' && encoding.charAt(j) == '}';
+    }
+
+    /** Returns true if the input string is a quoted String of a JSON encoding. */
+    public static boolean isQuotedJSON(String encoding) {
+        return JSONOption.isQuotedJSON(encoding, 0, encoding.length()-1);
+    }
+
+    private static boolean isQuotedJSON(String encoding, int i, int j) {
+        return 0 <= i && i < encoding.length() && 0 <= j && j < encoding.length() && i < j &&
+            ((encoding.charAt(i) == '"' && encoding.charAt(j) == '"') ||
+                (encoding.charAt(i) == '\'' && encoding.charAt(j) == '\'')) &&
+            JSONOption.isJSON(encoding, i+1, j-1);
     }
 
     /** Returns an option wrapper for the JSONArray interface type. */
@@ -46,23 +60,20 @@ public class JSONOption {
     }
 
     /** Returns an option wrapper for the JSONArray or JSONObject interace types based on the encoding. */
+    public static JSONOption QuotedString(String encoding) {
+        if (!JSONOption.isQuotedJSON(encoding)) {
+            return JSONOption.None();
+        }
+        return JSONOption.String(encoding.substring(0, encoding.length()-1));
+    }
+
+    /** Returns an option wrapper for the JSONArray or JSONObject interace types based on the encoding. */
     public static JSONOption String(String encoding) {
-        if (encoding.isEmpty() || encoding.isBlank()) {
-            return JSONOption.None();
+        if (JSONOption.isJSONArray(encoding)) {
+            return new JSONOption(new JSONArrayOption(encoding));
         }
-        int i = 0; int j = encoding.length()-1;
-        while (JSONOption.isQuoted(encoding, i, j)) {
-            i++;
-            j--;
-        }
-        if (j <= i) {
-            return JSONOption.None();
-        }
-        if (encoding.charAt(i) == '[' && encoding.charAt(j) == ']') {
-            return new JSONOption(new JSONArrayOption(encoding.substring(i, j+1)));
-        }
-        if (encoding.charAt(i) == '{' && encoding.charAt(j) == '}') {
-            return new JSONOption(new JSONObjectOption(encoding.substring(i, j+1)));
+        if (JSONOption.isJSONObject(encoding)) {
+            return new JSONOption(new JSONObjectOption(encoding));
         }
         return JSONOption.None();
     }

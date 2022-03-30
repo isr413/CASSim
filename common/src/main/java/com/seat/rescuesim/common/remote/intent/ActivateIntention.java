@@ -2,26 +2,18 @@ package com.seat.rescuesim.common.remote.intent;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONArray;
+import com.seat.rescuesim.common.json.JSONArrayBuilder;
+import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.util.Debugger;
 
 public class ActivateIntention extends Intention {
     private static final String ACTIVATIONS = "activations";
 
     private HashSet<String> activations;
-
-    public ActivateIntention(JSONObject json) {
-        super(json);
-    }
-
-    public ActivateIntention(JSONOption option) {
-        super(option);
-    }
-
-    public ActivateIntention(String encoding) {
-        super(encoding);
-    }
 
     public ActivateIntention() {
         this(new HashSet<String>());
@@ -34,6 +26,10 @@ public class ActivateIntention extends Intention {
     public ActivateIntention(HashSet<String> sensors) {
         super(IntentionType.ACTIVATE);
         this.activations = sensors;
+    }
+
+    public ActivateIntention(JSONOption option) {
+        super(option);
     }
 
     @Override

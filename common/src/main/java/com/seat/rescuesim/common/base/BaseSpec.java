@@ -2,7 +2,10 @@ package com.seat.rescuesim.common.base;
 
 import java.util.ArrayList;
 
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteSpec;
 import com.seat.rescuesim.common.remote.RemoteType;
@@ -12,18 +15,6 @@ import com.seat.rescuesim.common.sensor.SensorConfig;
 public class BaseSpec extends RemoteSpec {
 
     private BaseType type;
-
-    public BaseSpec(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public BaseSpec(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public BaseSpec(String encoding) throws JSONException {
-        super(encoding);
-    }
 
     public BaseSpec(BaseType type) {
         super(RemoteType.BASE);
@@ -43,6 +34,10 @@ public class BaseSpec extends RemoteSpec {
     public BaseSpec(BaseType type, Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
         super(RemoteType.BASE, location, maxBatteryPower, sensors);
         this.type = type;
+    }
+
+    public BaseSpec(JSONOption option) throws JSONException {
+        super(option);
     }
 
     @Override

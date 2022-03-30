@@ -2,7 +2,14 @@ package com.seat.rescuesim.common.sensor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONAble;
+import com.seat.rescuesim.common.json.JSONArray;
+import com.seat.rescuesim.common.json.JSONArrayBuilder;
+import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 
 /** A serializable configuration of a Sensor.  */
 public class SensorConfig extends JSONAble {
@@ -10,18 +17,6 @@ public class SensorConfig extends JSONAble {
     private int count;
     private HashSet<String> sensorIDs;
     private SensorSpec spec;
-
-    public SensorConfig(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public SensorConfig(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public SensorConfig(String encoding) throws JSONException {
-        super(encoding);
-    }
 
     public SensorConfig(SensorSpec spec, int count) {
         this.spec = spec;
@@ -42,9 +37,13 @@ public class SensorConfig extends JSONAble {
         this.sensorIDs = sensorIDs;
     }
 
+    public SensorConfig(JSONOption option) throws JSONException {
+        super(option);
+    }
+
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.spec = new SensorSpec(json.getJSONObject(SensorConst.SPEC));
+        this.spec = new SensorSpec(json.getJSONOption(SensorConst.SPEC));
         this.count = json.getInt(SensorConst.COUNT);
         this.sensorIDs = new HashSet<>();
         JSONArray jsonSensors = json.getJSONArray(SensorConst.SENSOR_IDS);

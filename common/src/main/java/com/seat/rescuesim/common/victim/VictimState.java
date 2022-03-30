@@ -1,8 +1,10 @@
 package com.seat.rescuesim.common.victim;
 
 import java.util.ArrayList;
-
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.KineticRemoteState;
 import com.seat.rescuesim.common.remote.RemoteType;
@@ -13,18 +15,6 @@ public class VictimState extends KineticRemoteState {
 
     private VictimType type;
 
-    public VictimState(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public VictimState(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public VictimState(String encoding) throws JSONException {
-        super(encoding);
-    }
-
     public VictimState(VictimType type, String remoteID, Vector location, double battery, Vector velocity,
             Vector acceleration) {
         this(type, remoteID, location, battery, new ArrayList<SensorState>(), velocity, acceleration);
@@ -34,6 +24,10 @@ public class VictimState extends KineticRemoteState {
             ArrayList<SensorState> sensors, Vector velocity, Vector acceleration) {
         super(RemoteType.VICTIM, remoteID, location, battery, sensors, velocity, acceleration);
         this.type = type;
+    }
+
+    public VictimState(JSONOption option) throws JSONException {
+        super(option);
     }
 
     @Override

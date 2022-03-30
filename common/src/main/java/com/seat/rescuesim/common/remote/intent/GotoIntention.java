@@ -1,6 +1,8 @@
 package com.seat.rescuesim.common.remote.intent;
 
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 
 public class GotoIntention extends Intention {
@@ -13,18 +15,6 @@ public class GotoIntention extends Intention {
     private double maxAcceleration;
     private double maxJerk;
     private double maxVelocity;
-
-    public GotoIntention(JSONObject json) {
-        super(json);
-    }
-
-    public GotoIntention(JSONOption option) {
-        super(option);
-    }
-
-    public GotoIntention(String encoding) {
-        super(encoding);
-    }
 
     public GotoIntention(Vector location) {
         this(location, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
@@ -46,10 +36,14 @@ public class GotoIntention extends Intention {
         this.maxJerk = maxJerk;
     }
 
+    public GotoIntention(JSONOption option) {
+        super(option);
+    }
+
     @Override
     protected void decode(JSONObject json) {
         super.decode(json);
-        this.location = new Vector(json.getJSONArray(GotoIntention.LOCATION));
+        this.location = new Vector(json.getJSONOption(GotoIntention.LOCATION));
         if (json.hasKey(GotoIntention.MAX_VELOCITY)) {
             this.maxVelocity = json.getDouble(GotoIntention.MAX_VELOCITY);
         } else {

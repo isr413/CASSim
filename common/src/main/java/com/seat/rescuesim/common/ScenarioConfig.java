@@ -5,7 +5,14 @@ import java.util.Random;
 
 import com.seat.rescuesim.common.base.BaseConfig;
 import com.seat.rescuesim.common.drone.DroneConfig;
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONAble;
+import com.seat.rescuesim.common.json.JSONArray;
+import com.seat.rescuesim.common.json.JSONArrayBuilder;
+import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.remote.RemoteConfig;
 import com.seat.rescuesim.common.remote.RemoteType;
@@ -36,18 +43,6 @@ public class ScenarioConfig extends JSONAble {
     private String scenarioID;
     private long seed;
     private double stepSize;
-
-    public ScenarioConfig(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public ScenarioConfig(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public ScenarioConfig(String encoding) throws JSONException {
-        super(encoding);
-    }
 
     //-- Constructors for scenarios with no victims and no drones --//
     public ScenarioConfig(Map map, int missionLength, double stepSize) {
@@ -123,11 +118,15 @@ public class ScenarioConfig extends JSONAble {
         }
     }
 
+    public ScenarioConfig(JSONOption option) throws JSONException {
+        super(option);
+    }
+
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.scenarioID = json.getString(ScenarioConfig.SCENARIO_ID);
         this.seed = json.getLong(ScenarioConfig.SEED);
-        this.map = new Map(json.getJSONObject(ScenarioConfig.MAP));
+        this.map = new Map(json.getJSONOption(ScenarioConfig.MAP));
         this.disasterScale = json.getDouble(ScenarioConfig.DISASTER_SCALE);
         this.missionLength = json.getInt(ScenarioConfig.MISSION_LENGTH);
         this.stepSize = json.getDouble(ScenarioConfig.STEP_SIZE);
@@ -135,7 +134,7 @@ public class ScenarioConfig extends JSONAble {
         if (json.hasKey(ScenarioConfig.REMOTE_CONFIG)) {
             JSONArray jsonDrones = json.getJSONArray(ScenarioConfig.REMOTE_CONFIG);
             for (int i = 0; i < jsonDrones.length(); i++) {
-                this.remoteConfig.add(RemoteFactory.decodeRemoteConfig(jsonDrones.getJSONObject(i)));
+                this.remoteConfig.add(RemoteFactory.decodeRemoteConfig(jsonDrones.getJSONOption(i)));
             }
         }
         this.countBases();

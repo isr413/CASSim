@@ -2,8 +2,14 @@ package com.seat.rescuesim.common.remote;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONAble;
+import com.seat.rescuesim.common.json.JSONArray;
+import com.seat.rescuesim.common.json.JSONArrayBuilder;
+import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable Remote configuration. */
@@ -14,18 +20,6 @@ public abstract class RemoteConfig extends JSONAble {
     protected HashSet<String> remoteIDs;
     protected RemoteSpec spec;
     protected RemoteType type;
-
-    public RemoteConfig(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public RemoteConfig(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public RemoteConfig(String encoding) throws JSONException {
-        super(encoding);
-    }
 
     public RemoteConfig(RemoteType type, RemoteSpec spec, int count, boolean dynamic) {
         this(type, spec, new HashSet<String>(), dynamic);
@@ -47,10 +41,14 @@ public abstract class RemoteConfig extends JSONAble {
         this.dynamic = dynamic;
     }
 
+    public RemoteConfig(JSONOption option) throws JSONException {
+        super(option);
+    }
+
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.type = RemoteType.values()[json.getInt(RemoteConst.REMOTE_TYPE)];
-        this.decodeSpec(json.getJSONObject(RemoteConst.SPEC));
+        this.decodeSpec(json.getJSONOption(RemoteConst.SPEC));
         this.count = json.getInt(RemoteConst.COUNT);
         this.remoteIDs = new HashSet<>();
         if (json.hasKey(RemoteConst.REMOTE_IDS)) {
@@ -62,7 +60,7 @@ public abstract class RemoteConfig extends JSONAble {
         this.dynamic = json.getBoolean(RemoteConst.DYNAMIC);
     }
 
-    protected abstract void decodeSpec(JSONObject jsonSpec) throws JSONException;
+    protected abstract void decodeSpec(JSONOption jsonSpec) throws JSONException;
 
     public int getCount() {
         return this.count;

@@ -1,26 +1,16 @@
 package com.seat.rescuesim.common.remote;
 
 import java.util.ArrayList;
-
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable state of a kinetic Remote. */
 public abstract class KineticRemoteState extends RemoteState {
-
-    public KineticRemoteState(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public KineticRemoteState(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public KineticRemoteState(String encoding) throws JSONException {
-        super(encoding);
-    }
 
     protected Vector acceleration;
     protected Vector velocity;
@@ -37,11 +27,15 @@ public abstract class KineticRemoteState extends RemoteState {
         this.acceleration = acceleration;
     }
 
+    public KineticRemoteState(JSONOption option) throws JSONException {
+        super(option);
+    }
+
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.velocity = new Vector(json.getJSONArray(RemoteConst.VELOCITY));
-        this.acceleration = new Vector(json.getJSONArray(RemoteConst.ACCELERATION));
+        this.velocity = new Vector(json.getJSONOption(RemoteConst.VELOCITY));
+        this.acceleration = new Vector(json.getJSONOption(RemoteConst.ACCELERATION));
     }
 
     public Vector getAcceleration() {

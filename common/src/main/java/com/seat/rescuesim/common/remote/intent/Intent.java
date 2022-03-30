@@ -4,25 +4,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.seat.rescuesim.common.json.JSONException;
-import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 
 public class Intent {
 
-    public static IntentionType decodeIntentionType(JSONObject json) {
-        return IntentionType.values()[json.getInt(Intention.INTENTION_TYPE)];
-    }
-
     public static IntentionType decodeIntentionType(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
-            return Intent.decodeIntentionType(option.someObject());
+            return IntentionType.values()[option.someObject().getInt(Intention.INTENTION_TYPE)];
         }
         throw new JSONException(String.format("Cannot decode intention type of %s", option.toString()));
-    }
-
-    public static IntentionType decodeIntentionType(String encoding) {
-        return Intent.decodeIntentionType(JSONOption.String(encoding));
     }
 
     public static Intention Activate() {
@@ -81,18 +72,18 @@ public class Intent {
         return new DoneIntention();
     }
 
-    public static Intention Some(JSONObject json) {
-        switch (Intent.decodeIntentionType(json)) {
+    public static Intention Some(JSONOption option) throws JSONException {
+        switch (Intent.decodeIntentionType(option)) {
             case ACTIVATE:
-                return new ActivateIntention(json);
+                return new ActivateIntention(option);
             case DEACTIVATE:
-                return new DeactivateIntention(json);
+                return new DeactivateIntention(option);
             case DONE:
                 return new DoneIntention();
             case GOTO:
-                return new GotoIntention(json);
+                return new GotoIntention(option);
             case MOVE:
-                return new MoveIntention(json);
+                return new MoveIntention(option);
             case SHUTDOWN:
                 return new ShutdownIntention();
             case STARTUP:
@@ -102,17 +93,6 @@ public class Intent {
             default:
                 return new NoneIntention();
         }
-    }
-
-    public static Intention Some(JSONOption option) throws JSONException {
-        if (option.isSomeObject()) {
-            return Intent.Some(option.someObject());
-        }
-        throw new JSONException(String.format("Cannot decode intent from %s", option.toString()));
-    }
-
-    public static Intention Some(String encoding) {
-        return Intent.Some(JSONOption.String(encoding));
     }
 
     public static Intention Startup() {

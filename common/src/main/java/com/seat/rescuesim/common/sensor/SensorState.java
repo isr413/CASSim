@@ -1,6 +1,11 @@
 package com.seat.rescuesim.common.sensor;
 
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONAble;
+import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 
 public abstract class SensorState extends JSONAble {
 
@@ -8,22 +13,14 @@ public abstract class SensorState extends JSONAble {
     protected String sensorID;
     protected SensorType type;
 
-    public SensorState(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public SensorState(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public SensorState(String encoding) throws JSONException {
-        super(encoding);
-    }
-
     public SensorState(SensorType type, String sensorID, boolean active) {
         this.type = type;
         this.sensorID = sensorID;
         this.active = active;
+    }
+
+    public SensorState(JSONOption option) throws JSONException {
+        super(option);
     }
 
     @Override

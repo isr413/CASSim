@@ -1,6 +1,11 @@
 package com.seat.rescuesim.common.sensor;
 
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONAble;
+import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 
 /** A serializable Sensor Prototype. */
 public class SensorSpec extends JSONAble {
@@ -10,18 +15,6 @@ public class SensorSpec extends JSONAble {
     private double delay;
     private double range;
     private SensorType type;
-
-    public SensorSpec(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public SensorSpec(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public SensorSpec(String encoding) throws JSONException {
-        super(encoding);
-    }
 
     public SensorSpec() {
         this(SensorType.None, 0, 0, 0, 0);
@@ -49,6 +42,10 @@ public class SensorSpec extends JSONAble {
         this.accuracy = accuracy;
         this.batteryUsage = batteryUsage;
         this.delay = delay;
+    }
+
+    public SensorSpec(JSONOption option) throws JSONException {
+        super(option);
     }
 
     @Override

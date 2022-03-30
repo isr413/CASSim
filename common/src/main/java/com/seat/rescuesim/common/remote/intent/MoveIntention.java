@@ -1,24 +1,14 @@
 package com.seat.rescuesim.common.remote.intent;
 
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 
 public class MoveIntention extends Intention {
     private static final String JERK = "jerk";
 
     private Vector jerk;
-
-    public MoveIntention(JSONObject json) {
-        super(json);
-    }
-
-    public MoveIntention(JSONOption option) {
-        super(option);
-    }
-
-    public MoveIntention(String encoding) {
-        super(encoding);
-    }
 
     public MoveIntention() {
         this(new Vector());
@@ -29,10 +19,14 @@ public class MoveIntention extends Intention {
         this.jerk = jerk;
     }
 
+    public MoveIntention(JSONOption option) {
+        super(option);
+    }
+
     @Override
     protected void decode(JSONObject json) {
         super.decode(json);
-        this.jerk = new Vector(json.getJSONArray(MoveIntention.JERK));
+        this.jerk = new Vector(json.getJSONOption(MoveIntention.JERK));
     }
 
     public Vector getJerk() {

@@ -1,8 +1,10 @@
 package com.seat.rescuesim.common.drone;
 
 import java.util.ArrayList;
-
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.KineticRemoteSpec;
 import com.seat.rescuesim.common.remote.RemoteType;
@@ -13,18 +15,6 @@ public class DroneSpec extends KineticRemoteSpec {
 
     private Vector batteryUsage; // [static (hovering), horizontal movement, vertical movement]
     private DroneType type;
-
-    public DroneSpec(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public DroneSpec(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public DroneSpec(String encoding) throws JSONException {
-        super(encoding);
-    }
 
     public DroneSpec(DroneType type, double maxBatteryPower, Vector batteryUsage, double maxVelocity,
             double maxAcceleration, double maxJerk) {
@@ -52,11 +42,15 @@ public class DroneSpec extends KineticRemoteSpec {
         this.batteryUsage = batteryUsage;
     }
 
+    public DroneSpec(JSONOption option) throws JSONException {
+        super(option);
+    }
+
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.type = DroneType.values()[json.getInt(DroneConst.DRONE_TYPE)];
-        this.batteryUsage = new Vector(json.getJSONArray(DroneConst.BATTERY_USAGE));
+        this.batteryUsage = new Vector(json.getJSONOption(DroneConst.BATTERY_USAGE));
     }
 
     public Vector getBatteryUsage() {

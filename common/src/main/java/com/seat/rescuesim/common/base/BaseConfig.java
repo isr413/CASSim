@@ -2,24 +2,13 @@ package com.seat.rescuesim.common.base;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.remote.RemoteConfig;
 import com.seat.rescuesim.common.remote.RemoteType;
 
 /** A serializable configuration of a Base Remote. */
 public class BaseConfig extends RemoteConfig {
-
-    public BaseConfig(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public BaseConfig(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public BaseConfig(String encoding) throws JSONException {
-        super(encoding);
-    }
 
     public BaseConfig(BaseSpec spec, int count, boolean dynamic) {
         super(RemoteType.BASE, spec, count, dynamic);
@@ -33,8 +22,12 @@ public class BaseConfig extends RemoteConfig {
         super(RemoteType.BASE, spec, remoteIDs, dynamic);
     }
 
+    public BaseConfig(JSONOption option) throws JSONException {
+        super(option);
+    }
+
     @Override
-    protected void decodeSpec(JSONObject jsonSpec) throws JSONException {
+    protected void decodeSpec(JSONOption jsonSpec) throws JSONException {
         this.spec = new BaseSpec(jsonSpec);
     }
 

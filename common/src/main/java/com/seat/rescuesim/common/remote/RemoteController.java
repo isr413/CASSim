@@ -3,7 +3,14 @@ package com.seat.rescuesim.common.remote;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONAble;
+import com.seat.rescuesim.common.json.JSONArray;
+import com.seat.rescuesim.common.json.JSONArrayBuilder;
+import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.remote.intent.Intent;
 import com.seat.rescuesim.common.remote.intent.Intention;
 import com.seat.rescuesim.common.remote.intent.IntentionType;
@@ -17,22 +24,14 @@ public class RemoteController extends JSONAble {
     protected String remoteID;
     protected RemoteType type;
 
-    public RemoteController(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public RemoteController(JSONOption option) throws JSONException{
-        super(option);
-    }
-
-    public RemoteController(String encoding) throws JSONException {
-        super(encoding);
-    }
-
     public RemoteController(RemoteType type, String remoteID) {
         this.type = type;
         this.remoteID = remoteID;
         this.intentions = new HashMap<>();
+    }
+
+    public RemoteController(JSONOption option) throws JSONException {
+        super(option);
     }
 
     @Override
@@ -43,7 +42,7 @@ public class RemoteController extends JSONAble {
         if (json.hasKey(RemoteConst.INTENTIONS)) {
             JSONArray jsonIntentions = json.getJSONArray(RemoteConst.INTENTIONS);
             for (int i = 0; i < jsonIntentions.length(); i++) {
-                this.addIntention(Intent.Some(jsonIntentions.getJSONObject(i)));
+                this.addIntention(Intent.Some(jsonIntentions.getJSONOption(i)));
             }
         }
     }

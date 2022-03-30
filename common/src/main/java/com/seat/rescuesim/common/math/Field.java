@@ -1,6 +1,11 @@
 package com.seat.rescuesim.common.math;
 
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONAble;
+import com.seat.rescuesim.common.json.JSONArray;
+import com.seat.rescuesim.common.json.JSONArrayBuilder;
+import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONOption;
 
 /**
  * The Field class represents forces that can act on Victims or Drones. Things to remember:
@@ -25,18 +30,6 @@ public class Field extends JSONAble {
     private Vector point;
     private FieldType type;
 
-    public Field(JSONArray json) throws JSONException {
-        super(json);
-    }
-
-    public Field(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public Field(String encoding) throws JSONException {
-        super(encoding);
-    }
-
     public Field() {
         this(FieldType.NONE, new Vector(), 0, new Vector());
     }
@@ -56,12 +49,16 @@ public class Field extends JSONAble {
         this.jerk = jerk;
     }
 
+    public Field(JSONOption option) throws JSONException {
+        super(option);
+    }
+
     @Override
     protected void decode(JSONArray json) throws JSONException {
         this.type = FieldType.values()[json.getInt(0)];
-        this.point = new Vector(json.getJSONArray(1));
+        this.point = new Vector(json.getJSONOption(1));
         this.magnitude = json.getDouble(2);
-        this.jerk = new Vector(json.getJSONArray(3));
+        this.jerk = new Vector(json.getJSONOption(3));
     }
 
     public FieldType getFieldType() {

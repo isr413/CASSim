@@ -6,32 +6,11 @@ public abstract class JSONAble {
     /** Required default constructor. */
     protected JSONAble() {}
 
-    /** JSONAble constructor for decoding a JSONArray.
-     * @throws JSONException if the JSONArray does not decode to this Object
-    */
-    protected JSONAble(JSONArray json) throws JSONException {
-        this.decode(json);
-    }
-
-    /** JSONAble constructor for decoding a JSONObject.
-     * @throws JSONException if the JSONObject does not decode to this Object
-    */
-    protected JSONAble(JSONObject json) throws JSONException {
-        this.decode(json);
-    }
-
     /** JSONAble constructor for decoding a JSONOption.
      * @throws JSONException if the JSONOption does not decode to this Object
     */
     protected JSONAble(JSONOption option) throws JSONException {
         this.decode(option);
-    }
-
-    /** JSONAble constructor for decoding a String encoding.
-     * @throws JSONException if the encoding does not decode to this Object
-    */
-    protected JSONAble(String encoding) throws JSONException {
-        this.decode(encoding);
     }
 
     /** Should be overriden by child classes that support a JSONArray representation.

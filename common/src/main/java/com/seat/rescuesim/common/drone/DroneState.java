@@ -1,8 +1,10 @@
 package com.seat.rescuesim.common.drone;
 
 import java.util.ArrayList;
-
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.KineticRemoteState;
 import com.seat.rescuesim.common.remote.RemoteType;
@@ -13,18 +15,6 @@ public class DroneState extends KineticRemoteState {
 
     private DroneType type;
 
-    public DroneState(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public DroneState(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public DroneState(String encoding) throws JSONException {
-        super(encoding);
-    }
-
     public DroneState(DroneType type, String remoteID, Vector location, double battery, Vector velocity,
             Vector acceleration) {
         this(type, remoteID, location, battery, new ArrayList<SensorState>(), velocity, acceleration);
@@ -34,6 +24,10 @@ public class DroneState extends KineticRemoteState {
             Vector velocity, Vector acceleration) {
         super(RemoteType.DRONE, remoteID, location, battery, sensors, velocity, acceleration);
         this.type = type;
+    }
+
+    public DroneState(JSONOption option) throws JSONException {
+        super(option);
     }
 
     @Override

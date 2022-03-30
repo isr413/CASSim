@@ -1,8 +1,14 @@
 package com.seat.rescuesim.common.remote;
 
 import java.util.ArrayList;
-
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONAble;
+import com.seat.rescuesim.common.json.JSONArray;
+import com.seat.rescuesim.common.json.JSONArrayBuilder;
+import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 import com.seat.rescuesim.common.sensor.SensorType;
@@ -17,18 +23,6 @@ public abstract class RemoteSpec extends JSONAble {
     protected double maxBatteryPower;
     protected ArrayList<SensorConfig> sensors;
     protected RemoteType type;
-
-    public RemoteSpec(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public RemoteSpec(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public RemoteSpec(String encoding) throws JSONException {
-        super(encoding);
-    }
 
     public RemoteSpec(RemoteType type) {
         this(type, null, 1, new ArrayList<SensorConfig>());
@@ -49,11 +43,15 @@ public abstract class RemoteSpec extends JSONAble {
         this.sensors = sensors;
     }
 
+    public RemoteSpec(JSONOption option) throws JSONException {
+        super(option);
+    }
+
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.type = RemoteType.values()[json.getInt(RemoteConst.REMOTE_TYPE)];
         if (json.hasKey(RemoteConst.LOCATION)) {
-            this.location = new Vector(json.getJSONArray(RemoteConst.LOCATION));
+            this.location = new Vector(json.getJSONOption(RemoteConst.LOCATION));
         } else {
             this.location = null;
         }
@@ -62,7 +60,7 @@ public abstract class RemoteSpec extends JSONAble {
         if (json.hasKey(RemoteConst.SENSORS)) {
             JSONArray jsonSensors = json.getJSONArray(RemoteConst.SENSORS);
             for (int i = 0; i < jsonSensors.length(); i++) {
-                this.sensors.add(new SensorConfig(jsonSensors.getJSONObject(i)));
+                this.sensors.add(new SensorConfig(jsonSensors.getJSONOption(i)));
             }
         }
     }

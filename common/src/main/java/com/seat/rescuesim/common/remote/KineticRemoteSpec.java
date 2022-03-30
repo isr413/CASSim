@@ -1,8 +1,10 @@
 package com.seat.rescuesim.common.remote;
 
 import java.util.ArrayList;
-
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 import com.seat.rescuesim.common.util.SerializableEnum;
@@ -13,18 +15,6 @@ public abstract class KineticRemoteSpec extends RemoteSpec {
     protected double maxAcceleration;
     protected double maxJerk;
     protected double maxVelocity;
-
-    public KineticRemoteSpec(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public KineticRemoteSpec(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public KineticRemoteSpec(String encoding) throws JSONException {
-        super(encoding);
-    }
 
     public KineticRemoteSpec(RemoteType type) {
         this(type, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
@@ -74,6 +64,10 @@ public abstract class KineticRemoteSpec extends RemoteSpec {
         this.maxVelocity = maxVelocity;
         this.maxAcceleration = maxAcceleration;
         this.maxJerk = maxJerk;
+    }
+
+    public KineticRemoteSpec(JSONOption option) throws JSONException {
+        super(option);
     }
 
     @Override

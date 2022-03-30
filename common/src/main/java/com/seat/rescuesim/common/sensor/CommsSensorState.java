@@ -14,18 +14,6 @@ public class CommsSensorState extends SensorState {
 
     private HashSet<String> connections;
 
-    public CommsSensorState(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public CommsSensorState(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public CommsSensorState(String encoding) throws JSONException {
-        super(encoding);
-    }
-
     public CommsSensorState(SensorType type, String sensorID) {
         this(type, sensorID, false, new HashSet<String>());
     }
@@ -37,6 +25,10 @@ public class CommsSensorState extends SensorState {
     public CommsSensorState(SensorType type, String sensorID, boolean active, HashSet<String> connections) {
         super(type, sensorID, active);
         this.connections = connections;
+    }
+
+    public CommsSensorState(JSONOption option) throws JSONException {
+        super(option);
     }
 
     @Override

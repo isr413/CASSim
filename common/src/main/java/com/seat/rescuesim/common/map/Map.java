@@ -1,7 +1,14 @@
 package com.seat.rescuesim.common.map;
 
-import com.seat.rescuesim.common.json.*;
-import com.seat.rescuesim.common.math.*;
+import com.seat.rescuesim.common.json.JSONAble;
+import com.seat.rescuesim.common.json.JSONArray;
+import com.seat.rescuesim.common.json.JSONArrayBuilder;
+import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
+import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.util.CoreException;
 
 /** Represents the map grid. */
@@ -17,18 +24,6 @@ public class Map extends JSONAble {
     private MapType type;
     private int width;      // number of zones in each row of the grid
     private int zoneSize;   // zones in the same map grid must have a uniform size
-
-    public Map(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public Map(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public Map(String encoding) throws JSONException {
-        super(encoding);
-    }
 
     public Map(int zoneSize, int width, int height) {
         this(MapType.DEFAULT, zoneSize, width, height);
@@ -66,6 +61,10 @@ public class Map extends JSONAble {
         this.height = height;
     }
 
+    public Map(JSONOption option) throws JSONException {
+        super(option);
+    }
+
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.type = MapType.values()[json.getInt(Map.MAP_TYPE)];
@@ -78,7 +77,7 @@ public class Map extends JSONAble {
             for (int y = 0; y < this.height; y++) {
                 JSONArray jsonRow = jsonGrid.getJSONArray(y);
                 for (int x = 0; x < this.width; x++) {
-                    this.grid[y][x] = new Zone(jsonRow.getJSONObject(x));
+                    this.grid[y][x] = new Zone(jsonRow.getJSONOption(x));
                 }
             }
         }

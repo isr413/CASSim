@@ -9,18 +9,6 @@ public class MonitorSensorState extends SensorState {
 
     private String monitorID;
 
-    public MonitorSensorState(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public MonitorSensorState(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public MonitorSensorState(String encoding) throws JSONException {
-        super(encoding);
-    }
-
     public MonitorSensorState(SensorType type, String sensorID) {
         this(type, sensorID, false, "");
     }
@@ -28,6 +16,10 @@ public class MonitorSensorState extends SensorState {
     public MonitorSensorState(SensorType type, String sensorID, boolean active, String monitorID) {
         super(type, sensorID, active);
         this.monitorID = monitorID;
+    }
+
+    public MonitorSensorState(JSONOption option) throws JSONException {
+        super(option);
     }
 
     @Override

@@ -3,8 +3,14 @@ package com.seat.rescuesim.common;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONAble;
+import com.seat.rescuesim.common.json.JSONArray;
+import com.seat.rescuesim.common.json.JSONArrayBuilder;
+import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.remote.RemoteState;
 import com.seat.rescuesim.common.util.CoreException;
 import com.seat.rescuesim.common.util.RemoteFactory;
@@ -31,18 +37,6 @@ public class Snapshot extends JSONAble {
     private double stepSize;
     private double time;
 
-    public Snapshot(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public Snapshot(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public Snapshot(String encoding) throws JSONException {
-        super(encoding);
-    }
-
     public Snapshot(String hash, String scenarioID, double stepSize, HashSet<String> remoteIDs,
             HashMap<String, RemoteState> state) {
         this(hash, scenarioID, SnapStatus.START, 0, stepSize, remoteIDs, new HashSet<String>(remoteIDs),
@@ -61,6 +55,10 @@ public class Snapshot extends JSONAble {
         this.activeRemotes = activeRemotes;
         this.dynamicRemotes = dynamicRemotes;
         this.state = state;
+    }
+
+    public Snapshot(JSONOption option) throws JSONException {
+        super(option);
     }
 
     @Override
@@ -94,7 +92,7 @@ public class Snapshot extends JSONAble {
         this.state = new HashMap<>();
         JSONArray jsonState = json.getJSONArray(Snapshot.STATE);
         for (int i = 0; i < jsonState.length(); i++) {
-            RemoteState state = RemoteFactory.decodeRemoteState(jsonState.getJSONObject(i));
+            RemoteState state = RemoteFactory.decodeRemoteState(jsonState.getJSONOption(i));
             this.state.put(state.getRemoteID(), state);
         }
     }

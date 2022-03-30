@@ -1,6 +1,11 @@
 package com.seat.rescuesim.common.math;
 
-import com.seat.rescuesim.common.json.*;
+import com.seat.rescuesim.common.json.JSONAble;
+import com.seat.rescuesim.common.json.JSONArray;
+import com.seat.rescuesim.common.json.JSONArrayBuilder;
+import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONOption;
 
 /** A vector triple of doubles for representing points and forces in 2D and 3D space. */
 public class Vector extends JSONAble {
@@ -147,21 +152,6 @@ public class Vector extends JSONAble {
     private double y; // Y-axis (+ goes south; - goes north)
     private double z; // Z-axis (+ increases elevation; - decreases elevation)
 
-    /** JSONAble constructor for JSONArray interface type. */
-    public Vector(JSONArray json) throws JSONException {
-        super(json);
-    }
-
-    /** JSONAble constructor for JSONOption. */
-    public Vector(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    /** JSONAble constructor for String encoding. */
-    public Vector(String encoding) throws JSONException {
-        super(encoding);
-    }
-
     /** Constructs a zero vector. */
     public Vector() {
         this(0, 0, 0);
@@ -182,6 +172,11 @@ public class Vector extends JSONAble {
         this.x = (Double.isFinite(x)) ? Math.round(x * Vector.PRECISION) / Vector.PRECISION : x;
         this.y = (Double.isFinite(y)) ? Math.round(y * Vector.PRECISION) / Vector.PRECISION : y;
         this.z = (Double.isFinite(z)) ? Math.round(z * Vector.PRECISION) / Vector.PRECISION : z;
+    }
+
+    /** JSONAble constructor for JSONOption. */
+    public Vector(JSONOption option) throws JSONException {
+        super(option);
     }
 
     /** Decodes the JSONArray. */

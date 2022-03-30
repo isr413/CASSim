@@ -14,18 +14,6 @@ public class VisionSensorState extends SensorState {
 
     private HashSet<String> observations;
 
-    public VisionSensorState(JSONObject json) throws JSONException {
-        super(json);
-    }
-
-    public VisionSensorState(JSONOption option) throws JSONException {
-        super(option);
-    }
-
-    public VisionSensorState(String encoding) throws JSONException {
-        super(encoding);
-    }
-
     public VisionSensorState(SensorType type, String sensorID) {
         this(type, sensorID, false, new HashSet<String>());
     }
@@ -37,6 +25,10 @@ public class VisionSensorState extends SensorState {
     public VisionSensorState(SensorType type, String sensorID, boolean active, HashSet<String> observations) {
         super(type, sensorID, active);
         this.observations = observations;
+    }
+
+    public VisionSensorState(JSONOption option) throws JSONException {
+        super(option);
     }
 
     @Override

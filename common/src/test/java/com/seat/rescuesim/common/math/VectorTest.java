@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
 import com.seat.rescuesim.common.json.JSONBuilder;
-
+import com.seat.rescuesim.common.json.JSONOption;
 import org.junit.Test;
 
 
@@ -66,13 +66,13 @@ public class VectorTest {
         json.put(1.0);
         json.put(2.0);
         VectorTest.assertVectorEquals(new Vector(0.0, 1.0, 2.0), new Vector(json.toJSON()));
-        VectorTest.assertVectorEquals(new Vector(0.0, 1.0, 2.0), new Vector(json.toString()));
+        VectorTest.assertVectorEquals(new Vector(0.0, 1.0, 2.0), new Vector(JSONOption.String(json.toString())));
         json = JSONBuilder.Array();
         json.put(-1.0);
         json.put(-2.0);
         json.put(-3.0);
         VectorTest.assertVectorEquals(new Vector(-1.0, -2.0, -3.0), new Vector(json.toJSON()));
-        VectorTest.assertVectorEquals(new Vector(-1.0, -2.0, -3.0), new Vector(json.toString()));
+        VectorTest.assertVectorEquals(new Vector(-1.0, -2.0, -3.0), new Vector(JSONOption.String(json.toString())));
     }
 
     @Test
@@ -123,9 +123,9 @@ public class VectorTest {
         Vector positives = new Vector(1, 2, 3);
         Vector negatives = new Vector(-1, -2, -3);
         Vector zeros = new Vector(0, 0, 0);
-        VectorTest.assertVectorEquals(positives, new Vector(positives.encode()));
-        VectorTest.assertVectorEquals(negatives, new Vector(negatives.encode()));
-        VectorTest.assertVectorEquals(zeros, new Vector(zeros.encode()));
+        VectorTest.assertVectorEquals(positives, new Vector(JSONOption.String(positives.encode())));
+        VectorTest.assertVectorEquals(negatives, new Vector(JSONOption.String(negatives.encode())));
+        VectorTest.assertVectorEquals(zeros, new Vector(JSONOption.String(zeros.encode())));
     }
 
     @Test
