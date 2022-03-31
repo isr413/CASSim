@@ -15,18 +15,18 @@ import com.seat.rescuesim.common.sensor.SensorState;
 public abstract class KineticRemoteState extends RemoteState {
 
     protected Vector acceleration;
-    protected KineticRemoteType type;
+    protected KineticRemoteType specType;
     protected Vector velocity;
 
-    public KineticRemoteState(KineticRemoteType type, String remoteID, Vector location, double battery, Vector velocity,
-            Vector acceleration) {
-        this(type, remoteID, location, battery, new ArrayList<SensorState>(), velocity, acceleration);
+    public KineticRemoteState(KineticRemoteType specType, String remoteID, Vector location, double battery,
+            Vector velocity, Vector acceleration) {
+        this(specType, remoteID, location, battery, new ArrayList<SensorState>(), velocity, acceleration);
     }
 
-    public KineticRemoteState(KineticRemoteType type, String remoteID, Vector location, double battery,
+    public KineticRemoteState(KineticRemoteType specType, String remoteID, Vector location, double battery,
             ArrayList<SensorState> sensors, Vector velocity, Vector acceleration) {
         super(RemoteType.KINETIC, remoteID, location, battery, sensors);
-        this.type = type;
+        this.specType = specType;
         this.velocity = velocity;
         this.acceleration = acceleration;
     }
@@ -38,7 +38,7 @@ public abstract class KineticRemoteState extends RemoteState {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.type = KineticRemoteType.decodeType(json);
+        this.specType = KineticRemoteType.decodeType(json);
         this.velocity = new Vector(json.getJSONOption(KineticRemoteConst.VELOCITY));
         this.acceleration = new Vector(json.getJSONOption(KineticRemoteConst.ACCELERATION));
     }
@@ -48,7 +48,7 @@ public abstract class KineticRemoteState extends RemoteState {
     }
 
     public KineticRemoteType getSpecType() {
-        return this.type;
+        return this.specType;
     }
 
     public Vector getVelocity() {
@@ -74,14 +74,14 @@ public abstract class KineticRemoteState extends RemoteState {
     @Override
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(KineticRemoteConst.KINETIC_REMOTE_TYPE, this.type.getType());
+        json.put(KineticRemoteConst.KINETIC_REMOTE_TYPE, this.specType.getType());
         json.put(KineticRemoteConst.VELOCITY, this.velocity.toJSON());
         json.put(KineticRemoteConst.ACCELERATION, this.acceleration.toJSON());
         return json;
     }
 
     public boolean equals(KineticRemoteState state) {
-        return super.equals(state) && this.type.equals(state.type) && this.velocity.equals(state.velocity) &&
+        return super.equals(state) && this.specType.equals(state.specType) && this.velocity.equals(state.velocity) &&
             this.acceleration.equals(state.acceleration);
     }
 

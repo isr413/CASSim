@@ -58,7 +58,7 @@ public class DroneSpec extends KineticRemoteSpec {
     }
 
     public String getLabel() {
-        return String.format("d%s", this.type.getLabel());
+        return String.format("d%s", this.specType.getLabel());
     }
 
     public double getStaticBatteryUsage() {

@@ -1,25 +1,25 @@
-package com.seat.rescuesim.common.remote.base;
+package com.seat.rescuesim.common.remote.stat.base;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.remote.RemoteConfig;
-import com.seat.rescuesim.common.remote.RemoteType;
+import com.seat.rescuesim.common.remote.stat.StaticRemoteConfig;
 
 /** A serializable configuration of a Base Remote. */
-public class BaseConfig extends RemoteConfig {
+public class BaseConfig extends StaticRemoteConfig {
 
     public BaseConfig(BaseSpec spec, int count, boolean dynamic) {
-        super(RemoteType.BASE, spec, count, dynamic);
+        super(spec, count, dynamic);
     }
 
     public BaseConfig(BaseSpec spec, ArrayList<String> remoteIDs, boolean dynamic) {
-        super(RemoteType.BASE, spec, remoteIDs, dynamic);
+        super(spec, remoteIDs, dynamic);
     }
 
     public BaseConfig(BaseSpec spec, HashSet<String> remoteIDs, boolean dynamic) {
-        super(RemoteType.BASE, spec, remoteIDs, dynamic);
+        super(spec, remoteIDs, dynamic);
     }
 
     public BaseConfig(JSONOption option) throws JSONException {
@@ -33,14 +33,6 @@ public class BaseConfig extends RemoteConfig {
 
     public BaseSpec getSpec() {
         return (BaseSpec) this.spec;
-    }
-
-    public BaseType getSpecType() {
-        return (BaseType) this.spec.getSpecType();
-    }
-
-    public boolean hasSpec() {
-        return !this.getSpecType().equals(BaseType.NONE);
     }
 
 }
