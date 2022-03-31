@@ -68,6 +68,15 @@ public class JSONSocket {
         this.out = new PrintWriter(this.clientSocket.getOutputStream(), true);
     }
 
+    public void close() throws IOException {
+        this.out.close();
+        this.in.close();
+        this.clientSocket.close();
+        if (this.serverSocket != null) {
+            this.serverSocket.close();
+        }
+    }
+
     public String getAddress() {
         return (this.serverSocket != null) ?
             this.serverSocket.getInetAddress().toString() :
