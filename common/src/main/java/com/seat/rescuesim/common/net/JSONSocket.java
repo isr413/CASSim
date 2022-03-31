@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common.socket;
+package com.seat.rescuesim.common.net;
 
 import java.io.BufferedReader;
 import java.io.IOException;
