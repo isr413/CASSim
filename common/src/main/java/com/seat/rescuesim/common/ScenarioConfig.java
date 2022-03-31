@@ -2,9 +2,6 @@ package com.seat.rescuesim.common;
 
 import java.util.ArrayList;
 import java.util.Random;
-
-import com.seat.rescuesim.common.base.BaseConfig;
-import com.seat.rescuesim.common.drone.DroneConfig;
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -16,8 +13,10 @@ import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.remote.RemoteConfig;
 import com.seat.rescuesim.common.remote.RemoteType;
+import com.seat.rescuesim.common.remote.base.BaseConfig;
+import com.seat.rescuesim.common.remote.drone.DroneConfig;
+import com.seat.rescuesim.common.remote.victim.VictimConfig;
 import com.seat.rescuesim.common.util.RemoteFactory;
-import com.seat.rescuesim.common.victim.VictimConfig;
 
 /** A serializable class to store scenario configurations. */
 public class ScenarioConfig extends JSONAble {

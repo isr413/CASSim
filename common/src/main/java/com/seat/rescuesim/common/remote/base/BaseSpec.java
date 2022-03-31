@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common.base;
+package com.seat.rescuesim.common.remote.base;
 
 import java.util.ArrayList;
 

@@ -1,19 +1,19 @@
-package com.seat.rescuesim.common.drone;
+package com.seat.rescuesim.common.remote.victim;
 
 import com.seat.rescuesim.common.util.SerializableEnum;
 
-/** A serializable enumeration to denote types of Drones. */
-public enum DroneType implements SerializableEnum {
+/** A serializable enumeration to denote types of Victims. */
+public enum VictimType implements SerializableEnum {
     NONE(0),
     DEFAULT(1);
 
     private int type;
 
-    private DroneType(int type) {
+    private VictimType(int type) {
         this.type = type;
     }
 
-    public boolean equals(DroneType type) {
+    public boolean equals(VictimType type) {
         return this.type == type.type;
     }
 

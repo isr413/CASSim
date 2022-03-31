@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common.drone;
+package com.seat.rescuesim.common.remote.drone;
 
 import java.util.ArrayList;
 import com.seat.rescuesim.common.json.JSONException;

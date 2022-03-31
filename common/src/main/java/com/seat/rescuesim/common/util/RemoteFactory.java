@@ -1,11 +1,5 @@
 package com.seat.rescuesim.common.util;
 
-import com.seat.rescuesim.common.base.BaseConfig;
-import com.seat.rescuesim.common.base.BaseSpec;
-import com.seat.rescuesim.common.base.BaseState;
-import com.seat.rescuesim.common.drone.DroneConfig;
-import com.seat.rescuesim.common.drone.DroneSpec;
-import com.seat.rescuesim.common.drone.DroneState;
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.remote.RemoteConfig;
@@ -13,9 +7,15 @@ import com.seat.rescuesim.common.remote.RemoteConst;
 import com.seat.rescuesim.common.remote.RemoteSpec;
 import com.seat.rescuesim.common.remote.RemoteState;
 import com.seat.rescuesim.common.remote.RemoteType;
-import com.seat.rescuesim.common.victim.VictimConfig;
-import com.seat.rescuesim.common.victim.VictimSpec;
-import com.seat.rescuesim.common.victim.VictimState;
+import com.seat.rescuesim.common.remote.base.BaseConfig;
+import com.seat.rescuesim.common.remote.base.BaseSpec;
+import com.seat.rescuesim.common.remote.base.BaseState;
+import com.seat.rescuesim.common.remote.drone.DroneConfig;
+import com.seat.rescuesim.common.remote.drone.DroneSpec;
+import com.seat.rescuesim.common.remote.drone.DroneState;
+import com.seat.rescuesim.common.remote.victim.VictimConfig;
+import com.seat.rescuesim.common.remote.victim.VictimSpec;
+import com.seat.rescuesim.common.remote.victim.VictimState;
 
 public class RemoteFactory {
 

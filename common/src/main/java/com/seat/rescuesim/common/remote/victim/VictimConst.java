@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common.victim;
+package com.seat.rescuesim.common.remote.victim;
 
 public class VictimConst {
     public static final String SPEED_MEAN = "speed_mean";

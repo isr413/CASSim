@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common.victim;
+package com.seat.rescuesim.common.remote.victim;
 
 import java.util.ArrayList;
 import com.seat.rescuesim.common.json.JSONException;
