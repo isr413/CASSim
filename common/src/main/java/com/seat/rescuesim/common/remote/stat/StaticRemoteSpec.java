@@ -12,26 +12,43 @@ import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable specification of a static Remote. */
-public abstract class StaticRemoteSpec extends RemoteSpec {
+public class StaticRemoteSpec extends RemoteSpec {
 
     protected StaticRemoteType specType;
 
-    public StaticRemoteSpec(StaticRemoteType specType) {
+    public StaticRemoteSpec() {
+        this(StaticRemoteType.CUSTOM);
+    }
+
+    public StaticRemoteSpec(Vector location) {
+        this(StaticRemoteType.CUSTOM, location);
+    }
+
+    public StaticRemoteSpec(double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+        this(StaticRemoteType.CUSTOM, maxBatteryPower, sensors);
+    }
+
+    public StaticRemoteSpec(Vector location, double maxBatteryPower,
+            ArrayList<SensorConfig> sensors) {
+        this(StaticRemoteType.CUSTOM, location, maxBatteryPower, sensors);
+    }
+
+    protected StaticRemoteSpec(StaticRemoteType specType) {
         super(RemoteType.STATIC);
         this.specType = specType;
     }
 
-    public StaticRemoteSpec(StaticRemoteType specType, Vector location) {
+    protected StaticRemoteSpec(StaticRemoteType specType, Vector location) {
         super(RemoteType.STATIC, location);
         this.specType = specType;
     }
 
-    public StaticRemoteSpec(StaticRemoteType specType, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+    protected StaticRemoteSpec(StaticRemoteType specType, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
         super(RemoteType.STATIC, maxBatteryPower, sensors);
         this.specType = specType;
     }
 
-    public StaticRemoteSpec(StaticRemoteType specType, Vector location, double maxBatteryPower,
+    protected StaticRemoteSpec(StaticRemoteType specType, Vector location, double maxBatteryPower,
             ArrayList<SensorConfig> sensors) {
         super(RemoteType.STATIC, location, maxBatteryPower, sensors);
         this.specType = specType;
@@ -45,6 +62,10 @@ public abstract class StaticRemoteSpec extends RemoteSpec {
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.specType = StaticRemoteType.decodeType(json);
+    }
+
+    public String getLabel() {
+        return String.format("r%s", this.specType.getLabel());
     }
 
     public StaticRemoteType getSpecType() {

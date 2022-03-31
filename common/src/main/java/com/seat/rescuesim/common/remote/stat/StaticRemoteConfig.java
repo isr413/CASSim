@@ -9,7 +9,7 @@ import com.seat.rescuesim.common.remote.RemoteConfig;
 import com.seat.rescuesim.common.remote.RemoteType;
 
 /** A serializable configuration of a Static Remote. */
-public abstract class StaticRemoteConfig extends RemoteConfig {
+public class StaticRemoteConfig extends RemoteConfig {
 
     public StaticRemoteConfig(StaticRemoteSpec spec, int count, boolean dynamic) {
         super(RemoteType.STATIC, spec, count, dynamic);
@@ -27,7 +27,9 @@ public abstract class StaticRemoteConfig extends RemoteConfig {
         super(option);
     }
 
-    protected abstract void decodeSpec(JSONOption jsonSpec);
+    protected StaticRemoteSpec decodeSpec(JSONOption jsonSpec) {
+        return new StaticRemoteSpec(jsonSpec);
+    }
 
     public StaticRemoteSpec getSpec() {
         return (StaticRemoteSpec) this.spec;

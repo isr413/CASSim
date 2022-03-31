@@ -27,8 +27,8 @@ public class BaseConfig extends StaticRemoteConfig {
     }
 
     @Override
-    protected void decodeSpec(JSONOption jsonSpec) throws JSONException {
-        this.spec = new BaseSpec(jsonSpec);
+    protected BaseSpec decodeSpec(JSONOption jsonSpec) throws JSONException {
+        return new BaseSpec(jsonSpec);
     }
 
     public BaseSpec getSpec() {

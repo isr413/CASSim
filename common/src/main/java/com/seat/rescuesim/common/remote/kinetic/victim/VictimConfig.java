@@ -27,8 +27,8 @@ public class VictimConfig extends KineticRemoteConfig {
     }
 
     @Override
-    protected void decodeSpec(JSONOption jsonSpec) throws JSONException {
-        this.spec = new VictimSpec(jsonSpec);
+    protected VictimSpec decodeSpec(JSONOption jsonSpec) throws JSONException {
+        return new VictimSpec(jsonSpec);
     }
 
     public VictimSpec getSpec() {

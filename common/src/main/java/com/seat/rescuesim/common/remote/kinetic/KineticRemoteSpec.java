@@ -12,18 +12,56 @@ import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable specification of a kinetic Remote. */
-public abstract class KineticRemoteSpec extends RemoteSpec {
+public class KineticRemoteSpec extends RemoteSpec {
 
     protected double maxAcceleration;
     protected double maxJerk;
     protected double maxVelocity;
     protected KineticRemoteType specType;
 
-    public KineticRemoteSpec(KineticRemoteType specType) {
+    public KineticRemoteSpec() {
+        this(KineticRemoteType.CUSTOM, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+    }
+
+    public KineticRemoteSpec(double maxVelocity, double maxAcceleration, double maxJerk) {
+        this(KineticRemoteType.CUSTOM, maxVelocity, maxAcceleration, maxJerk);
+    }
+
+    public KineticRemoteSpec(Vector location) {
+        this(KineticRemoteType.CUSTOM, location, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
+            Double.POSITIVE_INFINITY);
+    }
+
+    public KineticRemoteSpec(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
+        this(KineticRemoteType.CUSTOM, location, maxVelocity, maxAcceleration, maxJerk);
+    }
+
+    public KineticRemoteSpec(double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+        this(KineticRemoteType.CUSTOM, maxBatteryPower, sensors, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
+            Double.POSITIVE_INFINITY);
+    }
+
+    public KineticRemoteSpec(double maxBatteryPower, ArrayList<SensorConfig> sensors, double maxVelocity,
+            double maxAcceleration, double maxJerk) {
+        this(KineticRemoteType.CUSTOM, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
+    }
+
+    public KineticRemoteSpec(Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+        this(KineticRemoteType.CUSTOM, location, maxBatteryPower, sensors, Double.POSITIVE_INFINITY,
+            Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+    }
+
+    public KineticRemoteSpec(Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors,
+            double maxVelocity, double maxAcceleration, double maxJerk) {
+        this(KineticRemoteType.CUSTOM, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
+    }
+
+    protected KineticRemoteSpec(KineticRemoteType specType) {
         this(specType, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
     }
 
-    public KineticRemoteSpec(KineticRemoteType specType, double maxVelocity, double maxAcceleration, double maxJerk) {
+    protected KineticRemoteSpec(KineticRemoteType specType, double maxVelocity, double maxAcceleration,
+            double maxJerk) {
         super(RemoteType.KINETIC);
         this.specType = specType;
         this.maxVelocity = maxVelocity;
@@ -31,11 +69,11 @@ public abstract class KineticRemoteSpec extends RemoteSpec {
         this.maxJerk = maxJerk;
     }
 
-    public KineticRemoteSpec(KineticRemoteType specType, Vector location) {
+    protected KineticRemoteSpec(KineticRemoteType specType, Vector location) {
         this(specType, location, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
     }
 
-    public KineticRemoteSpec(KineticRemoteType specType, Vector location, double maxVelocity, double maxAcceleration,
+    protected KineticRemoteSpec(KineticRemoteType specType, Vector location, double maxVelocity, double maxAcceleration,
             double maxJerk) {
         super(RemoteType.KINETIC, location);
         this.specType = specType;
@@ -44,12 +82,12 @@ public abstract class KineticRemoteSpec extends RemoteSpec {
         this.maxJerk = maxJerk;
     }
 
-    public KineticRemoteSpec(KineticRemoteType specType, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+    protected KineticRemoteSpec(KineticRemoteType specType, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
         this(specType, maxBatteryPower, sensors, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
             Double.POSITIVE_INFINITY);
     }
 
-    public KineticRemoteSpec(KineticRemoteType specType, double maxBatteryPower, ArrayList<SensorConfig> sensors,
+    protected KineticRemoteSpec(KineticRemoteType specType, double maxBatteryPower, ArrayList<SensorConfig> sensors,
             double maxVelocity, double maxAcceleration, double maxJerk) {
         super(RemoteType.KINETIC, maxBatteryPower, sensors);
         this.specType = specType;
@@ -58,13 +96,13 @@ public abstract class KineticRemoteSpec extends RemoteSpec {
         this.maxJerk = maxJerk;
     }
 
-    public KineticRemoteSpec(KineticRemoteType specType, Vector location, double maxBatteryPower,
+    protected KineticRemoteSpec(KineticRemoteType specType, Vector location, double maxBatteryPower,
             ArrayList<SensorConfig> sensors) {
         this(specType, location, maxBatteryPower, sensors, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
             Double.POSITIVE_INFINITY);
     }
 
-    public KineticRemoteSpec(KineticRemoteType specType, Vector location, double maxBatteryPower,
+    protected KineticRemoteSpec(KineticRemoteType specType, Vector location, double maxBatteryPower,
             ArrayList<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
         super(RemoteType.KINETIC, location, maxBatteryPower, sensors);
         this.specType = specType;
@@ -98,7 +136,9 @@ public abstract class KineticRemoteSpec extends RemoteSpec {
         }
     }
 
-    public abstract String getLabel();
+    public String getLabel() {
+        return String.format("r%s", this.specType.getLabel());
+    }
 
     public double getMaxAcceleration() {
         return this.maxAcceleration;

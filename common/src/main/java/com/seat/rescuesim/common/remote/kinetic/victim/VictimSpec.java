@@ -50,6 +50,7 @@ public class VictimSpec extends KineticRemoteSpec {
         super(option);
     }
 
+    @Override
     public String getLabel() {
         return String.format("v%s", this.specType.getLabel());
     }

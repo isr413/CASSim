@@ -15,12 +15,20 @@ public class StaticRemoteState extends RemoteState {
 
     protected StaticRemoteType specType;
 
-    public StaticRemoteState(StaticRemoteType specType, String remoteID, Vector location, double battery) {
+    public StaticRemoteState(String remoteID, Vector location, double battery) {
+        this(StaticRemoteType.CUSTOM, remoteID, location, battery);
+    }
+
+    public StaticRemoteState(String remoteID, Vector location, double battery, ArrayList<SensorState> sensors) {
+        this(StaticRemoteType.CUSTOM, remoteID, location, battery, sensors);
+    }
+
+    protected StaticRemoteState(StaticRemoteType specType, String remoteID, Vector location, double battery) {
         super(RemoteType.STATIC, remoteID, location, battery);
         this.specType = specType;
     }
 
-    public StaticRemoteState(StaticRemoteType specType, String remoteID, Vector location, double battery,
+    protected StaticRemoteState(StaticRemoteType specType, String remoteID, Vector location, double battery,
             ArrayList<SensorState> sensors) {
         super(RemoteType.STATIC, remoteID, location, battery, sensors);
         this.specType = specType;

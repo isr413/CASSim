@@ -9,7 +9,7 @@ import com.seat.rescuesim.common.remote.RemoteConfig;
 import com.seat.rescuesim.common.remote.RemoteType;
 
 /** A serializable configuration of a Kinetic Remote. */
-public abstract class KineticRemoteConfig extends RemoteConfig {
+public class KineticRemoteConfig extends RemoteConfig {
 
     public KineticRemoteConfig(KineticRemoteSpec spec, int count, boolean dynamic) {
         super(RemoteType.KINETIC, spec, count, dynamic);
@@ -27,7 +27,9 @@ public abstract class KineticRemoteConfig extends RemoteConfig {
         super(option);
     }
 
-    protected abstract void decodeSpec(JSONOption jsonSpec);
+    protected KineticRemoteSpec decodeSpec(JSONOption jsonSpec) {
+        return new KineticRemoteSpec(jsonSpec);
+    }
 
     public KineticRemoteSpec getSpec() {
         return (KineticRemoteSpec) this.spec;

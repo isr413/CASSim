@@ -49,7 +49,7 @@ public abstract class RemoteConfig extends JSONAble {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.remoteType = RemoteType.decodeType(json);
-        this.decodeSpec(json.getJSONOption(RemoteConst.SPEC));
+        this.spec = this.decodeSpec(json.getJSONOption(RemoteConst.SPEC));
         this.count = json.getInt(RemoteConst.COUNT);
         this.remoteIDs = new HashSet<>();
         if (json.hasKey(RemoteConst.REMOTE_IDS)) {
@@ -61,7 +61,7 @@ public abstract class RemoteConfig extends JSONAble {
         this.dynamic = json.getBoolean(RemoteConst.DYNAMIC);
     }
 
-    protected abstract void decodeSpec(JSONOption jsonSpec) throws JSONException;
+    protected abstract RemoteSpec decodeSpec(JSONOption jsonSpec) throws JSONException;
 
     public int getCount() {
         return this.count;

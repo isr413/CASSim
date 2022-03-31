@@ -27,8 +27,8 @@ public class DroneConfig extends KineticRemoteConfig {
     }
 
     @Override
-    protected void decodeSpec(JSONOption jsonSpec) throws JSONException {
-        this.spec = new DroneSpec(jsonSpec);
+    protected DroneSpec decodeSpec(JSONOption jsonSpec) throws JSONException {
+        return new DroneSpec(jsonSpec);
     }
 
     public DroneSpec getSpec() {
