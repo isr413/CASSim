@@ -64,19 +64,19 @@ public class StaticRemoteSpec extends RemoteSpec {
         this.specType = StaticRemoteType.decodeType(json);
     }
 
+    @Override
+    protected JSONObjectBuilder getJSONBuilder() {
+        JSONObjectBuilder json = super.getJSONBuilder();
+        json.put(StaticRemoteConst.STATIC_REMOTE_TYPE, this.specType.getType());
+        return json;
+    }
+
     public String getLabel() {
         return String.format("r%s", this.specType.getLabel());
     }
 
     public StaticRemoteType getSpecType() {
         return this.specType;
-    }
-
-    @Override
-    protected JSONObjectBuilder getJSONBuilder() {
-        JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(StaticRemoteConst.STATIC_REMOTE_TYPE, this.specType.getType());
-        return json;
     }
 
     public boolean equals(StaticRemoteSpec spec) {

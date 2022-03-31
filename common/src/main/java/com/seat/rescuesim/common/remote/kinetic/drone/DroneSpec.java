@@ -49,6 +49,13 @@ public class DroneSpec extends KineticRemoteSpec {
         this.batteryUsage = new Vector(json.getJSONOption(DroneConst.BATTERY_USAGE));
     }
 
+    @Override
+    protected JSONObjectBuilder getJSONBuilder() {
+        JSONObjectBuilder json = super.getJSONBuilder();
+        json.put(DroneConst.BATTERY_USAGE, this.batteryUsage.toJSON());
+        return json;
+    }
+
     public Vector getBatteryUsage() {
         return this.batteryUsage;
     }
@@ -68,13 +75,6 @@ public class DroneSpec extends KineticRemoteSpec {
 
     public double getVerticalKineticBatteryUsage() {
         return this.batteryUsage.getZ();
-    }
-
-    @Override
-    protected JSONObjectBuilder getJSONBuilder() {
-        JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(DroneConst.BATTERY_USAGE, this.batteryUsage.toJSON());
-        return json;
     }
 
     public boolean equals(DroneSpec spec) {

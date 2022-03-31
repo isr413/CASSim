@@ -136,6 +136,22 @@ public class KineticRemoteSpec extends RemoteSpec {
         }
     }
 
+    @Override
+    protected JSONObjectBuilder getJSONBuilder() {
+        JSONObjectBuilder json = super.getJSONBuilder();
+        json.put(KineticRemoteConst.KINETIC_REMOTE_TYPE, this.specType.getType());
+        if (this.hasMaxAcceleration()) {
+            json.put(KineticRemoteConst.MAX_VELOCITY, this.maxVelocity);
+        }
+        if (this.hasMaxJerk()) {
+            json.put(KineticRemoteConst.MAX_ACCELERATION, this.maxAcceleration);
+        }
+        if (this.hasMaxVelocity()) {
+            json.put(KineticRemoteConst.MAX_JERK, this.maxJerk);
+        }
+        return json;
+    }
+
     public String getLabel() {
         return String.format("r%s", this.specType.getLabel());
     }
@@ -186,22 +202,6 @@ public class KineticRemoteSpec extends RemoteSpec {
 
     public boolean isStatic() {
         return !this.isKinetic();
-    }
-
-    @Override
-    protected JSONObjectBuilder getJSONBuilder() {
-        JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(KineticRemoteConst.KINETIC_REMOTE_TYPE, this.specType.getType());
-        if (this.hasMaxAcceleration()) {
-            json.put(KineticRemoteConst.MAX_VELOCITY, this.maxVelocity);
-        }
-        if (this.hasMaxJerk()) {
-            json.put(KineticRemoteConst.MAX_ACCELERATION, this.maxAcceleration);
-        }
-        if (this.hasMaxVelocity()) {
-            json.put(KineticRemoteConst.MAX_JERK, this.maxJerk);
-        }
-        return json;
     }
 
     public boolean equals(KineticRemoteSpec spec) {

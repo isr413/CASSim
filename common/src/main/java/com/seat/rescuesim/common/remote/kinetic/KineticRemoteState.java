@@ -52,6 +52,15 @@ public class KineticRemoteState extends RemoteState {
         this.acceleration = new Vector(json.getJSONOption(KineticRemoteConst.ACCELERATION));
     }
 
+    @Override
+    protected JSONObjectBuilder getJSONBuilder() {
+        JSONObjectBuilder json = super.getJSONBuilder();
+        json.put(KineticRemoteConst.KINETIC_REMOTE_TYPE, this.specType.getType());
+        json.put(KineticRemoteConst.VELOCITY, this.velocity.toJSON());
+        json.put(KineticRemoteConst.ACCELERATION, this.acceleration.toJSON());
+        return json;
+    }
+
     public Vector getAcceleration() {
         return this.acceleration;
     }
@@ -78,15 +87,6 @@ public class KineticRemoteState extends RemoteState {
 
     public boolean isStatic() {
         return !this.isKinetic();
-    }
-
-    @Override
-    protected JSONObjectBuilder getJSONBuilder() {
-        JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(KineticRemoteConst.KINETIC_REMOTE_TYPE, this.specType.getType());
-        json.put(KineticRemoteConst.VELOCITY, this.velocity.toJSON());
-        json.put(KineticRemoteConst.ACCELERATION, this.acceleration.toJSON());
-        return json;
     }
 
     public boolean equals(KineticRemoteState state) {

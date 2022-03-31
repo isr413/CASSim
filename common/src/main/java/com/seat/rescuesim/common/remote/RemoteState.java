@@ -62,6 +62,22 @@ public abstract class RemoteState extends JSONAble {
         }
     }
 
+    protected JSONObjectBuilder getJSONBuilder() {
+        JSONObjectBuilder json = JSONBuilder.Object();
+        json.put(RemoteConst.REMOTE_TYPE, this.remoteType.getType());
+        json.put(RemoteConst.REMOTE_ID, this.remoteID);
+        json.put(RemoteConst.LOCATION, this.location.toJSON());
+        json.put(RemoteConst.BATTERY, this.battery);
+        if (this.hasSensors()) {
+            JSONArrayBuilder jsonSensors = JSONBuilder.Array();
+            for (SensorState sensor : this.sensors.values()) {
+                jsonSensors.put(sensor.toJSON());
+            }
+            json.put(RemoteConst.SENSORS, jsonSensors.toJSON());
+        }
+        return json;
+    }
+
     public double getBattery() {
         return this.battery;
     }
@@ -109,22 +125,6 @@ public abstract class RemoteState extends JSONAble {
 
     public boolean isEnabled() {
         return this.battery > 0;
-    }
-
-    protected JSONObjectBuilder getJSONBuilder() {
-        JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(RemoteConst.REMOTE_TYPE, this.remoteType.getType());
-        json.put(RemoteConst.REMOTE_ID, this.remoteID);
-        json.put(RemoteConst.LOCATION, this.location.toJSON());
-        json.put(RemoteConst.BATTERY, this.battery);
-        if (this.hasSensors()) {
-            JSONArrayBuilder jsonSensors = JSONBuilder.Array();
-            for (SensorState sensor : this.sensors.values()) {
-                jsonSensors.put(sensor.toJSON());
-            }
-            json.put(RemoteConst.SENSORS, jsonSensors.toJSON());
-        }
-        return json;
     }
 
     public JSONOption toJSON() {
