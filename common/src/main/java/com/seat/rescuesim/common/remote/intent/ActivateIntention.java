@@ -2,6 +2,7 @@ package com.seat.rescuesim.common.remote.intent;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
 import com.seat.rescuesim.common.json.JSONBuilder;

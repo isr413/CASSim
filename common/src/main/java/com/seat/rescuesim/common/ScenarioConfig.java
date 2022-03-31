@@ -2,6 +2,7 @@ package com.seat.rescuesim.common;
 
 import java.util.ArrayList;
 import java.util.Random;
+
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -12,10 +13,11 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.remote.RemoteConfig;
-import com.seat.rescuesim.common.remote.RemoteType;
-import com.seat.rescuesim.common.remote.base.BaseConfig;
-import com.seat.rescuesim.common.remote.drone.DroneConfig;
-import com.seat.rescuesim.common.remote.victim.VictimConfig;
+import com.seat.rescuesim.common.remote.kinetic.KineticRemoteType;
+import com.seat.rescuesim.common.remote.kinetic.drone.DroneConfig;
+import com.seat.rescuesim.common.remote.kinetic.victim.VictimConfig;
+import com.seat.rescuesim.common.remote.stat.StaticRemoteType;
+import com.seat.rescuesim.common.remote.stat.base.BaseConfig;
 import com.seat.rescuesim.common.util.RemoteFactory;
 
 /** A serializable class to store scenario configurations. */
@@ -93,7 +95,7 @@ public class ScenarioConfig extends JSONAble {
     private void countBases() {
         this.numBases = 0;
         for (RemoteConfig config : this.remoteConfig) {
-            if (config.getRemoteType().equals(RemoteType.BASE)) {
+            if (config.getSpecType().equals(StaticRemoteType.BASE)) {
                 this.numBases += config.getCount();
             }
         }
@@ -102,7 +104,7 @@ public class ScenarioConfig extends JSONAble {
     private void countDrones() {
         this.numDrones = 0;
         for (RemoteConfig config : this.remoteConfig) {
-            if (config.getRemoteType().equals(RemoteType.DRONE)) {
+            if (config.getSpecType().equals(KineticRemoteType.DRONE)) {
                 this.numDrones += config.getCount();
             }
         }
@@ -111,7 +113,7 @@ public class ScenarioConfig extends JSONAble {
     private void countVictims() {
         this.numVictims = 0;
         for (RemoteConfig config : this.remoteConfig) {
-            if (config.getRemoteType().equals(RemoteType.VICTIM)) {
+            if (config.getSpecType().equals(KineticRemoteType.VICTIM)) {
                 this.numVictims += config.getCount();
             }
         }
@@ -144,7 +146,7 @@ public class ScenarioConfig extends JSONAble {
     public ArrayList<BaseConfig> getBases() {
         ArrayList<BaseConfig> baseConfig = new ArrayList<>();
         for (RemoteConfig config : this.remoteConfig) {
-            if (config.getRemoteType().equals(RemoteType.BASE)) {
+            if (config.getSpecType().equals(StaticRemoteType.BASE)) {
                 baseConfig.add((BaseConfig) config);
             }
         }
@@ -158,7 +160,7 @@ public class ScenarioConfig extends JSONAble {
     public ArrayList<DroneConfig> getDrones() {
         ArrayList<DroneConfig> droneConfig = new ArrayList<>();
         for (RemoteConfig config : this.remoteConfig) {
-            if (config.getRemoteType().equals(RemoteType.DRONE)) {
+            if (config.getSpecType().equals(KineticRemoteType.DRONE)) {
                 droneConfig.add((DroneConfig) config);
             }
         }
@@ -212,7 +214,7 @@ public class ScenarioConfig extends JSONAble {
     public ArrayList<VictimConfig> getVictims() {
         ArrayList<VictimConfig> victimConfig = new ArrayList<>();
         for (RemoteConfig config : this.remoteConfig) {
-            if (config.getRemoteType().equals(RemoteType.VICTIM)) {
+            if (config.getSpecType().equals(KineticRemoteType.VICTIM)) {
                 victimConfig.add((VictimConfig) config);
             }
         }

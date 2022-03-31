@@ -3,6 +3,7 @@ package com.seat.rescuesim.common;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
