@@ -1,28 +1,32 @@
-package com.seat.rescuesim.common.remote;
+package com.seat.rescuesim.common.remote.kinetic;
 
 import java.util.ArrayList;
+
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
+import com.seat.rescuesim.common.remote.RemoteState;
+import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.sensor.SensorState;
-import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable state of a kinetic Remote. */
 public abstract class KineticRemoteState extends RemoteState {
 
     protected Vector acceleration;
+    protected KineticRemoteType type;
     protected Vector velocity;
 
-    public KineticRemoteState(RemoteType type, String remoteID, Vector location, double battery, Vector velocity,
+    public KineticRemoteState(KineticRemoteType type, String remoteID, Vector location, double battery, Vector velocity,
             Vector acceleration) {
         this(type, remoteID, location, battery, new ArrayList<SensorState>(), velocity, acceleration);
     }
 
-    public KineticRemoteState(RemoteType type, String remoteID, Vector location, double battery,
+    public KineticRemoteState(KineticRemoteType type, String remoteID, Vector location, double battery,
             ArrayList<SensorState> sensors, Vector velocity, Vector acceleration) {
-        super(type, remoteID, location, battery, sensors);
+        super(RemoteType.KINETIC, remoteID, location, battery, sensors);
+        this.type = type;
         this.velocity = velocity;
         this.acceleration = acceleration;
     }
@@ -34,15 +38,18 @@ public abstract class KineticRemoteState extends RemoteState {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.velocity = new Vector(json.getJSONOption(RemoteConst.VELOCITY));
-        this.acceleration = new Vector(json.getJSONOption(RemoteConst.ACCELERATION));
+        this.type = KineticRemoteType.decodeType(json);
+        this.velocity = new Vector(json.getJSONOption(KineticRemoteConst.VELOCITY));
+        this.acceleration = new Vector(json.getJSONOption(KineticRemoteConst.ACCELERATION));
     }
 
     public Vector getAcceleration() {
         return this.acceleration;
     }
 
-    public abstract SerializableEnum getSpecType();
+    public KineticRemoteType getSpecType() {
+        return this.type;
+    }
 
     public Vector getVelocity() {
         return this.velocity;
@@ -67,15 +74,14 @@ public abstract class KineticRemoteState extends RemoteState {
     @Override
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(RemoteConst.VELOCITY, this.velocity.toJSON());
-        json.put(RemoteConst.ACCELERATION, this.acceleration.toJSON());
+        json.put(KineticRemoteConst.KINETIC_REMOTE_TYPE, this.type.getType());
+        json.put(KineticRemoteConst.VELOCITY, this.velocity.toJSON());
+        json.put(KineticRemoteConst.ACCELERATION, this.acceleration.toJSON());
         return json;
     }
 
-    public abstract JSONOption toJSON();
-
     public boolean equals(KineticRemoteState state) {
-        return super.equals(state) && this.velocity.equals(state.velocity) &&
+        return super.equals(state) && this.type.equals(state.type) && this.velocity.equals(state.velocity) &&
             this.acceleration.equals(state.acceleration);
     }
 

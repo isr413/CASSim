@@ -1,25 +1,25 @@
-package com.seat.rescuesim.common.remote.drone;
+package com.seat.rescuesim.common.remote.kinetic.drone;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.remote.RemoteConfig;
-import com.seat.rescuesim.common.remote.RemoteType;
+import com.seat.rescuesim.common.remote.kinetic.KineticRemoteConfig;
 
 /** A serializable configuration of a Drone Remote. */
-public class DroneConfig extends RemoteConfig {
+public class DroneConfig extends KineticRemoteConfig {
 
     public DroneConfig(DroneSpec spec, int count, boolean dynamic) {
-        super(RemoteType.DRONE, spec, count, dynamic);
+        super(spec, count, dynamic);
     }
 
     public DroneConfig(DroneSpec spec, ArrayList<String> remoteIDs, boolean dynamic) {
-        super(RemoteType.DRONE, spec, remoteIDs, dynamic);
+        super(spec, remoteIDs, dynamic);
     }
 
     public DroneConfig(DroneSpec spec, HashSet<String> remoteIDs, boolean dynamic) {
-        super(RemoteType.DRONE, spec, remoteIDs, dynamic);
+        super(spec, remoteIDs, dynamic);
     }
 
     public DroneConfig(JSONOption option) throws JSONException {
@@ -33,14 +33,6 @@ public class DroneConfig extends RemoteConfig {
 
     public DroneSpec getSpec() {
         return (DroneSpec) this.spec;
-    }
-
-    public DroneType getSpecType() {
-        return (DroneType) this.spec.getSpecType();
-    }
-
-    public boolean hasSpec() {
-        return !this.getSpecType().equals(DroneType.NONE);
     }
 
 }

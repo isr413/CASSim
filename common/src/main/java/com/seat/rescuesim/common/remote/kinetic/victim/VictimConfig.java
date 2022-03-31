@@ -1,26 +1,25 @@
-package com.seat.rescuesim.common.remote.victim;
+package com.seat.rescuesim.common.remote.kinetic.victim;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.remote.RemoteConfig;
-import com.seat.rescuesim.common.remote.RemoteType;
+import com.seat.rescuesim.common.remote.kinetic.KineticRemoteConfig;
 
 /** A serializable configuration of a Victim Remote. */
-public class VictimConfig extends RemoteConfig {
+public class VictimConfig extends KineticRemoteConfig {
 
     public VictimConfig(VictimSpec spec, int count, boolean dynamic) {
-        super(RemoteType.VICTIM, spec, count, dynamic);
+        super(spec, count, dynamic);
     }
 
     public VictimConfig(VictimSpec spec, ArrayList<String> remoteIDs, boolean dynamic) {
-        super(RemoteType.VICTIM, spec, remoteIDs, dynamic);
+        super(spec, remoteIDs, dynamic);
     }
 
     public VictimConfig(VictimSpec spec, HashSet<String> remoteIDs, boolean dynamic) {
-        super(RemoteType.VICTIM, spec, remoteIDs, dynamic);
+        super(spec, remoteIDs, dynamic);
     }
 
     public VictimConfig(JSONOption option) throws JSONException {
@@ -34,14 +33,6 @@ public class VictimConfig extends RemoteConfig {
 
     public VictimSpec getSpec() {
         return (VictimSpec) this.spec;
-    }
-
-    public VictimType getSpecType() {
-        return (VictimType) this.spec.getSpecType();
-    }
-
-    public boolean hasSpec() {
-        return !this.getSpecType().equals(VictimType.NONE);
     }
 
 }

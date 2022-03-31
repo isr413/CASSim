@@ -1,44 +1,41 @@
-package com.seat.rescuesim.common.remote.drone;
+package com.seat.rescuesim.common.remote.kinetic.drone;
 
 import java.util.ArrayList;
+
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.remote.KineticRemoteSpec;
-import com.seat.rescuesim.common.remote.RemoteType;
+import com.seat.rescuesim.common.remote.kinetic.KineticRemoteSpec;
+import com.seat.rescuesim.common.remote.kinetic.KineticRemoteType;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable specification of a Drone Remote. */
 public class DroneSpec extends KineticRemoteSpec {
 
     private Vector batteryUsage; // [static (hovering), horizontal movement, vertical movement]
-    private DroneType type;
 
-    public DroneSpec(DroneType type, double maxBatteryPower, Vector batteryUsage, double maxVelocity,
-            double maxAcceleration, double maxJerk) {
-        this(type, maxBatteryPower, batteryUsage, new ArrayList<SensorConfig>(), maxVelocity,
-            maxAcceleration, maxJerk);
+    public DroneSpec(double maxBatteryPower, Vector batteryUsage, double maxVelocity, double maxAcceleration,
+            double maxJerk) {
+        this(maxBatteryPower, batteryUsage, new ArrayList<SensorConfig>(), maxVelocity, maxAcceleration, maxJerk);
     }
 
-    public DroneSpec(DroneType type, double maxBatteryPower, Vector batteryUsage, ArrayList<SensorConfig> sensors,
-            double maxVelocity, double maxAcceleration, double maxJerk) {
-        super(RemoteType.DRONE, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
-        this.type = type;
+    public DroneSpec(double maxBatteryPower, Vector batteryUsage, ArrayList<SensorConfig> sensors, double maxVelocity,
+            double maxAcceleration, double maxJerk) {
+        super(KineticRemoteType.DRONE, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
         this.batteryUsage = batteryUsage;
     }
 
-    public DroneSpec(DroneType type, Vector location, double maxBatteryPower, Vector batteryUsage, double maxVelocity,
+    public DroneSpec(Vector location, double maxBatteryPower, Vector batteryUsage, double maxVelocity,
             double maxAcceleration, double maxJerk) {
-        this(type, location, maxBatteryPower, batteryUsage, new ArrayList<SensorConfig>(), maxVelocity, maxAcceleration,
+        this(location, maxBatteryPower, batteryUsage, new ArrayList<SensorConfig>(), maxVelocity, maxAcceleration,
             maxJerk);
     }
 
-    public DroneSpec(DroneType type, Vector location, double maxBatteryPower, Vector batteryUsage,
+    public DroneSpec(Vector location, double maxBatteryPower, Vector batteryUsage,
             ArrayList<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
-        super(RemoteType.DRONE, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
-        this.type = type;
+        super(KineticRemoteType.DRONE, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
         this.batteryUsage = batteryUsage;
     }
 
@@ -49,7 +46,6 @@ public class DroneSpec extends KineticRemoteSpec {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.type = DroneType.values()[json.getInt(DroneConst.DRONE_TYPE)];
         this.batteryUsage = new Vector(json.getJSONOption(DroneConst.BATTERY_USAGE));
     }
 
@@ -61,13 +57,8 @@ public class DroneSpec extends KineticRemoteSpec {
         return this.batteryUsage.getY();
     }
 
-    @Override
     public String getLabel() {
         return String.format("d%s", this.type.getLabel());
-    }
-
-    public DroneType getSpecType() {
-        return this.type;
     }
 
     public double getStaticBatteryUsage() {
@@ -78,15 +69,15 @@ public class DroneSpec extends KineticRemoteSpec {
         return this.batteryUsage.getZ();
     }
 
-    public JSONOption toJSON() {
+    @Override
+    protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(DroneConst.DRONE_TYPE, this.type.getType());
         json.put(DroneConst.BATTERY_USAGE, this.batteryUsage.toJSON());
-        return json.toJSON();
+        return json;
     }
 
     public boolean equals(DroneSpec spec) {
-        return super.equals(spec) && this.type.equals(spec.type) && this.batteryUsage.equals(spec.batteryUsage);
+        return super.equals(spec) && this.batteryUsage.equals(spec.batteryUsage);
     }
 
 }

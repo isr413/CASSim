@@ -1,6 +1,7 @@
 package com.seat.rescuesim.common.remote;
 
 import java.util.ArrayList;
+
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -21,23 +22,23 @@ public abstract class RemoteSpec extends JSONAble {
 
     protected Vector location;
     protected double maxBatteryPower;
+    protected RemoteType remoteType;
     protected ArrayList<SensorConfig> sensors;
-    protected RemoteType type;
 
-    public RemoteSpec(RemoteType type) {
-        this(type, null, 1, new ArrayList<SensorConfig>());
+    public RemoteSpec(RemoteType remoteType) {
+        this(remoteType, null, 1, new ArrayList<SensorConfig>());
     }
 
-    public RemoteSpec(RemoteType type, Vector location) {
-        this(type, location, 1, new ArrayList<SensorConfig>());
+    public RemoteSpec(RemoteType remoteType, Vector location) {
+        this(remoteType, location, 1, new ArrayList<SensorConfig>());
     }
 
-    public RemoteSpec(RemoteType type, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
-        this(type, null, maxBatteryPower, sensors);
+    public RemoteSpec(RemoteType remoteType, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+        this(remoteType, null, maxBatteryPower, sensors);
     }
 
-    public RemoteSpec(RemoteType type, Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
-        this.type = type;
+    public RemoteSpec(RemoteType remoteType, Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+        this.remoteType = remoteType;
         this.location = location;
         this.maxBatteryPower = maxBatteryPower;
         this.sensors = sensors;
@@ -49,7 +50,7 @@ public abstract class RemoteSpec extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = RemoteType.values()[json.getInt(RemoteConst.REMOTE_TYPE)];
+        this.remoteType = RemoteType.decodeType(json);
         if (json.hasKey(RemoteConst.LOCATION)) {
             this.location = new Vector(json.getJSONOption(RemoteConst.LOCATION));
         } else {
@@ -76,7 +77,7 @@ public abstract class RemoteSpec extends JSONAble {
     }
 
     public RemoteType getRemoteType() {
-        return this.type;
+        return this.remoteType;
     }
 
     public SensorConfig getSensor(int idx) throws CoreException {
@@ -99,15 +100,15 @@ public abstract class RemoteSpec extends JSONAble {
         throw new CoreException(String.format("No sensor with ID %s found on spec %s", sensorID, this.getLabel()));
     }
 
-    public ArrayList<SensorConfig> getSensorsWithType(SensorType type) {
+    public ArrayList<SensorConfig> getSensorsWithType(SensorType sensorType) {
         ArrayList<SensorConfig> confs = new ArrayList<>();
         for (SensorConfig conf : this.sensors) {
-            if (conf.getSpecType().equals(type)) {
+            if (conf.getSpecType().equals(sensorType)) {
                 confs.add(conf);
             }
         }
         if (confs.isEmpty()) {
-            Debugger.logger.warn(String.format("No sensors with type %s found on spec %s", type.getLabel(),
+            Debugger.logger.warn(String.format("No sensors with type %s found on spec %s", sensorType.getLabel(),
                 this.getLabel()));
         }
         return confs;
@@ -136,9 +137,9 @@ public abstract class RemoteSpec extends JSONAble {
         return false;
     }
 
-    public boolean hasSensorWithType(SensorType type) {
+    public boolean hasSensorWithType(SensorType sensorType) {
         for (SensorConfig conf : this.sensors) {
-            if (conf.getSpecType().equals(type)) {
+            if (conf.getSpecType().equals(sensorType)) {
                 return true;
             }
         }
@@ -153,17 +154,9 @@ public abstract class RemoteSpec extends JSONAble {
         return this.maxBatteryPower > 0;
     }
 
-    public boolean isKinetic() {
-        return false;
-    }
-
-    public boolean isStatic() {
-        return true;
-    }
-
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(RemoteConst.REMOTE_TYPE, this.type.getType());
+        json.put(RemoteConst.REMOTE_TYPE, this.remoteType.getType());
         if (this.hasLocation()) {
             json.put(RemoteConst.LOCATION, this.location.toJSON());
         }
@@ -178,10 +171,12 @@ public abstract class RemoteSpec extends JSONAble {
         return json;
     }
 
-    public abstract JSONOption toJSON();
+    public JSONOption toJSON() {
+        return this.getJSONBuilder().toJSON();
+    }
 
     public boolean equals(RemoteSpec spec) {
-        return this.type.equals(spec.type) && this.location.equals(spec.location) &&
+        return this.remoteType.equals(spec.remoteType) && this.location.equals(spec.location) &&
             this.maxBatteryPower == spec.maxBatteryPower && this.sensors.equals(spec.sensors);
     }
 

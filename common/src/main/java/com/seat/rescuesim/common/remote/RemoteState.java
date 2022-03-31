@@ -2,6 +2,7 @@ package com.seat.rescuesim.common.remote;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -23,15 +24,15 @@ public abstract class RemoteState extends JSONAble {
     protected Vector location;
     protected String remoteID;
     protected HashMap<String, SensorState> sensors;
-    protected RemoteType type;
+    protected RemoteType remoteType;
 
-    public RemoteState(RemoteType type, String remoteID, Vector location, double battery) {
-        this(type, remoteID, location, battery, new ArrayList<SensorState>());
+    public RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery) {
+        this(remoteType, remoteID, location, battery, new ArrayList<SensorState>());
     }
 
-    public RemoteState(RemoteType type, String remoteID, Vector location, double battery,
+    public RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery,
             ArrayList<SensorState> sensors) {
-        this.type = type;
+        this.remoteType = remoteType;
         this.remoteID = remoteID;
         this.location = location;
         this.battery = battery;
@@ -47,7 +48,7 @@ public abstract class RemoteState extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = RemoteType.values()[json.getInt(RemoteConst.REMOTE_TYPE)];
+        this.remoteType = RemoteType.decodeType(json);
         this.remoteID = json.getString(RemoteConst.REMOTE_ID);
         this.location = new Vector(json.getJSONOption(RemoteConst.LOCATION));
         this.battery = json.getDouble(RemoteConst.BATTERY);
@@ -66,7 +67,7 @@ public abstract class RemoteState extends JSONAble {
     }
 
     public String getLabel() {
-        return String.format("%s%s", this.remoteID, this.type.getLabel());
+        return String.format("%s%s", this.remoteID, this.remoteType.getLabel());
     }
 
     public Vector getLocation() {
@@ -78,7 +79,7 @@ public abstract class RemoteState extends JSONAble {
     }
 
     public RemoteType getRemoteType() {
-        return this.type;
+        return this.remoteType;
     }
 
     public ArrayList<SensorState> getSensors() {
@@ -112,7 +113,7 @@ public abstract class RemoteState extends JSONAble {
 
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(RemoteConst.REMOTE_TYPE, this.type.getType());
+        json.put(RemoteConst.REMOTE_TYPE, this.remoteType.getType());
         json.put(RemoteConst.REMOTE_ID, this.remoteID);
         json.put(RemoteConst.LOCATION, this.location.toJSON());
         json.put(RemoteConst.BATTERY, this.battery);
@@ -126,10 +127,12 @@ public abstract class RemoteState extends JSONAble {
         return json;
     }
 
-    public abstract JSONOption toJSON();
+    public JSONOption toJSON() {
+        return this.getJSONBuilder().toJSON();
+    }
 
     public boolean equals(RemoteState state) {
-        return this.type.equals(state.type) && this.remoteID.equals(state.remoteID) &&
+        return this.remoteType.equals(state.remoteType) && this.remoteID.equals(state.remoteID) &&
             this.location.equals(state.location) && this.battery == state.battery &&
             this.sensors.equals(state.sensors);
     }

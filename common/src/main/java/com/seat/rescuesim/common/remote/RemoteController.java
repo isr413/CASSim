@@ -3,6 +3,7 @@ package com.seat.rescuesim.common.remote;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -22,10 +23,10 @@ public class RemoteController extends JSONAble {
 
     protected HashMap<IntentionType, Intention> intentions;
     protected String remoteID;
-    protected RemoteType type;
+    protected RemoteType remoteType;
 
-    public RemoteController(RemoteType type, String remoteID) {
-        this.type = type;
+    public RemoteController(RemoteType remoteType, String remoteID) {
+        this.remoteType = remoteType;
         this.remoteID = remoteID;
         this.intentions = new HashMap<>();
     }
@@ -36,7 +37,7 @@ public class RemoteController extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = RemoteType.values()[json.getInt(RemoteConst.REMOTE_TYPE)];
+        this.remoteType = RemoteType.decodeType(json);
         this.remoteID = json.getString(RemoteConst.REMOTE_ID);
         this.intentions = new HashMap<>();
         if (json.hasKey(RemoteConst.INTENTIONS)) {
@@ -67,15 +68,16 @@ public class RemoteController extends JSONAble {
         return new HashSet<IntentionType>(this.intentions.keySet());
     }
 
-    public Intention getIntentionWithType(IntentionType type) throws CoreException {
-        if (!this.hasIntentionWithType(type)) {
-            throw new CoreException(String.format("Remote %s has no intention for %s", this.remoteID, type.getLabel()));
+    public Intention getIntentionWithType(IntentionType intentionType) throws CoreException {
+        if (!this.hasIntentionWithType(intentionType)) {
+            throw new CoreException(String.format("Remote %s has no intention for %s", this.remoteID,
+                intentionType.getLabel()));
         }
-        return this.intentions.get(type);
+        return this.intentions.get(intentionType);
     }
 
     public String getLabel() {
-        return String.format("%s%s", this.remoteID, this.type.getLabel());
+        return String.format("%s%s", this.remoteID, this.remoteType.getLabel());
     }
 
     public String getRemoteID() {
@@ -83,7 +85,7 @@ public class RemoteController extends JSONAble {
     }
 
     public RemoteType getRemoteType() {
-        return this.type;
+        return this.remoteType;
     }
 
     public boolean hasIntention(Intention intent) {
@@ -95,31 +97,32 @@ public class RemoteController extends JSONAble {
         return !this.intentions.isEmpty();
     }
 
-    public boolean hasIntentionWithType(IntentionType type) {
-        return this.intentions.containsKey(type);
+    public boolean hasIntentionWithType(IntentionType intentionType) {
+        return this.intentions.containsKey(intentionType);
     }
 
     public boolean removeIntention(Intention intent) {
         if (!this.hasIntention(intent)) {
-            Debugger.logger.warn(String.format("Remote %s has no intention for %s", this.remoteID, type.getLabel()));
+            Debugger.logger.warn(String.format("Remote %s has no intention for %s", this.remoteID, intent.getLabel()));
             return true;
         }
         this.intentions.remove(intent.getIntentionType());
         return true;
     }
 
-    public boolean removeIntentionWithType(IntentionType type) {
-        if (!this.hasIntentionWithType(type)) {
-            Debugger.logger.warn(String.format("Remote %s has no intention for %s", this.remoteID, type.getLabel()));
+    public boolean removeIntentionWithType(IntentionType intentionType) {
+        if (!this.hasIntentionWithType(intentionType)) {
+            Debugger.logger.warn(String.format("Remote %s has no intention for %s", this.remoteID,
+                intentionType.getLabel()));
             return true;
         }
-        this.intentions.remove(type);
+        this.intentions.remove(intentionType);
         return true;
     }
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(RemoteConst.REMOTE_TYPE, this.type.getType());
+        json.put(RemoteConst.REMOTE_TYPE, this.remoteType.getType());
         json.put(RemoteConst.REMOTE_ID, this.remoteID);
         if (this.hasIntentions()) {
             JSONArrayBuilder jsonIntentions = JSONBuilder.Array();
@@ -132,7 +135,7 @@ public class RemoteController extends JSONAble {
     }
 
     public boolean equals(RemoteController remote) {
-        return this.type.equals(remote.type) && this.remoteID.equals(remote.remoteID);
+        return this.remoteType.equals(remote.remoteType) && this.remoteID.equals(remote.remoteID);
     }
 
 }
