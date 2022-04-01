@@ -3,7 +3,7 @@ package com.seat.rescuesim.common;
 import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable enumeration to denote types of Snapshot statuses. */
-public enum SnapStatus implements SerializableEnum {
+public enum ScenarioStatus implements SerializableEnum {
     NONE(0),
     START(1),
     IN_PROGRESS(2),
@@ -12,11 +12,11 @@ public enum SnapStatus implements SerializableEnum {
 
     private int type;
 
-    private SnapStatus(int type) {
+    private ScenarioStatus(int type) {
         this.type = type;
     }
 
-    public boolean equals(SnapStatus type) {
+    public boolean equals(ScenarioStatus type) {
         return this.type == type.type;
     }
 
