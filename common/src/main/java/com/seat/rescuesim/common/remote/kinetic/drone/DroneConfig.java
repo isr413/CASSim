@@ -31,6 +31,7 @@ public class DroneConfig extends KineticRemoteConfig {
         return new DroneSpec(jsonSpec);
     }
 
+    @Override
     public DroneSpec getSpec() {
         return (DroneSpec) this.spec;
     }

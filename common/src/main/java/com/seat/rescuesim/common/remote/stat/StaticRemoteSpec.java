@@ -17,38 +17,38 @@ public class StaticRemoteSpec extends RemoteSpec {
     protected StaticRemoteType specType;
 
     public StaticRemoteSpec() {
-        this(StaticRemoteType.CUSTOM);
+        this(StaticRemoteType.GENERIC);
     }
 
     public StaticRemoteSpec(Vector location) {
-        this(StaticRemoteType.CUSTOM, location);
+        this(StaticRemoteType.GENERIC, location);
     }
 
     public StaticRemoteSpec(double maxBatteryPower, ArrayList<SensorConfig> sensors) {
-        this(StaticRemoteType.CUSTOM, maxBatteryPower, sensors);
+        this(StaticRemoteType.GENERIC, maxBatteryPower, sensors);
     }
 
     public StaticRemoteSpec(Vector location, double maxBatteryPower,
             ArrayList<SensorConfig> sensors) {
-        this(StaticRemoteType.CUSTOM, location, maxBatteryPower, sensors);
+        this(StaticRemoteType.GENERIC, location, maxBatteryPower, sensors);
     }
 
-    protected StaticRemoteSpec(StaticRemoteType specType) {
+    public StaticRemoteSpec(StaticRemoteType specType) {
         super(RemoteType.STATIC);
         this.specType = specType;
     }
 
-    protected StaticRemoteSpec(StaticRemoteType specType, Vector location) {
+    public StaticRemoteSpec(StaticRemoteType specType, Vector location) {
         super(RemoteType.STATIC, location);
         this.specType = specType;
     }
 
-    protected StaticRemoteSpec(StaticRemoteType specType, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+    public StaticRemoteSpec(StaticRemoteType specType, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
         super(RemoteType.STATIC, maxBatteryPower, sensors);
         this.specType = specType;
     }
 
-    protected StaticRemoteSpec(StaticRemoteType specType, Vector location, double maxBatteryPower,
+    public StaticRemoteSpec(StaticRemoteType specType, Vector location, double maxBatteryPower,
             ArrayList<SensorConfig> sensors) {
         super(RemoteType.STATIC, location, maxBatteryPower, sensors);
         this.specType = specType;
@@ -71,6 +71,7 @@ public class StaticRemoteSpec extends RemoteSpec {
         return json;
     }
 
+    @Override
     public String getLabel() {
         return String.format("r%s", this.specType.getLabel());
     }

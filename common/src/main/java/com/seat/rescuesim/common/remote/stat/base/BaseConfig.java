@@ -31,6 +31,7 @@ public class BaseConfig extends StaticRemoteConfig {
         return new BaseSpec(jsonSpec);
     }
 
+    @Override
     public BaseSpec getSpec() {
         return (BaseSpec) this.spec;
     }

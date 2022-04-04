@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteState;
@@ -16,19 +17,19 @@ public class StaticRemoteState extends RemoteState {
     protected StaticRemoteType specType;
 
     public StaticRemoteState(String remoteID, Vector location, double battery) {
-        this(StaticRemoteType.CUSTOM, remoteID, location, battery);
+        this(StaticRemoteType.GENERIC, remoteID, location, battery);
     }
 
     public StaticRemoteState(String remoteID, Vector location, double battery, ArrayList<SensorState> sensors) {
-        this(StaticRemoteType.CUSTOM, remoteID, location, battery, sensors);
+        this(StaticRemoteType.GENERIC, remoteID, location, battery, sensors);
     }
 
-    protected StaticRemoteState(StaticRemoteType specType, String remoteID, Vector location, double battery) {
+    public StaticRemoteState(StaticRemoteType specType, String remoteID, Vector location, double battery) {
         super(RemoteType.STATIC, remoteID, location, battery);
         this.specType = specType;
     }
 
-    protected StaticRemoteState(StaticRemoteType specType, String remoteID, Vector location, double battery,
+    public StaticRemoteState(StaticRemoteType specType, String remoteID, Vector location, double battery,
             ArrayList<SensorState> sensors) {
         super(RemoteType.STATIC, remoteID, location, battery, sensors);
         this.specType = specType;
@@ -44,6 +45,14 @@ public class StaticRemoteState extends RemoteState {
         this.specType = StaticRemoteType.decodeType(json);
     }
 
+    @Override
+    protected JSONObjectBuilder getJSONBuilder() {
+        JSONObjectBuilder json = super.getJSONBuilder();
+        json.put(StaticRemoteConst.STATIC_REMOTE_TYPE, this.specType.getType());
+        return json;
+    }
+
+    @Override
     public StaticRemoteType getSpecType() {
         return this.specType;
     }

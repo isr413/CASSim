@@ -7,7 +7,7 @@ import com.seat.rescuesim.common.util.SerializableEnum;
 public enum StaticRemoteType implements SerializableEnum {
     NONE(0),
     DEFAULT(1),
-    CUSTOM(2),
+    GENERIC(2),
     BASE(3);
 
     public static StaticRemoteType decodeType(JSONObject json) {

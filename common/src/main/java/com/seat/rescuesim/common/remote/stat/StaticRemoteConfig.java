@@ -27,14 +27,17 @@ public class StaticRemoteConfig extends RemoteConfig {
         super(option);
     }
 
+    @Override
     protected StaticRemoteSpec decodeSpec(JSONOption jsonSpec) {
         return new StaticRemoteSpec(jsonSpec);
     }
 
+    @Override
     public StaticRemoteSpec getSpec() {
         return (StaticRemoteSpec) this.spec;
     }
 
+    @Override
     public StaticRemoteType getSpecType() {
         return (StaticRemoteType) this.spec.getSpecType();
     }

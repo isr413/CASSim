@@ -27,14 +27,17 @@ public class KineticRemoteConfig extends RemoteConfig {
         super(option);
     }
 
+    @Override
     protected KineticRemoteSpec decodeSpec(JSONOption jsonSpec) {
         return new KineticRemoteSpec(jsonSpec);
     }
 
+    @Override
     public KineticRemoteSpec getSpec() {
         return (KineticRemoteSpec) this.spec;
     }
 
+    @Override
     public KineticRemoteType getSpecType() {
         return (KineticRemoteType) this.spec.getSpecType();
     }

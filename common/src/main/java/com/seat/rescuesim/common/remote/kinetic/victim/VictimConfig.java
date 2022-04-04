@@ -31,6 +31,7 @@ public class VictimConfig extends KineticRemoteConfig {
         return new VictimSpec(jsonSpec);
     }
 
+    @Override
     public VictimSpec getSpec() {
         return (VictimSpec) this.spec;
     }
