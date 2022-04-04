@@ -1,7 +1,6 @@
 package com.seat.rescuesim.common.sensor.monitor;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
@@ -14,11 +13,7 @@ public class MonitorSensorConfig extends SensorConfig {
         super(spec, count);
     }
 
-    public MonitorSensorConfig(MonitorSensorSpec spec, ArrayList<String> sensorIDs) {
-        super(spec, sensorIDs);
-    }
-
-    public MonitorSensorConfig(MonitorSensorSpec spec, HashSet<String> sensorIDs) {
+    public MonitorSensorConfig(MonitorSensorSpec spec, Collection<String> sensorIDs) {
         super(spec, sensorIDs);
     }
 

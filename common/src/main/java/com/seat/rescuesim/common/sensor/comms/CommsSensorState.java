@@ -1,7 +1,8 @@
 package com.seat.rescuesim.common.sensor.comms;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
 import com.seat.rescuesim.common.json.JSONBuilder;
@@ -21,26 +22,20 @@ public class CommsSensorState extends SensorState {
         this(CommsSensorType.GENERIC, sensorID);
     }
 
-    public CommsSensorState(String sensorID, boolean active, ArrayList<String> connections) {
-        this(CommsSensorType.GENERIC, sensorID, active, connections);
-    }
-
-    public CommsSensorState(String sensorID, boolean active, HashSet<String> connections) {
+    public CommsSensorState(String sensorID, boolean active, Collection<String> connections) {
         this(CommsSensorType.GENERIC, sensorID, active, connections);
     }
 
     public CommsSensorState(CommsSensorType specType, String sensorID) {
-        this(specType, sensorID, false, new HashSet<String>());
+        super(SensorType.COMMS, sensorID, false);
+        this.specType = specType;
+        this.connections = new HashSet<>();
     }
 
-    public CommsSensorState(CommsSensorType specType, String sensorID, boolean active, ArrayList<String> connections) {
-        this(specType, sensorID, active, new HashSet<String>(connections));
-    }
-
-    public CommsSensorState(CommsSensorType specType, String sensorID, boolean active, HashSet<String> connections) {
+    public CommsSensorState(CommsSensorType specType, String sensorID, boolean active, Collection<String> connections) {
         super(SensorType.COMMS, sensorID, active);
         this.specType = specType;
-        this.connections = connections;
+        this.connections = new HashSet<>(connections);
     }
 
     public CommsSensorState(JSONOption option) throws JSONException {

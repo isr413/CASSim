@@ -1,7 +1,8 @@
 package com.seat.rescuesim.common.sensor;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -28,14 +29,10 @@ public class SensorConfig extends JSONAble {
         }
     }
 
-    public SensorConfig(SensorSpec spec, ArrayList<String> sensorIDs) {
-        this(spec, new HashSet<String>(sensorIDs));
-    }
-
-    public SensorConfig(SensorSpec spec, HashSet<String> sensorIDs) {
+    public SensorConfig(SensorSpec spec, Collection<String> sensorIDs) {
         this.spec = spec;
         this.count = sensorIDs.size();
-        this.sensorIDs = sensorIDs;
+        this.sensorIDs = new HashSet<>(sensorIDs);
     }
 
     public SensorConfig(JSONOption option) throws JSONException {

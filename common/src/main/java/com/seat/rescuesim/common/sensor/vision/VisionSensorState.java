@@ -1,6 +1,6 @@
 package com.seat.rescuesim.common.sensor.vision;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 
 import com.seat.rescuesim.common.json.JSONArray;
@@ -22,27 +22,21 @@ public class VisionSensorState extends SensorState {
         this(VisionSensorType.GENERIC, sensorID);
     }
 
-    public VisionSensorState(String sensorID, boolean active, ArrayList<String> observations) {
-        this(VisionSensorType.GENERIC, sensorID, active, observations);
-    }
-
-    public VisionSensorState(String sensorID, boolean active, HashSet<String> observations) {
+    public VisionSensorState(String sensorID, boolean active, Collection<String> observations) {
         this(VisionSensorType.GENERIC, sensorID, active, observations);
     }
 
     public VisionSensorState(VisionSensorType specType, String sensorID) {
-        this(specType, sensorID, false, new HashSet<String>());
+        super(SensorType.VISION, sensorID, false);
+        this.specType = specType;
+        this.observations = new HashSet<>();
     }
 
     public VisionSensorState(VisionSensorType specType, String sensorID, boolean active,
-            ArrayList<String> observations) {
-        this(specType, sensorID, active, new HashSet<String>(observations));
-    }
-
-    public VisionSensorState(VisionSensorType specType, String sensorID, boolean active, HashSet<String> observations) {
+            Collection<String> observations) {
         super(SensorType.VISION, sensorID, active);
         this.specType = specType;
-        this.observations = observations;
+        this.observations = new HashSet<>(observations);
     }
 
     public VisionSensorState(JSONOption option) throws JSONException {

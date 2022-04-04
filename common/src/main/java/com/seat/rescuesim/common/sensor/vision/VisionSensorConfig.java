@@ -1,7 +1,6 @@
 package com.seat.rescuesim.common.sensor.vision;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
@@ -14,11 +13,7 @@ public class VisionSensorConfig extends SensorConfig {
         super(spec, count);
     }
 
-    public VisionSensorConfig(VisionSensorSpec spec, ArrayList<String> sensorIDs) {
-        super(spec, sensorIDs);
-    }
-
-    public VisionSensorConfig(VisionSensorSpec spec, HashSet<String> sensorIDs) {
+    public VisionSensorConfig(VisionSensorSpec spec, Collection<String> sensorIDs) {
         super(spec, sensorIDs);
     }
 
