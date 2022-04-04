@@ -152,11 +152,6 @@ public class KineticRemoteSpec extends RemoteSpec {
         return json;
     }
 
-    @Override
-    public String getLabel() {
-        return String.format("r%s", this.specType.getLabel());
-    }
-
     public double getMaxAcceleration() {
         return this.maxAcceleration;
     }

@@ -23,8 +23,8 @@ public class RemoteState extends JSONAble {
     protected double battery;
     protected Vector location;
     protected String remoteID;
-    protected HashMap<String, SensorState> sensors;
     protected RemoteType remoteType;
+    protected HashMap<String, SensorState> sensors;
 
     public RemoteState(String remoteID, Vector location, double battery) {
         this(RemoteType.GENERIC, remoteID, location, battery);
@@ -91,7 +91,7 @@ public class RemoteState extends JSONAble {
     }
 
     public String getLabel() {
-        return String.format("%s%s", this.remoteID, this.remoteType.getLabel());
+        return String.format("%s:%s", this.remoteID, this.remoteType.getLabel());
     }
 
     public Vector getLocation() {

@@ -72,10 +72,6 @@ public class StaticRemoteSpec extends RemoteSpec {
     }
 
     @Override
-    public String getLabel() {
-        return String.format("r%s", this.specType.getLabel());
-    }
-
     public StaticRemoteType getSpecType() {
         return this.specType;
     }

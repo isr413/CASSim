@@ -13,6 +13,8 @@ import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable specification of a Victim. */
 public class VictimSpec extends KineticRemoteSpec {
+    public static final String SPEED_MEAN = "speed_mean";
+    public static final String SPEED_STDDEV = "speed_stddev";
 
     private double speedMean;
     private double speedStdDev;
@@ -77,21 +79,21 @@ public class VictimSpec extends KineticRemoteSpec {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.speedMean = json.getDouble(VictimConst.SPEED_MEAN);
-        this.speedStdDev = json.getDouble(VictimConst.SPEED_STDDEV);
+        this.speedMean = json.getDouble(VictimSpec.SPEED_MEAN);
+        this.speedStdDev = json.getDouble(VictimSpec.SPEED_STDDEV);
     }
 
     @Override
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(VictimConst.SPEED_MEAN, this.speedMean);
-        json.put(VictimConst.SPEED_STDDEV, this.speedStdDev);
+        json.put(VictimSpec.SPEED_MEAN, this.speedMean);
+        json.put(VictimSpec.SPEED_STDDEV, this.speedStdDev);
         return json;
     }
 
     @Override
     public String getLabel() {
-        return String.format("v%s", this.specType.getLabel());
+        return String.format("v:%s", this.specType.getLabel());
     }
 
     public double getSpeedMean() {

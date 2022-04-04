@@ -56,7 +56,7 @@ public class RemoteSpec extends JSONAble {
     protected RemoteSpec(RemoteType remoteType, Vector location, double maxBatteryPower,
             ArrayList<SensorConfig> sensors) {
         this.remoteType = remoteType;
-        this.location = location;
+        this.location = location; // a remote with a null location should be randomly assigned a location
         this.maxBatteryPower = maxBatteryPower;
         this.sensors = sensors;
     }
@@ -101,7 +101,7 @@ public class RemoteSpec extends JSONAble {
     }
 
     public String getLabel() {
-        return String.format("r%s", this.remoteType.getLabel());
+        return String.format("r:%s:%s", this.remoteType.getLabel(), this.getSpecType().getLabel());
     }
 
     public Vector getLocation() {

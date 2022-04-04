@@ -13,6 +13,7 @@ import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable specification of a Drone Remote. */
 public class DroneSpec extends KineticRemoteSpec {
+    public static final String BATTERY_USAGE = "battery_usage";
 
     private Vector batteryUsage; // [static (hovering), horizontal movement, vertical movement]
 
@@ -46,13 +47,13 @@ public class DroneSpec extends KineticRemoteSpec {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.batteryUsage = new Vector(json.getJSONOption(DroneConst.BATTERY_USAGE));
+        this.batteryUsage = new Vector(json.getJSONOption(DroneSpec.BATTERY_USAGE));
     }
 
     @Override
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(DroneConst.BATTERY_USAGE, this.batteryUsage.toJSON());
+        json.put(DroneSpec.BATTERY_USAGE, this.batteryUsage.toJSON());
         return json;
     }
 
@@ -66,7 +67,7 @@ public class DroneSpec extends KineticRemoteSpec {
 
     @Override
     public String getLabel() {
-        return String.format("d%s", this.specType.getLabel());
+        return String.format("d:%s", this.specType.getLabel());
     }
 
     public double getStaticBatteryUsage() {

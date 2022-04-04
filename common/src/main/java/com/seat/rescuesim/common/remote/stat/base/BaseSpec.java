@@ -34,7 +34,7 @@ public class BaseSpec extends StaticRemoteSpec {
 
     @Override
     public String getLabel() {
-        return String.format("b%s", this.specType.getLabel());
+        return String.format("b:%s", this.specType.getLabel());
     }
 
 }

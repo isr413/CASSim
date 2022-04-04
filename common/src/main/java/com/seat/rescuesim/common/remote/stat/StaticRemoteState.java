@@ -57,4 +57,8 @@ public class StaticRemoteState extends RemoteState {
         return this.specType;
     }
 
+    public boolean equals(StaticRemoteState state) {
+        return super.equals(state) && this.specType.equals(state.specType);
+    }
+
 }
