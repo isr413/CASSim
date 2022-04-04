@@ -23,10 +23,8 @@ public class RemoteController extends JSONAble {
 
     protected HashMap<IntentionType, Intention> intentions;
     protected String remoteID;
-    protected RemoteType remoteType;
 
-    public RemoteController(RemoteType remoteType, String remoteID) {
-        this.remoteType = remoteType;
+    public RemoteController(String remoteID) {
         this.remoteID = remoteID;
         this.intentions = new HashMap<>();
     }
@@ -37,7 +35,6 @@ public class RemoteController extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.remoteType = RemoteType.decodeType(json);
         this.remoteID = json.getString(RemoteConst.REMOTE_ID);
         this.intentions = new HashMap<>();
         if (json.hasKey(RemoteConst.INTENTIONS)) {
@@ -77,15 +74,11 @@ public class RemoteController extends JSONAble {
     }
 
     public String getLabel() {
-        return String.format("%s%s", this.remoteID, this.remoteType.getLabel());
+        return String.format("[%s]", this.remoteID);
     }
 
     public String getRemoteID() {
         return this.remoteID;
-    }
-
-    public RemoteType getRemoteType() {
-        return this.remoteType;
     }
 
     public boolean hasIntention(Intention intent) {
@@ -122,7 +115,6 @@ public class RemoteController extends JSONAble {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(RemoteConst.REMOTE_TYPE, this.remoteType.getType());
         json.put(RemoteConst.REMOTE_ID, this.remoteID);
         if (this.hasIntentions()) {
             JSONArrayBuilder jsonIntentions = JSONBuilder.Array();
@@ -135,7 +127,7 @@ public class RemoteController extends JSONAble {
     }
 
     public boolean equals(RemoteController remote) {
-        return this.remoteType.equals(remote.remoteType) && this.remoteID.equals(remote.remoteID);
+        return this.remoteID.equals(remote.remoteID);
     }
 
 }

@@ -21,6 +21,12 @@ public class ActivateIntention extends Intention {
         this.activations = new HashSet<>();
     }
 
+    public ActivateIntention(String sensor) {
+        super(IntentionType.ACTIVATE);
+        this.activations = new HashSet<>();
+        this.addActivation(sensor);
+    }
+
     public ActivateIntention(Collection<String> sensors) {
         super(IntentionType.ACTIVATE);
         this.activations = new HashSet<>(sensors);

@@ -1,7 +1,6 @@
 package com.seat.rescuesim.common.remote.intent;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
@@ -20,23 +19,23 @@ public class Intent {
         return new ActivateIntention();
     }
 
-    public static Intention Activate(ArrayList<String> sensors) {
+    public static Intention Activate(String sensor) {
+        return new ActivateIntention(sensor);
+    }
+
+    public static Intention Activate(Collection<String> sensors) {
         return new ActivateIntention(sensors);
     }
 
-    public static Intention Activate(HashSet<String> sensors) {
-        return new ActivateIntention(sensors);
-    }
-
-    public static Intention Deactive() {
+    public static Intention Deactivate() {
         return new DeactivateIntention();
     }
 
-    public static Intention Deactivate(ArrayList<String> sensors) {
-        return new DeactivateIntention(sensors);
+    public static Intention Deactivate(String sensor) {
+        return new DeactivateIntention(sensor);
     }
 
-    public static Intention Deactivate(HashSet<String> sensors) {
+    public static Intention Deactivate(Collection<String> sensors) {
         return new DeactivateIntention(sensors);
     }
 
@@ -58,6 +57,10 @@ public class Intent {
 
     public static Intention Goto(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
         return new GotoIntention(location, maxVelocity, maxAcceleration, maxJerk);
+    }
+
+    public static Intention Move() {
+        return new MoveIntention();
     }
 
     public static Intention Move(Vector jerk) {

@@ -22,6 +22,12 @@ public class DeactivateIntention extends Intention {
         this.deactivations = new HashSet<>();
     }
 
+    public DeactivateIntention(String sensor) {
+        super(IntentionType.DEACTIVATE);
+        this.deactivations = new HashSet<>();
+        this.addDeactivation(sensor);
+    }
+
     public DeactivateIntention(Collection<String> sensors) {
         super(IntentionType.DEACTIVATE);
         this.deactivations = new HashSet<>(sensors);
