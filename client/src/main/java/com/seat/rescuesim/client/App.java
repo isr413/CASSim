@@ -60,8 +60,9 @@ public class App {
     }
 
     private static void runApplicationSync(Application app, BufferedReader in,
-            PrintWriter out) throws ClientException, IOException {
+            PrintWriter out) throws ClientException, InterruptedException, IOException {
         GUIFrame frame = new GUIFrame(app.getScenarioID());
+        frame.setVisible(true);
         Debugger.logger.info(String.format("Sending scenario <%s> ...", app.getScenarioID()));
         out.println(app.getScenarioConfig().encode());
         boolean done = false;
@@ -82,7 +83,8 @@ public class App {
                     continue;
                 }
                 Debugger.logger.info("Displaying snap ...");
-                frame.displaySnap(snap);
+                frame.displaySnap(snap, app.getScenarioConfig().getMap().getWidth(),
+                    app.getScenarioConfig().getMap().getHeight());
                 System.out.println(snap);
                 Debugger.logger.info("Getting next action(s) ...");
                 ArrayList<RemoteController> controllers = app.update(snap);

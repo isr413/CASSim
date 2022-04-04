@@ -4,7 +4,6 @@ public class SensorConst {
     public static final String ACCURACY = "accuracy";
     public static final String ACTIVE = "active";
     public static final String BATTERY_USAGE = "battery_usage";
-    public static final String CONNECTIONS = "connections";
     public static final String COUNT = "count";
     public static final String DELAY = "delay";
     public static final String MONITOR_ID = "monitor_id";

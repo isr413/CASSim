@@ -39,7 +39,7 @@ public class ACSOS implements Application {
             SensorType.Comms,
             10,
             1,
-            0.01,
+            0.00,
             0
         );
     }
@@ -49,7 +49,7 @@ public class ACSOS implements Application {
             SensorType.Vision,
             10,
             1,
-            0.01,
+            0.00,
             0
         );
     }
@@ -59,7 +59,7 @@ public class ACSOS implements Application {
             SensorType.Comms,
             100000,
             1,
-            0.01,
+            0.00,
             0
         );
     }
@@ -69,7 +69,7 @@ public class ACSOS implements Application {
             SensorType.Comms,
             1,
             1,
-            0.01,
+            0.00,
             0
         );
     }
@@ -101,7 +101,7 @@ public class ACSOS implements Application {
             DroneType.DEFAULT,
             BASE_LOCATION,
             1,
-            new Vector(0.01, 0.01, 0.01),
+            new Vector(0.00, 0.00, 0.00),
             sensors,
             30.0,
             3.0,
@@ -143,7 +143,7 @@ public class ACSOS implements Application {
         sensors.add(new SensorConfig(this.getVictimMonitor(), 1));
         VictimSpec victimSpec = new VictimSpec(
             VictimType.DEFAULT,
-            new Vector(),
+            null,
             1,
             sensors,
             1.50,
@@ -153,7 +153,7 @@ public class ACSOS implements Application {
             0.01
         );
         ArrayList<VictimConfig> victimConf = new ArrayList<>();
-        victimConf.add(new VictimConfig(victimSpec, 1, false));
+        victimConf.add(new VictimConfig(victimSpec, 100, false));
         return victimConf;
     }
 
