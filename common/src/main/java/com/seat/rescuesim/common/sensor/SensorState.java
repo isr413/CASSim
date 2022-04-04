@@ -40,7 +40,7 @@ public class SensorState extends JSONAble {
     }
 
     public String getLabel() {
-        return String.format("%s%s", this.sensorID, this.sensorType.getLabel());
+        return String.format("%s:%s", this.sensorID, this.sensorType.getLabel());
     }
 
     public String getSensorID() {

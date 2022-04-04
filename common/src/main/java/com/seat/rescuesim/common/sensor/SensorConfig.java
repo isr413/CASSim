@@ -12,28 +12,14 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
-/** A serializable configuration of a Sensor.  */
+/** A serializable configuration of a Sensor. */
 public class SensorConfig extends JSONAble {
 
     protected int count;
     protected HashSet<String> sensorIDs;
-    protected SensorType sensorType;
     protected SensorSpec spec;
 
     public SensorConfig(SensorSpec spec, int count) {
-        this(SensorType.GENERIC, spec, count);
-    }
-
-    public SensorConfig(SensorSpec spec, ArrayList<String> sensorIDs) {
-        this(SensorType.GENERIC, spec, sensorIDs);
-    }
-
-    public SensorConfig(SensorSpec spec, HashSet<String> sensorIDs) {
-        this(SensorType.GENERIC, spec, sensorIDs);
-    }
-
-    protected SensorConfig(SensorType sensorType, SensorSpec spec, int count) {
-        this.sensorType = sensorType;
         this.spec = spec;
         this.count = count;
         this.sensorIDs = new HashSet<>();
@@ -42,12 +28,11 @@ public class SensorConfig extends JSONAble {
         }
     }
 
-    protected SensorConfig(SensorType sensorType, SensorSpec spec, ArrayList<String> sensorIDs) {
-        this(sensorType, spec, new HashSet<String>(sensorIDs));
+    public SensorConfig(SensorSpec spec, ArrayList<String> sensorIDs) {
+        this(spec, new HashSet<String>(sensorIDs));
     }
 
-    protected SensorConfig(SensorType sensorType, SensorSpec spec, HashSet<String> sensorIDs) {
-        this.sensorType = sensorType;
+    public SensorConfig(SensorSpec spec, HashSet<String> sensorIDs) {
         this.spec = spec;
         this.count = sensorIDs.size();
         this.sensorIDs = sensorIDs;
@@ -59,7 +44,6 @@ public class SensorConfig extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.sensorType = SensorType.decodeType(json);
         this.spec = this.decodeSpec(json.getJSONOption(SensorConst.SPEC));
         this.count = json.getInt(SensorConst.COUNT);
         this.sensorIDs = new HashSet<>();
@@ -84,7 +68,7 @@ public class SensorConfig extends JSONAble {
     }
 
     public SensorType getSensorType() {
-        return this.sensorType;
+        return this.spec.getSensorType();
     }
 
     public SensorSpec getSpec() {

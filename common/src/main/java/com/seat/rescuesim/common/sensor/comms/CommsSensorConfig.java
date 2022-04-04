@@ -6,21 +6,20 @@ import java.util.HashSet;
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.sensor.SensorConfig;
-import com.seat.rescuesim.common.sensor.SensorType;
 
 /** A serializable configuration for a Comms Sensor. */
 public class CommsSensorConfig extends SensorConfig {
 
     public CommsSensorConfig(CommsSensorSpec spec, int count) {
-        super(SensorType.COMMS, spec, count);
+        super(spec, count);
     }
 
     public CommsSensorConfig(CommsSensorSpec spec, ArrayList<String> sensorIDs) {
-        super(SensorType.COMMS, spec, sensorIDs);
+        super(spec, sensorIDs);
     }
 
     public CommsSensorConfig(CommsSensorSpec spec, HashSet<String> sensorIDs) {
-        super(SensorType.COMMS, spec, sensorIDs);
+        super(spec, sensorIDs);
     }
 
     public CommsSensorConfig(JSONOption option) throws JSONException {

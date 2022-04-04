@@ -77,7 +77,7 @@ public class SensorSpec extends JSONAble {
     }
 
     public String getLabel() {
-        return String.format("s%s", this.sensorType.getLabel());
+        return String.format("s:%s:%s", this.sensorType.getLabel(), this.getSpecType().getLabel());
     }
 
     public double getSensorAccuracy() {

@@ -6,21 +6,20 @@ import java.util.HashSet;
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.sensor.SensorConfig;
-import com.seat.rescuesim.common.sensor.SensorType;
 
 /** A serializable configuration for a Monitor Sensor. */
 public class MonitorSensorConfig extends SensorConfig {
 
     public MonitorSensorConfig(MonitorSensorSpec spec, int count) {
-        super(SensorType.MONITOR, spec, count);
+        super(spec, count);
     }
 
     public MonitorSensorConfig(MonitorSensorSpec spec, ArrayList<String> sensorIDs) {
-        super(SensorType.MONITOR, spec, sensorIDs);
+        super(spec, sensorIDs);
     }
 
     public MonitorSensorConfig(MonitorSensorSpec spec, HashSet<String> sensorIDs) {
-        super(SensorType.MONITOR, spec, sensorIDs);
+        super(spec, sensorIDs);
     }
 
     public MonitorSensorConfig(JSONOption option) throws JSONException {

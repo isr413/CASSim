@@ -19,21 +19,33 @@ public class SensorFactory {
 
     public static CommsSensorConfig decodeCommsSensorConfig(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
-            return new CommsSensorConfig(option);
+            CommsSensorType sensorType = SensorFactory.decodeCommsSensorType(option);
+            if (sensorType.equals(CommsSensorType.GENERIC) || sensorType.equals(CommsSensorType.BLUETOOTH) ||
+                    sensorType.equals(CommsSensorType.LTE_RADIO)) {
+                return new CommsSensorConfig(option);
+            }
         }
         throw new JSONException(String.format("Cannot decode sensor config of %s", option.toString()));
     }
 
     public static CommsSensorSpec decodeCommsSensorSpec(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
-            return new CommsSensorSpec(option);
+            CommsSensorType sensorType = SensorFactory.decodeCommsSensorType(option);
+            if (sensorType.equals(CommsSensorType.GENERIC) || sensorType.equals(CommsSensorType.BLUETOOTH) ||
+                    sensorType.equals(CommsSensorType.LTE_RADIO)) {
+                return new CommsSensorSpec(option);
+            }
         }
         throw new JSONException(String.format("Cannot decode sensor spec of %s", option.toString()));
     }
 
     public static CommsSensorState decodeCommsSensorState(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
-            return new CommsSensorState(option);
+            CommsSensorType sensorType = SensorFactory.decodeCommsSensorType(option);
+            if (sensorType.equals(CommsSensorType.GENERIC) || sensorType.equals(CommsSensorType.BLUETOOTH) ||
+                    sensorType.equals(CommsSensorType.LTE_RADIO)) {
+                return new CommsSensorState(option);
+            }
         }
         throw new JSONException(String.format("Cannot decode sensor state of %s", option.toString()));
     }
@@ -47,21 +59,30 @@ public class SensorFactory {
 
     public static MonitorSensorConfig decodeMonitorSensorConfig(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
-            return new MonitorSensorConfig(option);
+            MonitorSensorType sensorType = SensorFactory.decodeMonitorSensorType(option);
+            if (sensorType.equals(MonitorSensorType.GENERIC) || sensorType.equals(MonitorSensorType.HRVM)) {
+                return new MonitorSensorConfig(option);
+            }
         }
         throw new JSONException(String.format("Cannot decode sensor config of %s", option.toString()));
     }
 
     public static MonitorSensorSpec decodeMonitorSensorSpec(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
-            return new MonitorSensorSpec(option);
+            MonitorSensorType sensorType = SensorFactory.decodeMonitorSensorType(option);
+            if (sensorType.equals(MonitorSensorType.GENERIC) || sensorType.equals(MonitorSensorType.HRVM)) {
+                return new MonitorSensorSpec(option);
+            }
         }
         throw new JSONException(String.format("Cannot decode sensor spec of %s", option.toString()));
     }
 
     public static MonitorSensorState decodeMonitorSensorState(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
-            return new MonitorSensorState(option);
+            MonitorSensorType sensorType = SensorFactory.decodeMonitorSensorType(option);
+            if (sensorType.equals(MonitorSensorType.GENERIC) || sensorType.equals(MonitorSensorType.HRVM)) {
+                return new MonitorSensorState(option);
+            }
         }
         throw new JSONException(String.format("Cannot decode sensor state of %s", option.toString()));
     }
@@ -76,6 +97,9 @@ public class SensorFactory {
     public static SensorConfig decodeSensorConfig(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
             SensorType sensorType = SensorFactory.decodeSensorType(option);
+            if (sensorType.equals(SensorType.GENERIC)) {
+                return new SensorConfig(option);
+            }
             if (sensorType.equals(SensorType.COMMS)) {
                 return SensorFactory.decodeCommsSensorConfig(option);
             }
@@ -85,7 +109,6 @@ public class SensorFactory {
             if (sensorType.equals(SensorType.VISION)) {
                 return SensorFactory.decodeVisionSensorConfig(option);
             }
-            return new SensorConfig(option);
         }
         throw new JSONException(String.format("Cannot decode remote config of %s", option.toString()));
     }
@@ -93,6 +116,9 @@ public class SensorFactory {
     public static SensorSpec decodeSensorSpec(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
             SensorType sensorType = SensorFactory.decodeSensorType(option);
+            if (sensorType.equals(SensorType.GENERIC)) {
+                return new SensorSpec(option);
+            }
             if (sensorType.equals(SensorType.COMMS)) {
                 return SensorFactory.decodeCommsSensorSpec(option);
             }
@@ -102,7 +128,6 @@ public class SensorFactory {
             if (sensorType.equals(SensorType.VISION)) {
                 return SensorFactory.decodeVisionSensorSpec(option);
             }
-            return new SensorSpec(option);
         }
         throw new JSONException(String.format("Cannot decode remote spec of %s", option.toString()));
     }
@@ -110,6 +135,9 @@ public class SensorFactory {
     public static SensorState decodeSensorState(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
             SensorType sensorType = SensorFactory.decodeSensorType(option);
+            if (sensorType.equals(SensorType.GENERIC)) {
+                return new SensorState(option);
+            }
             if (sensorType.equals(SensorType.COMMS)) {
                 return SensorFactory.decodeCommsSensorState(option);
             }
@@ -119,7 +147,6 @@ public class SensorFactory {
             if (sensorType.equals(SensorType.VISION)) {
                 return SensorFactory.decodeVisionSensorState(option);
             }
-            return new SensorState(option);
         }
         throw new JSONException(String.format("Cannot decode remote state of %s", option.toString()));
     }
@@ -133,21 +160,30 @@ public class SensorFactory {
 
     public static VisionSensorConfig decodeVisionSensorConfig(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
-            return new VisionSensorConfig(option);
+            VisionSensorType sensorType = SensorFactory.decodeVisionSensorType(option);
+            if (sensorType.equals(VisionSensorType.GENERIC) || sensorType.equals(VisionSensorType.CMOS_CAMERA)) {
+                return new VisionSensorConfig(option);
+            }
         }
         throw new JSONException(String.format("Cannot decode sensor config of %s", option.toString()));
     }
 
     public static VisionSensorSpec decodeVisionSensorSpec(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
-            return new VisionSensorSpec(option);
+            VisionSensorType sensorType = SensorFactory.decodeVisionSensorType(option);
+            if (sensorType.equals(VisionSensorType.GENERIC) || sensorType.equals(VisionSensorType.CMOS_CAMERA)) {
+                return new VisionSensorSpec(option);
+            }
         }
         throw new JSONException(String.format("Cannot decode sensor spec of %s", option.toString()));
     }
 
     public static VisionSensorState decodeVisionSensorState(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
-            return new VisionSensorState(option);
+            VisionSensorType sensorType = SensorFactory.decodeVisionSensorType(option);
+            if (sensorType.equals(VisionSensorType.GENERIC) || sensorType.equals(VisionSensorType.CMOS_CAMERA)) {
+                return new VisionSensorState(option);
+            }
         }
         throw new JSONException(String.format("Cannot decode sensor state of %s", option.toString()));
     }
