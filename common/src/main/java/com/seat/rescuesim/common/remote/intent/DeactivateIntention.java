@@ -1,6 +1,7 @@
 package com.seat.rescuesim.common.remote.intent;
 
-import java.util.ArrayList;
+
+import java.util.Collection;
 import java.util.HashSet;
 
 import com.seat.rescuesim.common.json.JSONArray;
@@ -17,16 +18,13 @@ public class DeactivateIntention extends Intention {
     private HashSet<String> deactivations;
 
     public DeactivateIntention() {
-        this(new HashSet<String>());
-    }
-
-    public DeactivateIntention(ArrayList<String> sensors) {
-        this(new HashSet<String>(sensors));
-    }
-
-    public DeactivateIntention(HashSet<String> sensors) {
         super(IntentionType.DEACTIVATE);
-        this.deactivations = sensors;
+        this.deactivations = new HashSet<>();
+    }
+
+    public DeactivateIntention(Collection<String> sensors) {
+        super(IntentionType.DEACTIVATE);
+        this.deactivations = new HashSet<>(sensors);
     }
 
     public DeactivateIntention(JSONOption option) {
@@ -54,6 +52,14 @@ public class DeactivateIntention extends Intention {
         return true;
     }
 
+    public boolean addDeactivations(Collection<String> sensors) {
+        boolean flag = true;
+        for (String sensor : sensors) {
+            flag = this.addDeactivation(sensor) && flag;
+        }
+        return flag;
+    }
+
     public HashSet<String> getDeactivations() {
         return this.deactivations;
     }
@@ -78,6 +84,14 @@ public class DeactivateIntention extends Intention {
         }
         this.deactivations.remove(sensor);
         return true;
+    }
+
+    public boolean removeDeactivations(Collection<String> sensors) {
+        boolean flag = true;
+        for (String sensor : sensors) {
+            flag = this.removeDeactivation(sensor) && flag;
+        }
+        return flag;
     }
 
     @Override

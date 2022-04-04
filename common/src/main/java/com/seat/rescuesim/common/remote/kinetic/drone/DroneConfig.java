@@ -1,7 +1,6 @@
 package com.seat.rescuesim.common.remote.kinetic.drone;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
@@ -14,11 +13,7 @@ public class DroneConfig extends KineticRemoteConfig {
         super(spec, count, dynamic);
     }
 
-    public DroneConfig(DroneSpec spec, ArrayList<String> remoteIDs, boolean dynamic) {
-        super(spec, remoteIDs, dynamic);
-    }
-
-    public DroneConfig(DroneSpec spec, HashSet<String> remoteIDs, boolean dynamic) {
+    public DroneConfig(DroneSpec spec, Collection<String> remoteIDs, boolean dynamic) {
         super(spec, remoteIDs, dynamic);
     }
 

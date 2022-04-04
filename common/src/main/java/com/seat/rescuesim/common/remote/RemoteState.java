@@ -1,6 +1,7 @@
 package com.seat.rescuesim.common.remote;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import com.seat.rescuesim.common.json.JSONAble;
@@ -30,16 +31,20 @@ public class RemoteState extends JSONAble {
         this(RemoteType.GENERIC, remoteID, location, battery);
     }
 
-    public RemoteState(String remoteID, Vector location, double battery, ArrayList<SensorState> sensors) {
+    public RemoteState(String remoteID, Vector location, double battery, Collection<SensorState> sensors) {
         this(RemoteType.GENERIC, remoteID, location, battery, sensors);
     }
 
     protected RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery) {
-        this(remoteType, remoteID, location, battery, new ArrayList<SensorState>());
+        this.remoteType = remoteType;
+        this.remoteID = remoteID;
+        this.location = location;
+        this.battery = battery;
+        this.sensors = new HashMap<>();
     }
 
     protected RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery,
-            ArrayList<SensorState> sensors) {
+            Collection<SensorState> sensors) {
         this.remoteType = remoteType;
         this.remoteID = remoteID;
         this.location = location;

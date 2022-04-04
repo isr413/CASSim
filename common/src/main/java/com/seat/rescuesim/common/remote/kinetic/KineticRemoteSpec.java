@@ -1,6 +1,6 @@
 package com.seat.rescuesim.common.remote.kinetic;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
@@ -27,8 +27,18 @@ public class KineticRemoteSpec extends RemoteSpec {
         this(KineticRemoteType.GENERIC, maxVelocity, maxAcceleration, maxJerk);
     }
 
+    public KineticRemoteSpec(double maxBatteryPower) {
+        this(KineticRemoteType.GENERIC, maxBatteryPower, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
+            Double.POSITIVE_INFINITY);
+    }
+
     public KineticRemoteSpec(Vector location) {
         this(KineticRemoteType.GENERIC, location, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
+            Double.POSITIVE_INFINITY);
+    }
+
+    public KineticRemoteSpec(Vector location, double maxBatteryPower) {
+        this(KineticRemoteType.GENERIC, location, maxBatteryPower, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
             Double.POSITIVE_INFINITY);
     }
 
@@ -36,22 +46,27 @@ public class KineticRemoteSpec extends RemoteSpec {
         this(KineticRemoteType.GENERIC, location, maxVelocity, maxAcceleration, maxJerk);
     }
 
-    public KineticRemoteSpec(double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+    public KineticRemoteSpec(Vector location, double maxBatteryPower, double maxVelocity, double maxAcceleration,
+            double maxJerk) {
+        this(KineticRemoteType.GENERIC, location, maxBatteryPower, maxVelocity, maxAcceleration, maxJerk);
+    }
+
+    public KineticRemoteSpec(double maxBatteryPower, Collection<SensorConfig> sensors) {
         this(KineticRemoteType.GENERIC, maxBatteryPower, sensors, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
             Double.POSITIVE_INFINITY);
     }
 
-    public KineticRemoteSpec(double maxBatteryPower, ArrayList<SensorConfig> sensors, double maxVelocity,
+    public KineticRemoteSpec(double maxBatteryPower, Collection<SensorConfig> sensors, double maxVelocity,
             double maxAcceleration, double maxJerk) {
         this(KineticRemoteType.GENERIC, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
     }
 
-    public KineticRemoteSpec(Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+    public KineticRemoteSpec(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {
         this(KineticRemoteType.GENERIC, location, maxBatteryPower, sensors, Double.POSITIVE_INFINITY,
             Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
     }
 
-    public KineticRemoteSpec(Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors,
+    public KineticRemoteSpec(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors,
             double maxVelocity, double maxAcceleration, double maxJerk) {
         this(KineticRemoteType.GENERIC, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
     }
@@ -63,6 +78,19 @@ public class KineticRemoteSpec extends RemoteSpec {
     public KineticRemoteSpec(KineticRemoteType specType, double maxVelocity, double maxAcceleration,
             double maxJerk) {
         super(RemoteType.KINETIC);
+        this.specType = specType;
+        this.maxVelocity = maxVelocity;
+        this.maxAcceleration = maxAcceleration;
+        this.maxJerk = maxJerk;
+    }
+
+    public KineticRemoteSpec(KineticRemoteType specType, double maxBatteryPower) {
+        this(specType, maxBatteryPower, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+    }
+
+    public KineticRemoteSpec(KineticRemoteType specType, double maxBatteryPower, double maxVelocity,
+            double maxAcceleration, double maxJerk) {
+        super(RemoteType.KINETIC, maxBatteryPower);
         this.specType = specType;
         this.maxVelocity = maxVelocity;
         this.maxAcceleration = maxAcceleration;
@@ -82,12 +110,21 @@ public class KineticRemoteSpec extends RemoteSpec {
         this.maxJerk = maxJerk;
     }
 
-    public KineticRemoteSpec(KineticRemoteType specType, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+    public KineticRemoteSpec(KineticRemoteType specType, Vector location, double maxBatteryPower, double maxVelocity,
+            double maxAcceleration, double maxJerk) {
+        super(RemoteType.KINETIC, location, maxBatteryPower);
+        this.specType = specType;
+        this.maxVelocity = maxVelocity;
+        this.maxAcceleration = maxAcceleration;
+        this.maxJerk = maxJerk;
+    }
+
+    public KineticRemoteSpec(KineticRemoteType specType, double maxBatteryPower, Collection<SensorConfig> sensors) {
         this(specType, maxBatteryPower, sensors, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
             Double.POSITIVE_INFINITY);
     }
 
-    public KineticRemoteSpec(KineticRemoteType specType, double maxBatteryPower, ArrayList<SensorConfig> sensors,
+    public KineticRemoteSpec(KineticRemoteType specType, double maxBatteryPower, Collection<SensorConfig> sensors,
             double maxVelocity, double maxAcceleration, double maxJerk) {
         super(RemoteType.KINETIC, maxBatteryPower, sensors);
         this.specType = specType;
@@ -97,13 +134,13 @@ public class KineticRemoteSpec extends RemoteSpec {
     }
 
     public KineticRemoteSpec(KineticRemoteType specType, Vector location, double maxBatteryPower,
-            ArrayList<SensorConfig> sensors) {
+            Collection<SensorConfig> sensors) {
         this(specType, location, maxBatteryPower, sensors, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
             Double.POSITIVE_INFINITY);
     }
 
     public KineticRemoteSpec(KineticRemoteType specType, Vector location, double maxBatteryPower,
-            ArrayList<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
         super(RemoteType.KINETIC, location, maxBatteryPower, sensors);
         this.specType = specType;
         this.maxVelocity = maxVelocity;

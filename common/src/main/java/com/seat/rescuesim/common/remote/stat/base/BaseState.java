@@ -1,6 +1,6 @@
 package com.seat.rescuesim.common.remote.stat.base;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
@@ -16,7 +16,7 @@ public class BaseState extends StaticRemoteState {
         super(StaticRemoteType.BASE, remoteID, location, battery);
     }
 
-    public BaseState(String remoteID, Vector location, double battery, ArrayList<SensorState> sensors) {
+    public BaseState(String remoteID, Vector location, double battery, Collection<SensorState> sensors) {
         super(StaticRemoteType.BASE, remoteID, location, battery, sensors);
     }
 

@@ -1,6 +1,6 @@
 package com.seat.rescuesim.common.remote.kinetic;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
@@ -22,18 +22,21 @@ public class KineticRemoteState extends RemoteState {
         this(KineticRemoteType.GENERIC, remoteID, location, battery, velocity, acceleration);
     }
 
-    public KineticRemoteState(String remoteID, Vector location, double battery, ArrayList<SensorState> sensors,
+    public KineticRemoteState(String remoteID, Vector location, double battery, Collection<SensorState> sensors,
             Vector velocity, Vector acceleration) {
         this(KineticRemoteType.GENERIC, remoteID, location, battery, sensors, velocity, acceleration);
     }
 
     public KineticRemoteState(KineticRemoteType specType, String remoteID, Vector location, double battery,
             Vector velocity, Vector acceleration) {
-        this(specType, remoteID, location, battery, new ArrayList<SensorState>(), velocity, acceleration);
+        super(RemoteType.KINETIC, remoteID, location, battery);
+        this.specType = specType;
+        this.velocity = velocity;
+        this.acceleration = acceleration;
     }
 
     public KineticRemoteState(KineticRemoteType specType, String remoteID, Vector location, double battery,
-            ArrayList<SensorState> sensors, Vector velocity, Vector acceleration) {
+            Collection<SensorState> sensors, Vector velocity, Vector acceleration) {
         super(RemoteType.KINETIC, remoteID, location, battery, sensors);
         this.specType = specType;
         this.velocity = velocity;

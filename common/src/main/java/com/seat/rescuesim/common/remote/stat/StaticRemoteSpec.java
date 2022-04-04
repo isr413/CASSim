@@ -1,6 +1,6 @@
 package com.seat.rescuesim.common.remote.stat;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
@@ -20,16 +20,23 @@ public class StaticRemoteSpec extends RemoteSpec {
         this(StaticRemoteType.GENERIC);
     }
 
+    public StaticRemoteSpec(double maxBatteryPower) {
+        this(StaticRemoteType.GENERIC, maxBatteryPower);
+    }
+
     public StaticRemoteSpec(Vector location) {
         this(StaticRemoteType.GENERIC, location);
     }
 
-    public StaticRemoteSpec(double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+    public StaticRemoteSpec(Vector location, double maxBatteryPower) {
+        this(StaticRemoteType.GENERIC, location, maxBatteryPower);
+    }
+
+    public StaticRemoteSpec(double maxBatteryPower, Collection<SensorConfig> sensors) {
         this(StaticRemoteType.GENERIC, maxBatteryPower, sensors);
     }
 
-    public StaticRemoteSpec(Vector location, double maxBatteryPower,
-            ArrayList<SensorConfig> sensors) {
+    public StaticRemoteSpec(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {
         this(StaticRemoteType.GENERIC, location, maxBatteryPower, sensors);
     }
 
@@ -38,18 +45,28 @@ public class StaticRemoteSpec extends RemoteSpec {
         this.specType = specType;
     }
 
+    public StaticRemoteSpec(StaticRemoteType specType, double maxBatteryPower) {
+        super(RemoteType.STATIC, maxBatteryPower);
+        this.specType = specType;
+    }
+
     public StaticRemoteSpec(StaticRemoteType specType, Vector location) {
         super(RemoteType.STATIC, location);
         this.specType = specType;
     }
 
-    public StaticRemoteSpec(StaticRemoteType specType, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+    public StaticRemoteSpec(StaticRemoteType specType, Vector location, double maxBatteryPower) {
+        super(RemoteType.STATIC, location, maxBatteryPower);
+        this.specType = specType;
+    }
+
+    public StaticRemoteSpec(StaticRemoteType specType, double maxBatteryPower, Collection<SensorConfig> sensors) {
         super(RemoteType.STATIC, maxBatteryPower, sensors);
         this.specType = specType;
     }
 
     public StaticRemoteSpec(StaticRemoteType specType, Vector location, double maxBatteryPower,
-            ArrayList<SensorConfig> sensors) {
+            Collection<SensorConfig> sensors) {
         super(RemoteType.STATIC, location, maxBatteryPower, sensors);
         this.specType = specType;
     }

@@ -1,6 +1,6 @@
 package com.seat.rescuesim.common.remote.kinetic.victim;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
@@ -45,13 +45,13 @@ public class VictimSpec extends KineticRemoteSpec {
         this.speedStdDev = speedStdDev;
     }
 
-    public VictimSpec(double speedMean, double speedStdDev, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+    public VictimSpec(double speedMean, double speedStdDev, double maxBatteryPower, Collection<SensorConfig> sensors) {
         super(KineticRemoteType.VICTIM, maxBatteryPower, sensors);
         this.speedMean = speedMean;
         this.speedStdDev = speedStdDev;
     }
 
-    public VictimSpec(double speedMean, double speedStdDev, double maxBatteryPower, ArrayList<SensorConfig> sensors,
+    public VictimSpec(double speedMean, double speedStdDev, double maxBatteryPower, Collection<SensorConfig> sensors,
             double maxVelocity, double maxAcceleration, double maxJerk) {
         super(KineticRemoteType.VICTIM, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
         this.speedMean = speedMean;
@@ -59,14 +59,14 @@ public class VictimSpec extends KineticRemoteSpec {
     }
 
     public VictimSpec(Vector location, double speedMean, double speedStdDev, double maxBatteryPower,
-            ArrayList<SensorConfig> sensors) {
+            Collection<SensorConfig> sensors) {
         super(KineticRemoteType.VICTIM, location, maxBatteryPower, sensors);
         this.speedMean = speedMean;
         this.speedStdDev = speedStdDev;
     }
 
     public VictimSpec(Vector location, double speedMean, double speedStdDev, double maxBatteryPower,
-            ArrayList<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
         super(KineticRemoteType.VICTIM, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
         this.speedMean = speedMean;
         this.speedStdDev = speedStdDev;

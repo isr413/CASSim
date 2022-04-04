@@ -1,6 +1,6 @@
 package com.seat.rescuesim.common.remote.kinetic.drone;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
@@ -13,11 +13,11 @@ import com.seat.rescuesim.common.sensor.SensorState;
 public class DroneState extends KineticRemoteState {
 
     public DroneState(String remoteID, Vector location, double battery, Vector velocity, Vector acceleration) {
-        this(remoteID, location, battery, new ArrayList<SensorState>(), velocity, acceleration);
+        super(remoteID, location, battery, velocity, acceleration);
     }
 
-    public DroneState(String remoteID, Vector location, double battery, ArrayList<SensorState> sensors, Vector velocity,
-            Vector acceleration) {
+    public DroneState(String remoteID, Vector location, double battery, Collection<SensorState> sensors,
+            Vector velocity, Vector acceleration) {
         super(KineticRemoteType.DRONE, remoteID, location, battery, sensors, velocity, acceleration);
     }
 

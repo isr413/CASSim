@@ -1,6 +1,6 @@
 package com.seat.rescuesim.common.remote.kinetic.drone;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
@@ -19,10 +19,11 @@ public class DroneSpec extends KineticRemoteSpec {
 
     public DroneSpec(double maxBatteryPower, Vector batteryUsage, double maxVelocity, double maxAcceleration,
             double maxJerk) {
-        this(maxBatteryPower, batteryUsage, new ArrayList<SensorConfig>(), maxVelocity, maxAcceleration, maxJerk);
+        super(KineticRemoteType.DRONE, maxBatteryPower, maxVelocity, maxAcceleration, maxJerk);
+        this.batteryUsage = batteryUsage;
     }
 
-    public DroneSpec(double maxBatteryPower, Vector batteryUsage, ArrayList<SensorConfig> sensors, double maxVelocity,
+    public DroneSpec(double maxBatteryPower, Vector batteryUsage, Collection<SensorConfig> sensors, double maxVelocity,
             double maxAcceleration, double maxJerk) {
         super(KineticRemoteType.DRONE, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
         this.batteryUsage = batteryUsage;
@@ -30,12 +31,12 @@ public class DroneSpec extends KineticRemoteSpec {
 
     public DroneSpec(Vector location, double maxBatteryPower, Vector batteryUsage, double maxVelocity,
             double maxAcceleration, double maxJerk) {
-        this(location, maxBatteryPower, batteryUsage, new ArrayList<SensorConfig>(), maxVelocity, maxAcceleration,
-            maxJerk);
+        super(KineticRemoteType.DRONE, location, maxBatteryPower, maxVelocity, maxAcceleration, maxJerk);
+        this.batteryUsage = batteryUsage;
     }
 
     public DroneSpec(Vector location, double maxBatteryPower, Vector batteryUsage,
-            ArrayList<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
         super(KineticRemoteType.DRONE, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
         this.batteryUsage = batteryUsage;
     }

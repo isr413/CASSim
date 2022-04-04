@@ -1,6 +1,7 @@
 package com.seat.rescuesim.common.remote;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
@@ -33,32 +34,51 @@ public class RemoteSpec extends JSONAble {
         this(RemoteType.GENERIC, location);
     }
 
-    public RemoteSpec(double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+    public RemoteSpec(double maxBatteryPower) {
+        this(RemoteType.GENERIC, maxBatteryPower);
+    }
+
+    public RemoteSpec(Vector location, double maxBatteryPower) {
+        this(RemoteType.GENERIC, location, maxBatteryPower);
+    }
+
+    public RemoteSpec(double maxBatteryPower, Collection<SensorConfig> sensors) {
         this(RemoteType.GENERIC, maxBatteryPower, sensors);
     }
 
-    public RemoteSpec(Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+    public RemoteSpec(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {
         this(RemoteType.GENERIC, location, maxBatteryPower, sensors);
     }
 
     protected RemoteSpec(RemoteType remoteType) {
-        this(remoteType, null, 1, new ArrayList<SensorConfig>());
+        this(remoteType, null, 1);
+    }
+
+    protected RemoteSpec(RemoteType remoteType, double maxBatteryPower) {
+        this(remoteType, null, maxBatteryPower);
     }
 
     protected RemoteSpec(RemoteType remoteType, Vector location) {
-        this(remoteType, location, 1, new ArrayList<SensorConfig>());
+        this(remoteType, location, 1);
     }
 
-    protected RemoteSpec(RemoteType remoteType, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+    protected RemoteSpec(RemoteType remoteType, Vector location, double maxBatteryPower) {
+        this.remoteType = remoteType;
+        this.location = location; // a remote with a null location should be randomly assigned a location
+        this.maxBatteryPower = maxBatteryPower;
+        this.sensors = new ArrayList<>();
+    }
+
+    protected RemoteSpec(RemoteType remoteType, double maxBatteryPower, Collection<SensorConfig> sensors) {
         this(remoteType, null, maxBatteryPower, sensors);
     }
 
     protected RemoteSpec(RemoteType remoteType, Vector location, double maxBatteryPower,
-            ArrayList<SensorConfig> sensors) {
+            Collection<SensorConfig> sensors) {
         this.remoteType = remoteType;
         this.location = location; // a remote with a null location should be randomly assigned a location
         this.maxBatteryPower = maxBatteryPower;
-        this.sensors = sensors;
+        this.sensors = new ArrayList<>(sensors);
     }
 
     public RemoteSpec(JSONOption option) throws JSONException {

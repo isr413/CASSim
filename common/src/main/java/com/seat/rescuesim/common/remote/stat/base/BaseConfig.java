@@ -1,7 +1,6 @@
 package com.seat.rescuesim.common.remote.stat.base;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
@@ -14,11 +13,7 @@ public class BaseConfig extends StaticRemoteConfig {
         super(spec, count, dynamic);
     }
 
-    public BaseConfig(BaseSpec spec, ArrayList<String> remoteIDs, boolean dynamic) {
-        super(spec, remoteIDs, dynamic);
-    }
-
-    public BaseConfig(BaseSpec spec, HashSet<String> remoteIDs, boolean dynamic) {
+    public BaseConfig(BaseSpec spec, Collection<String> remoteIDs, boolean dynamic) {
         super(spec, remoteIDs, dynamic);
     }
 

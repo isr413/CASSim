@@ -1,7 +1,6 @@
 package com.seat.rescuesim.common.remote.kinetic.victim;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
@@ -14,11 +13,7 @@ public class VictimConfig extends KineticRemoteConfig {
         super(spec, count, dynamic);
     }
 
-    public VictimConfig(VictimSpec spec, ArrayList<String> remoteIDs, boolean dynamic) {
-        super(spec, remoteIDs, dynamic);
-    }
-
-    public VictimConfig(VictimSpec spec, HashSet<String> remoteIDs, boolean dynamic) {
+    public VictimConfig(VictimSpec spec, Collection<String> remoteIDs, boolean dynamic) {
         super(spec, remoteIDs, dynamic);
     }
 

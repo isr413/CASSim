@@ -1,6 +1,6 @@
 package com.seat.rescuesim.common.remote.stat.base;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
@@ -16,15 +16,23 @@ public class BaseSpec extends StaticRemoteSpec {
         super(StaticRemoteType.BASE);
     }
 
+    public BaseSpec(double maxBatteryPower) {
+        super(StaticRemoteType.BASE, maxBatteryPower);
+    }
+
     public BaseSpec(Vector location) {
         super(StaticRemoteType.BASE, location);
     }
 
-    public BaseSpec(double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+    public BaseSpec(Vector location, double maxBatteryPower) {
+        super(StaticRemoteType.BASE, location, maxBatteryPower);
+    }
+
+    public BaseSpec(double maxBatteryPower, Collection<SensorConfig> sensors) {
         super(StaticRemoteType.BASE, maxBatteryPower, sensors);
     }
 
-    public BaseSpec(Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+    public BaseSpec(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {
         super(StaticRemoteType.BASE, location, maxBatteryPower, sensors);
     }
 
