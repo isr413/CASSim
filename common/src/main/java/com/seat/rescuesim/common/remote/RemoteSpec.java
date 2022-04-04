@@ -18,26 +18,43 @@ import com.seat.rescuesim.common.util.Debugger;
 import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable specification of a Remote. */
-public abstract class RemoteSpec extends JSONAble {
+public class RemoteSpec extends JSONAble {
 
     protected Vector location;
     protected double maxBatteryPower;
     protected RemoteType remoteType;
     protected ArrayList<SensorConfig> sensors;
 
-    public RemoteSpec(RemoteType remoteType) {
+    public RemoteSpec() {
+        this(RemoteType.GENERIC);
+    }
+
+    public RemoteSpec(Vector location) {
+        this(RemoteType.GENERIC, location);
+    }
+
+    public RemoteSpec(double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+        this(RemoteType.GENERIC, maxBatteryPower, sensors);
+    }
+
+    public RemoteSpec(Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+        this(RemoteType.GENERIC, location, maxBatteryPower, sensors);
+    }
+
+    protected RemoteSpec(RemoteType remoteType) {
         this(remoteType, null, 1, new ArrayList<SensorConfig>());
     }
 
-    public RemoteSpec(RemoteType remoteType, Vector location) {
+    protected RemoteSpec(RemoteType remoteType, Vector location) {
         this(remoteType, location, 1, new ArrayList<SensorConfig>());
     }
 
-    public RemoteSpec(RemoteType remoteType, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+    protected RemoteSpec(RemoteType remoteType, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
         this(remoteType, null, maxBatteryPower, sensors);
     }
 
-    public RemoteSpec(RemoteType remoteType, Vector location, double maxBatteryPower, ArrayList<SensorConfig> sensors) {
+    protected RemoteSpec(RemoteType remoteType, Vector location, double maxBatteryPower,
+            ArrayList<SensorConfig> sensors) {
         this.remoteType = remoteType;
         this.location = location;
         this.maxBatteryPower = maxBatteryPower;
@@ -83,7 +100,9 @@ public abstract class RemoteSpec extends JSONAble {
         return json;
     }
 
-    public abstract String getLabel();
+    public String getLabel() {
+        return String.format("r%s", this.remoteType.getLabel());
+    }
 
     public Vector getLocation() {
         return this.location;
@@ -131,7 +150,9 @@ public abstract class RemoteSpec extends JSONAble {
         return confs;
     }
 
-    public abstract SerializableEnum getSpecType();
+    public SerializableEnum getSpecType() {
+        return RemoteType.GENERIC;
+    }
 
     public boolean hasLocation() {
         return this.location != null;

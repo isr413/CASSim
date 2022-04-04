@@ -18,7 +18,7 @@ import com.seat.rescuesim.common.util.SensorFactory;
 import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable snapshot of a Remote. */
-public abstract class RemoteState extends JSONAble {
+public class RemoteState extends JSONAble {
 
     protected double battery;
     protected Vector location;
@@ -26,11 +26,19 @@ public abstract class RemoteState extends JSONAble {
     protected HashMap<String, SensorState> sensors;
     protected RemoteType remoteType;
 
-    public RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery) {
+    public RemoteState(String remoteID, Vector location, double battery) {
+        this(RemoteType.GENERIC, remoteID, location, battery);
+    }
+
+    public RemoteState(String remoteID, Vector location, double battery, ArrayList<SensorState> sensors) {
+        this(RemoteType.GENERIC, remoteID, location, battery, sensors);
+    }
+
+    protected RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery) {
         this(remoteType, remoteID, location, battery, new ArrayList<SensorState>());
     }
 
-    public RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery,
+    protected RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery,
             ArrayList<SensorState> sensors) {
         this.remoteType = remoteType;
         this.remoteID = remoteID;
@@ -109,7 +117,9 @@ public abstract class RemoteState extends JSONAble {
         return this.sensors.get(sensorID);
     }
 
-    public abstract SerializableEnum getSpecType();
+    public SerializableEnum getSpecType() {
+        return RemoteType.GENERIC;
+    }
 
     public boolean hasSensorWithID(String sensorID) {
         return this.sensors.containsKey(sensorID);

@@ -14,7 +14,7 @@ import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable Remote configuration. */
-public abstract class RemoteConfig extends JSONAble {
+public class RemoteConfig extends JSONAble {
 
     protected int count;
     protected boolean dynamic;
@@ -22,7 +22,19 @@ public abstract class RemoteConfig extends JSONAble {
     protected RemoteType remoteType;
     protected RemoteSpec spec;
 
-    public RemoteConfig(RemoteType remoteType, RemoteSpec spec, int count, boolean dynamic) {
+    public RemoteConfig(RemoteSpec spec, int count, boolean dynamic) {
+        this(RemoteType.GENERIC, spec, count, dynamic);
+    }
+
+    public RemoteConfig(RemoteSpec spec, ArrayList<String> remoteIDs, boolean dynamic) {
+        this(RemoteType.GENERIC, spec, remoteIDs, dynamic);
+    }
+
+    public RemoteConfig(RemoteSpec spec, HashSet<String> remoteIDs, boolean dynamic) {
+        this(RemoteType.GENERIC, spec, remoteIDs, dynamic);
+    }
+
+    protected RemoteConfig(RemoteType remoteType, RemoteSpec spec, int count, boolean dynamic) {
         this(remoteType, spec, new HashSet<String>(), dynamic);
         this.count = count;
         for (int i = 0; i < count; i++) {
@@ -30,11 +42,11 @@ public abstract class RemoteConfig extends JSONAble {
         }
     }
 
-    public RemoteConfig(RemoteType remoteType, RemoteSpec spec, ArrayList<String> remoteIDs, boolean dynamic) {
+    protected RemoteConfig(RemoteType remoteType, RemoteSpec spec, ArrayList<String> remoteIDs, boolean dynamic) {
         this(remoteType, spec, new HashSet<String>(remoteIDs), dynamic);
     }
 
-    public RemoteConfig(RemoteType remoteType, RemoteSpec spec, HashSet<String> remoteIDs, boolean dynamic) {
+    protected RemoteConfig(RemoteType remoteType, RemoteSpec spec, HashSet<String> remoteIDs, boolean dynamic) {
         this.remoteType = remoteType;
         this.spec = spec;
         this.count = remoteIDs.size();
@@ -61,7 +73,9 @@ public abstract class RemoteConfig extends JSONAble {
         this.dynamic = json.getBoolean(RemoteConst.DYNAMIC);
     }
 
-    protected abstract RemoteSpec decodeSpec(JSONOption jsonSpec) throws JSONException;
+    protected RemoteSpec decodeSpec(JSONOption jsonSpec) throws JSONException {
+        return new RemoteSpec(jsonSpec);
+    }
 
     public int getCount() {
         return this.count;
