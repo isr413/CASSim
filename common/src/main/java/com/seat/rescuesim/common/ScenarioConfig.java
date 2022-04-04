@@ -1,6 +1,7 @@
 package com.seat.rescuesim.common;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 import com.seat.rescuesim.common.json.JSONAble;
@@ -45,48 +46,55 @@ public class ScenarioConfig extends JSONAble {
     private long seed;
     private double stepSize;
 
-    //-- Constructors for scenarios with no victims and no drones --//
     public ScenarioConfig(Map map, int missionLength, double stepSize) {
-        this(ScenarioConfig.DEFAULT_ID, map, 0, missionLength, stepSize, new ArrayList<RemoteConfig>());
+        this(ScenarioConfig.DEFAULT_ID, map, missionLength, stepSize);
     }
 
     public ScenarioConfig(String scenarioID, Map map, int missionLength, double stepSize) {
-        this(scenarioID, map, 0, missionLength, stepSize, new ArrayList<RemoteConfig>());
+        this(scenarioID, new Random().nextLong(), map, missionLength, stepSize);
     }
 
     public ScenarioConfig(long seed, Map map, int missionLength, double stepSize) {
-        this(ScenarioConfig.DEFAULT_ID, seed, map, 0, missionLength, stepSize, new ArrayList<RemoteConfig>());
+        this(ScenarioConfig.DEFAULT_ID, seed, map, missionLength, stepSize);
     }
 
     public ScenarioConfig(String scenarioID, long seed, Map map, int missionLength, double stepSize) {
-        this(scenarioID, seed, map, 0, missionLength, stepSize, new ArrayList<RemoteConfig>());
+        this.scenarioID = scenarioID;
+        this.seed = seed;
+        this.map = map;
+        this.disasterScale = 0;
+        this.missionLength = missionLength;
+        this.stepSize = stepSize;
+        this.remoteConfig = new ArrayList<>();
+        this.countBases();
+        this.countDrones();
+        this.countVictims();
     }
 
-    //-- Constructors for scenarios with victims, drones, and/or a base --//
     public ScenarioConfig(Map map, double disasterScale, int missionLength, double stepSize,
-            ArrayList<RemoteConfig> remoteConfig) {
+            Collection<RemoteConfig> remoteConfig) {
         this(ScenarioConfig.DEFAULT_ID, map, disasterScale, missionLength, stepSize, remoteConfig);
     }
 
     public ScenarioConfig(String scenarioID, Map map, double disasterScale, int missionLength, double stepSize,
-            ArrayList<RemoteConfig> remoteConfig) {
+            Collection<RemoteConfig> remoteConfig) {
         this(scenarioID, new Random().nextLong(), map, disasterScale, missionLength, stepSize, remoteConfig);
     }
 
     public ScenarioConfig(long seed, Map map, double disasterScale, int missionLength, double stepSize,
-            ArrayList<RemoteConfig> remoteConfig) {
+            Collection<RemoteConfig> remoteConfig) {
         this(ScenarioConfig.DEFAULT_ID, seed, map, disasterScale, missionLength, stepSize, remoteConfig);
     }
 
     public ScenarioConfig(String scenarioID, long seed, Map map, double disasterScale, int missionLength,
-            double stepSize, ArrayList<RemoteConfig> remoteConfig) {
+            double stepSize, Collection<RemoteConfig> remoteConfig) {
         this.scenarioID = scenarioID;
         this.seed = seed;
         this.map = map;
         this.disasterScale = disasterScale;
         this.missionLength = missionLength;
         this.stepSize = stepSize;
-        this.remoteConfig = remoteConfig;
+        this.remoteConfig = new ArrayList<>(remoteConfig);
         this.countBases();
         this.countDrones();
         this.countVictims();

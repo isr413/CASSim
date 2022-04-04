@@ -1,6 +1,6 @@
 package com.seat.rescuesim.common.app;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 import com.seat.rescuesim.common.ScenarioConfig;
@@ -35,10 +35,10 @@ public interface Application {
         );
     }
 
-    ArrayList<RemoteConfig> getRemoteConfigs();
+    Collection<RemoteConfig> getRemoteConfigs();
 
     double getStepSize();
 
-    ArrayList<RemoteController> update(Snapshot snap);
+    Collection<RemoteController> update(Snapshot snap);
 
 }
