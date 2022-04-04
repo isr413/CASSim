@@ -10,15 +10,30 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
+import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable configuration of a Sensor.  */
 public class SensorConfig extends JSONAble {
 
-    private int count;
-    private HashSet<String> sensorIDs;
-    private SensorSpec spec;
+    protected int count;
+    protected HashSet<String> sensorIDs;
+    protected SensorType sensorType;
+    protected SensorSpec spec;
 
     public SensorConfig(SensorSpec spec, int count) {
+        this(SensorType.GENERIC, spec, count);
+    }
+
+    public SensorConfig(SensorSpec spec, ArrayList<String> sensorIDs) {
+        this(SensorType.GENERIC, spec, sensorIDs);
+    }
+
+    public SensorConfig(SensorSpec spec, HashSet<String> sensorIDs) {
+        this(SensorType.GENERIC, spec, sensorIDs);
+    }
+
+    protected SensorConfig(SensorType sensorType, SensorSpec spec, int count) {
+        this.sensorType = sensorType;
         this.spec = spec;
         this.count = count;
         this.sensorIDs = new HashSet<>();
@@ -27,11 +42,12 @@ public class SensorConfig extends JSONAble {
         }
     }
 
-    public SensorConfig(SensorSpec spec, ArrayList<String> sensorIDs) {
-        this(spec, new HashSet<String>(sensorIDs));
+    protected SensorConfig(SensorType sensorType, SensorSpec spec, ArrayList<String> sensorIDs) {
+        this(sensorType, spec, new HashSet<String>(sensorIDs));
     }
 
-    public SensorConfig(SensorSpec spec, HashSet<String> sensorIDs) {
+    protected SensorConfig(SensorType sensorType, SensorSpec spec, HashSet<String> sensorIDs) {
+        this.sensorType = sensorType;
         this.spec = spec;
         this.count = sensorIDs.size();
         this.sensorIDs = sensorIDs;
@@ -43,13 +59,20 @@ public class SensorConfig extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.spec = new SensorSpec(json.getJSONOption(SensorConst.SPEC));
+        this.sensorType = SensorType.decodeType(json);
+        this.spec = this.decodeSpec(json.getJSONOption(SensorConst.SPEC));
         this.count = json.getInt(SensorConst.COUNT);
         this.sensorIDs = new HashSet<>();
-        JSONArray jsonSensors = json.getJSONArray(SensorConst.SENSOR_IDS);
-        for (int i = 0; i < jsonSensors.length(); i++) {
-            this.sensorIDs.add(jsonSensors.getString(i));
+        if (json.hasKey(SensorConst.SENSOR_IDS)) {
+            JSONArray jsonSensors = json.getJSONArray(SensorConst.SENSOR_IDS);
+            for (int i = 0; i < jsonSensors.length(); i++) {
+                this.sensorIDs.add(jsonSensors.getString(i));
+            }
         }
+    }
+
+    protected SensorSpec decodeSpec(JSONOption jsonSpec) throws JSONException {
+        return new SensorSpec(jsonSpec);
     }
 
     public int getCount() {
@@ -60,11 +83,15 @@ public class SensorConfig extends JSONAble {
         return this.sensorIDs;
     }
 
+    public SensorType getSensorType() {
+        return this.sensorType;
+    }
+
     public SensorSpec getSpec() {
         return this.spec;
     }
 
-    public SensorType getSpecType() {
+    public SerializableEnum getSpecType() {
         return this.spec.getSpecType();
     }
 
@@ -80,16 +107,18 @@ public class SensorConfig extends JSONAble {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(SensorConst.SPEC, this.spec.toJSON());
         json.put(SensorConst.COUNT, this.count);
-        JSONArrayBuilder jsonSensors = JSONBuilder.Array();
-        for (String sensorID : this.sensorIDs) {
-            jsonSensors.put(sensorID);
+        if (this.hasSensors()) {
+            JSONArrayBuilder jsonSensors = JSONBuilder.Array();
+            for (String sensorID : this.sensorIDs) {
+                jsonSensors.put(sensorID);
+            }
+            json.put(SensorConst.SENSOR_IDS, jsonSensors.toJSON());
         }
-        json.put(SensorConst.SENSOR_IDS, jsonSensors.toJSON());
         return json.toJSON();
     }
 
-    public boolean equals(SensorConfig conf) {
-        return this.spec.equals(conf.spec) && this.count == conf.count && this.sensorIDs.equals(conf.sensorIDs);
+    public boolean equals(SensorConfig config) {
+        return this.spec.equals(config.spec) && this.count == config.count && this.sensorIDs.equals(config.sensorIDs);
     }
 
 }

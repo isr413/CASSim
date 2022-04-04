@@ -6,38 +6,49 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
+import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable Sensor Prototype. */
 public class SensorSpec extends JSONAble {
 
     protected double accuracy;
     protected double batteryUsage;
-    protected double delay;
     protected double range;
     protected SensorType sensorType;
 
-    public SensorSpec(SensorType sensorType) {
-        this(sensorType, Double.POSITIVE_INFINITY, 1, 0, 0);
+    public SensorSpec() {
+        this(SensorType.GENERIC);
     }
 
-    public SensorSpec(SensorType sensorType, double range) {
-        this(sensorType, range, 1, 0, 0);
+    public SensorSpec(double range) {
+        this(SensorType.GENERIC, range);
     }
 
-    public SensorSpec(SensorType sensorType, double range, double accuracy) {
-        this(sensorType, range, accuracy, 0, 0);
+    public SensorSpec(double range, double accuracy) {
+        this(SensorType.GENERIC, range, accuracy);
     }
 
-    public SensorSpec(SensorType sensorType, double range, double accuracy, double batteryUsage) {
-        this(sensorType, range, accuracy, batteryUsage, 0);
+    public SensorSpec(double range, double accuracy, double batteryUsage) {
+        this(SensorType.GENERIC, range, accuracy, batteryUsage);
     }
 
-    public SensorSpec(SensorType sensorType, double range, double accuracy, double batteryUsage, double delay) {
+    protected SensorSpec(SensorType sensorType) {
+        this(sensorType, Double.POSITIVE_INFINITY, 1, 0);
+    }
+
+    protected SensorSpec(SensorType sensorType, double range) {
+        this(sensorType, range, 1, 0);
+    }
+
+    protected SensorSpec(SensorType sensorType, double range, double accuracy) {
+        this(sensorType, range, accuracy, 0);
+    }
+
+    protected SensorSpec(SensorType sensorType, double range, double accuracy, double batteryUsage) {
         this.sensorType = sensorType;
         this.range = range;
         this.accuracy = accuracy;
         this.batteryUsage = batteryUsage;
-        this.delay = delay;
     }
 
     public SensorSpec(JSONOption option) throws JSONException {
@@ -50,7 +61,15 @@ public class SensorSpec extends JSONAble {
         this.accuracy = json.getDouble(SensorConst.ACCURACY);
         this.range = json.getDouble(SensorConst.RANGE);
         this.batteryUsage = json.getDouble(SensorConst.BATTERY_USAGE);
-        this.delay = json.getDouble(SensorConst.DELAY);
+    }
+
+    protected JSONObjectBuilder getJSONBuilder() {
+        JSONObjectBuilder json = JSONBuilder.Object();
+        json.put(SensorConst.SENSOR_TYPE, this.sensorType.getType());
+        json.put(SensorConst.RANGE, this.range);
+        json.put(SensorConst.ACCURACY, this.accuracy);
+        json.put(SensorConst.BATTERY_USAGE, this.batteryUsage);
+        return json;
     }
 
     public double getBatteryUsage() {
@@ -65,31 +84,25 @@ public class SensorSpec extends JSONAble {
         return this.accuracy;
     }
 
-    public double getSensorDelay() {
-        return this.delay;
-    }
-
     public double getSensorRange() {
         return this.range;
     }
 
-    public SensorType getSpecType() {
+    public SensorType getSensorType() {
         return this.sensorType;
     }
 
+    public SerializableEnum getSpecType() {
+        return SensorType.GENERIC;
+    }
+
     public JSONOption toJSON() {
-        JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(SensorConst.SENSOR_TYPE, this.sensorType.getType());
-        json.put(SensorConst.RANGE, this.range);
-        json.put(SensorConst.ACCURACY, this.accuracy);
-        json.put(SensorConst.BATTERY_USAGE, this.batteryUsage);
-        json.put(SensorConst.DELAY, this.delay);
-        return json.toJSON();
+        return this.getJSONBuilder().toJSON();
     }
 
     public boolean equals(SensorSpec spec) {
         return this.sensorType.equals(spec.sensorType) && this.range == spec.range && this.accuracy == spec.accuracy &&
-            this.batteryUsage == spec.batteryUsage && this.delay == spec.delay;
+            this.batteryUsage == spec.batteryUsage;
     }
 
 }

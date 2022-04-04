@@ -10,21 +10,36 @@ import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.sensor.SensorState;
+import com.seat.rescuesim.common.sensor.SensorType;
 
 public class CommsSensorState extends SensorState {
 
-    private HashSet<String> connections;
+    protected HashSet<String> connections;
+    protected CommsSensorType specType;
 
-    public CommsSensorState(SensorType type, String sensorID) {
-        this(type, sensorID, false, new HashSet<String>());
+    public CommsSensorState(String sensorID) {
+        this(CommsSensorType.GENERIC, sensorID);
     }
 
-    public CommsSensorState(SensorType type, String sensorID, boolean active, ArrayList<String> connections) {
-        this(type, sensorID, active, new HashSet<String>(connections));
+    public CommsSensorState(String sensorID, boolean active, ArrayList<String> connections) {
+        this(CommsSensorType.GENERIC, sensorID, active, connections);
     }
 
-    public CommsSensorState(SensorType type, String sensorID, boolean active, HashSet<String> connections) {
-        super(type, sensorID, active);
+    public CommsSensorState(String sensorID, boolean active, HashSet<String> connections) {
+        this(CommsSensorType.GENERIC, sensorID, active, connections);
+    }
+
+    public CommsSensorState(CommsSensorType specType, String sensorID) {
+        this(specType, sensorID, false, new HashSet<String>());
+    }
+
+    public CommsSensorState(CommsSensorType specType, String sensorID, boolean active, ArrayList<String> connections) {
+        this(specType, sensorID, active, new HashSet<String>(connections));
+    }
+
+    public CommsSensorState(CommsSensorType specType, String sensorID, boolean active, HashSet<String> connections) {
+        super(SensorType.COMMS, sensorID, active);
+        this.specType = specType;
         this.connections = connections;
     }
 
@@ -35,17 +50,36 @@ public class CommsSensorState extends SensorState {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
+        this.specType = CommsSensorType.decodeType(json);
         this.connections = new HashSet<>();
-        if (json.hasKey(SensorConst.CONNECTIONS)) {
-            JSONArray jsonConnections = json.getJSONArray(SensorConst.CONNECTIONS);
+        if (json.hasKey(CommsSensorConst.CONNECTIONS)) {
+            JSONArray jsonConnections = json.getJSONArray(CommsSensorConst.CONNECTIONS);
             for (int i = 0; i < jsonConnections.length(); i++) {
                 this.connections.add(jsonConnections.getString(i));
             }
         }
     }
 
+    @Override
+    protected JSONObjectBuilder getJSONBuilder() {
+        JSONObjectBuilder json = super.getJSONBuilder();
+        if (this.hasConnections()) {
+            JSONArrayBuilder jsonObservations = JSONBuilder.Array();
+            for (String remoteID : this.connections) {
+                jsonObservations.put(remoteID);
+            }
+            json.put(CommsSensorConst.CONNECTIONS, jsonObservations.toJSON());
+        }
+        return json;
+    }
+
     public HashSet<String> getConnections() {
         return this.connections;
+    }
+
+    @Override
+    public CommsSensorType getSpecType() {
+        return this.specType;
     }
 
     public boolean hasConnections() {
@@ -56,16 +90,9 @@ public class CommsSensorState extends SensorState {
         return this.connections.contains(remoteID);
     }
 
-    public JSONOption toJSON() {
-        JSONObjectBuilder json = super.getJSONBuilder();
-        if (this.hasConnections()) {
-            JSONArrayBuilder jsonObservations = JSONBuilder.Array();
-            for (String remoteID : this.connections) {
-                jsonObservations.put(remoteID);
-            }
-            json.put(SensorConst.CONNECTIONS, jsonObservations.toJSON());
-        }
-        return json.toJSON();
+    public boolean equals(CommsSensorState state) {
+        return super.equals(state) && this.specType.equals(state.specType) &&
+            this.connections.equals(state.connections);
     }
 
 }

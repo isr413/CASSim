@@ -6,15 +6,16 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
+import com.seat.rescuesim.common.util.SerializableEnum;
 
-public abstract class SensorState extends JSONAble {
+public class SensorState extends JSONAble {
 
     protected boolean active;
     protected String sensorID;
-    protected SensorType type;
+    protected SensorType sensorType;
 
-    public SensorState(SensorType type, String sensorID, boolean active) {
-        this.type = type;
+    public SensorState(SensorType sensorType, String sensorID, boolean active) {
+        this.sensorType = sensorType;
         this.sensorID = sensorID;
         this.active = active;
     }
@@ -25,17 +26,33 @@ public abstract class SensorState extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = SensorType.values()[json.getInt(SensorConst.SENSOR_TYPE)];
+        this.sensorType = SensorType.decodeType(json);
         this.sensorID = json.getString(SensorConst.SENSOR_ID);
         this.active = json.getBoolean(SensorConst.ACTIVE);
+    }
+
+    protected JSONObjectBuilder getJSONBuilder() {
+        JSONObjectBuilder json = JSONBuilder.Object();
+        json.put(SensorConst.SENSOR_TYPE, this.sensorType.getType());
+        json.put(SensorConst.SENSOR_ID, this.sensorID);
+        json.put(SensorConst.ACTIVE, this.active);
+        return json;
+    }
+
+    public String getLabel() {
+        return String.format("%s%s", this.sensorID, this.sensorType.getLabel());
     }
 
     public String getSensorID() {
         return this.sensorID;
     }
 
-    public SensorType getSpecType() {
-        return this.type;
+    public SensorType getSensorType() {
+        return this.sensorType;
+    }
+
+    public SerializableEnum getSpecType() {
+        return SensorType.GENERIC;
     }
 
     public boolean isActive() {
@@ -46,18 +63,12 @@ public abstract class SensorState extends JSONAble {
         return !this.isActive();
     }
 
-    protected JSONObjectBuilder getJSONBuilder() {
-        JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(SensorConst.SENSOR_TYPE, this.type.getType());
-        json.put(SensorConst.SENSOR_ID, this.sensorID);
-        json.put(SensorConst.ACTIVE, this.active);
-        return json;
+    public JSONOption toJSON() {
+        return this.getJSONBuilder().toJSON();
     }
 
-    public abstract JSONOption toJSON();
-
     public boolean equals(SensorState state) {
-        return this.type.equals(state.type) && this.sensorID.equals(state.sensorID);
+        return this.sensorType.equals(state.sensorType) && this.sensorID.equals(state.sensorID);
     }
 
 }

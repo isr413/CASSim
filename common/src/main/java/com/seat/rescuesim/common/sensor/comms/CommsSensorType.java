@@ -3,11 +3,11 @@ package com.seat.rescuesim.common.sensor.comms;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.util.SerializableEnum;
 
-/** A serializable enumeration to denote types of comms sensors. */
+/** A serializable enumeration to denote types of Comms Sensors. */
 public enum CommsSensorType implements SerializableEnum {
     NONE(0),
     DEFAULT(1),
-    CUSTOM(2),
+    GENERIC(2),
     BLUETOOTH(3),
     LTE_RADIO(4);
 

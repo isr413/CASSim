@@ -1,5 +1,39 @@
 package com.seat.rescuesim.common.sensor.monitor;
 
-public class MonitorSensorType {
+import com.seat.rescuesim.common.json.JSONObject;
+import com.seat.rescuesim.common.util.SerializableEnum;
+
+/** A serializable enumeration to denote types of Monitor Sensors. */
+public enum MonitorSensorType implements SerializableEnum {
+    NONE(0),
+    DEFAULT(1),
+    GENERIC(2),
+    HRVM(3);
+
+    public static MonitorSensorType decodeType(JSONObject json) {
+        return MonitorSensorType.Value(json.getInt(MonitorSensorConst.MONITOR_SENSOR_TYPE));
+    }
+
+    public static MonitorSensorType Value(int value) {
+        return MonitorSensorType.values()[value];
+    }
+
+    private int type;
+
+    private MonitorSensorType(int type) {
+        this.type = type;
+    }
+
+    public boolean equals(MonitorSensorType type) {
+        return this.type == type.type;
+    }
+
+    public int getType() {
+        return this.type;
+    }
+
+    public String toString() {
+        return this.getLabel();
+    }
 
 }
