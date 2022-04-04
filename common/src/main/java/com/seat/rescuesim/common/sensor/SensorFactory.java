@@ -1,11 +1,7 @@
-package com.seat.rescuesim.common.util;
+package com.seat.rescuesim.common.sensor;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.sensor.SensorConfig;
-import com.seat.rescuesim.common.sensor.SensorSpec;
-import com.seat.rescuesim.common.sensor.SensorState;
-import com.seat.rescuesim.common.sensor.SensorType;
 import com.seat.rescuesim.common.sensor.comms.CommsSensorConfig;
 import com.seat.rescuesim.common.sensor.comms.CommsSensorSpec;
 import com.seat.rescuesim.common.sensor.comms.CommsSensorState;

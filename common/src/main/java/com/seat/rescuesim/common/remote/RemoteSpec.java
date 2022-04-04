@@ -10,12 +10,12 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
+import com.seat.rescuesim.common.json.SerializableEnum;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 import com.seat.rescuesim.common.sensor.SensorType;
 import com.seat.rescuesim.common.util.CoreException;
 import com.seat.rescuesim.common.util.Debugger;
-import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable specification of a Remote. */
 public class RemoteSpec extends JSONAble {

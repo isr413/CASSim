@@ -1,11 +1,7 @@
-package com.seat.rescuesim.common.util;
+package com.seat.rescuesim.common.remote;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.remote.RemoteConfig;
-import com.seat.rescuesim.common.remote.RemoteSpec;
-import com.seat.rescuesim.common.remote.RemoteState;
-import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.remote.kinetic.KineticRemoteConfig;
 import com.seat.rescuesim.common.remote.kinetic.KineticRemoteSpec;
 import com.seat.rescuesim.common.remote.kinetic.KineticRemoteState;

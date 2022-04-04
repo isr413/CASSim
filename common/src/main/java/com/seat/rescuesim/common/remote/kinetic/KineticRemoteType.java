@@ -1,7 +1,7 @@
 package com.seat.rescuesim.common.remote.kinetic;
 
 import com.seat.rescuesim.common.json.JSONObject;
-import com.seat.rescuesim.common.util.SerializableEnum;
+import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable enumeration to denote types of kinetic remotes. */
 public enum KineticRemoteType implements SerializableEnum {

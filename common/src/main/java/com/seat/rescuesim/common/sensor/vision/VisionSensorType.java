@@ -1,7 +1,7 @@
 package com.seat.rescuesim.common.sensor.vision;
 
 import com.seat.rescuesim.common.json.JSONObject;
-import com.seat.rescuesim.common.util.SerializableEnum;
+import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable enumeration to denote types of Vision Sensors. */
 public enum VisionSensorType implements SerializableEnum {

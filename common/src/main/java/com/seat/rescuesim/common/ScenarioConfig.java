@@ -13,12 +13,12 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.remote.RemoteConfig;
+import com.seat.rescuesim.common.remote.RemoteFactory;
 import com.seat.rescuesim.common.remote.kinetic.KineticRemoteType;
 import com.seat.rescuesim.common.remote.kinetic.drone.DroneConfig;
 import com.seat.rescuesim.common.remote.kinetic.victim.VictimConfig;
 import com.seat.rescuesim.common.remote.stat.StaticRemoteType;
 import com.seat.rescuesim.common.remote.stat.base.BaseConfig;
-import com.seat.rescuesim.common.util.RemoteFactory;
 
 /** A serializable class to store scenario configurations. */
 public class ScenarioConfig extends JSONAble {

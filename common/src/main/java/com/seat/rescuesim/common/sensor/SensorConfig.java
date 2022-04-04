@@ -10,7 +10,7 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.util.SerializableEnum;
+import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable configuration of a Sensor.  */
 public class SensorConfig extends JSONAble {

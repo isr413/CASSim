@@ -12,9 +12,9 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
+import com.seat.rescuesim.common.remote.RemoteFactory;
 import com.seat.rescuesim.common.remote.RemoteState;
 import com.seat.rescuesim.common.util.CoreException;
-import com.seat.rescuesim.common.util.RemoteFactory;
 
 /** A serializable class to represent a single snapshot of the current sim state. */
 public class Snapshot extends JSONAble {

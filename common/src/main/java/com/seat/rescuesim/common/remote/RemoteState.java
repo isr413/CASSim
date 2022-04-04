@@ -11,11 +11,11 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
+import com.seat.rescuesim.common.json.SerializableEnum;
 import com.seat.rescuesim.common.math.Vector;
+import com.seat.rescuesim.common.sensor.SensorFactory;
 import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.util.CoreException;
-import com.seat.rescuesim.common.util.SensorFactory;
-import com.seat.rescuesim.common.util.SerializableEnum;
 
 /** A serializable snapshot of a Remote. */
 public class RemoteState extends JSONAble {
