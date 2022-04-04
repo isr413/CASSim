@@ -17,15 +17,39 @@ public class DroneSpec extends KineticRemoteSpec {
 
     private Vector batteryUsage; // [static (hovering), horizontal movement, vertical movement]
 
+    public DroneSpec(Vector batteryUsage) {
+        super(KineticRemoteType.DRONE);
+        this.batteryUsage = batteryUsage;
+    }
+
+    public DroneSpec(Vector batteryUsage, double maxVelocity, double maxAcceleration, double maxJerk) {
+        super(KineticRemoteType.DRONE, maxVelocity, maxAcceleration, maxJerk);
+        this.batteryUsage = batteryUsage;
+    }
+
+    public DroneSpec(double maxBatteryPower, Vector batteryUsage) {
+        super(KineticRemoteType.DRONE, maxBatteryPower);
+        this.batteryUsage = batteryUsage;
+    }
+
     public DroneSpec(double maxBatteryPower, Vector batteryUsage, double maxVelocity, double maxAcceleration,
             double maxJerk) {
         super(KineticRemoteType.DRONE, maxBatteryPower, maxVelocity, maxAcceleration, maxJerk);
         this.batteryUsage = batteryUsage;
     }
 
-    public DroneSpec(double maxBatteryPower, Vector batteryUsage, Collection<SensorConfig> sensors, double maxVelocity,
-            double maxAcceleration, double maxJerk) {
-        super(KineticRemoteType.DRONE, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
+    public DroneSpec(Vector location, Vector batteryUsage) {
+        super(KineticRemoteType.DRONE, location);
+        this.batteryUsage = batteryUsage;
+    }
+
+    public DroneSpec(Vector location, Vector batteryUsage, double maxVelocity, double maxAcceleration, double maxJerk) {
+        super(KineticRemoteType.DRONE, location, maxVelocity, maxAcceleration, maxJerk);
+        this.batteryUsage = batteryUsage;
+    }
+
+    public DroneSpec(Vector location, double maxBatteryPower, Vector batteryUsage) {
+        super(KineticRemoteType.DRONE, location, maxBatteryPower);
         this.batteryUsage = batteryUsage;
     }
 
@@ -35,8 +59,24 @@ public class DroneSpec extends KineticRemoteSpec {
         this.batteryUsage = batteryUsage;
     }
 
-    public DroneSpec(Vector location, double maxBatteryPower, Vector batteryUsage,
-            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
+    public DroneSpec(double maxBatteryPower, Collection<SensorConfig> sensors, Vector batteryUsage) {
+        super(KineticRemoteType.DRONE, maxBatteryPower, sensors);
+        this.batteryUsage = batteryUsage;
+    }
+
+    public DroneSpec(double maxBatteryPower, Collection<SensorConfig> sensors, Vector batteryUsage, double maxVelocity,
+            double maxAcceleration, double maxJerk) {
+        super(KineticRemoteType.DRONE, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
+        this.batteryUsage = batteryUsage;
+    }
+
+    public DroneSpec(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors, Vector batteryUsage) {
+        super(KineticRemoteType.DRONE, location, maxBatteryPower, sensors);
+        this.batteryUsage = batteryUsage;
+    }
+
+    public DroneSpec(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors, Vector batteryUsage,
+            double maxVelocity, double maxAcceleration, double maxJerk) {
         super(KineticRemoteType.DRONE, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
         this.batteryUsage = batteryUsage;
     }
