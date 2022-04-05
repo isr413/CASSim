@@ -10,14 +10,14 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.seat.rescuesim.common.ScenarioConfig;
-import com.seat.rescuesim.common.Snapshot;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
 import com.seat.rescuesim.common.json.JSONBuilder;
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.remote.RemoteController;
+import com.seat.rescuesim.common.scenario.ScenarioConfig;
+import com.seat.rescuesim.common.scenario.Snapshot;
 import com.seat.rescuesim.common.util.CoreException;
 
 public class JSONSocket {

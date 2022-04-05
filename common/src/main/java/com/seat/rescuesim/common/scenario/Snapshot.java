@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common;
+package com.seat.rescuesim.common.scenario;
 
 import java.util.ArrayList;
 import java.util.HashMap;

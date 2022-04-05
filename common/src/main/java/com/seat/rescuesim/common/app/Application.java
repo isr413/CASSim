@@ -3,15 +3,13 @@ package com.seat.rescuesim.common.app;
 import java.util.Collection;
 import java.util.Random;
 
-import com.seat.rescuesim.common.ScenarioConfig;
-import com.seat.rescuesim.common.Snapshot;
 import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.remote.RemoteConfig;
 import com.seat.rescuesim.common.remote.RemoteController;
+import com.seat.rescuesim.common.scenario.ScenarioConfig;
+import com.seat.rescuesim.common.scenario.Snapshot;
 
 public interface Application {
-
-    double getDisasterScale();
 
     Map getMap();
 
@@ -28,7 +26,6 @@ public interface Application {
             getScenarioID(),
             getSeed(),
             getMap(),
-            getDisasterScale(),
             getMissionLength(),
             getStepSize(),
             getRemoteConfigs()

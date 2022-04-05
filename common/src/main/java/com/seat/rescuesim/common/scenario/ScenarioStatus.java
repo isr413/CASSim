@@ -1,8 +1,8 @@
-package com.seat.rescuesim.common;
+package com.seat.rescuesim.common.scenario;
 
 import com.seat.rescuesim.common.json.SerializableEnum;
 
-/** A serializable enumeration to denote types of Snapshot statuses. */
+/** A serializable enumeration to denote types of scenario statuses. */
 public enum ScenarioStatus implements SerializableEnum {
     NONE(0),
     START(1),
