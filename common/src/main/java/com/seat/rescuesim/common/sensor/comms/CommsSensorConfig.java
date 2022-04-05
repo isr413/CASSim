@@ -28,12 +28,12 @@ public class CommsSensorConfig extends SensorConfig {
 
     @Override
     public CommsSensorSpec getSpec() {
-        return (CommsSensorSpec) this.spec;
+        return (CommsSensorSpec) super.getSpec();
     }
 
     @Override
     public CommsSensorType getSpecType() {
-        return (CommsSensorType) this.spec.getSpecType();
+        return (CommsSensorType) super.getSpecType();
     }
 
 }

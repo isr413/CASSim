@@ -6,9 +6,8 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 /** A serializable enumeration to denote types of Vision Sensors. */
 public enum VisionSensorType implements SerializableEnum {
     NONE(0),
-    DEFAULT(1),
-    GENERIC(2),
-    CMOS_CAMERA(3);
+    GENERIC(1),
+    CMOS_CAMERA(2);
 
     public static VisionSensorType decodeType(JSONObject json) {
         return VisionSensorType.Value(json.getInt(VisionSensorConst.VISION_SENSOR_TYPE));

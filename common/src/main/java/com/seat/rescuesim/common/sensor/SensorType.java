@@ -6,11 +6,10 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 /** A serializable enum to denote types of Sensors. */
 public enum SensorType implements SerializableEnum {
     NONE(0),
-    DEFAULT(1),
-    GENERIC(2),
-    COMMS(3),
-    MONITOR(4),
-    VISION(5);
+    GENERIC(1),
+    COMMS(2),
+    MONITOR(3),
+    VISION(4);
 
     public static SensorType decodeType(JSONObject json) {
         return SensorType.Value(json.getInt(SensorConst.SENSOR_TYPE));

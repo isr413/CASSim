@@ -28,12 +28,12 @@ public class VisionSensorConfig extends SensorConfig {
 
     @Override
     public VisionSensorSpec getSpec() {
-        return (VisionSensorSpec) this.spec;
+        return (VisionSensorSpec) super.getSpec();
     }
 
     @Override
     public VisionSensorType getSpecType() {
-        return (VisionSensorType) this.spec.getSpecType();
+        return (VisionSensorType) super.getSpecType();
     }
 
 }

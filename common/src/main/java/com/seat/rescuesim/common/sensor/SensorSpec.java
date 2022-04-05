@@ -11,37 +11,43 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 /** A serializable Sensor Prototype. */
 public class SensorSpec extends JSONAble {
 
-    protected double accuracy;
-    protected double batteryUsage;
-    protected double range;
-    protected SensorType sensorType;
+    protected static final double DEFAULT_ACCURACY = 1.0;
+    protected static final double DEFAULT_BATTERY_USAGE = 0.0;
+    protected static final double DEFAULT_RANGE = Double.POSITIVE_INFINITY;
+    protected static final SensorType DEFAULT_SENSOR_TYPE = SensorType.GENERIC;
+
+    private double accuracy;
+    private double batteryUsage;
+    private double range;
+    private SensorType sensorType;
 
     public SensorSpec() {
-        this(SensorType.GENERIC);
+        this(SensorSpec.DEFAULT_SENSOR_TYPE, SensorSpec.DEFAULT_RANGE, SensorSpec.DEFAULT_ACCURACY,
+            SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     public SensorSpec(double range) {
-        this(SensorType.GENERIC, range);
+        this(SensorSpec.DEFAULT_SENSOR_TYPE, range, SensorSpec.DEFAULT_ACCURACY, SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     public SensorSpec(double range, double accuracy) {
-        this(SensorType.GENERIC, range, accuracy);
+        this(SensorSpec.DEFAULT_SENSOR_TYPE, range, accuracy, SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     public SensorSpec(double range, double accuracy, double batteryUsage) {
-        this(SensorType.GENERIC, range, accuracy, batteryUsage);
+        this(SensorSpec.DEFAULT_SENSOR_TYPE, range, accuracy, batteryUsage);
     }
 
     protected SensorSpec(SensorType sensorType) {
-        this(sensorType, Double.POSITIVE_INFINITY, 1, 0);
+        this(sensorType, SensorSpec.DEFAULT_RANGE, SensorSpec.DEFAULT_ACCURACY, SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     protected SensorSpec(SensorType sensorType, double range) {
-        this(sensorType, range, 1, 0);
+        this(sensorType, range, SensorSpec.DEFAULT_ACCURACY, SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     protected SensorSpec(SensorType sensorType, double range, double accuracy) {
-        this(sensorType, range, accuracy, 0);
+        this(sensorType, range, accuracy, SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     protected SensorSpec(SensorType sensorType, double range, double accuracy, double batteryUsage) {
@@ -93,7 +99,7 @@ public class SensorSpec extends JSONAble {
     }
 
     public SerializableEnum getSpecType() {
-        return SensorType.GENERIC;
+        return SensorSpec.DEFAULT_SENSOR_TYPE;
     }
 
     public JSONOption toJSON() {

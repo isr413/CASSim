@@ -10,37 +10,37 @@ import com.seat.rescuesim.common.sensor.SensorType;
 /** A serializable representation of a Monitor Sensor spec. */
 public class MonitorSensorSpec extends SensorSpec {
 
-    protected MonitorSensorType specType;
+    protected static final MonitorSensorType DEFAULT_SPEC_TYPE = MonitorSensorType.GENERIC;
+
+    private MonitorSensorType specType;
 
     public MonitorSensorSpec() {
-        this(MonitorSensorType.GENERIC);
+        this(MonitorSensorSpec.DEFAULT_SPEC_TYPE, SensorSpec.DEFAULT_RANGE, SensorSpec.DEFAULT_ACCURACY,
+            SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     public MonitorSensorSpec(double range) {
-        this(MonitorSensorType.GENERIC, range);
+        this(MonitorSensorSpec.DEFAULT_SPEC_TYPE, range, SensorSpec.DEFAULT_ACCURACY, SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     public MonitorSensorSpec(double range, double accuracy) {
-        this(MonitorSensorType.GENERIC, range, accuracy);
+        this(MonitorSensorSpec.DEFAULT_SPEC_TYPE, range, accuracy, SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     public MonitorSensorSpec(double range, double accuracy, double batteryUsage) {
-        this(MonitorSensorType.GENERIC, range, accuracy, batteryUsage);
+        this(MonitorSensorSpec.DEFAULT_SPEC_TYPE, range, accuracy, batteryUsage);
     }
 
     public MonitorSensorSpec(MonitorSensorType specType) {
-        super(SensorType.MONITOR);
-        this.specType = specType;
+        this(specType, SensorSpec.DEFAULT_RANGE, SensorSpec.DEFAULT_ACCURACY, SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     public MonitorSensorSpec(MonitorSensorType specType, double range) {
-        super(SensorType.MONITOR, range);
-        this.specType = specType;
+        this(specType, range, SensorSpec.DEFAULT_ACCURACY, SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     public MonitorSensorSpec(MonitorSensorType specType, double range, double accuracy) {
-        super(SensorType.MONITOR, range, accuracy);
-        this.specType = specType;
+        this(specType, range, accuracy, SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     public MonitorSensorSpec(MonitorSensorType specType, double range, double accuracy, double batteryUsage) {

@@ -16,9 +16,9 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 /** A serializable configuration of a Sensor. */
 public class SensorConfig extends JSONAble {
 
-    protected int count;
-    protected HashSet<String> sensorIDs;
-    protected SensorSpec spec;
+    private int count;
+    private HashSet<String> sensorIDs;
+    private SensorSpec spec;
 
     public SensorConfig(SensorSpec spec, int count) {
         this.spec = spec;

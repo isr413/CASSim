@@ -6,9 +6,8 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 /** A serializable enumeration to denote types of Monitor Sensors. */
 public enum MonitorSensorType implements SerializableEnum {
     NONE(0),
-    DEFAULT(1),
-    GENERIC(2),
-    HRVM(3);
+    GENERIC(1),
+    HRVM(2);
 
     public static MonitorSensorType decodeType(JSONObject json) {
         return MonitorSensorType.Value(json.getInt(MonitorSensorConst.MONITOR_SENSOR_TYPE));

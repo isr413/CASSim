@@ -9,19 +9,21 @@ import com.seat.rescuesim.common.sensor.SensorType;
 
 public class MonitorSensorState extends SensorState {
 
-    protected String monitorID;
-    protected MonitorSensorType specType;
+    protected static final MonitorSensorType DEFAULT_SPEC_TYPE = MonitorSensorType.GENERIC;
+
+    private String monitorID;
+    private MonitorSensorType specType;
 
     public MonitorSensorState(String sensorID) {
-        this(MonitorSensorType.GENERIC, sensorID);
+        this(MonitorSensorState.DEFAULT_SPEC_TYPE, sensorID, SensorState.DEFAULT_ACTIVE, null);
     }
 
     public MonitorSensorState(String sensorID, boolean active, String monitorID) {
-        this(MonitorSensorType.GENERIC, sensorID, active, monitorID);
+        this(MonitorSensorState.DEFAULT_SPEC_TYPE, sensorID, active, monitorID);
     }
 
     public MonitorSensorState(MonitorSensorType specType, String sensorID) {
-        this(specType, sensorID, false, "");
+        this(specType, sensorID, SensorState.DEFAULT_ACTIVE, null);
     }
 
     public MonitorSensorState(MonitorSensorType specType, String sensorID, boolean active, String monitorID) {
@@ -41,7 +43,7 @@ public class MonitorSensorState extends SensorState {
         if (json.hasKey(MonitorSensorConst.MONITOR_ID)) {
             this.monitorID = json.getString(MonitorSensorConst.MONITOR_ID);
         } else {
-            this.monitorID = "";
+            this.monitorID = null;
         }
     }
 
@@ -56,7 +58,7 @@ public class MonitorSensorState extends SensorState {
     }
 
     public String getMonitorID() {
-        return this.monitorID;
+        return (this.hasMonitorID()) ? this.monitorID : "";
     }
 
     @Override

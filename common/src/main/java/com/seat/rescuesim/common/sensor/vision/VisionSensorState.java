@@ -15,28 +15,36 @@ import com.seat.rescuesim.common.sensor.SensorType;
 
 public class VisionSensorState extends SensorState {
 
-    protected HashSet<String> observations;
-    protected VisionSensorType specType;
+    protected static final VisionSensorType DEFAULT_SPEC_TYPE = VisionSensorType.GENERIC;
+
+    private HashSet<String> observations;
+    private VisionSensorType specType;
 
     public VisionSensorState(String sensorID) {
-        this(VisionSensorType.GENERIC, sensorID);
+        this(VisionSensorState.DEFAULT_SPEC_TYPE, sensorID, SensorState.DEFAULT_ACTIVE, null);
+    }
+
+    public VisionSensorState(String sensorID, boolean active) {
+        this(VisionSensorState.DEFAULT_SPEC_TYPE, sensorID, active, null);
     }
 
     public VisionSensorState(String sensorID, boolean active, Collection<String> observations) {
-        this(VisionSensorType.GENERIC, sensorID, active, observations);
+        this(VisionSensorState.DEFAULT_SPEC_TYPE, sensorID, active, observations);
     }
 
     public VisionSensorState(VisionSensorType specType, String sensorID) {
-        super(SensorType.VISION, sensorID, false);
-        this.specType = specType;
-        this.observations = new HashSet<>();
+        this(specType, sensorID, SensorState.DEFAULT_ACTIVE, null);
+    }
+
+    public VisionSensorState(VisionSensorType specType, String sensorID, boolean active) {
+        this(specType, sensorID, active, null);
     }
 
     public VisionSensorState(VisionSensorType specType, String sensorID, boolean active,
             Collection<String> observations) {
         super(SensorType.VISION, sensorID, active);
         this.specType = specType;
-        this.observations = new HashSet<>(observations);
+        this.observations = (observations != null) ? new HashSet<>(observations) : new HashSet<>();
     }
 
     public VisionSensorState(JSONOption option) throws JSONException {

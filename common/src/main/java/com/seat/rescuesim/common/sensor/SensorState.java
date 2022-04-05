@@ -10,9 +10,24 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 
 public class SensorState extends JSONAble {
 
-    protected boolean active;
-    protected String sensorID;
-    protected SensorType sensorType;
+    protected static final boolean DEFAULT_ACTIVE = false;
+    protected static final SensorType DEFAULT_SENSOR_TYPE = SensorType.GENERIC;
+
+    private boolean active;
+    private String sensorID;
+    private SensorType sensorType;
+
+    public SensorState(String sensorID) {
+        this(SensorState.DEFAULT_SENSOR_TYPE, sensorID, SensorState.DEFAULT_ACTIVE);
+    }
+
+    public SensorState(String sensorID, boolean active) {
+        this(SensorState.DEFAULT_SENSOR_TYPE, sensorID, active);
+    }
+
+    public SensorState(SensorType sensorType, String sensorID) {
+        this(sensorType, sensorID, SensorState.DEFAULT_ACTIVE);
+    }
 
     public SensorState(SensorType sensorType, String sensorID, boolean active) {
         this.sensorType = sensorType;
@@ -52,7 +67,7 @@ public class SensorState extends JSONAble {
     }
 
     public SerializableEnum getSpecType() {
-        return SensorType.GENERIC;
+        return SensorState.DEFAULT_SENSOR_TYPE;
     }
 
     public boolean isActive() {

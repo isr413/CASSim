@@ -28,12 +28,12 @@ public class MonitorSensorConfig extends SensorConfig {
 
     @Override
     public MonitorSensorSpec getSpec() {
-        return (MonitorSensorSpec) this.spec;
+        return (MonitorSensorSpec) super.getSpec();
     }
 
     @Override
     public MonitorSensorType getSpecType() {
-        return (MonitorSensorType) this.spec.getSpecType();
+        return (MonitorSensorType) super.getSpecType();
     }
 
 }

@@ -6,10 +6,9 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 /** A serializable enumeration to denote types of Comms Sensors. */
 public enum CommsSensorType implements SerializableEnum {
     NONE(0),
-    DEFAULT(1),
-    GENERIC(2),
-    BLUETOOTH(3),
-    LTE_RADIO(4);
+    GENERIC(1),
+    BLUETOOTH(2),
+    LTE_RADIO(3);
 
     public static CommsSensorType decodeType(JSONObject json) {
         return CommsSensorType.Value(json.getInt(CommsSensorConst.COMMS_SENSOR_TYPE));

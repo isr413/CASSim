@@ -10,37 +10,37 @@ import com.seat.rescuesim.common.sensor.SensorType;
 /** A serializable representation of a Vision Sensor spec. */
 public class VisionSensorSpec extends SensorSpec {
 
-    protected VisionSensorType specType;
+    protected static final VisionSensorType DEFAULT_SPEC_TYPE = VisionSensorType.GENERIC;
+
+    private VisionSensorType specType;
 
     public VisionSensorSpec() {
-        this(VisionSensorType.GENERIC);
+        this(VisionSensorSpec.DEFAULT_SPEC_TYPE, SensorSpec.DEFAULT_RANGE, SensorSpec.DEFAULT_ACCURACY,
+            SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     public VisionSensorSpec(double range) {
-        this(VisionSensorType.GENERIC, range);
+        this(VisionSensorSpec.DEFAULT_SPEC_TYPE, range, SensorSpec.DEFAULT_ACCURACY, SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     public VisionSensorSpec(double range, double accuracy) {
-        this(VisionSensorType.GENERIC, range, accuracy);
+        this(VisionSensorSpec.DEFAULT_SPEC_TYPE, range, accuracy, SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     public VisionSensorSpec(double range, double accuracy, double batteryUsage) {
-        this(VisionSensorType.GENERIC, range, accuracy, batteryUsage);
+        this(VisionSensorSpec.DEFAULT_SPEC_TYPE, range, accuracy, batteryUsage);
     }
 
     public VisionSensorSpec(VisionSensorType specType) {
-        super(SensorType.VISION);
-        this.specType = specType;
+        this(specType, SensorSpec.DEFAULT_RANGE, SensorSpec.DEFAULT_ACCURACY, SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     public VisionSensorSpec(VisionSensorType specType, double range) {
-        super(SensorType.VISION, range);
-        this.specType = specType;
+        this(specType, range, SensorSpec.DEFAULT_ACCURACY, SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     public VisionSensorSpec(VisionSensorType specType, double range, double accuracy) {
-        super(SensorType.VISION, range, accuracy);
-        this.specType = specType;
+        this(specType, range, accuracy, SensorSpec.DEFAULT_BATTERY_USAGE);
     }
 
     public VisionSensorSpec(VisionSensorType specType, double range, double accuracy, double batteryUsage) {

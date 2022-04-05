@@ -15,27 +15,36 @@ import com.seat.rescuesim.common.sensor.SensorType;
 
 public class CommsSensorState extends SensorState {
 
-    protected HashSet<String> connections;
-    protected CommsSensorType specType;
+    protected static final CommsSensorType DEFAULT_SPEC_TYPE = CommsSensorType.GENERIC;
+
+    private HashSet<String> connections;
+    private CommsSensorType specType;
 
     public CommsSensorState(String sensorID) {
-        this(CommsSensorType.GENERIC, sensorID);
+        this(CommsSensorState.DEFAULT_SPEC_TYPE, sensorID, SensorState.DEFAULT_ACTIVE, null);
+    }
+
+    public CommsSensorState(String sensorID, boolean active) {
+        this(CommsSensorState.DEFAULT_SPEC_TYPE, sensorID, active, null);
     }
 
     public CommsSensorState(String sensorID, boolean active, Collection<String> connections) {
-        this(CommsSensorType.GENERIC, sensorID, active, connections);
+        this(CommsSensorState.DEFAULT_SPEC_TYPE, sensorID, active, connections);
     }
 
     public CommsSensorState(CommsSensorType specType, String sensorID) {
-        super(SensorType.COMMS, sensorID, false);
-        this.specType = specType;
-        this.connections = new HashSet<>();
+        this(specType, sensorID, SensorState.DEFAULT_ACTIVE, null);
     }
 
-    public CommsSensorState(CommsSensorType specType, String sensorID, boolean active, Collection<String> connections) {
+    public CommsSensorState(CommsSensorType specType, String sensorID, boolean active) {
+        this(specType, sensorID, active, null);
+    }
+
+    public CommsSensorState(CommsSensorType specType, String sensorID, boolean active,
+            Collection<String> connections) {
         super(SensorType.COMMS, sensorID, active);
         this.specType = specType;
-        this.connections = new HashSet<>(connections);
+        this.connections = (connections != null) ? new HashSet<>(connections) : new HashSet<>();
     }
 
     public CommsSensorState(JSONOption option) throws JSONException {
