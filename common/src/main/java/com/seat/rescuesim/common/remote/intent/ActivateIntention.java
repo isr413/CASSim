@@ -113,7 +113,7 @@ public class ActivateIntention extends Intention {
     }
 
     public boolean equals(ActivateIntention intent) {
-        return this.type == intent.type && this.activations.equals(intent.activations);
+        return super.equals(intent) && this.activations.equals(intent.activations);
     }
 
 }

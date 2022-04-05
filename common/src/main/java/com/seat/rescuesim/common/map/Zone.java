@@ -12,11 +12,11 @@ import com.seat.rescuesim.common.math.Vector;
 
 /** Represents the single cubic zone within the map grid. */
 public class Zone extends JSONAble {
-    private static final String ZONE_AERIAL = "aerial_field";
-    private static final String ZONE_GROUND = "ground_field";
-    private static final String ZONE_LOCATION = "location";
-    private static final String ZONE_SIZE = "size";
-    private static final String ZONE_TYPE = "type";
+    public static final String ZONE_AERIAL = "aerial_field";
+    public static final String ZONE_GROUND = "ground_field";
+    public static final String ZONE_LOCATION = "location";
+    public static final String ZONE_SIZE = "size";
+    public static final String ZONE_TYPE = "type";
 
     private Field aerial;
     private Field ground;

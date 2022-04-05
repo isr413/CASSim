@@ -50,7 +50,7 @@ public class MoveIntention extends Intention {
     }
 
     public boolean equals(MoveIntention intent) {
-        return this.type == intent.type && this.jerk.equals(intent.jerk);
+        return super.equals(intent) && this.jerk.equals(intent.jerk);
     }
 
 }

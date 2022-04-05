@@ -21,8 +21,8 @@ import com.seat.rescuesim.common.util.Debugger;
 /** A serializable class to assign intentions to a Remote. */
 public class RemoteController extends JSONAble {
 
-    protected HashMap<IntentionType, Intention> intentions;
-    protected String remoteID;
+    private HashMap<IntentionType, Intention> intentions;
+    private String remoteID;
 
     public RemoteController(String remoteID) {
         this.remoteID = remoteID;

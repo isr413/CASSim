@@ -28,12 +28,12 @@ public class KineticRemoteConfig extends RemoteConfig {
 
     @Override
     public KineticRemoteSpec getSpec() {
-        return (KineticRemoteSpec) this.spec;
+        return (KineticRemoteSpec) super.getSpec();
     }
 
     @Override
     public KineticRemoteType getSpecType() {
-        return (KineticRemoteType) this.spec.getSpecType();
+        return (KineticRemoteType) super.getSpecType();
     }
 
 }

@@ -6,10 +6,14 @@ import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 
 public class GotoIntention extends Intention {
-    private static final String LOCATION = "location";
-    private static final String MAX_ACCELERATION = "max_acceleration";
-    private static final String MAX_JERK = "max_jerk";
-    private static final String MAX_VELOCITY = "max_velocity";
+    public static final String LOCATION = "location";
+    public static final String MAX_ACCELERATION = "max_acceleration";
+    public static final String MAX_JERK = "max_jerk";
+    public static final String MAX_VELOCITY = "max_velocity";
+
+    protected static final double DEFAULT_ACCELERATION = Double.POSITIVE_INFINITY;
+    protected static final double DEFAULT_JERK = Double.POSITIVE_INFINITY;
+    protected static final double DEFAULT_VELOCITY = Double.POSITIVE_INFINITY;
 
     private Vector location;
     private double maxAcceleration;
@@ -17,15 +21,15 @@ public class GotoIntention extends Intention {
     private double maxVelocity;
 
     public GotoIntention(Vector location) {
-        this(location, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+        this(location, GotoIntention.DEFAULT_VELOCITY, GotoIntention.DEFAULT_ACCELERATION, GotoIntention.DEFAULT_JERK);
     }
 
     public GotoIntention(Vector location, double maxVelocity) {
-        this(location, maxVelocity, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+        this(location, maxVelocity, GotoIntention.DEFAULT_ACCELERATION, GotoIntention.DEFAULT_JERK);
     }
 
     public GotoIntention(Vector location, double maxVelocity, double maxAcceleration) {
-        this(location, maxVelocity, maxAcceleration, Double.POSITIVE_INFINITY);
+        this(location, maxVelocity, maxAcceleration, GotoIntention.DEFAULT_JERK);
     }
 
     public GotoIntention(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
@@ -111,7 +115,7 @@ public class GotoIntention extends Intention {
     }
 
     public boolean equals(GotoIntention intent) {
-        return this.type == intent.type && this.maxVelocity == intent.maxVelocity &&
+        return super.equals(intent) && this.maxVelocity == intent.maxVelocity &&
             this.maxAcceleration == intent.maxAcceleration && this.maxJerk == intent.maxJerk;
     }
 

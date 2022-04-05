@@ -7,12 +7,11 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 
 public abstract class Intention extends JSONAble {
-    static final String INTENTION_TYPE = "intention_type";
 
-    protected IntentionType type;
+    private IntentionType intentType;
 
-    public Intention(IntentionType type) {
-        this.type = type;
+    public Intention(IntentionType intentType) {
+        this.intentType = intentType;
     }
 
     public Intention(JSONOption option) {
@@ -21,20 +20,20 @@ public abstract class Intention extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) {
-        this.type = IntentionType.values()[json.getInt(Intention.INTENTION_TYPE)];
+        this.intentType = IntentionType.decodeType(json);
     }
 
     public IntentionType getIntentionType() {
-        return this.type;
+        return this.intentType;
     }
 
     public String getLabel() {
-        return String.format("i%s", this.type.getLabel());
+        return String.format("i:%s", this.intentType.getLabel());
     }
 
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(Intention.INTENTION_TYPE, this.type.getType());
+        json.put(IntentionConst.INTENTION_TYPE, this.intentType.getType());
         return json;
     }
 
@@ -43,7 +42,7 @@ public abstract class Intention extends JSONAble {
     }
 
     public boolean equals(Intention intent) {
-        return this.type.equals(intent.type);
+        return this.intentType.equals(intent.intentType);
     }
 
 }

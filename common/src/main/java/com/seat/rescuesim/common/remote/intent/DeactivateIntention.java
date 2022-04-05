@@ -114,7 +114,7 @@ public class DeactivateIntention extends Intention {
     }
 
     public boolean equals(DeactivateIntention intent) {
-        return this.type == intent.type && this.deactivations.equals(intent.deactivations);
+        return super.equals(intent) && this.deactivations.equals(intent.deactivations);
     }
 
 }

@@ -21,52 +21,52 @@ import com.seat.rescuesim.common.util.Debugger;
 /** A serializable specification of a Remote. */
 public class RemoteSpec extends JSONAble {
 
-    protected Vector location;
-    protected double maxBatteryPower;
-    protected RemoteType remoteType;
-    protected ArrayList<SensorConfig> sensors;
+    protected static final double DEFAULT_BATTERY_POWER = 1.0;
+    protected static final RemoteType DEFAULT_REMOTE_TYPE = RemoteType.GENERIC;
+
+    private Vector location;
+    private double maxBatteryPower;
+    private RemoteType remoteType;
+    private ArrayList<SensorConfig> sensors;
 
     public RemoteSpec() {
-        this(RemoteType.GENERIC);
+        this(RemoteSpec.DEFAULT_REMOTE_TYPE, null, RemoteSpec.DEFAULT_BATTERY_POWER, null);
     }
 
     public RemoteSpec(Vector location) {
-        this(RemoteType.GENERIC, location);
+        this(RemoteSpec.DEFAULT_REMOTE_TYPE, location, RemoteSpec.DEFAULT_BATTERY_POWER, null);
     }
 
     public RemoteSpec(double maxBatteryPower) {
-        this(RemoteType.GENERIC, maxBatteryPower);
+        this(RemoteSpec.DEFAULT_REMOTE_TYPE, null, maxBatteryPower, null);
     }
 
     public RemoteSpec(Vector location, double maxBatteryPower) {
-        this(RemoteType.GENERIC, location, maxBatteryPower);
+        this(RemoteSpec.DEFAULT_REMOTE_TYPE, location, maxBatteryPower, null);
     }
 
     public RemoteSpec(double maxBatteryPower, Collection<SensorConfig> sensors) {
-        this(RemoteType.GENERIC, maxBatteryPower, sensors);
+        this(RemoteSpec.DEFAULT_REMOTE_TYPE, null, maxBatteryPower, sensors);
     }
 
     public RemoteSpec(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {
-        this(RemoteType.GENERIC, location, maxBatteryPower, sensors);
+        this(RemoteSpec.DEFAULT_REMOTE_TYPE, location, maxBatteryPower, sensors);
     }
 
     protected RemoteSpec(RemoteType remoteType) {
-        this(remoteType, null, 1);
+        this(remoteType, null, RemoteSpec.DEFAULT_BATTERY_POWER, null);
     }
 
     protected RemoteSpec(RemoteType remoteType, double maxBatteryPower) {
-        this(remoteType, null, maxBatteryPower);
+        this(remoteType, null, maxBatteryPower, null);
     }
 
     protected RemoteSpec(RemoteType remoteType, Vector location) {
-        this(remoteType, location, 1);
+        this(remoteType, location, RemoteSpec.DEFAULT_BATTERY_POWER, null);
     }
 
     protected RemoteSpec(RemoteType remoteType, Vector location, double maxBatteryPower) {
-        this.remoteType = remoteType;
-        this.location = location; // a remote with a null location should be randomly assigned a location
-        this.maxBatteryPower = maxBatteryPower;
-        this.sensors = new ArrayList<>();
+        this(remoteType, location, maxBatteryPower, null);
     }
 
     protected RemoteSpec(RemoteType remoteType, double maxBatteryPower, Collection<SensorConfig> sensors) {
@@ -78,7 +78,7 @@ public class RemoteSpec extends JSONAble {
         this.remoteType = remoteType;
         this.location = location; // a remote with a null location should be randomly assigned a location
         this.maxBatteryPower = maxBatteryPower;
-        this.sensors = new ArrayList<>(sensors);
+        this.sensors = (sensors != null) ? new ArrayList<>(sensors) : new ArrayList<>();
     }
 
     public RemoteSpec(JSONOption option) throws JSONException {
@@ -171,7 +171,7 @@ public class RemoteSpec extends JSONAble {
     }
 
     public SerializableEnum getSpecType() {
-        return RemoteType.GENERIC;
+        return RemoteSpec.DEFAULT_REMOTE_TYPE;
     }
 
     public boolean hasLocation() {

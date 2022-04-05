@@ -8,13 +8,6 @@ import com.seat.rescuesim.common.math.Vector;
 
 public class Intent {
 
-    public static IntentionType decodeIntentionType(JSONOption option) throws JSONException {
-        if (option.isSomeObject()) {
-            return IntentionType.values()[option.someObject().getInt(Intention.INTENTION_TYPE)];
-        }
-        throw new JSONException(String.format("Cannot decode intention type of %s", option.toString()));
-    }
-
     public static Intention Activate() {
         return new ActivateIntention();
     }
@@ -76,7 +69,10 @@ public class Intent {
     }
 
     public static Intention Some(JSONOption option) throws JSONException {
-        switch (Intent.decodeIntentionType(option)) {
+        if (!option.isSomeObject()) {
+            throw new JSONException(String.format("Cannot decode intention type of %s", option.toString()));
+        }
+        switch (IntentionType.decodeType(option.someObject())) {
             case ACTIVATE:
                 return new ActivateIntention(option);
             case DEACTIVATE:

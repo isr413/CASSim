@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common.remote.intent;
 
+import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable enumeration to denote types of intents. */
@@ -13,6 +14,14 @@ public enum IntentionType implements SerializableEnum {
     SHUTDOWN(6),
     STARTUP(7),
     STOP(8);
+
+    public static IntentionType decodeType(JSONObject json) {
+        return IntentionType.Value(json.getInt(IntentionConst.INTENTION_TYPE));
+    }
+
+    public static IntentionType Value(int value) {
+        return IntentionType.values()[value];
+    }
 
     private int type;
 

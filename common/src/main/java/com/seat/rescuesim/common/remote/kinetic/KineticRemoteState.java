@@ -14,25 +14,24 @@ import com.seat.rescuesim.common.sensor.SensorState;
 /** A serializable state of a kinetic Remote. */
 public class KineticRemoteState extends RemoteState {
 
-    protected Vector acceleration;
-    protected KineticRemoteType specType;
-    protected Vector velocity;
+    protected static final KineticRemoteType DEFAULT_SPEC_TYPE = KineticRemoteType.GENERIC;
+
+    private Vector acceleration;
+    private KineticRemoteType specType;
+    private Vector velocity;
 
     public KineticRemoteState(String remoteID, Vector location, double battery, Vector velocity, Vector acceleration) {
-        this(KineticRemoteType.GENERIC, remoteID, location, battery, velocity, acceleration);
+        this(KineticRemoteState.DEFAULT_SPEC_TYPE, remoteID, location, battery, null, velocity, acceleration);
     }
 
     public KineticRemoteState(String remoteID, Vector location, double battery, Collection<SensorState> sensors,
             Vector velocity, Vector acceleration) {
-        this(KineticRemoteType.GENERIC, remoteID, location, battery, sensors, velocity, acceleration);
+        this(KineticRemoteState.DEFAULT_SPEC_TYPE, remoteID, location, battery, sensors, velocity, acceleration);
     }
 
     public KineticRemoteState(KineticRemoteType specType, String remoteID, Vector location, double battery,
             Vector velocity, Vector acceleration) {
-        super(RemoteType.KINETIC, remoteID, location, battery);
-        this.specType = specType;
-        this.velocity = velocity;
-        this.acceleration = acceleration;
+        this(specType, remoteID, location, battery, null, velocity, acceleration);
     }
 
     public KineticRemoteState(KineticRemoteType specType, String remoteID, Vector location, double battery,

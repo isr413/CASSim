@@ -28,7 +28,7 @@ public class BaseConfig extends StaticRemoteConfig {
 
     @Override
     public BaseSpec getSpec() {
-        return (BaseSpec) this.spec;
+        return (BaseSpec) super.getSpec();
     }
 
 }

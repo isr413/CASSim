@@ -9,7 +9,7 @@ import com.seat.rescuesim.common.json.JSONOption;
 
 /** A vector triple of doubles for representing points and forces in 2D and 3D space. */
 public class Vector extends JSONAble {
-    private static final double PRECISION = 1_000_000.0;
+    public static final double PRECISION = 1_000_000.0;
 
     /** A basis vectors for vectors in 3D space. */
     public static final Vector BASIS_VECTOR = new Vector(1, 1, 1);

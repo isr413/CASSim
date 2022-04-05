@@ -14,55 +14,52 @@ import com.seat.rescuesim.common.sensor.SensorConfig;
 /** A serializable specification of a static Remote. */
 public class StaticRemoteSpec extends RemoteSpec {
 
-    protected StaticRemoteType specType;
+    protected static final StaticRemoteType DEFAULT_SPEC_TYPE = StaticRemoteType.GENERIC;
+
+    private StaticRemoteType specType;
 
     public StaticRemoteSpec() {
-        this(StaticRemoteType.GENERIC);
+        this(StaticRemoteSpec.DEFAULT_SPEC_TYPE, null, RemoteSpec.DEFAULT_BATTERY_POWER, null);
     }
 
     public StaticRemoteSpec(double maxBatteryPower) {
-        this(StaticRemoteType.GENERIC, maxBatteryPower);
+        this(StaticRemoteSpec.DEFAULT_SPEC_TYPE, null, maxBatteryPower, null);
     }
 
     public StaticRemoteSpec(Vector location) {
-        this(StaticRemoteType.GENERIC, location);
+        this(StaticRemoteSpec.DEFAULT_SPEC_TYPE, location, RemoteSpec.DEFAULT_BATTERY_POWER, null);
     }
 
     public StaticRemoteSpec(Vector location, double maxBatteryPower) {
-        this(StaticRemoteType.GENERIC, location, maxBatteryPower);
+        this(StaticRemoteSpec.DEFAULT_SPEC_TYPE, location, maxBatteryPower, null);
     }
 
     public StaticRemoteSpec(double maxBatteryPower, Collection<SensorConfig> sensors) {
-        this(StaticRemoteType.GENERIC, maxBatteryPower, sensors);
+        this(StaticRemoteSpec.DEFAULT_SPEC_TYPE, null, maxBatteryPower, sensors);
     }
 
     public StaticRemoteSpec(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {
-        this(StaticRemoteType.GENERIC, location, maxBatteryPower, sensors);
+        this(StaticRemoteSpec.DEFAULT_SPEC_TYPE, location, maxBatteryPower, sensors);
     }
 
     public StaticRemoteSpec(StaticRemoteType specType) {
-        super(RemoteType.STATIC);
-        this.specType = specType;
+        this(specType, null, RemoteSpec.DEFAULT_BATTERY_POWER, null);
     }
 
     public StaticRemoteSpec(StaticRemoteType specType, double maxBatteryPower) {
-        super(RemoteType.STATIC, maxBatteryPower);
-        this.specType = specType;
+        this(specType, null, maxBatteryPower, null);
     }
 
     public StaticRemoteSpec(StaticRemoteType specType, Vector location) {
-        super(RemoteType.STATIC, location);
-        this.specType = specType;
+        this(specType, location, RemoteSpec.DEFAULT_BATTERY_POWER, null);
     }
 
     public StaticRemoteSpec(StaticRemoteType specType, Vector location, double maxBatteryPower) {
-        super(RemoteType.STATIC, location, maxBatteryPower);
-        this.specType = specType;
+        this(specType, location, maxBatteryPower, null);
     }
 
     public StaticRemoteSpec(StaticRemoteType specType, double maxBatteryPower, Collection<SensorConfig> sensors) {
-        super(RemoteType.STATIC, maxBatteryPower, sensors);
-        this.specType = specType;
+        this(specType, null, maxBatteryPower, sensors);
     }
 
     public StaticRemoteSpec(StaticRemoteType specType, Vector location, double maxBatteryPower,

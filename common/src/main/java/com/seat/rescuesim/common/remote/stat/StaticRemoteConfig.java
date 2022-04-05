@@ -28,12 +28,12 @@ public class StaticRemoteConfig extends RemoteConfig {
 
     @Override
     public StaticRemoteSpec getSpec() {
-        return (StaticRemoteSpec) this.spec;
+        return (StaticRemoteSpec) super.getSpec();
     }
 
     @Override
     public StaticRemoteType getSpecType() {
-        return (StaticRemoteType) this.spec.getSpecType();
+        return (StaticRemoteType) super.getSpecType();
     }
 
 }

@@ -13,11 +13,11 @@ import com.seat.rescuesim.common.util.CoreException;
 
 /** Represents the map grid. */
 public class Map extends JSONAble {
-    private static final String MAP_GRID = "map_grid";
-    private static final String MAP_HEIGHT = "map_height";
-    private static final String MAP_TYPE = "map_type";
-    private static final String MAP_WIDTH = "map_width";
-    private static final String ZONE_SIZE = "zone_size";
+    public static final String MAP_GRID = "map_grid";
+    public static final String MAP_HEIGHT = "map_height";
+    public static final String MAP_TYPE = "map_type";
+    public static final String MAP_WIDTH = "map_width";
+    public static final String ZONE_SIZE = "zone_size";
 
     private Zone[][] grid;
     private int height;     // number of zones in each column of the grid

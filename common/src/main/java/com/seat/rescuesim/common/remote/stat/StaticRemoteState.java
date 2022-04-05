@@ -14,19 +14,20 @@ import com.seat.rescuesim.common.sensor.SensorState;
 /** A serializable state of a static Remote. */
 public class StaticRemoteState extends RemoteState {
 
+    protected static final StaticRemoteType DEFAULT_SPEC_TYPE = StaticRemoteType.GENERIC;
+
     protected StaticRemoteType specType;
 
     public StaticRemoteState(String remoteID, Vector location, double battery) {
-        this(StaticRemoteType.GENERIC, remoteID, location, battery);
+        this(StaticRemoteState.DEFAULT_SPEC_TYPE, remoteID, location, battery, null);
     }
 
     public StaticRemoteState(String remoteID, Vector location, double battery, Collection<SensorState> sensors) {
-        this(StaticRemoteType.GENERIC, remoteID, location, battery, sensors);
+        this(StaticRemoteState.DEFAULT_SPEC_TYPE, remoteID, location, battery, sensors);
     }
 
     public StaticRemoteState(StaticRemoteType specType, String remoteID, Vector location, double battery) {
-        super(RemoteType.STATIC, remoteID, location, battery);
-        this.specType = specType;
+        this(specType, remoteID, location, battery, null);
     }
 
     public StaticRemoteState(StaticRemoteType specType, String remoteID, Vector location, double battery,

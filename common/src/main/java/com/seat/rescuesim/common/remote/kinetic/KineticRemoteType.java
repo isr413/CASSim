@@ -6,10 +6,9 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 /** A serializable enumeration to denote types of kinetic remotes. */
 public enum KineticRemoteType implements SerializableEnum {
     NONE(0),
-    DEFAULT(1),
-    GENERIC(2),
-    DRONE(3),
-    VICTIM(4);
+    GENERIC(1),
+    DRONE(2),
+    VICTIM(3);
 
     public static KineticRemoteType decodeType(JSONObject json) {
         return KineticRemoteType.Value(json.getInt(KineticRemoteConst.KINETIC_REMOTE_TYPE));

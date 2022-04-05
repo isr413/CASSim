@@ -6,10 +6,9 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 /** A serializable enumeration to denote types of Remotes. */
 public enum RemoteType implements SerializableEnum {
     NONE(0),
-    DEFAULT(1),
-    GENERIC(2),
-    KINETIC(3),
-    STATIC(4);
+    GENERIC(1),
+    KINETIC(2),
+    STATIC(3);
 
     public static RemoteType decodeType(JSONObject json) {
         return RemoteType.Value(json.getInt(RemoteConst.REMOTE_TYPE));

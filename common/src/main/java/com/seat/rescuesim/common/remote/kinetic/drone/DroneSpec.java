@@ -7,6 +7,7 @@ import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
+import com.seat.rescuesim.common.remote.RemoteSpec;
 import com.seat.rescuesim.common.remote.kinetic.KineticRemoteSpec;
 import com.seat.rescuesim.common.remote.kinetic.KineticRemoteType;
 import com.seat.rescuesim.common.sensor.SensorConfig;
@@ -18,61 +19,56 @@ public class DroneSpec extends KineticRemoteSpec {
     private Vector batteryUsage; // [static (hovering), horizontal movement, vertical movement]
 
     public DroneSpec(Vector batteryUsage) {
-        super(KineticRemoteType.DRONE);
-        this.batteryUsage = batteryUsage;
+        this(null, RemoteSpec.DEFAULT_BATTERY_POWER, null, batteryUsage, KineticRemoteSpec.DEFAULT_VELOCITY,
+            KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public DroneSpec(Vector batteryUsage, double maxVelocity, double maxAcceleration, double maxJerk) {
-        super(KineticRemoteType.DRONE, maxVelocity, maxAcceleration, maxJerk);
-        this.batteryUsage = batteryUsage;
+        this(null, RemoteSpec.DEFAULT_BATTERY_POWER, null, batteryUsage, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public DroneSpec(double maxBatteryPower, Vector batteryUsage) {
-        super(KineticRemoteType.DRONE, maxBatteryPower);
-        this.batteryUsage = batteryUsage;
+        this(null, maxBatteryPower, null, batteryUsage, KineticRemoteSpec.DEFAULT_VELOCITY,
+            KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public DroneSpec(double maxBatteryPower, Vector batteryUsage, double maxVelocity, double maxAcceleration,
             double maxJerk) {
-        super(KineticRemoteType.DRONE, maxBatteryPower, maxVelocity, maxAcceleration, maxJerk);
-        this.batteryUsage = batteryUsage;
+        this(null, maxBatteryPower, null, batteryUsage, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public DroneSpec(Vector location, Vector batteryUsage) {
-        super(KineticRemoteType.DRONE, location);
-        this.batteryUsage = batteryUsage;
+        this(location, RemoteSpec.DEFAULT_BATTERY_POWER, null, batteryUsage, KineticRemoteSpec.DEFAULT_VELOCITY,
+            KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public DroneSpec(Vector location, Vector batteryUsage, double maxVelocity, double maxAcceleration, double maxJerk) {
-        super(KineticRemoteType.DRONE, location, maxVelocity, maxAcceleration, maxJerk);
-        this.batteryUsage = batteryUsage;
+        this(location, RemoteSpec.DEFAULT_BATTERY_POWER, null, batteryUsage, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public DroneSpec(Vector location, double maxBatteryPower, Vector batteryUsage) {
-        super(KineticRemoteType.DRONE, location, maxBatteryPower);
-        this.batteryUsage = batteryUsage;
+        this(location, maxBatteryPower, null, batteryUsage, KineticRemoteSpec.DEFAULT_VELOCITY,
+            KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public DroneSpec(Vector location, double maxBatteryPower, Vector batteryUsage, double maxVelocity,
             double maxAcceleration, double maxJerk) {
-        super(KineticRemoteType.DRONE, location, maxBatteryPower, maxVelocity, maxAcceleration, maxJerk);
-        this.batteryUsage = batteryUsage;
+        this(location, maxBatteryPower, null, batteryUsage, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public DroneSpec(double maxBatteryPower, Collection<SensorConfig> sensors, Vector batteryUsage) {
-        super(KineticRemoteType.DRONE, maxBatteryPower, sensors);
-        this.batteryUsage = batteryUsage;
+        this(null, maxBatteryPower, sensors, batteryUsage, KineticRemoteSpec.DEFAULT_VELOCITY,
+            KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public DroneSpec(double maxBatteryPower, Collection<SensorConfig> sensors, Vector batteryUsage, double maxVelocity,
             double maxAcceleration, double maxJerk) {
-        super(KineticRemoteType.DRONE, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
-        this.batteryUsage = batteryUsage;
+        this(null, maxBatteryPower, sensors, batteryUsage, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public DroneSpec(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors, Vector batteryUsage) {
-        super(KineticRemoteType.DRONE, location, maxBatteryPower, sensors);
-        this.batteryUsage = batteryUsage;
+        this(location, maxBatteryPower, sensors, batteryUsage, KineticRemoteSpec.DEFAULT_VELOCITY,
+            KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public DroneSpec(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors, Vector batteryUsage,
@@ -108,7 +104,7 @@ public class DroneSpec extends KineticRemoteSpec {
 
     @Override
     public String getLabel() {
-        return String.format("d:%s", this.specType.getLabel());
+        return String.format("d:%s", this.getSpecType().getLabel());
     }
 
     public double getStaticBatteryUsage() {

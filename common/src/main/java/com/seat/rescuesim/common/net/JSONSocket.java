@@ -22,8 +22,8 @@ import com.seat.rescuesim.common.util.CoreException;
 
 public class JSONSocket {
 
-    private static final InetAddress DEFAULT_ADDRESS = InetAddress.getLoopbackAddress();
-    private static final int DEFAULT_PORT = 8080;
+    protected static final InetAddress DEFAULT_ADDRESS = InetAddress.getLoopbackAddress();
+    protected static final int DEFAULT_PORT = 8080;
 
     public static JSONSocket Client() throws IOException {
         return JSONSocket.Client(JSONSocket.DEFAULT_ADDRESS, JSONSocket.DEFAULT_PORT);

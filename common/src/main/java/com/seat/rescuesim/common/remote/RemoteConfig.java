@@ -16,10 +16,10 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 /** A serializable Remote configuration. */
 public class RemoteConfig extends JSONAble {
 
-    protected int count;
-    protected boolean dynamic;
-    protected HashSet<String> remoteIDs;
-    protected RemoteSpec spec;
+    private int count;
+    private boolean dynamic;
+    private HashSet<String> remoteIDs;
+    private RemoteSpec spec;
 
     public RemoteConfig(RemoteSpec spec, int count, boolean dynamic) {
         this.spec = spec;

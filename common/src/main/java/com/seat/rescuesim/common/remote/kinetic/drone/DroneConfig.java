@@ -28,7 +28,7 @@ public class DroneConfig extends KineticRemoteConfig {
 
     @Override
     public DroneSpec getSpec() {
-        return (DroneSpec) this.spec;
+        return (DroneSpec) super.getSpec();
     }
 
 }

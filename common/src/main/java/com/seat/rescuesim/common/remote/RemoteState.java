@@ -21,26 +21,24 @@ import com.seat.rescuesim.common.util.CoreException;
 /** A serializable snapshot of a Remote. */
 public class RemoteState extends JSONAble {
 
-    protected double battery;
-    protected Vector location;
-    protected String remoteID;
-    protected RemoteType remoteType;
-    protected HashMap<String, SensorState> sensors;
+    protected static final RemoteType DEFAULT_REMOTE_TYPE = RemoteType.GENERIC;
+
+    private double battery;
+    private Vector location;
+    private String remoteID;
+    private RemoteType remoteType;
+    private HashMap<String, SensorState> sensors;
 
     public RemoteState(String remoteID, Vector location, double battery) {
-        this(RemoteType.GENERIC, remoteID, location, battery);
+        this(RemoteState.DEFAULT_REMOTE_TYPE, remoteID, location, battery, null);
     }
 
     public RemoteState(String remoteID, Vector location, double battery, Collection<SensorState> sensors) {
-        this(RemoteType.GENERIC, remoteID, location, battery, sensors);
+        this(RemoteState.DEFAULT_REMOTE_TYPE, remoteID, location, battery, sensors);
     }
 
     protected RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery) {
-        this.remoteType = remoteType;
-        this.remoteID = remoteID;
-        this.location = location;
-        this.battery = battery;
-        this.sensors = new HashMap<>();
+        this(remoteType, remoteID, location, battery, null);
     }
 
     protected RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery,
@@ -50,8 +48,10 @@ public class RemoteState extends JSONAble {
         this.location = location;
         this.battery = battery;
         this.sensors = new HashMap<>();
-        for (SensorState sensor : sensors) {
-            this.sensors.put(sensor.getSensorID(), sensor);
+        if (sensors != null) {
+            for (SensorState sensor : sensors) {
+                this.sensors.put(sensor.getSensorID(), sensor);
+            }
         }
     }
 
@@ -123,7 +123,7 @@ public class RemoteState extends JSONAble {
     }
 
     public SerializableEnum getSpecType() {
-        return RemoteType.GENERIC;
+        return RemoteState.DEFAULT_REMOTE_TYPE;
     }
 
     public boolean hasSensorWithID(String sensorID) {

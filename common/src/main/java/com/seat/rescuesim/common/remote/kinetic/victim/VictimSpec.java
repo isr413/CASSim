@@ -7,6 +7,7 @@ import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
+import com.seat.rescuesim.common.remote.RemoteSpec;
 import com.seat.rescuesim.common.remote.kinetic.KineticRemoteSpec;
 import com.seat.rescuesim.common.remote.kinetic.KineticRemoteType;
 import com.seat.rescuesim.common.sensor.SensorConfig;
@@ -20,75 +21,61 @@ public class VictimSpec extends KineticRemoteSpec {
     private double speedStdDev;
 
     public VictimSpec(double speedMean, double speedStdDev) {
-        super(KineticRemoteType.VICTIM);
-        this.speedMean = speedMean;
-        this.speedStdDev = speedStdDev;
+        this(null, RemoteSpec.DEFAULT_BATTERY_POWER, null, speedMean, speedStdDev, KineticRemoteSpec.DEFAULT_VELOCITY,
+            KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public VictimSpec(double speedMean, double speedStdDev, double maxVelocity, double maxAcceleration,
             double maxJerk) {
-        super(KineticRemoteType.VICTIM, maxVelocity, maxAcceleration, maxJerk);
-        this.speedMean = speedMean;
-        this.speedStdDev = speedStdDev;
+        this(null, RemoteSpec.DEFAULT_BATTERY_POWER, null, speedMean, speedStdDev, maxVelocity, maxAcceleration,
+            maxJerk);
     }
 
     public VictimSpec(double maxBatteryPower, double speedMean, double speedStdDev) {
-        super(KineticRemoteType.VICTIM, maxBatteryPower);
-        this.speedMean = speedMean;
-        this.speedStdDev = speedStdDev;
+        this(null, maxBatteryPower, null, speedMean, speedStdDev, KineticRemoteSpec.DEFAULT_VELOCITY,
+            KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public VictimSpec(double maxBatteryPower, double speedMean, double speedStdDev, double maxVelocity,
             double maxAcceleration, double maxJerk) {
-        super(KineticRemoteType.VICTIM, maxBatteryPower, maxVelocity, maxAcceleration, maxJerk);
-        this.speedMean = speedMean;
-        this.speedStdDev = speedStdDev;
+        this(null, maxBatteryPower, null, speedMean, speedStdDev, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public VictimSpec(Vector location, double speedMean, double speedStdDev) {
-        super(KineticRemoteType.VICTIM, location);
-        this.speedMean = speedMean;
-        this.speedStdDev = speedStdDev;
+        this(location, RemoteSpec.DEFAULT_BATTERY_POWER, null, speedMean, speedStdDev,
+            KineticRemoteSpec.DEFAULT_VELOCITY, KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public VictimSpec(Vector location, double speedMean, double speedStdDev, double maxVelocity,
             double maxAcceleration, double maxJerk) {
-        super(KineticRemoteType.VICTIM, location, maxVelocity, maxAcceleration, maxJerk);
-        this.speedMean = speedMean;
-        this.speedStdDev = speedStdDev;
+        this(location, RemoteSpec.DEFAULT_BATTERY_POWER, null, speedMean, speedStdDev, maxVelocity, maxAcceleration,
+            maxJerk);
     }
 
     public VictimSpec(Vector location, double maxBatteryPower, double speedMean, double speedStdDev) {
-        super(KineticRemoteType.VICTIM, location, maxBatteryPower);
-        this.speedMean = speedMean;
-        this.speedStdDev = speedStdDev;
+        this(location, maxBatteryPower, null, speedMean, speedStdDev, KineticRemoteSpec.DEFAULT_VELOCITY,
+            KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public VictimSpec(Vector location, double maxBatteryPower, double speedMean, double speedStdDev, double maxVelocity,
             double maxAcceleration, double maxJerk) {
-        super(KineticRemoteType.VICTIM, location, maxBatteryPower, maxVelocity, maxAcceleration, maxJerk);
-        this.speedMean = speedMean;
-        this.speedStdDev = speedStdDev;
+        this(location, maxBatteryPower, null, speedMean, speedStdDev, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public VictimSpec(double maxBatteryPower, Collection<SensorConfig> sensors, double speedMean, double speedStdDev) {
-        super(KineticRemoteType.VICTIM, maxBatteryPower, sensors);
-        this.speedMean = speedMean;
-        this.speedStdDev = speedStdDev;
+        this(null, maxBatteryPower, sensors, speedMean, speedStdDev, KineticRemoteSpec.DEFAULT_VELOCITY,
+            KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public VictimSpec(double maxBatteryPower, Collection<SensorConfig> sensors, double speedMean, double speedStdDev,
             double maxVelocity, double maxAcceleration, double maxJerk) {
-        super(KineticRemoteType.VICTIM, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
-        this.speedMean = speedMean;
-        this.speedStdDev = speedStdDev;
+        this(null, maxBatteryPower, sensors, speedMean, speedStdDev, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public VictimSpec(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors, double speedMean,
             double speedStdDev) {
-        super(KineticRemoteType.VICTIM, location, maxBatteryPower, sensors);
-        this.speedMean = speedMean;
-        this.speedStdDev = speedStdDev;
+        this(location, maxBatteryPower, sensors, speedMean, speedStdDev, KineticRemoteSpec.DEFAULT_VELOCITY,
+            KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public VictimSpec(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors, double speedMean,
@@ -119,7 +106,7 @@ public class VictimSpec extends KineticRemoteSpec {
 
     @Override
     public String getLabel() {
-        return String.format("v:%s", this.specType.getLabel());
+        return String.format("v:%s", this.getSpecType().getLabel());
     }
 
     public double getSpeedMean() {

@@ -18,15 +18,15 @@ import com.seat.rescuesim.common.util.CoreException;
 
 /** A serializable class to represent a single snapshot of the current sim state. */
 public class Snapshot extends JSONAble {
-    private static final String ACTIVE_REMOTES = "active_remotes";
-    private static final String DYNAMIC_REMOTES = "dynamic_remotes";
-    private static final String HASH = "hash";
-    private static final String REMOTE_IDS = "remote_ids";
-    private static final String SCENARIO_ID = "scenario_id";
-    private static final String STATE = "state";
-    private static final String STATUS = "status";
-    private static final String STEP_SIZE = "step_size";
-    private static final String TIME = "time";
+    public static final String ACTIVE_REMOTES = "active_remotes";
+    public static final String DYNAMIC_REMOTES = "dynamic_remotes";
+    public static final String HASH = "hash";
+    public static final String REMOTE_IDS = "remote_ids";
+    public static final String SCENARIO_ID = "scenario_id";
+    public static final String STATE = "state";
+    public static final String STATUS = "status";
+    public static final String STEP_SIZE = "step_size";
+    public static final String TIME = "time";
 
     private HashSet<String> activeRemotes;
     private HashSet<String> dynamicRemotes;
