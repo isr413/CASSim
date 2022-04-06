@@ -49,7 +49,7 @@ public class StaticRemoteState extends RemoteState {
     @Override
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(StaticRemoteConst.STATIC_REMOTE_TYPE, this.specType.getType());
+        json.put(StaticRemoteType.STATIC_REMOTE_TYPE, this.specType.getType());
         return json;
     }
 

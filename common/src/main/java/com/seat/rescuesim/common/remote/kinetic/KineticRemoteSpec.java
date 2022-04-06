@@ -13,6 +13,9 @@ import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable specification of a kinetic Remote. */
 public class KineticRemoteSpec extends RemoteSpec {
+    public static final String MAX_ACCELERATION = "max_acceleration";
+    public static final String MAX_JERK = "max_jerk";
+    public static final String MAX_VELOCITY = "max_velocity";
 
     protected static final double DEFAULT_ACCELERATION = Double.POSITIVE_INFINITY;
     protected static final double DEFAULT_JERK = Double.POSITIVE_INFINITY;
@@ -158,18 +161,18 @@ public class KineticRemoteSpec extends RemoteSpec {
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.specType = KineticRemoteType.decodeType(json);
-        if (json.hasKey(KineticRemoteConst.MAX_VELOCITY)) {
-            this.maxVelocity = json.getDouble(KineticRemoteConst.MAX_VELOCITY);
+        if (json.hasKey(KineticRemoteSpec.MAX_VELOCITY)) {
+            this.maxVelocity = json.getDouble(KineticRemoteSpec.MAX_VELOCITY);
         } else {
             this.maxVelocity = Double.POSITIVE_INFINITY;
         }
-        if (json.hasKey(KineticRemoteConst.MAX_ACCELERATION)) {
-            this.maxAcceleration = json.getDouble(KineticRemoteConst.MAX_ACCELERATION);
+        if (json.hasKey(KineticRemoteSpec.MAX_ACCELERATION)) {
+            this.maxAcceleration = json.getDouble(KineticRemoteSpec.MAX_ACCELERATION);
         } else {
             this.maxAcceleration = Double.POSITIVE_INFINITY;
         }
-        if (json.hasKey(KineticRemoteConst.MAX_JERK)) {
-            this.maxJerk = json.getDouble(KineticRemoteConst.MAX_JERK);
+        if (json.hasKey(KineticRemoteSpec.MAX_JERK)) {
+            this.maxJerk = json.getDouble(KineticRemoteSpec.MAX_JERK);
         } else {
             this.maxJerk = Double.POSITIVE_INFINITY;
         }
@@ -178,15 +181,15 @@ public class KineticRemoteSpec extends RemoteSpec {
     @Override
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(KineticRemoteConst.KINETIC_REMOTE_TYPE, this.specType.getType());
+        json.put(KineticRemoteType.KINETIC_REMOTE_TYPE, this.specType.getType());
         if (this.hasMaxAcceleration()) {
-            json.put(KineticRemoteConst.MAX_VELOCITY, this.maxVelocity);
+            json.put(KineticRemoteSpec.MAX_VELOCITY, this.maxVelocity);
         }
         if (this.hasMaxJerk()) {
-            json.put(KineticRemoteConst.MAX_ACCELERATION, this.maxAcceleration);
+            json.put(KineticRemoteSpec.MAX_ACCELERATION, this.maxAcceleration);
         }
         if (this.hasMaxVelocity()) {
-            json.put(KineticRemoteConst.MAX_JERK, this.maxJerk);
+            json.put(KineticRemoteSpec.MAX_JERK, this.maxJerk);
         }
         return json;
     }

@@ -13,6 +13,8 @@ import com.seat.rescuesim.common.sensor.SensorState;
 
 /** A serializable state of a kinetic Remote. */
 public class KineticRemoteState extends RemoteState {
+    public static final String ACCELERATION = "acceleration";
+    public static final String VELOCITY = "velocity";
 
     protected static final KineticRemoteType DEFAULT_SPEC_TYPE = KineticRemoteType.GENERIC;
 
@@ -50,16 +52,16 @@ public class KineticRemoteState extends RemoteState {
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.specType = KineticRemoteType.decodeType(json);
-        this.velocity = new Vector(json.getJSONOption(KineticRemoteConst.VELOCITY));
-        this.acceleration = new Vector(json.getJSONOption(KineticRemoteConst.ACCELERATION));
+        this.velocity = new Vector(json.getJSONOption(KineticRemoteState.VELOCITY));
+        this.acceleration = new Vector(json.getJSONOption(KineticRemoteState.ACCELERATION));
     }
 
     @Override
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(KineticRemoteConst.KINETIC_REMOTE_TYPE, this.specType.getType());
-        json.put(KineticRemoteConst.VELOCITY, this.velocity.toJSON());
-        json.put(KineticRemoteConst.ACCELERATION, this.acceleration.toJSON());
+        json.put(KineticRemoteType.KINETIC_REMOTE_TYPE, this.specType.getType());
+        json.put(KineticRemoteState.VELOCITY, this.velocity.toJSON());
+        json.put(KineticRemoteState.ACCELERATION, this.acceleration.toJSON());
         return json;
     }
 

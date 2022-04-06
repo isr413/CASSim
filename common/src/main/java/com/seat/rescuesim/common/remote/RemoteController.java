@@ -20,6 +20,7 @@ import com.seat.rescuesim.common.util.Debugger;
 
 /** A serializable class to assign intentions to a Remote. */
 public class RemoteController extends JSONAble {
+    public static final String INTENTIONS = "intentions";
 
     private HashMap<IntentionType, Intention> intentions;
     private String remoteID;
@@ -35,10 +36,10 @@ public class RemoteController extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.remoteID = json.getString(RemoteConst.REMOTE_ID);
+        this.remoteID = json.getString(RemoteState.REMOTE_ID);
         this.intentions = new HashMap<>();
-        if (json.hasKey(RemoteConst.INTENTIONS)) {
-            JSONArray jsonIntentions = json.getJSONArray(RemoteConst.INTENTIONS);
+        if (json.hasKey(RemoteController.INTENTIONS)) {
+            JSONArray jsonIntentions = json.getJSONArray(RemoteController.INTENTIONS);
             for (int i = 0; i < jsonIntentions.length(); i++) {
                 this.addIntention(Intent.Some(jsonIntentions.getJSONOption(i)));
             }
@@ -115,13 +116,13 @@ public class RemoteController extends JSONAble {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(RemoteConst.REMOTE_ID, this.remoteID);
+        json.put(RemoteState.REMOTE_ID, this.remoteID);
         if (this.hasIntentions()) {
             JSONArrayBuilder jsonIntentions = JSONBuilder.Array();
             for (Intention intent : this.intentions.values()) {
                 jsonIntentions.put(intent.toJSON());
             }
-            json.put(RemoteConst.INTENTIONS, jsonIntentions.toJSON());
+            json.put(RemoteController.INTENTIONS, jsonIntentions.toJSON());
         }
         return json.toJSON();
     }

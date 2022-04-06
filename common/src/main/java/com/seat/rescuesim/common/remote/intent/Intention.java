@@ -33,7 +33,7 @@ public abstract class Intention extends JSONAble {
 
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(IntentionConst.INTENTION_TYPE, this.intentType.getType());
+        json.put(IntentionType.INTENTION_TYPE, this.intentType.getType());
         return json;
     }
 

@@ -20,6 +20,9 @@ import com.seat.rescuesim.common.util.Debugger;
 
 /** A serializable specification of a Remote. */
 public class RemoteSpec extends JSONAble {
+    public static final String LOCATION = "location";
+    public static final String MAX_BATTERY = "max_battery";
+    public static final String SENSORS = "sensors";
 
     protected static final double DEFAULT_BATTERY_POWER = 1.0;
     protected static final RemoteType DEFAULT_REMOTE_TYPE = RemoteType.GENERIC;
@@ -88,15 +91,15 @@ public class RemoteSpec extends JSONAble {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.remoteType = RemoteType.decodeType(json);
-        if (json.hasKey(RemoteConst.LOCATION)) {
-            this.location = new Vector(json.getJSONOption(RemoteConst.LOCATION));
+        if (json.hasKey(RemoteSpec.LOCATION)) {
+            this.location = new Vector(json.getJSONOption(RemoteSpec.LOCATION));
         } else {
             this.location = null;
         }
-        this.maxBatteryPower = json.getDouble(RemoteConst.MAX_BATTERY);
+        this.maxBatteryPower = json.getDouble(RemoteSpec.MAX_BATTERY);
         this.sensors = new ArrayList<>();
-        if (json.hasKey(RemoteConst.SENSORS)) {
-            JSONArray jsonSensors = json.getJSONArray(RemoteConst.SENSORS);
+        if (json.hasKey(RemoteSpec.SENSORS)) {
+            JSONArray jsonSensors = json.getJSONArray(RemoteSpec.SENSORS);
             for (int i = 0; i < jsonSensors.length(); i++) {
                 this.sensors.add(new SensorConfig(jsonSensors.getJSONOption(i)));
             }
@@ -105,17 +108,17 @@ public class RemoteSpec extends JSONAble {
 
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(RemoteConst.REMOTE_TYPE, this.remoteType.getType());
+        json.put(RemoteType.REMOTE_TYPE, this.remoteType.getType());
         if (this.hasLocation()) {
-            json.put(RemoteConst.LOCATION, this.location.toJSON());
+            json.put(RemoteSpec.LOCATION, this.location.toJSON());
         }
-        json.put(RemoteConst.MAX_BATTERY, this.maxBatteryPower);
+        json.put(RemoteSpec.MAX_BATTERY, this.maxBatteryPower);
         if (this.hasSensors()) {
             JSONArrayBuilder jsonSensors = JSONBuilder.Array();
             for (SensorConfig conf : this.sensors) {
                 jsonSensors.put(conf.toJSON());
             }
-            json.put(RemoteConst.SENSORS, jsonSensors.toJSON());
+            json.put(RemoteSpec.SENSORS, jsonSensors.toJSON());
         }
         return json;
     }

@@ -15,6 +15,10 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable Remote configuration. */
 public class RemoteConfig extends JSONAble {
+    public static final String COUNT = "count";
+    public static final String DYNAMIC = "dynamic";
+    public static final String REMOTE_IDS = "remote_ids";
+    public static final String SPEC = "spec";
 
     private int count;
     private boolean dynamic;
@@ -44,16 +48,16 @@ public class RemoteConfig extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.spec = this.decodeSpec(json.getJSONOption(RemoteConst.SPEC));
-        this.count = json.getInt(RemoteConst.COUNT);
+        this.spec = this.decodeSpec(json.getJSONOption(RemoteConfig.SPEC));
+        this.count = json.getInt(RemoteConfig.COUNT);
         this.remoteIDs = new HashSet<>();
-        if (json.hasKey(RemoteConst.REMOTE_IDS)) {
-            JSONArray jsonRemotes = json.getJSONArray(RemoteConst.REMOTE_IDS);
+        if (json.hasKey(RemoteConfig.REMOTE_IDS)) {
+            JSONArray jsonRemotes = json.getJSONArray(RemoteConfig.REMOTE_IDS);
             for (int i = 0; i < jsonRemotes.length(); i++) {
                 this.remoteIDs.add(jsonRemotes.getString(i));
             }
         }
-        this.dynamic = json.getBoolean(RemoteConst.DYNAMIC);
+        this.dynamic = json.getBoolean(RemoteConfig.DYNAMIC);
     }
 
     protected RemoteSpec decodeSpec(JSONOption jsonSpec) throws JSONException {
@@ -106,16 +110,16 @@ public class RemoteConfig extends JSONAble {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(RemoteConst.SPEC, this.spec.toJSON());
-        json.put(RemoteConst.COUNT, this.count);
+        json.put(RemoteConfig.SPEC, this.spec.toJSON());
+        json.put(RemoteConfig.COUNT, this.count);
         if (this.hasRemoteIDs()) {
             JSONArrayBuilder jsonRemotes = JSONBuilder.Array();
             for (String remoteID : this.remoteIDs) {
                 jsonRemotes.put(remoteID);
             }
-            json.put(RemoteConst.REMOTE_IDS, jsonRemotes.toJSON());
+            json.put(RemoteConfig.REMOTE_IDS, jsonRemotes.toJSON());
         }
-        json.put(RemoteConst.DYNAMIC, this.dynamic);
+        json.put(RemoteConfig.DYNAMIC, this.dynamic);
         return json.toJSON();
     }
 
