@@ -1,6 +1,5 @@
 package com.seat.rescuesim.common.map;
 
-import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
@@ -12,8 +11,10 @@ public enum ZoneType implements SerializableEnum {
 
     public static final String ZONE_TYPE = "zone_type";
 
-    public static ZoneType decodeType(JSONObject json) throws JSONException {
-        return ZoneType.Value(json.getInt(ZoneType.ZONE_TYPE));
+    public static ZoneType decodeType(JSONObject json) {
+        return (json.hasKey(ZoneType.ZONE_TYPE)) ?
+            ZoneType.Value(json.getInt(ZoneType.ZONE_TYPE)) :
+            ZoneType.NONE;
     }
 
     public static ZoneType Value(int value) {

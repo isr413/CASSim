@@ -2,6 +2,7 @@ package com.seat.rescuesim.common.math;
 
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable enumeration to denote types of Fields. */
@@ -13,8 +14,16 @@ public enum FieldType implements SerializableEnum {
 
     public static final String FIELD_TYPE = "field_type";
 
-    public static FieldType decodeType(JSONArray json) throws JSONException {
-        return FieldType.Value(json.getInt(0));
+    public static FieldType decodeType(JSONArray json) {
+        return (json.length() > 0) ?
+            FieldType.Value(json.getInt(0)) :
+            FieldType.NONE;
+    }
+
+    public static FieldType decodeType(JSONObject json) throws JSONException {
+        return (json.hasKey(FieldType.FIELD_TYPE)) ?
+            FieldType.Value(json.getInt(FieldType.FIELD_TYPE)) :
+            FieldType.NONE;
     }
 
     public static FieldType Value(int value) {
