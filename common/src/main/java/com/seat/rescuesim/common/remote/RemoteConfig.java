@@ -17,26 +17,26 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 public class RemoteConfig extends JSONAble {
     public static final String COUNT = "count";
     public static final String DYNAMIC = "dynamic";
+    public static final String PROTO = "__proto__";
     public static final String REMOTE_IDS = "remote_ids";
-    public static final String SPEC = "spec";
 
     private int count;
     private boolean dynamic;
+    private RemoteProto proto;
     private HashSet<String> remoteIDs;
-    private RemoteSpec spec;
 
-    public RemoteConfig(RemoteSpec spec, int count, boolean dynamic) {
-        this.spec = spec;
+    public RemoteConfig(RemoteProto proto, int count, boolean dynamic) {
+        this.proto = proto;
         this.count = count;
         this.remoteIDs = new HashSet<>();
         for (int i = 0; i < count; i++) {
-            this.remoteIDs.add(String.format("%s:(%d)", spec.getLabel(), i));
+            this.remoteIDs.add(String.format("%s:(%d)", proto.getLabel(), i));
         }
         this.dynamic = dynamic;
     }
 
-    public RemoteConfig(RemoteSpec spec, Collection<String> remoteIDs, boolean dynamic) {
-        this.spec = spec;
+    public RemoteConfig(RemoteProto proto, Collection<String> remoteIDs, boolean dynamic) {
+        this.proto = proto;
         this.count = remoteIDs.size();
         this.remoteIDs = new HashSet<>(remoteIDs);
         this.dynamic = dynamic;
@@ -48,7 +48,7 @@ public class RemoteConfig extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.spec = this.decodeSpec(json.getJSONOption(RemoteConfig.SPEC));
+        this.proto = this.decodeProto(json.getJSONOption(RemoteConfig.PROTO));
         this.count = json.getInt(RemoteConfig.COUNT);
         this.remoteIDs = new HashSet<>();
         if (json.hasKey(RemoteConfig.REMOTE_IDS)) {
@@ -60,8 +60,8 @@ public class RemoteConfig extends JSONAble {
         this.dynamic = json.getBoolean(RemoteConfig.DYNAMIC);
     }
 
-    protected RemoteSpec decodeSpec(JSONOption jsonSpec) throws JSONException {
-        return new RemoteSpec(jsonSpec);
+    protected RemoteProto decodeProto(JSONOption jsonSpec) throws JSONException {
+        return new RemoteProto(jsonSpec);
     }
 
     public int getCount() {
@@ -69,7 +69,11 @@ public class RemoteConfig extends JSONAble {
     }
 
     public String getLabel() {
-        return this.spec.getLabel();
+        return this.proto.getLabel();
+    }
+
+    public RemoteProto getProto() {
+        return this.proto;
     }
 
     public HashSet<String> getRemoteIDs() {
@@ -77,15 +81,15 @@ public class RemoteConfig extends JSONAble {
     }
 
     public RemoteType getRemoteType() {
-        return this.spec.getRemoteType();
-    }
-
-    public RemoteSpec getSpec() {
-        return this.spec;
+        return this.proto.getRemoteType();
     }
 
     public SerializableEnum getSpecType() {
-        return this.spec.getSpecType();
+        return this.proto.getSpecType();
+    }
+
+    public boolean hasProto() {
+        return this.proto != null && !this.proto.getRemoteType().equals(RemoteType.NONE);
     }
 
     public boolean hasRemoteIDs() {
@@ -94,10 +98,6 @@ public class RemoteConfig extends JSONAble {
 
     public boolean hasRemoteWithID(String remoteID) {
         return this.remoteIDs.contains(remoteID);
-    }
-
-    public boolean hasSpec() {
-        return this.spec != null && !this.spec.getRemoteType().equals(RemoteType.NONE);
     }
 
     public boolean isDynamic() {
@@ -110,7 +110,7 @@ public class RemoteConfig extends JSONAble {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(RemoteConfig.SPEC, this.spec.toJSON());
+        json.put(RemoteConfig.PROTO, this.proto.toJSON());
         json.put(RemoteConfig.COUNT, this.count);
         if (this.hasRemoteIDs()) {
             JSONArrayBuilder jsonRemotes = JSONBuilder.Array();
@@ -124,8 +124,8 @@ public class RemoteConfig extends JSONAble {
     }
 
     public boolean equals(RemoteConfig config) {
-        return this.spec.equals(config.spec) && this.count == config.count && this.remoteIDs.equals(config.remoteIDs) &&
-            this.dynamic == config.dynamic;
+        return this.proto.equals(config.proto) && this.count == config.count &&
+            this.remoteIDs.equals(config.remoteIDs) && this.dynamic == config.dynamic;
     }
 
 }

@@ -7,19 +7,19 @@ import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.remote.RemoteSpec;
+import com.seat.rescuesim.common.remote.RemoteProto;
 import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable specification of a static Remote. */
-public class StaticRemoteSpec extends RemoteSpec {
+public class StaticRemoteSpec extends RemoteProto {
 
     protected static final StaticRemoteType DEFAULT_SPEC_TYPE = StaticRemoteType.GENERIC;
 
     private StaticRemoteType specType;
 
     public StaticRemoteSpec() {
-        this(StaticRemoteSpec.DEFAULT_SPEC_TYPE, null, RemoteSpec.DEFAULT_BATTERY_POWER, null);
+        this(StaticRemoteSpec.DEFAULT_SPEC_TYPE, null, RemoteProto.DEFAULT_BATTERY_POWER, null);
     }
 
     public StaticRemoteSpec(double maxBatteryPower) {
@@ -27,7 +27,7 @@ public class StaticRemoteSpec extends RemoteSpec {
     }
 
     public StaticRemoteSpec(Vector location) {
-        this(StaticRemoteSpec.DEFAULT_SPEC_TYPE, location, RemoteSpec.DEFAULT_BATTERY_POWER, null);
+        this(StaticRemoteSpec.DEFAULT_SPEC_TYPE, location, RemoteProto.DEFAULT_BATTERY_POWER, null);
     }
 
     public StaticRemoteSpec(Vector location, double maxBatteryPower) {
@@ -43,7 +43,7 @@ public class StaticRemoteSpec extends RemoteSpec {
     }
 
     public StaticRemoteSpec(StaticRemoteType specType) {
-        this(specType, null, RemoteSpec.DEFAULT_BATTERY_POWER, null);
+        this(specType, null, RemoteProto.DEFAULT_BATTERY_POWER, null);
     }
 
     public StaticRemoteSpec(StaticRemoteType specType, double maxBatteryPower) {
@@ -51,7 +51,7 @@ public class StaticRemoteSpec extends RemoteSpec {
     }
 
     public StaticRemoteSpec(StaticRemoteType specType, Vector location) {
-        this(specType, location, RemoteSpec.DEFAULT_BATTERY_POWER, null);
+        this(specType, location, RemoteProto.DEFAULT_BATTERY_POWER, null);
     }
 
     public StaticRemoteSpec(StaticRemoteType specType, Vector location, double maxBatteryPower) {

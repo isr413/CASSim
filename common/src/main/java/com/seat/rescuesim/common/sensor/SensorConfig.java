@@ -79,6 +79,10 @@ public class SensorConfig extends JSONAble {
         return this.proto.getSpecType();
     }
 
+    public boolean hasProto() {
+        return this.proto != null && !this.proto.getSensorType().equals(SensorType.NONE);
+    }
+
     public boolean hasSensorWithID(String sensorID) {
         return this.sensorIDs.contains(sensorID);
     }

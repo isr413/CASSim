@@ -66,11 +66,11 @@ public class RemoteState extends JSONAble {
     protected void decode(JSONObject json) throws JSONException {
         this.remoteType = RemoteType.decodeType(json);
         this.remoteID = json.getString(RemoteState.REMOTE_ID);
-        this.location = new Vector(json.getJSONOption(RemoteSpec.LOCATION));
+        this.location = new Vector(json.getJSONOption(RemoteProto.LOCATION));
         this.battery = json.getDouble(RemoteState.BATTERY);
         this.sensors = new HashMap<>();
-        if (json.hasKey(RemoteSpec.SENSORS)) {
-            JSONArray jsonState = json.getJSONArray(RemoteSpec.SENSORS);
+        if (json.hasKey(RemoteProto.SENSORS)) {
+            JSONArray jsonState = json.getJSONArray(RemoteProto.SENSORS);
             for (int i = 0; i < jsonState.length(); i++) {
                 SensorState state = SensorRegistry.decodeTo(jsonState.getJSONOption(i), SensorState.class);
                 this.sensors.put(state.getSensorID(), state);
@@ -82,14 +82,14 @@ public class RemoteState extends JSONAble {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(RemoteType.REMOTE_TYPE, this.remoteType.getType());
         json.put(RemoteState.REMOTE_ID, this.remoteID);
-        json.put(RemoteSpec.LOCATION, this.location.toJSON());
+        json.put(RemoteProto.LOCATION, this.location.toJSON());
         json.put(RemoteState.BATTERY, this.battery);
         if (this.hasSensors()) {
             JSONArrayBuilder jsonSensors = JSONBuilder.Array();
             for (SensorState sensor : this.sensors.values()) {
                 jsonSensors.put(sensor.toJSON());
             }
-            json.put(RemoteSpec.SENSORS, jsonSensors.toJSON());
+            json.put(RemoteProto.SENSORS, jsonSensors.toJSON());
         }
         return json;
     }

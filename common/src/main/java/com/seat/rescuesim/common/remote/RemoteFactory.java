@@ -93,11 +93,11 @@ public class RemoteFactory {
         throw new JSONException(String.format("Cannot decode remote config of %s", option.toString()));
     }
 
-    public static RemoteSpec decodeRemoteSpec(JSONOption option) throws JSONException {
+    public static RemoteProto decodeRemoteSpec(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
             RemoteType remoteType = RemoteFactory.decodeRemoteType(option);
             if (remoteType.equals(RemoteType.GENERIC)) {
-                return new RemoteSpec(option);
+                return new RemoteProto(option);
             }
             if (remoteType.equals(RemoteType.KINETIC)) {
                 return RemoteFactory.decodeKineticRemoteSpec(option);

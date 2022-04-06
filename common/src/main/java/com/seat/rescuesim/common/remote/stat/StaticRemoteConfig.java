@@ -22,13 +22,13 @@ public class StaticRemoteConfig extends RemoteConfig {
     }
 
     @Override
-    protected StaticRemoteSpec decodeSpec(JSONOption jsonSpec) {
+    protected StaticRemoteSpec decodeProto(JSONOption jsonSpec) {
         return new StaticRemoteSpec(jsonSpec);
     }
 
     @Override
-    public StaticRemoteSpec getSpec() {
-        return (StaticRemoteSpec) super.getSpec();
+    public StaticRemoteSpec getProto() {
+        return (StaticRemoteSpec) super.getProto();
     }
 
     @Override

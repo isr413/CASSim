@@ -7,7 +7,7 @@ import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.remote.RemoteSpec;
+import com.seat.rescuesim.common.remote.RemoteProto;
 import com.seat.rescuesim.common.remote.kinetic.KineticRemoteSpec;
 import com.seat.rescuesim.common.remote.kinetic.KineticRemoteType;
 import com.seat.rescuesim.common.sensor.SensorConfig;
@@ -19,12 +19,12 @@ public class DroneSpec extends KineticRemoteSpec {
     private Vector batteryUsage; // [static (hovering), horizontal movement, vertical movement]
 
     public DroneSpec(Vector batteryUsage) {
-        this(null, RemoteSpec.DEFAULT_BATTERY_POWER, null, batteryUsage, KineticRemoteSpec.DEFAULT_VELOCITY,
+        this(null, RemoteProto.DEFAULT_BATTERY_POWER, null, batteryUsage, KineticRemoteSpec.DEFAULT_VELOCITY,
             KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public DroneSpec(Vector batteryUsage, double maxVelocity, double maxAcceleration, double maxJerk) {
-        this(null, RemoteSpec.DEFAULT_BATTERY_POWER, null, batteryUsage, maxVelocity, maxAcceleration, maxJerk);
+        this(null, RemoteProto.DEFAULT_BATTERY_POWER, null, batteryUsage, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public DroneSpec(double maxBatteryPower, Vector batteryUsage) {
@@ -38,12 +38,12 @@ public class DroneSpec extends KineticRemoteSpec {
     }
 
     public DroneSpec(Vector location, Vector batteryUsage) {
-        this(location, RemoteSpec.DEFAULT_BATTERY_POWER, null, batteryUsage, KineticRemoteSpec.DEFAULT_VELOCITY,
+        this(location, RemoteProto.DEFAULT_BATTERY_POWER, null, batteryUsage, KineticRemoteSpec.DEFAULT_VELOCITY,
             KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public DroneSpec(Vector location, Vector batteryUsage, double maxVelocity, double maxAcceleration, double maxJerk) {
-        this(location, RemoteSpec.DEFAULT_BATTERY_POWER, null, batteryUsage, maxVelocity, maxAcceleration, maxJerk);
+        this(location, RemoteProto.DEFAULT_BATTERY_POWER, null, batteryUsage, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public DroneSpec(Vector location, double maxBatteryPower, Vector batteryUsage) {

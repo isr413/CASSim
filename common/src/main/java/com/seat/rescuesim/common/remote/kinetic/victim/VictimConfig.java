@@ -22,13 +22,13 @@ public class VictimConfig extends KineticRemoteConfig {
     }
 
     @Override
-    protected VictimSpec decodeSpec(JSONOption jsonSpec) throws JSONException {
+    protected VictimSpec decodeProto(JSONOption jsonSpec) throws JSONException {
         return new VictimSpec(jsonSpec);
     }
 
     @Override
-    public VictimSpec getSpec() {
-        return (VictimSpec) super.getSpec();
+    public VictimSpec getProto() {
+        return (VictimSpec) super.getProto();
     }
 
 }

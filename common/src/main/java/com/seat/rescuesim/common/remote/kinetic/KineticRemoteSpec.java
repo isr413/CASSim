@@ -7,12 +7,12 @@ import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.remote.RemoteSpec;
+import com.seat.rescuesim.common.remote.RemoteProto;
 import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable specification of a kinetic Remote. */
-public class KineticRemoteSpec extends RemoteSpec {
+public class KineticRemoteSpec extends RemoteProto {
     public static final String MAX_ACCELERATION = "max_acceleration";
     public static final String MAX_JERK = "max_jerk";
     public static final String MAX_VELOCITY = "max_velocity";
@@ -28,12 +28,12 @@ public class KineticRemoteSpec extends RemoteSpec {
     private KineticRemoteType specType;
 
     public KineticRemoteSpec() {
-        this(KineticRemoteSpec.DEFAULT_SPEC_TYPE, null, RemoteSpec.DEFAULT_BATTERY_POWER, null,
+        this(KineticRemoteSpec.DEFAULT_SPEC_TYPE, null, RemoteProto.DEFAULT_BATTERY_POWER, null,
             KineticRemoteSpec.DEFAULT_VELOCITY, KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public KineticRemoteSpec(double maxVelocity, double maxAcceleration, double maxJerk) {
-        this(KineticRemoteSpec.DEFAULT_SPEC_TYPE, null, RemoteSpec.DEFAULT_BATTERY_POWER, null, maxVelocity,
+        this(KineticRemoteSpec.DEFAULT_SPEC_TYPE, null, RemoteProto.DEFAULT_BATTERY_POWER, null, maxVelocity,
             maxAcceleration, maxJerk);
     }
 
@@ -47,12 +47,12 @@ public class KineticRemoteSpec extends RemoteSpec {
     }
 
     public KineticRemoteSpec(Vector location) {
-        this(KineticRemoteSpec.DEFAULT_SPEC_TYPE, location, RemoteSpec.DEFAULT_BATTERY_POWER, null,
+        this(KineticRemoteSpec.DEFAULT_SPEC_TYPE, location, RemoteProto.DEFAULT_BATTERY_POWER, null,
             KineticRemoteSpec.DEFAULT_VELOCITY, KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public KineticRemoteSpec(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
-        this(KineticRemoteSpec.DEFAULT_SPEC_TYPE, location, RemoteSpec.DEFAULT_BATTERY_POWER, null, maxVelocity,
+        this(KineticRemoteSpec.DEFAULT_SPEC_TYPE, location, RemoteProto.DEFAULT_BATTERY_POWER, null, maxVelocity,
             maxAcceleration, maxJerk);
     }
 
@@ -90,12 +90,12 @@ public class KineticRemoteSpec extends RemoteSpec {
     }
 
     public KineticRemoteSpec(KineticRemoteType specType) {
-        this(specType, null, RemoteSpec.DEFAULT_BATTERY_POWER, null, KineticRemoteSpec.DEFAULT_VELOCITY,
+        this(specType, null, RemoteProto.DEFAULT_BATTERY_POWER, null, KineticRemoteSpec.DEFAULT_VELOCITY,
             KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public KineticRemoteSpec(KineticRemoteType specType, double maxVelocity, double maxAcceleration, double maxJerk) {
-        this(specType, null, RemoteSpec.DEFAULT_BATTERY_POWER, null, maxVelocity, maxAcceleration, maxJerk);
+        this(specType, null, RemoteProto.DEFAULT_BATTERY_POWER, null, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public KineticRemoteSpec(KineticRemoteType specType, double maxBatteryPower) {
@@ -109,13 +109,13 @@ public class KineticRemoteSpec extends RemoteSpec {
     }
 
     public KineticRemoteSpec(KineticRemoteType specType, Vector location) {
-        this(specType, location, RemoteSpec.DEFAULT_BATTERY_POWER, null, KineticRemoteSpec.DEFAULT_VELOCITY,
+        this(specType, location, RemoteProto.DEFAULT_BATTERY_POWER, null, KineticRemoteSpec.DEFAULT_VELOCITY,
             KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public KineticRemoteSpec(KineticRemoteType specType, Vector location, double maxVelocity, double maxAcceleration,
             double maxJerk) {
-        this(specType, location, RemoteSpec.DEFAULT_BATTERY_POWER, null, maxVelocity, maxAcceleration, maxJerk);
+        this(specType, location, RemoteProto.DEFAULT_BATTERY_POWER, null, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public KineticRemoteSpec(KineticRemoteType specType, Vector location, double maxBatteryPower) {

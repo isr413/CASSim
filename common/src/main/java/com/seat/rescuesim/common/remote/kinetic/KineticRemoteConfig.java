@@ -22,13 +22,13 @@ public class KineticRemoteConfig extends RemoteConfig {
     }
 
     @Override
-    protected KineticRemoteSpec decodeSpec(JSONOption jsonSpec) {
+    protected KineticRemoteSpec decodeProto(JSONOption jsonSpec) {
         return new KineticRemoteSpec(jsonSpec);
     }
 
     @Override
-    public KineticRemoteSpec getSpec() {
-        return (KineticRemoteSpec) super.getSpec();
+    public KineticRemoteSpec getProto() {
+        return (KineticRemoteSpec) super.getProto();
     }
 
     @Override

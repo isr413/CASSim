@@ -7,7 +7,7 @@ import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.remote.RemoteSpec;
+import com.seat.rescuesim.common.remote.RemoteProto;
 import com.seat.rescuesim.common.remote.kinetic.KineticRemoteSpec;
 import com.seat.rescuesim.common.remote.kinetic.KineticRemoteType;
 import com.seat.rescuesim.common.sensor.SensorConfig;
@@ -21,13 +21,13 @@ public class VictimSpec extends KineticRemoteSpec {
     private double speedStdDev;
 
     public VictimSpec(double speedMean, double speedStdDev) {
-        this(null, RemoteSpec.DEFAULT_BATTERY_POWER, null, speedMean, speedStdDev, KineticRemoteSpec.DEFAULT_VELOCITY,
+        this(null, RemoteProto.DEFAULT_BATTERY_POWER, null, speedMean, speedStdDev, KineticRemoteSpec.DEFAULT_VELOCITY,
             KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public VictimSpec(double speedMean, double speedStdDev, double maxVelocity, double maxAcceleration,
             double maxJerk) {
-        this(null, RemoteSpec.DEFAULT_BATTERY_POWER, null, speedMean, speedStdDev, maxVelocity, maxAcceleration,
+        this(null, RemoteProto.DEFAULT_BATTERY_POWER, null, speedMean, speedStdDev, maxVelocity, maxAcceleration,
             maxJerk);
     }
 
@@ -42,13 +42,13 @@ public class VictimSpec extends KineticRemoteSpec {
     }
 
     public VictimSpec(Vector location, double speedMean, double speedStdDev) {
-        this(location, RemoteSpec.DEFAULT_BATTERY_POWER, null, speedMean, speedStdDev,
+        this(location, RemoteProto.DEFAULT_BATTERY_POWER, null, speedMean, speedStdDev,
             KineticRemoteSpec.DEFAULT_VELOCITY, KineticRemoteSpec.DEFAULT_ACCELERATION, KineticRemoteSpec.DEFAULT_JERK);
     }
 
     public VictimSpec(Vector location, double speedMean, double speedStdDev, double maxVelocity,
             double maxAcceleration, double maxJerk) {
-        this(location, RemoteSpec.DEFAULT_BATTERY_POWER, null, speedMean, speedStdDev, maxVelocity, maxAcceleration,
+        this(location, RemoteProto.DEFAULT_BATTERY_POWER, null, speedMean, speedStdDev, maxVelocity, maxAcceleration,
             maxJerk);
     }
 
