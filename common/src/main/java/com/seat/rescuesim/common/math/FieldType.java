@@ -10,6 +10,8 @@ public enum FieldType implements SerializableEnum {
     PUSH(2),
     PULL(3);
 
+    public static final String FIELD_TYPE = "field_type";
+
     public static FieldType decodeType(JSONArray json) {
         return FieldType.Value(json.getInt(0));
     }

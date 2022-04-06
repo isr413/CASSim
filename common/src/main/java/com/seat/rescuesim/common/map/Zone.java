@@ -16,7 +16,6 @@ public class Zone extends JSONAble {
     public static final String ZONE_GROUND = "ground_field";
     public static final String ZONE_LOCATION = "location";
     public static final String ZONE_SIZE = "size";
-    public static final String ZONE_TYPE = "type";
 
     protected static final ZoneType DEFAULT_ZONE_TYPE = ZoneType.OPEN;
 
@@ -48,7 +47,7 @@ public class Zone extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = ZoneType.values()[json.getInt(Zone.ZONE_TYPE)];
+        this.type = ZoneType.values()[json.getInt(ZoneType.ZONE_TYPE)];
         this.location = new Vector(json.getJSONOption(Zone.ZONE_LOCATION));
         this.size = json.getInt(Zone.ZONE_SIZE);
         if (json.hasKey(Zone.ZONE_AERIAL)) {
@@ -97,7 +96,7 @@ public class Zone extends JSONAble {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(Zone.ZONE_TYPE, this.type.getType());
+        json.put(ZoneType.ZONE_TYPE, this.type.getType());
         json.put(Zone.ZONE_LOCATION, this.location.toJSON());
         json.put(Zone.ZONE_SIZE, this.size);
         if (this.hasAerialField()) {

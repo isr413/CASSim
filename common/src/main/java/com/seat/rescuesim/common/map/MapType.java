@@ -9,8 +9,10 @@ public enum MapType implements SerializableEnum {
     GENERIC(1),
     CUSTOM(2);
 
+    public static final String MAP_TYPE = "map_type";
+
     public static MapType decodeType(JSONObject json) {
-        return MapType.Value(json.getInt(Map.MAP_TYPE));
+        return MapType.Value(json.getInt(MapType.MAP_TYPE));
     }
 
     public static MapType Value(int value) {

@@ -9,8 +9,10 @@ public enum ZoneType implements SerializableEnum {
     CLOSED(1),
     OPEN(2);
 
+    public static final String ZONE_TYPE = "zone_type";
+
     public static ZoneType decodeType(JSONObject json) {
-        return ZoneType.Value(json.getInt(Zone.ZONE_TYPE));
+        return ZoneType.Value(json.getInt(ZoneType.ZONE_TYPE));
     }
 
     public static ZoneType Value(int value) {

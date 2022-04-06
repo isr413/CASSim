@@ -15,7 +15,6 @@ import com.seat.rescuesim.common.util.CoreException;
 public class Map extends JSONAble {
     public static final String MAP_GRID = "map_grid";
     public static final String MAP_HEIGHT = "map_height";
-    public static final String MAP_TYPE = "map_type";
     public static final String MAP_WIDTH = "map_width";
     public static final String ZONE_SIZE = "zone_size";
 
@@ -70,7 +69,7 @@ public class Map extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = MapType.values()[json.getInt(Map.MAP_TYPE)];
+        this.type = MapType.values()[json.getInt(MapType.MAP_TYPE)];
         this.width = json.getInt(Map.MAP_WIDTH);
         this.height = json.getInt(Map.MAP_HEIGHT);
         this.zoneSize = json.getInt(Map.ZONE_SIZE);
@@ -201,7 +200,7 @@ public class Map extends JSONAble {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(Map.MAP_TYPE, this.type.getType());
+        json.put(MapType.MAP_TYPE, this.type.getType());
         json.put(Map.MAP_WIDTH, this.width);
         json.put(Map.MAP_HEIGHT, this.height);
         json.put(Map.ZONE_SIZE, this.zoneSize);
