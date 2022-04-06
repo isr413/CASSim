@@ -7,6 +7,7 @@ import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.remote.RemoteConfig;
 import com.seat.rescuesim.common.remote.intent.IntentionSet;
 import com.seat.rescuesim.common.scenario.ScenarioConfig;
+import com.seat.rescuesim.common.scenario.ScenarioType;
 import com.seat.rescuesim.common.scenario.Snapshot;
 
 public interface Application {
@@ -23,6 +24,7 @@ public interface Application {
 
     default ScenarioConfig getScenarioConfig() {
         return new ScenarioConfig(
+            getScenarioType(),
             getScenarioID(),
             getSeed(),
             getMap(),
@@ -33,6 +35,10 @@ public interface Application {
     }
 
     Collection<RemoteConfig> getRemoteConfigs();
+
+    default ScenarioType getScenarioType() {
+        return ScenarioType.GENERIC;
+    }
 
     double getStepSize();
 

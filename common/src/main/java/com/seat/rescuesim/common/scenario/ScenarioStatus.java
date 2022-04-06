@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common.scenario;
 
+import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable enumeration to denote types of scenario statuses. */
@@ -10,6 +11,18 @@ public enum ScenarioStatus implements SerializableEnum {
     DONE(3),
     ERROR(4);
 
+    public static final String STATUS = "status";
+
+    public static ScenarioStatus decodeStatus(JSONObject json) {
+        return (json.hasKey(ScenarioStatus.STATUS)) ?
+            ScenarioStatus.Value(json.getInt(ScenarioStatus.STATUS)) :
+            ScenarioStatus.NONE;
+    }
+
+    public static ScenarioStatus Value(int value) {
+        return ScenarioStatus.values()[value];
+    }
+
     private int type;
 
     private ScenarioStatus(int type) {
@@ -17,6 +30,7 @@ public enum ScenarioStatus implements SerializableEnum {
     }
 
     public boolean equals(ScenarioStatus type) {
+        if (type == null) return false;
         return this.type == type.type;
     }
 

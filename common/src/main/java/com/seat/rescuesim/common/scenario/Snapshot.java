@@ -24,7 +24,6 @@ public class Snapshot extends JSONAble {
     public static final String REMOTE_IDS = "remote_ids";
     public static final String SCENARIO_ID = "scenario_id";
     public static final String STATE = "state";
-    public static final String STATUS = "status";
     public static final String STEP_SIZE = "step_size";
     public static final String TIME = "time";
 
@@ -33,21 +32,23 @@ public class Snapshot extends JSONAble {
     private String hash;
     private HashSet<String> remoteIDs;
     private String scenarioID;
+    private ScenarioType scenarioType;
     private HashMap<String, RemoteState> state;
     private ScenarioStatus status;
     private double stepSize;
     private double time;
 
-    public Snapshot(String hash, String scenarioID, double stepSize, HashSet<String> remoteIDs,
-            HashMap<String, RemoteState> state) {
-        this(hash, scenarioID, ScenarioStatus.START, 0, stepSize, remoteIDs, new HashSet<String>(remoteIDs),
-            new HashSet<String>(remoteIDs), state);
+    public Snapshot(String hash, ScenarioType scenarioType, String scenarioID, double stepSize,
+            HashSet<String> remoteIDs, HashMap<String, RemoteState> state) {
+        this(hash, scenarioType, scenarioID, ScenarioStatus.START, 0, stepSize, remoteIDs,
+            new HashSet<String>(remoteIDs), new HashSet<String>(remoteIDs), state);
     }
 
-    public Snapshot(String hash, String scenarioID, ScenarioStatus status, double time, double stepSize,
-            HashSet<String> remoteIDs, HashSet<String> activeRemotes, HashSet<String> dynamicRemotes,
+    public Snapshot(String hash, ScenarioType scenarioType, String scenarioID, ScenarioStatus status, double time,
+            double stepSize, HashSet<String> remoteIDs, HashSet<String> activeRemotes, HashSet<String> dynamicRemotes,
             HashMap<String, RemoteState> state) {
         this.hash = hash;
+        this.scenarioType = scenarioType;
         this.scenarioID = scenarioID;
         this.status = status;
         this.time = time;
@@ -65,8 +66,9 @@ public class Snapshot extends JSONAble {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.hash = json.getString(Snapshot.HASH);
+        this.scenarioType = ScenarioType.decodeType(json);
         this.scenarioID = json.getString(Snapshot.SCENARIO_ID);
-        this.status = ScenarioStatus.values()[json.getInt(Snapshot.STATUS)];
+        this.status = ScenarioStatus.values()[json.getInt(ScenarioStatus.STATUS)];
         this.time = json.getDouble(Snapshot.TIME);
         this.stepSize = json.getDouble(Snapshot.STEP_SIZE);
         this.remoteIDs = new HashSet<>();
@@ -125,6 +127,10 @@ public class Snapshot extends JSONAble {
         return this.scenarioID;
     }
 
+    public ScenarioType getScenarioType() {
+        return this.scenarioType;
+    }
+
     public ArrayList<RemoteState> getState() {
         return new ArrayList<RemoteState>(this.state.values());
     }
@@ -176,8 +182,9 @@ public class Snapshot extends JSONAble {
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(Snapshot.HASH, this.hash);
+        json.put(ScenarioType.SCENARIO_TYPE, this.scenarioType.getType());
         json.put(Snapshot.SCENARIO_ID, this.scenarioID);
-        json.put(Snapshot.STATUS, this.status.getType());
+        json.put(ScenarioStatus.STATUS, this.status.getType());
         json.put(Snapshot.TIME, this.time);
         json.put(Snapshot.STEP_SIZE, this.stepSize);
         if (this.hasRemotes()) {
@@ -210,6 +217,7 @@ public class Snapshot extends JSONAble {
     }
 
     public boolean equals(Snapshot snap) {
+        if (snap == null) return false;
         return this.hash.equals(snap.hash);
     }
 

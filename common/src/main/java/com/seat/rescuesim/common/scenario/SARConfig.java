@@ -67,7 +67,7 @@ public class SARConfig extends ScenarioConfig {
 
     public SARConfig(String scenarioID, long seed, Map map, double disasterScale, int missionLength,
             double stepSize, Collection<RemoteConfig> remoteConfig) {
-        super(scenarioID, seed, map, missionLength, stepSize, remoteConfig);
+        super(ScenarioType.SAR, scenarioID, seed, map, missionLength, stepSize, remoteConfig);
         this.disasterScale = disasterScale;
         this.init();
     }
@@ -79,7 +79,9 @@ public class SARConfig extends ScenarioConfig {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.disasterScale = json.getDouble(SARConfig.DISASTER_SCALE);
+        this.disasterScale = (json.hasKey(SARConfig.DISASTER_SCALE)) ?
+            json.getDouble(SARConfig.DISASTER_SCALE) :
+            SARConfig.DEFAULT_DISASTER_SCALE;
         this.init();
     }
 
@@ -185,6 +187,7 @@ public class SARConfig extends ScenarioConfig {
     }
 
     public boolean equals(SARConfig config) {
+        if (config == null) return false;
         return super.equals(config) && this.disasterScale == config.disasterScale;
     }
 

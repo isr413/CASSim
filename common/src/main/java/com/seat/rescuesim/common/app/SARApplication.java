@@ -1,6 +1,7 @@
 package com.seat.rescuesim.common.app;
 
 import com.seat.rescuesim.common.scenario.SARConfig;
+import com.seat.rescuesim.common.scenario.ScenarioType;
 
 public interface SARApplication extends Application {
 
@@ -16,6 +17,10 @@ public interface SARApplication extends Application {
             getStepSize(),
             getRemoteConfigs()
         );
+    }
+
+    default ScenarioType getScenarioType() {
+        return ScenarioType.SAR;
     }
 
 }
