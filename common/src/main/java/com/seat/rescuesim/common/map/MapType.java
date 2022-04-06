@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common.map;
 
+import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
@@ -11,7 +12,7 @@ public enum MapType implements SerializableEnum {
 
     public static final String MAP_TYPE = "map_type";
 
-    public static MapType decodeType(JSONObject json) {
+    public static MapType decodeType(JSONObject json) throws JSONException {
         return MapType.Value(json.getInt(MapType.MAP_TYPE));
     }
 

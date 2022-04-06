@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common.remote.kinetic;
 
+import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
@@ -10,8 +11,10 @@ public enum KineticRemoteType implements SerializableEnum {
     DRONE(2),
     VICTIM(3);
 
-    public static KineticRemoteType decodeType(JSONObject json) {
-        return KineticRemoteType.Value(json.getInt(KineticRemoteConst.KINETIC_REMOTE_TYPE));
+    public static final String KINETIC_REMOTE_TYPE = "kinetic_remote_type";
+
+    public static KineticRemoteType decodeType(JSONObject json) throws JSONException {
+        return KineticRemoteType.Value(json.getInt(KineticRemoteType.KINETIC_REMOTE_TYPE));
     }
 
     public static KineticRemoteType Value(int value) {

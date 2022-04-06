@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common.remote.stat;
 
+import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
@@ -9,8 +10,10 @@ public enum StaticRemoteType implements SerializableEnum {
     GENERIC(1),
     BASE(2);
 
-    public static StaticRemoteType decodeType(JSONObject json) {
-        return StaticRemoteType.Value(json.getInt(StaticRemoteConst.STATIC_REMOTE_TYPE));
+    public static final String STATIC_REMOTE_TYPE = "static_remote_type";
+
+    public static StaticRemoteType decodeType(JSONObject json) throws JSONException {
+        return StaticRemoteType.Value(json.getInt(StaticRemoteType.STATIC_REMOTE_TYPE));
     }
 
     public static StaticRemoteType Value(int value) {
