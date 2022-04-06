@@ -18,7 +18,7 @@ import com.seat.rescuesim.common.sensor.SensorType;
 import com.seat.rescuesim.common.util.CoreException;
 import com.seat.rescuesim.common.util.Debugger;
 
-/** A serializable specification of a Remote. */
+/** A serializable prototype of a Remote. */
 public class RemoteProto extends JSONAble {
     public static final String LOCATION = "location";
     public static final String MAX_BATTERY = "max_battery";

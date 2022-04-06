@@ -12,13 +12,6 @@ import com.seat.rescuesim.common.remote.kinetic.drone.DroneState;
 import com.seat.rescuesim.common.remote.kinetic.victim.VictimConfig;
 import com.seat.rescuesim.common.remote.kinetic.victim.VictimSpec;
 import com.seat.rescuesim.common.remote.kinetic.victim.VictimState;
-import com.seat.rescuesim.common.remote.stat.StaticRemoteConfig;
-import com.seat.rescuesim.common.remote.stat.StaticRemoteSpec;
-import com.seat.rescuesim.common.remote.stat.StaticRemoteState;
-import com.seat.rescuesim.common.remote.stat.StaticRemoteType;
-import com.seat.rescuesim.common.remote.stat.base.BaseConfig;
-import com.seat.rescuesim.common.remote.stat.base.BaseSpec;
-import com.seat.rescuesim.common.remote.stat.base.BaseState;
 
 public class RemoteFactory {
 
@@ -86,9 +79,6 @@ public class RemoteFactory {
             if (remoteType.equals(RemoteType.KINETIC)) {
                 return RemoteFactory.decodeKineticRemoteConfig(option);
             }
-            if (remoteType.equals(RemoteType.STATIC)) {
-                return RemoteFactory.decodeStaticRemoteConfig(option);
-            }
         }
         throw new JSONException(String.format("Cannot decode remote config of %s", option.toString()));
     }
@@ -101,9 +91,6 @@ public class RemoteFactory {
             }
             if (remoteType.equals(RemoteType.KINETIC)) {
                 return RemoteFactory.decodeKineticRemoteSpec(option);
-            }
-            if (remoteType.equals(RemoteType.STATIC)) {
-                return RemoteFactory.decodeStaticRemoteSpec(option);
             }
         }
         throw new JSONException(String.format("Cannot decode remote spec of %s", option.toString()));
@@ -118,9 +105,6 @@ public class RemoteFactory {
             if (remoteType.equals(RemoteType.KINETIC)) {
                 return RemoteFactory.decodeKineticRemoteState(option);
             }
-            if (remoteType.equals(RemoteType.STATIC)) {
-                return RemoteFactory.decodeStaticRemoteState(option);
-            }
         }
         throw new JSONException(String.format("Cannot decode remote state of %s", option.toString()));
     }
@@ -128,52 +112,6 @@ public class RemoteFactory {
     public static RemoteType decodeRemoteType(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
             return RemoteType.decodeType(option.someObject());
-        }
-        throw new JSONException(String.format("Cannot decode remote type of %s", option.toString()));
-    }
-
-    public static StaticRemoteConfig decodeStaticRemoteConfig(JSONOption option) throws JSONException {
-        if (option.isSomeObject()) {
-            StaticRemoteType specType = RemoteFactory.decodeStaticRemoteType(option);
-            if (specType.equals(StaticRemoteType.GENERIC)) {
-                return new StaticRemoteConfig(option);
-            }
-            if (specType.equals(StaticRemoteType.BASE)) {
-                return new BaseConfig(option);
-            }
-        }
-        throw new JSONException(String.format("Cannot decode remote config of %s", option.toString()));
-    }
-
-    public static StaticRemoteSpec decodeStaticRemoteSpec(JSONOption option) throws JSONException {
-        if (option.isSomeObject()) {
-            StaticRemoteType specType = RemoteFactory.decodeStaticRemoteType(option);
-            if (specType.equals(StaticRemoteType.GENERIC)) {
-                return new StaticRemoteSpec(option);
-            }
-            if (specType.equals(StaticRemoteType.BASE)) {
-                return new BaseSpec(option);
-            }
-        }
-        throw new JSONException(String.format("Cannot decode remote spec of %s", option.toString()));
-    }
-
-    public static StaticRemoteState decodeStaticRemoteState(JSONOption option) throws JSONException {
-        if (option.isSomeObject()) {
-            StaticRemoteType specType = RemoteFactory.decodeStaticRemoteType(option);
-            if (specType.equals(StaticRemoteType.GENERIC)) {
-                return new StaticRemoteState(option);
-            }
-            if (specType.equals(StaticRemoteType.BASE)) {
-                return new BaseState(option);
-            }
-        }
-        throw new JSONException(String.format("Cannot decode remote state of %s", option.toString()));
-    }
-
-    public static StaticRemoteType decodeStaticRemoteType(JSONOption option) throws JSONException {
-        if (option.isSomeObject()) {
-            return StaticRemoteType.decodeType(option.someObject());
         }
         throw new JSONException(String.format("Cannot decode remote type of %s", option.toString()));
     }

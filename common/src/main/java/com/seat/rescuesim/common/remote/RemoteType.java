@@ -8,7 +8,7 @@ public enum RemoteType implements SerializableEnum {
     NONE(0),
     GENERIC(1),
     KINETIC(2),
-    STATIC(3);
+    BASE(3);
 
     public static final String REMOTE_TYPE = "remote_type";
 

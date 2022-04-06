@@ -9,11 +9,11 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.remote.RemoteConfig;
+import com.seat.rescuesim.common.remote.RemoteType;
+import com.seat.rescuesim.common.remote.base.BaseConfig;
 import com.seat.rescuesim.common.remote.kinetic.KineticRemoteType;
 import com.seat.rescuesim.common.remote.kinetic.drone.DroneConfig;
 import com.seat.rescuesim.common.remote.kinetic.victim.VictimConfig;
-import com.seat.rescuesim.common.remote.stat.StaticRemoteType;
-import com.seat.rescuesim.common.remote.stat.base.BaseConfig;
 
 public class SARConfig extends ScenarioConfig {
     public static final String DISASTER_SCALE = "disaster_scale";
@@ -96,7 +96,7 @@ public class SARConfig extends ScenarioConfig {
     private void countBases() {
         this.numBases = 0;
         for (RemoteConfig config : this.getRemotes()) {
-            if (config.getSpecType().equals(StaticRemoteType.BASE)) {
+            if (config.getSpecType().equals(RemoteType.BASE)) {
                 this.numBases += config.getCount();
             }
         }
@@ -129,7 +129,7 @@ public class SARConfig extends ScenarioConfig {
     public ArrayList<BaseConfig> getBases() {
         ArrayList<BaseConfig> baseConfig = new ArrayList<>();
         for (RemoteConfig config : this.getRemotes()) {
-            if (config.getSpecType().equals(StaticRemoteType.BASE)) {
+            if (config.getSpecType().equals(RemoteType.BASE)) {
                 baseConfig.add((BaseConfig) config);
             }
         }
