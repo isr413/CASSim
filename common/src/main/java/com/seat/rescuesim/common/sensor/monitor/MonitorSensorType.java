@@ -9,8 +9,10 @@ public enum MonitorSensorType implements SerializableEnum {
     GENERIC(1),
     HRVM(2);
 
+    public static final String MONITOR_SENSOR_TYPE = "monitor_sensor_type";
+
     public static MonitorSensorType decodeType(JSONObject json) {
-        return MonitorSensorType.Value(json.getInt(MonitorSensorConst.MONITOR_SENSOR_TYPE));
+        return MonitorSensorType.Value(json.getInt(MonitorSensorType.MONITOR_SENSOR_TYPE));
     }
 
     public static MonitorSensorType Value(int value) {

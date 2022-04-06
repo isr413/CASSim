@@ -8,6 +8,7 @@ import com.seat.rescuesim.common.sensor.SensorSpec;
 import com.seat.rescuesim.common.sensor.SensorType;
 
 public class CommsSensorSpec extends SensorSpec {
+    public static final String DELAY = "delay";
 
     protected static final double DEFAULT_DELAY = 0.0;
     protected static final CommsSensorType DEFAULT_SPEC_TYPE = CommsSensorType.GENERIC;
@@ -70,14 +71,14 @@ public class CommsSensorSpec extends SensorSpec {
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.specType = CommsSensorType.decodeType(json);
-        this.delay = json.getDouble(CommsSensorConst.DELAY);
+        this.delay = json.getDouble(CommsSensorSpec.DELAY);
     }
 
     @Override
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(CommsSensorConst.COMMS_SENSOR_TYPE, this.specType.getType());
-        json.put(CommsSensorConst.DELAY, this.delay);
+        json.put(CommsSensorType.COMMS_SENSOR_TYPE, this.specType.getType());
+        json.put(CommsSensorSpec.DELAY, this.delay);
         return json;
     }
 

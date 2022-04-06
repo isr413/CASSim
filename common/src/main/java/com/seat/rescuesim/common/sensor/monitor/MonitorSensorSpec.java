@@ -61,7 +61,7 @@ public class MonitorSensorSpec extends SensorSpec {
     @Override
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(MonitorSensorConst.MONITOR_SENSOR_TYPE, this.specType.getType());
+        json.put(MonitorSensorType.MONITOR_SENSOR_TYPE, this.specType.getType());
         return json;
     }
 

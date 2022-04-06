@@ -11,8 +11,10 @@ public enum SensorType implements SerializableEnum {
     MONITOR(3),
     VISION(4);
 
+    public static final String SENSOR_TYPE = "sensor_type";
+
     public static SensorType decodeType(JSONObject json) {
-        return SensorType.Value(json.getInt(SensorConst.SENSOR_TYPE));
+        return SensorType.Value(json.getInt(SensorType.SENSOR_TYPE));
     }
 
     public static SensorType Value(int value) {

@@ -15,6 +15,9 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable configuration of a Sensor. */
 public class SensorConfig extends JSONAble {
+    public static final String COUNT = "count";
+    public static final String SENSOR_IDS = "sensor_ids";
+    public static final String SPEC = "spec";
 
     private int count;
     private HashSet<String> sensorIDs;
@@ -41,11 +44,11 @@ public class SensorConfig extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.spec = this.decodeSpec(json.getJSONOption(SensorConst.SPEC));
-        this.count = json.getInt(SensorConst.COUNT);
+        this.spec = this.decodeSpec(json.getJSONOption(SensorConfig.SPEC));
+        this.count = json.getInt(SensorConfig.COUNT);
         this.sensorIDs = new HashSet<>();
-        if (json.hasKey(SensorConst.SENSOR_IDS)) {
-            JSONArray jsonSensors = json.getJSONArray(SensorConst.SENSOR_IDS);
+        if (json.hasKey(SensorConfig.SENSOR_IDS)) {
+            JSONArray jsonSensors = json.getJSONArray(SensorConfig.SENSOR_IDS);
             for (int i = 0; i < jsonSensors.length(); i++) {
                 this.sensorIDs.add(jsonSensors.getString(i));
             }
@@ -86,14 +89,14 @@ public class SensorConfig extends JSONAble {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(SensorConst.SPEC, this.spec.toJSON());
-        json.put(SensorConst.COUNT, this.count);
+        json.put(SensorConfig.SPEC, this.spec.toJSON());
+        json.put(SensorConfig.COUNT, this.count);
         if (this.hasSensors()) {
             JSONArrayBuilder jsonSensors = JSONBuilder.Array();
             for (String sensorID : this.sensorIDs) {
                 jsonSensors.put(sensorID);
             }
-            json.put(SensorConst.SENSOR_IDS, jsonSensors.toJSON());
+            json.put(SensorConfig.SENSOR_IDS, jsonSensors.toJSON());
         }
         return json.toJSON();
     }

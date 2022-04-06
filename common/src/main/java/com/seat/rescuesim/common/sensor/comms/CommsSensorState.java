@@ -14,6 +14,7 @@ import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.sensor.SensorType;
 
 public class CommsSensorState extends SensorState {
+    public static final String CONNECTIONS = "connections";
 
     protected static final CommsSensorType DEFAULT_SPEC_TYPE = CommsSensorType.GENERIC;
 
@@ -56,8 +57,8 @@ public class CommsSensorState extends SensorState {
         super.decode(json);
         this.specType = CommsSensorType.decodeType(json);
         this.connections = new HashSet<>();
-        if (json.hasKey(CommsSensorConst.CONNECTIONS)) {
-            JSONArray jsonConnections = json.getJSONArray(CommsSensorConst.CONNECTIONS);
+        if (json.hasKey(CommsSensorState.CONNECTIONS)) {
+            JSONArray jsonConnections = json.getJSONArray(CommsSensorState.CONNECTIONS);
             for (int i = 0; i < jsonConnections.length(); i++) {
                 this.connections.add(jsonConnections.getString(i));
             }
@@ -72,7 +73,7 @@ public class CommsSensorState extends SensorState {
             for (String remoteID : this.connections) {
                 jsonObservations.put(remoteID);
             }
-            json.put(CommsSensorConst.CONNECTIONS, jsonObservations.toJSON());
+            json.put(CommsSensorState.CONNECTIONS, jsonObservations.toJSON());
         }
         return json;
     }

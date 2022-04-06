@@ -8,6 +8,7 @@ import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.sensor.SensorType;
 
 public class MonitorSensorState extends SensorState {
+    public static final String MONITOR_ID = "monitor_id";
 
     protected static final MonitorSensorType DEFAULT_SPEC_TYPE = MonitorSensorType.GENERIC;
 
@@ -40,8 +41,8 @@ public class MonitorSensorState extends SensorState {
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.specType = MonitorSensorType.decodeType(json);
-        if (json.hasKey(MonitorSensorConst.MONITOR_ID)) {
-            this.monitorID = json.getString(MonitorSensorConst.MONITOR_ID);
+        if (json.hasKey(MonitorSensorState.MONITOR_ID)) {
+            this.monitorID = json.getString(MonitorSensorState.MONITOR_ID);
         } else {
             this.monitorID = null;
         }
@@ -50,9 +51,9 @@ public class MonitorSensorState extends SensorState {
     @Override
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(MonitorSensorConst.MONITOR_SENSOR_TYPE, this.specType.getType());
+        json.put(MonitorSensorType.MONITOR_SENSOR_TYPE, this.specType.getType());
         if (this.hasMonitorID()) {
-            json.put(MonitorSensorConst.MONITOR_ID, this.monitorID);
+            json.put(MonitorSensorState.MONITOR_ID, this.monitorID);
         }
         return json;
     }

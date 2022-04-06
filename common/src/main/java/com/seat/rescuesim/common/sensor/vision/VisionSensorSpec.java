@@ -61,7 +61,7 @@ public class VisionSensorSpec extends SensorSpec {
     @Override
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(VisionSensorConst.VISION_SENSOR_TYPE, this.specType.getType());
+        json.put(VisionSensorType.VISION_SENSOR_TYPE, this.specType.getType());
         return json;
     }
 

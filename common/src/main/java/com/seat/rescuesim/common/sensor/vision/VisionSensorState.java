@@ -14,6 +14,7 @@ import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.sensor.SensorType;
 
 public class VisionSensorState extends SensorState {
+    public static final String OBSERVATIONS = "observations";
 
     protected static final VisionSensorType DEFAULT_SPEC_TYPE = VisionSensorType.GENERIC;
 
@@ -56,8 +57,8 @@ public class VisionSensorState extends SensorState {
         super.decode(json);
         this.specType = VisionSensorType.decodeType(json);
         this.observations = new HashSet<>();
-        if (json.hasKey(VisionSensorConst.OBSERVATIONS)) {
-            JSONArray jsonObservations = json.getJSONArray(VisionSensorConst.OBSERVATIONS);
+        if (json.hasKey(VisionSensorState.OBSERVATIONS)) {
+            JSONArray jsonObservations = json.getJSONArray(VisionSensorState.OBSERVATIONS);
             for (int i = 0; i < jsonObservations.length(); i++) {
                 this.observations.add(jsonObservations.getString(i));
             }
@@ -67,13 +68,13 @@ public class VisionSensorState extends SensorState {
     @Override
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(VisionSensorConst.VISION_SENSOR_TYPE, this.specType.getType());
+        json.put(VisionSensorType.VISION_SENSOR_TYPE, this.specType.getType());
         if (this.hasObservations()) {
             JSONArrayBuilder jsonObservations = JSONBuilder.Array();
             for (String remoteID : this.observations) {
                 jsonObservations.put(remoteID);
             }
-            json.put(VisionSensorConst.OBSERVATIONS, jsonObservations.toJSON());
+            json.put(VisionSensorState.OBSERVATIONS, jsonObservations.toJSON());
         }
         return json;
     }

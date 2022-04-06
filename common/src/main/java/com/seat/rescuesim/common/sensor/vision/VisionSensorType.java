@@ -9,8 +9,10 @@ public enum VisionSensorType implements SerializableEnum {
     GENERIC(1),
     CMOS_CAMERA(2);
 
+    public static final String VISION_SENSOR_TYPE = "vision_sensor_type";
+
     public static VisionSensorType decodeType(JSONObject json) {
-        return VisionSensorType.Value(json.getInt(VisionSensorConst.VISION_SENSOR_TYPE));
+        return VisionSensorType.Value(json.getInt(VisionSensorType.VISION_SENSOR_TYPE));
     }
 
     public static VisionSensorType Value(int value) {

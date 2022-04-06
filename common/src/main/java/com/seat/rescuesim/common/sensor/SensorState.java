@@ -9,6 +9,8 @@ import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
 public class SensorState extends JSONAble {
+    public static final String ACTIVE = "active";
+    public static final String SENSOR_ID = "sensor_id";
 
     protected static final boolean DEFAULT_ACTIVE = false;
     protected static final SensorType DEFAULT_SENSOR_TYPE = SensorType.GENERIC;
@@ -42,15 +44,15 @@ public class SensorState extends JSONAble {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.sensorType = SensorType.decodeType(json);
-        this.sensorID = json.getString(SensorConst.SENSOR_ID);
-        this.active = json.getBoolean(SensorConst.ACTIVE);
+        this.sensorID = json.getString(SensorState.SENSOR_ID);
+        this.active = json.getBoolean(SensorState.ACTIVE);
     }
 
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(SensorConst.SENSOR_TYPE, this.sensorType.getType());
-        json.put(SensorConst.SENSOR_ID, this.sensorID);
-        json.put(SensorConst.ACTIVE, this.active);
+        json.put(SensorType.SENSOR_TYPE, this.sensorType.getType());
+        json.put(SensorState.SENSOR_ID, this.sensorID);
+        json.put(SensorState.ACTIVE, this.active);
         return json;
     }
 

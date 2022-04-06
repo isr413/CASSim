@@ -10,6 +10,9 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable Sensor Prototype. */
 public class SensorSpec extends JSONAble {
+    public static final String ACCURACY = "accuracy";
+    public static final String BATTERY_USAGE = "battery_usage";
+    public static final String RANGE = "range";
 
     protected static final double DEFAULT_ACCURACY = 1.0;
     protected static final double DEFAULT_BATTERY_USAGE = 0.0;
@@ -64,17 +67,17 @@ public class SensorSpec extends JSONAble {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.sensorType = SensorType.decodeType(json);
-        this.accuracy = json.getDouble(SensorConst.ACCURACY);
-        this.range = json.getDouble(SensorConst.RANGE);
-        this.batteryUsage = json.getDouble(SensorConst.BATTERY_USAGE);
+        this.accuracy = json.getDouble(SensorSpec.ACCURACY);
+        this.range = json.getDouble(SensorSpec.RANGE);
+        this.batteryUsage = json.getDouble(SensorSpec.BATTERY_USAGE);
     }
 
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(SensorConst.SENSOR_TYPE, this.sensorType.getType());
-        json.put(SensorConst.RANGE, this.range);
-        json.put(SensorConst.ACCURACY, this.accuracy);
-        json.put(SensorConst.BATTERY_USAGE, this.batteryUsage);
+        json.put(SensorType.SENSOR_TYPE, this.sensorType.getType());
+        json.put(SensorSpec.RANGE, this.range);
+        json.put(SensorSpec.ACCURACY, this.accuracy);
+        json.put(SensorSpec.BATTERY_USAGE, this.batteryUsage);
         return json;
     }
 

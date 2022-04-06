@@ -10,8 +10,10 @@ public enum CommsSensorType implements SerializableEnum {
     BLUETOOTH(2),
     LTE_RADIO(3);
 
+    public static final String COMMS_SENSOR_TYPE = "comms_sensor_type";
+
     public static CommsSensorType decodeType(JSONObject json) {
-        return CommsSensorType.Value(json.getInt(CommsSensorConst.COMMS_SENSOR_TYPE));
+        return CommsSensorType.Value(json.getInt(CommsSensorType.COMMS_SENSOR_TYPE));
     }
 
     public static CommsSensorType Value(int value) {
