@@ -36,7 +36,7 @@ public class VisionSensorRegistry {
         throw new CoreException(String.format("Cannot decode vision sensor %s", option.toString()));
     }
 
-    public static VisionSensorType decodeType(JSONOption option) throws CoreException, JSONException {
+    public static VisionSensorType decodeType(JSONOption option) throws CoreException {
         if (!option.isSomeObject()) {
             throw new CoreException(String.format("Cannot decode vision sensor type of %s", option.toString()));
         }

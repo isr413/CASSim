@@ -40,7 +40,7 @@ public interface CommsSensorRegistry {
         throw new CoreException(String.format("Cannot decode comms sensor %s", option.toString()));
     }
 
-    public static CommsSensorType decodeType(JSONOption option) throws CoreException, JSONException {
+    public static CommsSensorType decodeType(JSONOption option) throws CoreException {
         if (!option.isSomeObject()) {
             throw new CoreException(String.format("Cannot decode comms sensor type of %s", option.toString()));
         }

@@ -36,7 +36,7 @@ public class MonitorSensorRegistry {
         throw new CoreException(String.format("Cannot decode monitor sensor %s", option.toString()));
     }
 
-    public static MonitorSensorType decodeType(JSONOption option) throws CoreException, JSONException {
+    public static MonitorSensorType decodeType(JSONOption option) throws CoreException {
         if (!option.isSomeObject()) {
             throw new CoreException(String.format("Cannot decode monitor sensor type of %s", option.toString()));
         }

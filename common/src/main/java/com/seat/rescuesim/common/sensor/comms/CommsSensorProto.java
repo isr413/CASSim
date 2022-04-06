@@ -73,7 +73,9 @@ public class CommsSensorProto extends SensorProto {
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.specType = CommsSensorType.decodeType(json);
-        this.delay = json.getDouble(CommsSensorProto.DELAY);
+        this.delay = (json.hasKey(CommsSensorProto.DELAY)) ?
+            json.getDouble(CommsSensorProto.DELAY) :
+            CommsSensorProto.DEFAULT_DELAY;
     }
 
     @Override

@@ -42,11 +42,9 @@ public class MonitorSensorState extends SensorState {
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.specType = MonitorSensorType.decodeType(json);
-        if (json.hasKey(MonitorSensorState.MONITOR_ID)) {
-            this.monitorID = json.getString(MonitorSensorState.MONITOR_ID);
-        } else {
-            this.monitorID = null;
-        }
+        this.monitorID = (json.hasKey(MonitorSensorState.MONITOR_ID)) ?
+            json.getString(MonitorSensorState.MONITOR_ID) :
+            null;
     }
 
     @Override

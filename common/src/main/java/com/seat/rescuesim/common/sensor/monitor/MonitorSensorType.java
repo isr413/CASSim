@@ -1,6 +1,5 @@
 package com.seat.rescuesim.common.sensor.monitor;
 
-import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
@@ -12,8 +11,10 @@ public enum MonitorSensorType implements SerializableEnum {
 
     public static final String MONITOR_SENSOR_TYPE = "monitor_sensor_type";
 
-    public static MonitorSensorType decodeType(JSONObject json) throws JSONException {
-        return MonitorSensorType.Value(json.getInt(MonitorSensorType.MONITOR_SENSOR_TYPE));
+    public static MonitorSensorType decodeType(JSONObject json) {
+        return (json.hasKey(MonitorSensorType.MONITOR_SENSOR_TYPE)) ?
+            MonitorSensorType.Value(json.getInt(MonitorSensorType.MONITOR_SENSOR_TYPE)) :
+            MonitorSensorType.NONE;
     }
 
     public static MonitorSensorType Value(int value) {
