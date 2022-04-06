@@ -174,6 +174,13 @@ public class Vector extends JSONAble {
         this.z = (Double.isFinite(z)) ? Math.round(z * Vector.PRECISION) / Vector.PRECISION : z;
     }
 
+    /** Constructs a copy of the provided vector. */
+    public Vector(Vector vect) {
+        this.x = vect.x;
+        this.y = vect.y;
+        this.z = vect.z;
+    }
+
     /** JSONAble constructor for JSONOption. */
     public Vector(JSONOption option) throws JSONException {
         super(option);

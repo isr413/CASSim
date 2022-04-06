@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common.math;
 
+import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable enumeration to denote types of Fields. */
@@ -8,6 +9,14 @@ public enum FieldType implements SerializableEnum {
     JERK(1),
     PUSH(2),
     PULL(3);
+
+    public static FieldType decodeType(JSONArray json) {
+        return FieldType.Value(json.getInt(0));
+    }
+
+    public static FieldType Value(int value) {
+        return FieldType.values()[value];
+    }
 
     private int type;
 

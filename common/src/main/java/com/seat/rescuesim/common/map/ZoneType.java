@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common.map;
 
+import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable enumeration to denote types of Zones. */
@@ -7,6 +8,14 @@ public enum ZoneType implements SerializableEnum {
     NONE(0),
     CLOSED(1),
     OPEN(2);
+
+    public static ZoneType decodeType(JSONObject json) {
+        return ZoneType.Value(json.getInt(Zone.ZONE_TYPE));
+    }
+
+    public static ZoneType Value(int value) {
+        return ZoneType.values()[value];
+    }
 
     private int type;
 

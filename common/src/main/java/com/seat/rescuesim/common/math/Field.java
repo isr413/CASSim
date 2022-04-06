@@ -25,28 +25,31 @@ import com.seat.rescuesim.common.json.JSONOption;
  */
 public class Field extends JSONAble {
 
+    protected static final FieldType DEFAULT_FIELD_TYPE = FieldType.NONE;
+    protected static final double DEFAULT_MAGNITUDE = 0.0;
+
     private Vector jerk;
     private double magnitude;
     private Vector point;
     private FieldType type;
 
     public Field() {
-        this(FieldType.NONE, new Vector(), 0, new Vector());
+        this(Field.DEFAULT_FIELD_TYPE, null, Field.DEFAULT_MAGNITUDE, null);
     }
 
     public Field(Vector jerk) {
-        this(FieldType.JERK, new Vector(), 0, jerk);
+        this(FieldType.JERK, null, Field.DEFAULT_MAGNITUDE, jerk);
     }
 
     public Field(FieldType type, Vector point, double magnitude) {
-        this(type, point, magnitude, new Vector());
+        this(type, point, magnitude, null);
     }
 
     public Field(FieldType type, Vector point, double magnitude, Vector jerk) {
         this.type = type;
-        this.point = point;
+        this.point = (point != null) ? point : new Vector();
         this.magnitude = magnitude;
-        this.jerk = jerk;
+        this.jerk = (jerk != null) ? jerk : new Vector();
     }
 
     public Field(JSONOption option) throws JSONException {

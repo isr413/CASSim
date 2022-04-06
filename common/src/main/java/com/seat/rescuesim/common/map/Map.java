@@ -19,6 +19,9 @@ public class Map extends JSONAble {
     public static final String MAP_WIDTH = "map_width";
     public static final String ZONE_SIZE = "zone_size";
 
+    protected static final MapType CUSTOM_MAP_TYPE = MapType.CUSTOM;
+    protected static final MapType DEFAULT_MAP_TYPE = MapType.GENERIC;
+
     private Zone[][] grid;
     private int height;     // number of zones in each column of the grid
     private MapType type;
@@ -26,7 +29,7 @@ public class Map extends JSONAble {
     private int zoneSize;   // zones in the same map grid must have a uniform size
 
     public Map(int zoneSize, int width, int height) {
-        this(MapType.DEFAULT, zoneSize, width, height);
+        this(Map.DEFAULT_MAP_TYPE, zoneSize, width, height);
     }
 
     public Map(MapType type, int zoneSize, int width, int height) {
@@ -42,7 +45,7 @@ public class Map extends JSONAble {
     }
 
     public Map(Zone[][] grid, int zoneSize, int mapSize) {
-       this(MapType.CUSTOM, grid, zoneSize, mapSize, mapSize);
+       this(Map.CUSTOM_MAP_TYPE, grid, zoneSize, mapSize, mapSize);
     }
 
     public Map(MapType type, Zone[][] grid, int zoneSize, int mapSize) {
@@ -50,7 +53,7 @@ public class Map extends JSONAble {
     }
 
     public Map(Zone[][] grid, int zoneSize, int width, int height) {
-        this(MapType.CUSTOM, grid, zoneSize, width, height);
+        this(Map.CUSTOM_MAP_TYPE, grid, zoneSize, width, height);
     }
 
     public Map(MapType type, Zone[][] grid, int zoneSize, int width, int height) {
@@ -202,7 +205,7 @@ public class Map extends JSONAble {
         json.put(Map.MAP_WIDTH, this.width);
         json.put(Map.MAP_HEIGHT, this.height);
         json.put(Map.ZONE_SIZE, this.zoneSize);
-        if (!(this.type.equals(MapType.DEFAULT) || this.type.equals(MapType.NONE))) {
+        if (!(this.type.equals(Map.DEFAULT_MAP_TYPE) || this.type.equals(MapType.NONE))) {
             JSONArrayBuilder jsonGrid = JSONBuilder.Array();
             for (int y = 0; y < this.height; y++) {
                 JSONArrayBuilder jsonRow = JSONBuilder.Array();
