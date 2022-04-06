@@ -12,7 +12,7 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.remote.RemoteFactory;
+import com.seat.rescuesim.common.remote.RemoteRegistry;
 import com.seat.rescuesim.common.remote.RemoteState;
 import com.seat.rescuesim.common.util.CoreException;
 
@@ -93,7 +93,7 @@ public class Snapshot extends JSONAble {
         this.state = new HashMap<>();
         JSONArray jsonState = json.getJSONArray(Snapshot.STATE);
         for (int i = 0; i < jsonState.length(); i++) {
-            RemoteState state = RemoteFactory.decodeRemoteState(jsonState.getJSONOption(i));
+            RemoteState state = RemoteRegistry.decodeTo(jsonState.getJSONOption(i), RemoteState.class);
             this.state.put(state.getRemoteID(), state);
         }
     }

@@ -14,7 +14,7 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.remote.RemoteConfig;
-import com.seat.rescuesim.common.remote.RemoteFactory;
+import com.seat.rescuesim.common.remote.RemoteRegistry;
 
 /** A serializable class to store scenario configurations. */
 public class ScenarioConfig extends JSONAble {
@@ -90,7 +90,7 @@ public class ScenarioConfig extends JSONAble {
         if (json.hasKey(ScenarioConfig.REMOTE_CONFIG)) {
             JSONArray jsonDrones = json.getJSONArray(ScenarioConfig.REMOTE_CONFIG);
             for (int i = 0; i < jsonDrones.length(); i++) {
-                this.remoteConfig.add(RemoteFactory.decodeRemoteConfig(jsonDrones.getJSONOption(i)));
+                this.remoteConfig.add(RemoteRegistry.decodeTo(jsonDrones.getJSONOption(i), RemoteConfig.class));
             }
         }
     }
