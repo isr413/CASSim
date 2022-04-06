@@ -9,11 +9,11 @@ import com.seat.rescuesim.common.sensor.SensorConfig;
 /** A serializable configuration for a Monitor Sensor. */
 public class MonitorSensorConfig extends SensorConfig {
 
-    public MonitorSensorConfig(MonitorSensorSpec spec, int count) {
+    public MonitorSensorConfig(MonitorSensorProto spec, int count) {
         super(spec, count);
     }
 
-    public MonitorSensorConfig(MonitorSensorSpec spec, Collection<String> sensorIDs) {
+    public MonitorSensorConfig(MonitorSensorProto spec, Collection<String> sensorIDs) {
         super(spec, sensorIDs);
     }
 
@@ -22,13 +22,13 @@ public class MonitorSensorConfig extends SensorConfig {
     }
 
     @Override
-    protected MonitorSensorSpec decodeSpec(JSONOption jsonSpec) throws JSONException {
-        return new MonitorSensorSpec(jsonSpec);
+    protected MonitorSensorProto decodeSpec(JSONOption jsonSpec) throws JSONException {
+        return new MonitorSensorProto(jsonSpec);
     }
 
     @Override
-    public MonitorSensorSpec getSpec() {
-        return (MonitorSensorSpec) super.getSpec();
+    public MonitorSensorProto getSpec() {
+        return (MonitorSensorProto) super.getSpec();
     }
 
     @Override

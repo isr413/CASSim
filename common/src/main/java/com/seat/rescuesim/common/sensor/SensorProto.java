@@ -9,7 +9,7 @@ import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable Sensor Prototype. */
-public class SensorSpec extends JSONAble {
+public class SensorProto extends JSONAble {
     public static final String ACCURACY = "accuracy";
     public static final String BATTERY_USAGE = "battery_usage";
     public static final String RANGE = "range";
@@ -24,60 +24,60 @@ public class SensorSpec extends JSONAble {
     private double range;
     private SensorType sensorType;
 
-    public SensorSpec() {
-        this(SensorSpec.DEFAULT_SENSOR_TYPE, SensorSpec.DEFAULT_RANGE, SensorSpec.DEFAULT_ACCURACY,
-            SensorSpec.DEFAULT_BATTERY_USAGE);
+    public SensorProto() {
+        this(SensorProto.DEFAULT_SENSOR_TYPE, SensorProto.DEFAULT_RANGE, SensorProto.DEFAULT_ACCURACY,
+            SensorProto.DEFAULT_BATTERY_USAGE);
     }
 
-    public SensorSpec(double range) {
-        this(SensorSpec.DEFAULT_SENSOR_TYPE, range, SensorSpec.DEFAULT_ACCURACY, SensorSpec.DEFAULT_BATTERY_USAGE);
+    public SensorProto(double range) {
+        this(SensorProto.DEFAULT_SENSOR_TYPE, range, SensorProto.DEFAULT_ACCURACY, SensorProto.DEFAULT_BATTERY_USAGE);
     }
 
-    public SensorSpec(double range, double accuracy) {
-        this(SensorSpec.DEFAULT_SENSOR_TYPE, range, accuracy, SensorSpec.DEFAULT_BATTERY_USAGE);
+    public SensorProto(double range, double accuracy) {
+        this(SensorProto.DEFAULT_SENSOR_TYPE, range, accuracy, SensorProto.DEFAULT_BATTERY_USAGE);
     }
 
-    public SensorSpec(double range, double accuracy, double batteryUsage) {
-        this(SensorSpec.DEFAULT_SENSOR_TYPE, range, accuracy, batteryUsage);
+    public SensorProto(double range, double accuracy, double batteryUsage) {
+        this(SensorProto.DEFAULT_SENSOR_TYPE, range, accuracy, batteryUsage);
     }
 
-    protected SensorSpec(SensorType sensorType) {
-        this(sensorType, SensorSpec.DEFAULT_RANGE, SensorSpec.DEFAULT_ACCURACY, SensorSpec.DEFAULT_BATTERY_USAGE);
+    protected SensorProto(SensorType sensorType) {
+        this(sensorType, SensorProto.DEFAULT_RANGE, SensorProto.DEFAULT_ACCURACY, SensorProto.DEFAULT_BATTERY_USAGE);
     }
 
-    protected SensorSpec(SensorType sensorType, double range) {
-        this(sensorType, range, SensorSpec.DEFAULT_ACCURACY, SensorSpec.DEFAULT_BATTERY_USAGE);
+    protected SensorProto(SensorType sensorType, double range) {
+        this(sensorType, range, SensorProto.DEFAULT_ACCURACY, SensorProto.DEFAULT_BATTERY_USAGE);
     }
 
-    protected SensorSpec(SensorType sensorType, double range, double accuracy) {
-        this(sensorType, range, accuracy, SensorSpec.DEFAULT_BATTERY_USAGE);
+    protected SensorProto(SensorType sensorType, double range, double accuracy) {
+        this(sensorType, range, accuracy, SensorProto.DEFAULT_BATTERY_USAGE);
     }
 
-    protected SensorSpec(SensorType sensorType, double range, double accuracy, double batteryUsage) {
+    protected SensorProto(SensorType sensorType, double range, double accuracy, double batteryUsage) {
         this.sensorType = sensorType;
         this.range = range;
         this.accuracy = accuracy;
         this.batteryUsage = batteryUsage;
     }
 
-    public SensorSpec(JSONOption option) throws JSONException {
+    public SensorProto(JSONOption option) throws JSONException {
         super(option);
     }
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.sensorType = SensorType.decodeType(json);
-        this.accuracy = json.getDouble(SensorSpec.ACCURACY);
-        this.range = json.getDouble(SensorSpec.RANGE);
-        this.batteryUsage = json.getDouble(SensorSpec.BATTERY_USAGE);
+        this.accuracy = json.getDouble(SensorProto.ACCURACY);
+        this.range = json.getDouble(SensorProto.RANGE);
+        this.batteryUsage = json.getDouble(SensorProto.BATTERY_USAGE);
     }
 
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(SensorType.SENSOR_TYPE, this.sensorType.getType());
-        json.put(SensorSpec.RANGE, this.range);
-        json.put(SensorSpec.ACCURACY, this.accuracy);
-        json.put(SensorSpec.BATTERY_USAGE, this.batteryUsage);
+        json.put(SensorProto.RANGE, this.range);
+        json.put(SensorProto.ACCURACY, this.accuracy);
+        json.put(SensorProto.BATTERY_USAGE, this.batteryUsage);
         return json;
     }
 
@@ -102,14 +102,14 @@ public class SensorSpec extends JSONAble {
     }
 
     public SerializableEnum getSpecType() {
-        return SensorSpec.DEFAULT_SENSOR_TYPE;
+        return SensorProto.DEFAULT_SENSOR_TYPE;
     }
 
     public JSONOption toJSON() {
         return this.getJSONBuilder().toJSON();
     }
 
-    public boolean equals(SensorSpec spec) {
+    public boolean equals(SensorProto spec) {
         return this.sensorType.equals(spec.sensorType) && this.range == spec.range && this.accuracy == spec.accuracy &&
             this.batteryUsage == spec.batteryUsage;
     }

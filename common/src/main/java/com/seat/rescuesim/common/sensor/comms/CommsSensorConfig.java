@@ -9,11 +9,11 @@ import com.seat.rescuesim.common.sensor.SensorConfig;
 /** A serializable configuration for a Comms Sensor. */
 public class CommsSensorConfig extends SensorConfig {
 
-    public CommsSensorConfig(CommsSensorSpec spec, int count) {
+    public CommsSensorConfig(CommsSensorProto spec, int count) {
         super(spec, count);
     }
 
-    public CommsSensorConfig(CommsSensorSpec spec, Collection<String> sensorIDs) {
+    public CommsSensorConfig(CommsSensorProto spec, Collection<String> sensorIDs) {
         super(spec, sensorIDs);
     }
 
@@ -22,13 +22,13 @@ public class CommsSensorConfig extends SensorConfig {
     }
 
     @Override
-    protected CommsSensorSpec decodeSpec(JSONOption jsonSpec) throws JSONException {
-        return new CommsSensorSpec(jsonSpec);
+    protected CommsSensorProto decodeSpec(JSONOption jsonSpec) throws JSONException {
+        return new CommsSensorProto(jsonSpec);
     }
 
     @Override
-    public CommsSensorSpec getSpec() {
-        return (CommsSensorSpec) super.getSpec();
+    public CommsSensorProto getSpec() {
+        return (CommsSensorProto) super.getSpec();
     }
 
     @Override

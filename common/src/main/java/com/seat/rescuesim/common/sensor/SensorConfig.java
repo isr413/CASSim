@@ -21,9 +21,9 @@ public class SensorConfig extends JSONAble {
 
     private int count;
     private HashSet<String> sensorIDs;
-    private SensorSpec spec;
+    private SensorProto spec;
 
-    public SensorConfig(SensorSpec spec, int count) {
+    public SensorConfig(SensorProto spec, int count) {
         this.spec = spec;
         this.count = count;
         this.sensorIDs = new HashSet<>();
@@ -32,7 +32,7 @@ public class SensorConfig extends JSONAble {
         }
     }
 
-    public SensorConfig(SensorSpec spec, Collection<String> sensorIDs) {
+    public SensorConfig(SensorProto spec, Collection<String> sensorIDs) {
         this.spec = spec;
         this.count = sensorIDs.size();
         this.sensorIDs = new HashSet<>(sensorIDs);
@@ -55,8 +55,8 @@ public class SensorConfig extends JSONAble {
         }
     }
 
-    protected SensorSpec decodeSpec(JSONOption jsonSpec) throws JSONException {
-        return new SensorSpec(jsonSpec);
+    protected SensorProto decodeSpec(JSONOption jsonSpec) throws JSONException {
+        return new SensorProto(jsonSpec);
     }
 
     public int getCount() {
@@ -71,7 +71,7 @@ public class SensorConfig extends JSONAble {
         return this.spec.getSensorType();
     }
 
-    public SensorSpec getSpec() {
+    public SensorProto getSpec() {
         return this.spec;
     }
 
