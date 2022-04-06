@@ -1,6 +1,5 @@
 package com.seat.rescuesim.common.remote.intent;
 
-import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
@@ -18,8 +17,10 @@ public enum IntentionType implements SerializableEnum {
 
     public static final String INTENTION_TYPE = "intention_type";
 
-    public static IntentionType decodeType(JSONObject json) throws JSONException {
-        return IntentionType.Value(json.getInt(IntentionType.INTENTION_TYPE));
+    public static IntentionType decodeType(JSONObject json) {
+        return (json.hasKey(IntentionType.INTENTION_TYPE)) ?
+            IntentionType.Value(json.getInt(IntentionType.INTENTION_TYPE)) :
+            IntentionType.NONE;
     }
 
     public static IntentionType Value(int value) {
@@ -33,6 +34,7 @@ public enum IntentionType implements SerializableEnum {
     }
 
     public boolean equals(IntentionType type) {
+        if (type == null) return false;
         return this.type == type.type;
     }
 

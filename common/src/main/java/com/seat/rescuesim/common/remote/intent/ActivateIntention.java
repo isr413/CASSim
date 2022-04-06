@@ -48,6 +48,19 @@ public class ActivateIntention extends Intention {
         }
     }
 
+    @Override
+    protected JSONObjectBuilder getJSONBuilder() {
+        JSONObjectBuilder json = super.getJSONBuilder();
+        if (this.hasActivations()) {
+            JSONArrayBuilder jsonSensors = JSONBuilder.Array();
+            for (String sensor : this.activations) {
+                jsonSensors.put(sensor);
+            }
+            json.put(ActivateIntention.ACTIVATIONS, jsonSensors.toJSON());
+        }
+        return json;
+    }
+
     public boolean addActivation(String sensor) {
         if (this.hasActivationOfSensor(sensor)) {
             Debugger.logger.warn(String.format("Sensor %s is already intended to be activated", sensor));
@@ -99,20 +112,8 @@ public class ActivateIntention extends Intention {
         return flag;
     }
 
-    @Override
-    public JSONOption toJSON() {
-        JSONObjectBuilder json = super.getJSONBuilder();
-        if (this.hasActivations()) {
-            JSONArrayBuilder jsonSensors = JSONBuilder.Array();
-            for (String sensor : this.activations) {
-                jsonSensors.put(sensor);
-            }
-            json.put(ActivateIntention.ACTIVATIONS, jsonSensors.toJSON());
-        }
-        return json.toJSON();
-    }
-
     public boolean equals(ActivateIntention intent) {
+        if (intent == null) return false;
         return super.equals(intent) && this.activations.equals(intent.activations);
     }
 

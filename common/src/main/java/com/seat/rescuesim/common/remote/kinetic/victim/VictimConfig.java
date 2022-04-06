@@ -9,12 +9,12 @@ import com.seat.rescuesim.common.remote.kinetic.KineticRemoteConfig;
 /** A serializable configuration of a Victim Remote. */
 public class VictimConfig extends KineticRemoteConfig {
 
-    public VictimConfig(VictimSpec spec, int count, boolean dynamic) {
-        super(spec, count, dynamic);
+    public VictimConfig(VictimProto proto, int count, boolean dynamic) {
+        super(proto, count, dynamic);
     }
 
-    public VictimConfig(VictimSpec spec, Collection<String> remoteIDs, boolean dynamic) {
-        super(spec, remoteIDs, dynamic);
+    public VictimConfig(VictimProto proto, Collection<String> remoteIDs, boolean dynamic) {
+        super(proto, remoteIDs, dynamic);
     }
 
     public VictimConfig(JSONOption option) throws JSONException {
@@ -22,13 +22,13 @@ public class VictimConfig extends KineticRemoteConfig {
     }
 
     @Override
-    protected VictimSpec decodeProto(JSONOption jsonSpec) throws JSONException {
-        return new VictimSpec(jsonSpec);
+    protected VictimProto decodeProto(JSONOption option) throws JSONException {
+        return new VictimProto(option);
     }
 
     @Override
-    public VictimSpec getProto() {
-        return (VictimSpec) super.getProto();
+    public VictimProto getProto() {
+        return (VictimProto) super.getProto();
     }
 
 }

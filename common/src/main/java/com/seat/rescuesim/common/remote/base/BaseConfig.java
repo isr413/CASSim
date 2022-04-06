@@ -10,12 +10,12 @@ import com.seat.rescuesim.common.remote.RemoteType;
 /** A serializable configuration of a Base Remote. */
 public class BaseConfig extends RemoteConfig {
 
-    public BaseConfig(BaseProto spec, int count, boolean dynamic) {
-        super(spec, count, dynamic);
+    public BaseConfig(BaseProto proto, int count, boolean dynamic) {
+        super(proto, count, dynamic);
     }
 
-    public BaseConfig(BaseProto spec, Collection<String> remoteIDs, boolean dynamic) {
-        super(spec, remoteIDs, dynamic);
+    public BaseConfig(BaseProto proto, Collection<String> remoteIDs, boolean dynamic) {
+        super(proto, remoteIDs, dynamic);
     }
 
     public BaseConfig(JSONOption option) throws JSONException {
@@ -23,8 +23,8 @@ public class BaseConfig extends RemoteConfig {
     }
 
     @Override
-    protected BaseProto decodeProto(JSONOption jsonSpec) throws JSONException {
-        return new BaseProto(jsonSpec);
+    protected BaseProto decodeProto(JSONOption option) throws JSONException {
+        return new BaseProto(option);
     }
 
     @Override

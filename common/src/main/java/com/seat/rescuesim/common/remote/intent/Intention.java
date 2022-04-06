@@ -23,6 +23,12 @@ public abstract class Intention extends JSONAble {
         this.intentType = IntentionType.decodeType(json);
     }
 
+    protected JSONObjectBuilder getJSONBuilder() {
+        JSONObjectBuilder json = JSONBuilder.Object();
+        json.put(IntentionType.INTENTION_TYPE, this.intentType.getType());
+        return json;
+    }
+
     public IntentionType getIntentionType() {
         return this.intentType;
     }
@@ -31,17 +37,12 @@ public abstract class Intention extends JSONAble {
         return String.format("i:%s", this.intentType.getLabel());
     }
 
-    protected JSONObjectBuilder getJSONBuilder() {
-        JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(IntentionType.INTENTION_TYPE, this.intentType.getType());
-        return json;
-    }
-
     public JSONOption toJSON() {
         return this.getJSONBuilder().toJSON();
     }
 
     public boolean equals(Intention intent) {
+        if (intent == null) return false;
         return this.intentType.equals(intent.intentType);
     }
 

@@ -20,6 +20,22 @@ public class GotoIntention extends Intention {
     private double maxJerk;
     private double maxVelocity;
 
+    public GotoIntention() {
+        this(null, GotoIntention.DEFAULT_VELOCITY, GotoIntention.DEFAULT_ACCELERATION, GotoIntention.DEFAULT_JERK);
+    }
+
+    public GotoIntention(double maxVelocity) {
+        this(null, maxVelocity, GotoIntention.DEFAULT_ACCELERATION, GotoIntention.DEFAULT_JERK);
+    }
+
+    public GotoIntention(double maxVelocity, double maxAcceleration) {
+        this(null, maxVelocity, maxAcceleration, GotoIntention.DEFAULT_JERK);
+    }
+
+    public GotoIntention(double maxVelocity, double maxAcceleration, double maxJerk) {
+        this(null, maxVelocity, maxAcceleration, maxJerk);
+    }
+
     public GotoIntention(Vector location) {
         this(location, GotoIntention.DEFAULT_VELOCITY, GotoIntention.DEFAULT_ACCELERATION, GotoIntention.DEFAULT_JERK);
     }
@@ -47,22 +63,36 @@ public class GotoIntention extends Intention {
     @Override
     protected void decode(JSONObject json) {
         super.decode(json);
-        this.location = new Vector(json.getJSONOption(GotoIntention.LOCATION));
-        if (json.hasKey(GotoIntention.MAX_VELOCITY)) {
-            this.maxVelocity = json.getDouble(GotoIntention.MAX_VELOCITY);
-        } else {
-            this.maxVelocity = Double.POSITIVE_INFINITY;
+        this.location = (json.hasKey(GotoIntention.LOCATION)) ?
+            new Vector(json.getJSONOption(GotoIntention.LOCATION)) :
+            null;
+        this.maxVelocity = (json.hasKey(GotoIntention.MAX_VELOCITY)) ?
+            this.maxVelocity = json.getDouble(GotoIntention.MAX_VELOCITY) :
+            Double.POSITIVE_INFINITY;
+        this.maxAcceleration = (json.hasKey(GotoIntention.MAX_ACCELERATION)) ?
+            this.maxAcceleration = json.getDouble(GotoIntention.MAX_ACCELERATION) :
+            Double.POSITIVE_INFINITY;
+        this.maxJerk = (json.hasKey(GotoIntention.MAX_JERK)) ?
+            json.getDouble(GotoIntention.MAX_JERK) :
+            Double.POSITIVE_INFINITY;
+    }
+
+    @Override
+    protected JSONObjectBuilder getJSONBuilder() {
+        JSONObjectBuilder json = super.getJSONBuilder();
+        if (this.hasLocation()) {
+            json.put(GotoIntention.LOCATION, this.location.toJSON());
         }
-        if (json.hasKey(GotoIntention.MAX_ACCELERATION)) {
-            this.maxAcceleration = json.getDouble(GotoIntention.MAX_ACCELERATION);
-        } else {
-            this.maxAcceleration = Double.POSITIVE_INFINITY;
+        if (this.hasMaxVelocity()) {
+            json.put(GotoIntention.MAX_VELOCITY, this.maxVelocity);
         }
-        if (json.hasKey(GotoIntention.MAX_JERK)) {
-            this.maxJerk = json.getDouble(GotoIntention.MAX_JERK);
-        } else {
-            this.maxJerk = Double.POSITIVE_INFINITY;
+        if (this.hasMaxAcceleration()) {
+            json.put(GotoIntention.MAX_ACCELERATION, this.maxAcceleration);
         }
+        if (this.hasMaxJerk()) {
+            json.put(GotoIntention.MAX_JERK, this.maxJerk);
+        }
+        return json;
     }
 
     @Override
@@ -86,6 +116,10 @@ public class GotoIntention extends Intention {
         return this.maxVelocity;
     }
 
+    public boolean hasLocation() {
+        return this.location != null;
+    }
+
     public boolean hasMaxAcceleration() {
         return this.maxAcceleration != Double.POSITIVE_INFINITY;
     }
@@ -98,25 +132,12 @@ public class GotoIntention extends Intention {
         return this.maxVelocity != Double.POSITIVE_INFINITY;
     }
 
-    @Override
-    public JSONOption toJSON() {
-        JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(GotoIntention.LOCATION, this.location.toJSON());
-        if (this.hasMaxVelocity()) {
-            json.put(GotoIntention.MAX_VELOCITY, this.maxVelocity);
-        }
-        if (this.hasMaxAcceleration()) {
-            json.put(GotoIntention.MAX_ACCELERATION, this.maxAcceleration);
-        }
-        if (this.hasMaxJerk()) {
-            json.put(GotoIntention.MAX_JERK, this.maxJerk);
-        }
-        return json.toJSON();
-    }
-
     public boolean equals(GotoIntention intent) {
-        return super.equals(intent) && this.maxVelocity == intent.maxVelocity &&
-            this.maxAcceleration == intent.maxAcceleration && this.maxJerk == intent.maxJerk;
+        if (intent == null) return false;
+        return super.equals(intent) &&
+            ((this.hasLocation() && this.location.equals(intent.location)) || this.location == intent.location) &&
+            this.maxVelocity == intent.maxVelocity && this.maxAcceleration == intent.maxAcceleration &&
+            this.maxJerk == intent.maxJerk;
     }
 
 }

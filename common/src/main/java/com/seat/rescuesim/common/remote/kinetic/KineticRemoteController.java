@@ -40,6 +40,22 @@ public class KineticRemoteController extends RemoteController {
         super.addIntention(Intent.Done());
     }
 
+    public void goTo() {
+        super.addIntention(Intent.Goto());
+    }
+
+    public void goTo(double maxVelocity) {
+        super.addIntention(Intent.Goto(maxVelocity));
+    }
+
+    public void goTo(double maxVelocity, double maxAcceleration) {
+        super.addIntention(Intent.Goto(maxVelocity, maxAcceleration));
+    }
+
+    public void goTo(double maxVelocity, double maxAcceleration, double maxJerk) {
+        super.addIntention(Intent.Goto(maxVelocity, maxAcceleration, maxJerk));
+    }
+
     public void goTo(Vector location) {
         super.addIntention(Intent.Goto(location));
     }

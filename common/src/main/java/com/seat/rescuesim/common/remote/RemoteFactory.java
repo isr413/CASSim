@@ -3,14 +3,14 @@ package com.seat.rescuesim.common.remote;
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.remote.kinetic.KineticRemoteConfig;
-import com.seat.rescuesim.common.remote.kinetic.KineticRemoteSpec;
+import com.seat.rescuesim.common.remote.kinetic.KineticRemoteProto;
 import com.seat.rescuesim.common.remote.kinetic.KineticRemoteState;
 import com.seat.rescuesim.common.remote.kinetic.KineticRemoteType;
 import com.seat.rescuesim.common.remote.kinetic.drone.DroneConfig;
-import com.seat.rescuesim.common.remote.kinetic.drone.DroneSpec;
+import com.seat.rescuesim.common.remote.kinetic.drone.DroneProto;
 import com.seat.rescuesim.common.remote.kinetic.drone.DroneState;
 import com.seat.rescuesim.common.remote.kinetic.victim.VictimConfig;
-import com.seat.rescuesim.common.remote.kinetic.victim.VictimSpec;
+import com.seat.rescuesim.common.remote.kinetic.victim.VictimProto;
 import com.seat.rescuesim.common.remote.kinetic.victim.VictimState;
 
 public class RemoteFactory {
@@ -31,17 +31,17 @@ public class RemoteFactory {
         throw new JSONException(String.format("Cannot decode remote config of %s", option.toString()));
     }
 
-    public static KineticRemoteSpec decodeKineticRemoteSpec(JSONOption option) throws JSONException {
+    public static KineticRemoteProto decodeKineticRemoteSpec(JSONOption option) throws JSONException {
         if (option.isSomeObject()) {
             KineticRemoteType specType = RemoteFactory.decodeKineticRemoteType(option);
             if (specType.equals(KineticRemoteType.GENERIC)) {
-                return new KineticRemoteSpec(option);
+                return new KineticRemoteProto(option);
             }
             if (specType.equals(KineticRemoteType.DRONE)) {
-                return new DroneSpec(option);
+                return new DroneProto(option);
             }
             if (specType.equals(KineticRemoteType.VICTIM)) {
-                return new VictimSpec(option);
+                return new VictimProto(option);
             }
         }
         throw new JSONException(String.format("Cannot decode remote spec of %s", option.toString()));

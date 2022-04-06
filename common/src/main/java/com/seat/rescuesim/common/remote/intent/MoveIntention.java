@@ -26,7 +26,9 @@ public class MoveIntention extends Intention {
     @Override
     protected void decode(JSONObject json) {
         super.decode(json);
-        this.jerk = new Vector(json.getJSONOption(MoveIntention.JERK));
+        this.jerk = (json.hasKey(MoveIntention.JERK)) ?
+            new Vector(json.getJSONOption(MoveIntention.JERK)) :
+            new Vector();
     }
 
     public Vector getJerk() {
@@ -50,6 +52,7 @@ public class MoveIntention extends Intention {
     }
 
     public boolean equals(MoveIntention intent) {
+        if (intent == null) return false;
         return super.equals(intent) && this.jerk.equals(intent.jerk);
     }
 

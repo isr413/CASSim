@@ -9,12 +9,12 @@ import com.seat.rescuesim.common.remote.kinetic.KineticRemoteConfig;
 /** A serializable configuration of a Drone Remote. */
 public class DroneConfig extends KineticRemoteConfig {
 
-    public DroneConfig(DroneSpec spec, int count, boolean dynamic) {
-        super(spec, count, dynamic);
+    public DroneConfig(DroneProto proto, int count, boolean dynamic) {
+        super(proto, count, dynamic);
     }
 
-    public DroneConfig(DroneSpec spec, Collection<String> remoteIDs, boolean dynamic) {
-        super(spec, remoteIDs, dynamic);
+    public DroneConfig(DroneProto proto, Collection<String> remoteIDs, boolean dynamic) {
+        super(proto, remoteIDs, dynamic);
     }
 
     public DroneConfig(JSONOption option) throws JSONException {
@@ -22,13 +22,13 @@ public class DroneConfig extends KineticRemoteConfig {
     }
 
     @Override
-    protected DroneSpec decodeProto(JSONOption jsonSpec) throws JSONException {
-        return new DroneSpec(jsonSpec);
+    protected DroneProto decodeProto(JSONOption option) throws JSONException {
+        return new DroneProto(option);
     }
 
     @Override
-    public DroneSpec getProto() {
-        return (DroneSpec) super.getProto();
+    public DroneProto getProto() {
+        return (DroneProto) super.getProto();
     }
 
 }

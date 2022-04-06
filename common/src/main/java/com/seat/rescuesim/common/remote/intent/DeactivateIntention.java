@@ -49,6 +49,19 @@ public class DeactivateIntention extends Intention {
         }
     }
 
+    @Override
+    protected JSONObjectBuilder getJSONBuilder() {
+        JSONObjectBuilder json = super.getJSONBuilder();
+        if (this.hasDeactivations()) {
+            JSONArrayBuilder jsonSensors = JSONBuilder.Array();
+            for (String sensor : this.deactivations) {
+                jsonSensors.put(sensor);
+            }
+            json.put(DeactivateIntention.DEACTIVATIONS, jsonSensors.toJSON());
+        }
+        return json;
+    }
+
     public boolean addDeactivation(String sensor) {
         if (this.hasDeactivationOfSensor(sensor)) {
             Debugger.logger.warn(String.format("Sensor %s is already intended to be deactivated", sensor));
@@ -100,20 +113,8 @@ public class DeactivateIntention extends Intention {
         return flag;
     }
 
-    @Override
-    public JSONOption toJSON() {
-        JSONObjectBuilder json = super.getJSONBuilder();
-        if (this.hasDeactivations()) {
-            JSONArrayBuilder jsonSensors = JSONBuilder.Array();
-            for (String sensor : this.deactivations) {
-                jsonSensors.put(sensor);
-            }
-            json.put(DeactivateIntention.DEACTIVATIONS, jsonSensors.toJSON());
-        }
-        return json.toJSON();
-    }
-
     public boolean equals(DeactivateIntention intent) {
+        if (intent == null) return false;
         return super.equals(intent) && this.deactivations.equals(intent.deactivations);
     }
 

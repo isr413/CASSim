@@ -71,7 +71,8 @@ public class MonitorSensorState extends SensorState {
     }
 
     public boolean equals(MonitorSensorState state) {
-        return super.equals(state) && this.specType.equals(state.specType) && this.monitorID.equals(state.monitorID);
+        return super.equals(state) && this.specType.equals(state.specType) &&
+            ((this.hasMonitorID() && this.monitorID.equals(state.monitorID)) || this.monitorID == state.monitorID);
     }
 
 }

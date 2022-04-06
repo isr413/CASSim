@@ -141,7 +141,7 @@ public class RemoteProto extends JSONAble {
 
     public SensorConfig getSensor(int idx) throws CoreException {
         if (idx < 0 || this.sensors.size() <= idx) {
-            throw new CoreException(String.format("No sensor at index %d found on spec %s", idx, this.getLabel()));
+            throw new CoreException(String.format("No sensor at index %d found on proto %s", idx, this.getLabel()));
         }
         return this.sensors.get(idx);
     }
@@ -156,7 +156,7 @@ public class RemoteProto extends JSONAble {
                 return conf;
             }
         }
-        throw new CoreException(String.format("No sensor with ID %s found on spec %s", sensorID, this.getLabel()));
+        throw new CoreException(String.format("No sensor with ID %s found on remote %s", sensorID, this.getLabel()));
     }
 
     public ArrayList<SensorConfig> getSensorsWithType(SensorType sensorType) {
@@ -167,7 +167,7 @@ public class RemoteProto extends JSONAble {
             }
         }
         if (confs.isEmpty()) {
-            Debugger.logger.warn(String.format("No sensors with type %s found on spec %s", sensorType.getLabel(),
+            Debugger.logger.warn(String.format("No sensors with type %s found on remote %s", sensorType.getLabel(),
                 this.getLabel()));
         }
         return confs;

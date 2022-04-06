@@ -52,8 +52,12 @@ public class KineticRemoteState extends RemoteState {
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.specType = KineticRemoteType.decodeType(json);
-        this.velocity = new Vector(json.getJSONOption(KineticRemoteState.VELOCITY));
-        this.acceleration = new Vector(json.getJSONOption(KineticRemoteState.ACCELERATION));
+        this.velocity = (json.hasKey(KineticRemoteState.VELOCITY)) ?
+            new Vector(json.getJSONOption(KineticRemoteState.VELOCITY)) :
+            new Vector();
+        this.acceleration = (json.hasKey(KineticRemoteState.ACCELERATION)) ?
+            new Vector(json.getJSONOption(KineticRemoteState.ACCELERATION)) :
+            new Vector();
     }
 
     @Override
@@ -95,6 +99,7 @@ public class KineticRemoteState extends RemoteState {
     }
 
     public boolean equals(KineticRemoteState state) {
+        if (state == null) return false;
         return super.equals(state) && this.specType.equals(state.specType) && this.velocity.equals(state.velocity) &&
             this.acceleration.equals(state.acceleration);
     }
