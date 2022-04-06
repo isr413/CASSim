@@ -128,6 +128,7 @@ public class RemoteController extends JSONAble {
     }
 
     public boolean equals(RemoteController remote) {
+        if (remote == null) return false;
         return this.remoteID.equals(remote.remoteID);
     }
 

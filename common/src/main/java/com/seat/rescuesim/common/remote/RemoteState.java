@@ -150,6 +150,7 @@ public class RemoteState extends JSONAble {
     }
 
     public boolean equals(RemoteState state) {
+        if (state == null) return false;
         return this.remoteType.equals(state.remoteType) && this.remoteID.equals(state.remoteID) &&
             this.location.equals(state.location) && this.battery == state.battery &&
             this.sensors.equals(state.sensors);

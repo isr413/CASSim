@@ -29,6 +29,7 @@ public enum RemoteType implements SerializableEnum {
     }
 
     public boolean equals(RemoteType type) {
+        if (type == null) return false;
         return this.type == type.type;
     }
 

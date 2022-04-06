@@ -219,9 +219,11 @@ public class RemoteProto extends JSONAble {
         return this.getJSONBuilder().toJSON();
     }
 
-    public boolean equals(RemoteProto spec) {
-        return this.remoteType.equals(spec.remoteType) && this.location.equals(spec.location) &&
-            this.maxBatteryPower == spec.maxBatteryPower && this.sensors.equals(spec.sensors);
+    public boolean equals(RemoteProto proto) {
+        if (proto == null) return false;
+        return this.remoteType.equals(proto.remoteType) &&
+            ((this.hasLocation() && this.location.equals(proto.location)) || this.location == proto.location) &&
+            this.maxBatteryPower == proto.maxBatteryPower && this.sensors.equals(proto.sensors);
     }
 
 }

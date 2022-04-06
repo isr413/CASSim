@@ -60,8 +60,8 @@ public class RemoteConfig extends JSONAble {
         this.dynamic = json.getBoolean(RemoteConfig.DYNAMIC);
     }
 
-    protected RemoteProto decodeProto(JSONOption jsonSpec) throws JSONException {
-        return new RemoteProto(jsonSpec);
+    protected RemoteProto decodeProto(JSONOption option) throws JSONException {
+        return new RemoteProto(option);
     }
 
     public int getCount() {
@@ -124,6 +124,7 @@ public class RemoteConfig extends JSONAble {
     }
 
     public boolean equals(RemoteConfig config) {
+        if (config == null) return false;
         return this.proto.equals(config.proto) && this.count == config.count &&
             this.remoteIDs.equals(config.remoteIDs) && this.dynamic == config.dynamic;
     }
