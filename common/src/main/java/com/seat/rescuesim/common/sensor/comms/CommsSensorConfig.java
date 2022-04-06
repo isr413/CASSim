@@ -22,13 +22,13 @@ public class CommsSensorConfig extends SensorConfig {
     }
 
     @Override
-    protected CommsSensorProto decodeSpec(JSONOption jsonSpec) throws JSONException {
+    protected CommsSensorProto decodeProto(JSONOption jsonSpec) throws JSONException {
         return new CommsSensorProto(jsonSpec);
     }
 
     @Override
-    public CommsSensorProto getSpec() {
-        return (CommsSensorProto) super.getSpec();
+    public CommsSensorProto getProto() {
+        return (CommsSensorProto) super.getProto();
     }
 
     @Override

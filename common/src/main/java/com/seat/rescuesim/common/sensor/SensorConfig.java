@@ -16,24 +16,24 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 /** A serializable configuration of a generic Sensor. */
 public class SensorConfig extends JSONAble {
     public static final String COUNT = "count";
+    public static final String PROTO = "__proto__";
     public static final String SENSOR_IDS = "sensor_ids";
-    public static final String SPEC = "spec";
 
     private int count;
+    private SensorProto proto;
     private HashSet<String> sensorIDs;
-    private SensorProto spec;
 
-    public SensorConfig(SensorProto spec, int count) {
-        this.spec = spec;
+    public SensorConfig(SensorProto proto, int count) {
+        this.proto = proto;
         this.count = count;
         this.sensorIDs = new HashSet<>();
         for (int i = 0; i < count; i++) {
-            this.sensorIDs.add(String.format("%s:(%d)", spec.getLabel(), i));
+            this.sensorIDs.add(String.format("%s:(%d)", proto.getLabel(), i));
         }
     }
 
-    public SensorConfig(SensorProto spec, Collection<String> sensorIDs) {
-        this.spec = spec;
+    public SensorConfig(SensorProto proto, Collection<String> sensorIDs) {
+        this.proto = proto;
         this.count = sensorIDs.size();
         this.sensorIDs = new HashSet<>(sensorIDs);
     }
@@ -44,7 +44,7 @@ public class SensorConfig extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.spec = this.decodeSpec(json.getJSONOption(SensorConfig.SPEC));
+        this.proto = this.decodeProto(json.getJSONOption(SensorConfig.PROTO));
         this.count = json.getInt(SensorConfig.COUNT);
         this.sensorIDs = new HashSet<>();
         if (json.hasKey(SensorConfig.SENSOR_IDS)) {
@@ -55,7 +55,7 @@ public class SensorConfig extends JSONAble {
         }
     }
 
-    protected SensorProto decodeSpec(JSONOption jsonSpec) throws JSONException {
+    protected SensorProto decodeProto(JSONOption jsonSpec) throws JSONException {
         return new SensorProto(jsonSpec);
     }
 
@@ -63,20 +63,20 @@ public class SensorConfig extends JSONAble {
         return this.count;
     }
 
+    public SensorProto getProto() {
+        return this.proto;
+    }
+
     public HashSet<String> getSensorIDs() {
         return this.sensorIDs;
     }
 
     public SensorType getSensorType() {
-        return this.spec.getSensorType();
-    }
-
-    public SensorProto getSpec() {
-        return this.spec;
+        return this.proto.getSensorType();
     }
 
     public SerializableEnum getSpecType() {
-        return this.spec.getSpecType();
+        return this.proto.getSpecType();
     }
 
     public boolean hasSensorWithID(String sensorID) {
@@ -89,7 +89,7 @@ public class SensorConfig extends JSONAble {
 
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(SensorConfig.SPEC, this.spec.toJSON());
+        json.put(SensorConfig.PROTO, this.proto.toJSON());
         json.put(SensorConfig.COUNT, this.count);
         if (this.hasSensors()) {
             JSONArrayBuilder jsonSensors = JSONBuilder.Array();
@@ -102,7 +102,7 @@ public class SensorConfig extends JSONAble {
     }
 
     public boolean equals(SensorConfig config) {
-        return this.spec.equals(config.spec) && this.count == config.count && this.sensorIDs.equals(config.sensorIDs);
+        return this.proto.equals(config.proto) && this.count == config.count && this.sensorIDs.equals(config.sensorIDs);
     }
 
 }

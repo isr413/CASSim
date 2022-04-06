@@ -22,13 +22,13 @@ public class VisionSensorConfig extends SensorConfig {
     }
 
     @Override
-    protected VisionSensorProto decodeSpec(JSONOption jsonSpec) throws JSONException {
+    protected VisionSensorProto decodeProto(JSONOption jsonSpec) throws JSONException {
         return new VisionSensorProto(jsonSpec);
     }
 
     @Override
-    public VisionSensorProto getSpec() {
-        return (VisionSensorProto) super.getSpec();
+    public VisionSensorProto getProto() {
+        return (VisionSensorProto) super.getProto();
     }
 
     @Override
