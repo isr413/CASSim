@@ -13,7 +13,7 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
-/** A serializable configuration of a Sensor. */
+/** A serializable configuration of a generic Sensor. */
 public class SensorConfig extends JSONAble {
     public static final String COUNT = "count";
     public static final String SENSOR_IDS = "sensor_ids";

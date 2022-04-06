@@ -7,6 +7,7 @@ import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.sensor.SensorProto;
 import com.seat.rescuesim.common.sensor.SensorType;
 
+/** A serializable prototype for a Comms Sensor. */
 public class CommsSensorProto extends SensorProto {
     public static final String DELAY = "delay";
 
@@ -57,7 +58,8 @@ public class CommsSensorProto extends SensorProto {
         this(specType, range, accuracy, batteryUsage, CommsSensorProto.DEFAULT_DELAY);
     }
 
-    public CommsSensorProto(CommsSensorType specType, double range, double accuracy, double batteryUsage, double delay) {
+    public CommsSensorProto(CommsSensorType specType, double range, double accuracy, double batteryUsage,
+            double delay) {
         super(SensorType.COMMS, range, accuracy, batteryUsage);
         this.specType = specType;
         this.delay = delay;

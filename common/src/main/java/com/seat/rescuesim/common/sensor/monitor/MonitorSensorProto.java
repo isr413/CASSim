@@ -7,7 +7,7 @@ import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.sensor.SensorProto;
 import com.seat.rescuesim.common.sensor.SensorType;
 
-/** A serializable representation of a Monitor Sensor spec. */
+/** A serializable prototype of a Monitor Sensor. */
 public class MonitorSensorProto extends SensorProto {
 
     protected static final MonitorSensorType DEFAULT_SPEC_TYPE = MonitorSensorType.GENERIC;
@@ -20,7 +20,8 @@ public class MonitorSensorProto extends SensorProto {
     }
 
     public MonitorSensorProto(double range) {
-        this(MonitorSensorProto.DEFAULT_SPEC_TYPE, range, SensorProto.DEFAULT_ACCURACY, SensorProto.DEFAULT_BATTERY_USAGE);
+        this(MonitorSensorProto.DEFAULT_SPEC_TYPE, range, SensorProto.DEFAULT_ACCURACY,
+            SensorProto.DEFAULT_BATTERY_USAGE);
     }
 
     public MonitorSensorProto(double range, double accuracy) {

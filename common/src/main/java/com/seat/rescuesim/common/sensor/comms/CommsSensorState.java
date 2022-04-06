@@ -13,6 +13,7 @@ import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.sensor.SensorType;
 
+/** A serializable Comms Sensor state. */
 public class CommsSensorState extends SensorState {
     public static final String CONNECTIONS = "connections";
 

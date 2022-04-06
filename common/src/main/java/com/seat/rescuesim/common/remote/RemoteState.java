@@ -14,7 +14,7 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.json.SerializableEnum;
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.sensor.SensorFactory;
+import com.seat.rescuesim.common.sensor.SensorRegistry;
 import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.util.CoreException;
 
@@ -69,7 +69,7 @@ public class RemoteState extends JSONAble {
         if (json.hasKey(RemoteConst.SENSORS)) {
             JSONArray jsonState = json.getJSONArray(RemoteConst.SENSORS);
             for (int i = 0; i < jsonState.length(); i++) {
-                SensorState state = SensorFactory.decodeSensorState(jsonState.getJSONOption(i));
+                SensorState state = SensorRegistry.decodeTo(jsonState.getJSONOption(i), SensorState.class);
                 this.sensors.put(state.getSensorID(), state);
             }
         }

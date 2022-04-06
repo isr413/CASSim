@@ -8,7 +8,7 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
-/** A serializable Sensor Prototype. */
+/** A serializable prototype of a generic Sensor. */
 public class SensorProto extends JSONAble {
     public static final String ACCURACY = "accuracy";
     public static final String BATTERY_USAGE = "battery_usage";

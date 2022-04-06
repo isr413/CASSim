@@ -7,6 +7,7 @@ import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.sensor.SensorType;
 
+/** A serializable Monitor Sensor state. */
 public class MonitorSensorState extends SensorState {
     public static final String MONITOR_ID = "monitor_id";
 

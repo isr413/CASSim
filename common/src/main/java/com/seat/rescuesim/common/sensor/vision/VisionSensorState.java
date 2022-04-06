@@ -13,6 +13,7 @@ import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.sensor.SensorState;
 import com.seat.rescuesim.common.sensor.SensorType;
 
+/** A serializable Vision Sensor state. */
 public class VisionSensorState extends SensorState {
     public static final String OBSERVATIONS = "observations";
 

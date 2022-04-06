@@ -8,6 +8,7 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
+/** A serializable generic Sensor state. */
 public class SensorState extends JSONAble {
     public static final String ACTIVE = "active";
     public static final String SENSOR_ID = "sensor_id";

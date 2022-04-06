@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common.sensor.comms;
 
+import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.SerializableEnum;
 
@@ -12,7 +13,7 @@ public enum CommsSensorType implements SerializableEnum {
 
     public static final String COMMS_SENSOR_TYPE = "comms_sensor_type";
 
-    public static CommsSensorType decodeType(JSONObject json) {
+    public static CommsSensorType decodeType(JSONObject json) throws JSONException {
         return CommsSensorType.Value(json.getInt(CommsSensorType.COMMS_SENSOR_TYPE));
     }
 

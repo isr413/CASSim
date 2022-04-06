@@ -7,7 +7,7 @@ import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.sensor.SensorProto;
 import com.seat.rescuesim.common.sensor.SensorType;
 
-/** A serializable representation of a Vision Sensor spec. */
+/** A serializable prototype of a Vision Sensor. */
 public class VisionSensorProto extends SensorProto {
 
     protected static final VisionSensorType DEFAULT_SPEC_TYPE = VisionSensorType.GENERIC;
@@ -20,7 +20,8 @@ public class VisionSensorProto extends SensorProto {
     }
 
     public VisionSensorProto(double range) {
-        this(VisionSensorProto.DEFAULT_SPEC_TYPE, range, SensorProto.DEFAULT_ACCURACY, SensorProto.DEFAULT_BATTERY_USAGE);
+        this(VisionSensorProto.DEFAULT_SPEC_TYPE, range, SensorProto.DEFAULT_ACCURACY,
+            SensorProto.DEFAULT_BATTERY_USAGE);
     }
 
     public VisionSensorProto(double range, double accuracy) {
