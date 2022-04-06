@@ -28,6 +28,7 @@ public enum MapType implements SerializableEnum {
     }
 
     public boolean equals(MapType type) {
+        if (type == null) return false;
         return this.type == type.type;
     }
 

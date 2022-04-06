@@ -29,6 +29,7 @@ public enum CommsSensorType implements SerializableEnum {
     }
 
     public boolean equals(CommsSensorType type) {
+        if (type == null) return false;
         return this.type == type.type;
     }
 

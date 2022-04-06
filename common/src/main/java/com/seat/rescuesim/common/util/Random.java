@@ -66,4 +66,9 @@ public class Random {
         return this.seed;
     }
 
+    public boolean equals(Random rng) {
+        if (rng == null) return false;
+        return this.seed == rng.seed;
+    }
+
 }

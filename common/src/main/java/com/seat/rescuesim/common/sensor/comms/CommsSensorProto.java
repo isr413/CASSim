@@ -95,8 +95,9 @@ public class CommsSensorProto extends SensorProto {
         return this.specType;
     }
 
-    public boolean equals(CommsSensorProto spec) {
-        return super.equals(spec) && this.specType.equals(spec.specType) && this.delay == spec.delay;
+    public boolean equals(CommsSensorProto proto) {
+        if (proto == null) return false;
+        return super.equals(proto) && this.specType.equals(proto.specType) && this.delay == proto.delay;
     }
 
 }

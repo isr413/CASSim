@@ -98,6 +98,7 @@ public class VisionSensorState extends SensorState {
     }
 
     public boolean equals(VisionSensorState state) {
+        if (state == null) return false;
         return super.equals(state) && this.specType.equals(state.specType) &&
             this.observations.equals(state.observations);
     }

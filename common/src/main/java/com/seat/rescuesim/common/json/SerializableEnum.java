@@ -10,6 +10,7 @@ public interface SerializableEnum {
 
     /** Returns true if the encoded SerializableEnum has the same enum constant. */
     default boolean equals(String encoding) {
+        if (encoding == null) return false;
         return this.encode().equals(encoding);
     }
 

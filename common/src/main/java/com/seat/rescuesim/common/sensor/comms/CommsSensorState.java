@@ -97,6 +97,7 @@ public class CommsSensorState extends SensorState {
     }
 
     public boolean equals(CommsSensorState state) {
+        if (state == null) return false;
         return super.equals(state) && this.specType.equals(state.specType) &&
             this.connections.equals(state.connections);
     }

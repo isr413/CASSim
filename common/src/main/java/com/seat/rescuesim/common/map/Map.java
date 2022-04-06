@@ -69,7 +69,7 @@ public class Map extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = MapType.values()[json.getInt(MapType.MAP_TYPE)];
+        this.type = MapType.decodeType(json);
         this.width = json.getInt(Map.MAP_WIDTH);
         this.height = json.getInt(Map.MAP_HEIGHT);
         this.zoneSize = json.getInt(Map.ZONE_SIZE);
@@ -219,6 +219,7 @@ public class Map extends JSONAble {
     }
 
     public boolean equals(Map map) {
+        if (map == null) return false;
         boolean flag = this.type.equals(map.type) && this.width == map.width && this.height == map.height &&
             this.zoneSize == map.zoneSize;
         if (!flag) {

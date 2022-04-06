@@ -28,6 +28,7 @@ public enum ZoneType implements SerializableEnum {
     }
 
     public boolean equals(ZoneType type) {
+        if (type == null) return false;
         return this.type == type.type;
     }
 

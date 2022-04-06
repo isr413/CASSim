@@ -266,6 +266,7 @@ public class Vector extends JSONAble {
 
     /** Returns true if both vectors have equal components. */
     public boolean equals(Vector vec) {
+        if (vec == null) return false;
         return this.x == vec.x && this.y == vec.y && this.z == vec.z;
     }
 

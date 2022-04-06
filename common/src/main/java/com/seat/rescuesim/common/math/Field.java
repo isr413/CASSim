@@ -58,7 +58,7 @@ public class Field extends JSONAble {
 
     @Override
     protected void decode(JSONArray json) throws JSONException {
-        this.type = FieldType.values()[json.getInt(0)];
+        this.type = FieldType.decodeType(json);
         this.point = new Vector(json.getJSONOption(1));
         this.magnitude = json.getDouble(2);
         this.jerk = new Vector(json.getJSONOption(3));
@@ -90,6 +90,7 @@ public class Field extends JSONAble {
     }
 
     public boolean equals(Field field) {
+        if (field == null) return false;
         return this.type.equals(field.type) && this.point.equals(field.point) && this.magnitude == field.magnitude &&
             this.jerk.equals(field.jerk);
     }

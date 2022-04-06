@@ -71,8 +71,9 @@ public class VisionSensorProto extends SensorProto {
         return (VisionSensorType) this.specType;
     }
 
-    public boolean equals(VisionSensorProto spec) {
-        return super.equals(spec) && this.specType.equals(spec.specType);
+    public boolean equals(VisionSensorProto proto) {
+        if (proto == null) return false;
+        return super.equals(proto) && this.specType.equals(proto.specType);
     }
 
 }

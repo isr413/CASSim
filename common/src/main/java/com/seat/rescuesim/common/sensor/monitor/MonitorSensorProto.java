@@ -71,8 +71,9 @@ public class MonitorSensorProto extends SensorProto {
         return (MonitorSensorType) this.specType;
     }
 
-    public boolean equals(MonitorSensorProto spec) {
-        return super.equals(spec) && this.specType.equals(spec.specType);
+    public boolean equals(MonitorSensorProto proto) {
+        if (proto == null) return false;
+        return super.equals(proto) && this.specType.equals(proto.specType);
     }
 
 }

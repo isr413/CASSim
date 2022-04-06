@@ -47,19 +47,15 @@ public class Zone extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = ZoneType.values()[json.getInt(ZoneType.ZONE_TYPE)];
+        this.type = ZoneType.decodeType(json);
         this.location = new Vector(json.getJSONOption(Zone.ZONE_LOCATION));
         this.size = json.getInt(Zone.ZONE_SIZE);
-        if (json.hasKey(Zone.ZONE_AERIAL)) {
-            this.aerial = new Field(json.getJSONOption(Zone.ZONE_AERIAL));
-        } else {
-            this.aerial = new Field();
-        }
-        if (json.hasKey(Zone.ZONE_GROUND)) {
-            this.ground = new Field(json.getJSONOption(Zone.ZONE_GROUND));
-        } else {
-            this.ground = new Field();
-        }
+        this.ground = (json.hasKey(Zone.ZONE_GROUND)) ?
+            this.ground = new Field(json.getJSONOption(Zone.ZONE_GROUND)) :
+            new Field();
+        this.aerial = (json.hasKey(Zone.ZONE_AERIAL)) ?
+            this.aerial = new Field(json.getJSONOption(Zone.ZONE_AERIAL)) :
+            new Field();
     }
 
     public Field getAerialField() {
@@ -99,16 +95,17 @@ public class Zone extends JSONAble {
         json.put(ZoneType.ZONE_TYPE, this.type.getType());
         json.put(Zone.ZONE_LOCATION, this.location.toJSON());
         json.put(Zone.ZONE_SIZE, this.size);
-        if (this.hasAerialField()) {
-            json.put(Zone.ZONE_AERIAL, this.aerial.toJSON());
-        }
         if (this.hasGroundField()) {
             json.put(Zone.ZONE_GROUND, this.ground.toJSON());
+        }
+        if (this.hasAerialField()) {
+            json.put(Zone.ZONE_AERIAL, this.aerial.toJSON());
         }
         return json.toJSON();
     }
 
     public boolean equals(Zone zone) {
+        if (zone == null) return false;
         return this.location.equals(zone.location);
     }
 

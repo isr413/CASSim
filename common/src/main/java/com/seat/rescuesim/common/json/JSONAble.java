@@ -56,26 +56,31 @@ public abstract class JSONAble {
 
     /** Returns true if the the JSONAble has the same encoding. */
     public boolean equals(JSONAble json) {
+        if (json == null) return false;
         return this.equals(json.encode());
     }
 
     /** Returns true if the the JSONArray has the same encoding. */
     public boolean equals(JSONArray json) {
+        if (json == null) return false;
         return this.equals(json.toString());
     }
 
     /** Returns true if the the JSONObject has the same encoding. */
     public boolean equals(JSONObject json) {
+        if (json == null) return false;
         return this.equals(json.toString());
     }
 
     /** Returns true if the the JSONOption has the same encoding. */
     public boolean equals(JSONOption option) {
+        if (option == null) return false;
         return this.equals(option.toString());
     }
 
     /** Returns true if the encoding would deserialize to this Object. */
     public boolean equals(String encoding) {
+        if (encoding == null) return false;
         return this.encode().equals(encoding);
     }
 

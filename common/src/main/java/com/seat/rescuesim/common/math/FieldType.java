@@ -37,6 +37,7 @@ public enum FieldType implements SerializableEnum {
     }
 
     public boolean equals(FieldType type) {
+        if (type == null) return false;
         return this.type == type.type;
     }
 

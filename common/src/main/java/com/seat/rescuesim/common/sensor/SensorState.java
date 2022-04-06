@@ -86,6 +86,7 @@ public class SensorState extends JSONAble {
     }
 
     public boolean equals(SensorState state) {
+        if (state == null) return false;
         return this.sensorType.equals(state.sensorType) && this.sensorID.equals(state.sensorID);
     }
 

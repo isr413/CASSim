@@ -28,6 +28,7 @@ public enum VisionSensorType implements SerializableEnum {
     }
 
     public boolean equals(VisionSensorType type) {
+        if (type == null) return false;
         return this.type == type.type;
     }
 

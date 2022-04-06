@@ -109,9 +109,10 @@ public class SensorProto extends JSONAble {
         return this.getJSONBuilder().toJSON();
     }
 
-    public boolean equals(SensorProto spec) {
-        return this.sensorType.equals(spec.sensorType) && this.range == spec.range && this.accuracy == spec.accuracy &&
-            this.batteryUsage == spec.batteryUsage;
+    public boolean equals(SensorProto proto) {
+        if (proto == null) return false;
+        return this.sensorType.equals(proto.sensorType) && this.range == proto.range &&
+            this.accuracy == proto.accuracy && this.batteryUsage == proto.batteryUsage;
     }
 
 }

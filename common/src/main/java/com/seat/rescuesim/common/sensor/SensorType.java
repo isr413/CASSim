@@ -29,6 +29,7 @@ public enum SensorType implements SerializableEnum {
     }
 
     public boolean equals(SensorType type) {
+        if (type == null) return false;
         return this.type == type.type;
     }
 

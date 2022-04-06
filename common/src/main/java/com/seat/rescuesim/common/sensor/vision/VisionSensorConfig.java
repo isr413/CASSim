@@ -9,12 +9,12 @@ import com.seat.rescuesim.common.sensor.SensorConfig;
 /** A serializable configuration for a Vision Sensor. */
 public class VisionSensorConfig extends SensorConfig {
 
-    public VisionSensorConfig(VisionSensorProto spec, int count) {
-        super(spec, count);
+    public VisionSensorConfig(VisionSensorProto proto, int count) {
+        super(proto, count);
     }
 
-    public VisionSensorConfig(VisionSensorProto spec, Collection<String> sensorIDs) {
-        super(spec, sensorIDs);
+    public VisionSensorConfig(VisionSensorProto proto, Collection<String> sensorIDs) {
+        super(proto, sensorIDs);
     }
 
     public VisionSensorConfig(JSONOption option) throws JSONException {
@@ -22,8 +22,8 @@ public class VisionSensorConfig extends SensorConfig {
     }
 
     @Override
-    protected VisionSensorProto decodeProto(JSONOption jsonSpec) throws JSONException {
-        return new VisionSensorProto(jsonSpec);
+    protected VisionSensorProto decodeProto(JSONOption option) throws JSONException {
+        return new VisionSensorProto(option);
     }
 
     @Override

@@ -55,8 +55,8 @@ public class SensorConfig extends JSONAble {
         }
     }
 
-    protected SensorProto decodeProto(JSONOption jsonSpec) throws JSONException {
-        return new SensorProto(jsonSpec);
+    protected SensorProto decodeProto(JSONOption option) throws JSONException {
+        return new SensorProto(option);
     }
 
     public int getCount() {
@@ -106,6 +106,7 @@ public class SensorConfig extends JSONAble {
     }
 
     public boolean equals(SensorConfig config) {
+        if (config == null) return false;
         return this.proto.equals(config.proto) && this.count == config.count && this.sensorIDs.equals(config.sensorIDs);
     }
 
