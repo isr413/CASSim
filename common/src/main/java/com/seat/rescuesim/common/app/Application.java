@@ -5,7 +5,7 @@ import java.util.Random;
 
 import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.remote.RemoteConfig;
-import com.seat.rescuesim.common.remote.RemoteController;
+import com.seat.rescuesim.common.remote.intent.IntentionSet;
 import com.seat.rescuesim.common.scenario.ScenarioConfig;
 import com.seat.rescuesim.common.scenario.Snapshot;
 
@@ -36,6 +36,6 @@ public interface Application {
 
     double getStepSize();
 
-    Collection<RemoteController> update(Snapshot snap);
+    Collection<IntentionSet> update(Snapshot snap);
 
 }

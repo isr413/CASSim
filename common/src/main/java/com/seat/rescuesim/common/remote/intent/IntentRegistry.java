@@ -6,7 +6,7 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 
-public class Intent {
+public class IntentRegistry {
 
     public static Intention Activate() {
         return new ActivateIntention();
@@ -36,36 +36,36 @@ public class Intent {
         return new DoneIntention();
     }
 
-    public static Intention Goto() {
-        return new GotoIntention();
+    public static Intention GoTo() {
+        return new GoToIntention();
     }
 
-    public static Intention Goto(double maxVelocity) {
-        return new GotoIntention(maxVelocity);
+    public static Intention GoTo(double maxVelocity) {
+        return new GoToIntention(maxVelocity);
     }
 
-    public static Intention Goto(double maxVelocity, double maxAcceleration) {
-        return new GotoIntention(maxVelocity, maxAcceleration);
+    public static Intention GoTo(double maxVelocity, double maxAcceleration) {
+        return new GoToIntention(maxVelocity, maxAcceleration);
     }
 
-    public static Intention Goto(double maxVelocity, double maxAcceleration, double maxJerk) {
-        return new GotoIntention(maxVelocity, maxAcceleration, maxJerk);
+    public static Intention GoTo(double maxVelocity, double maxAcceleration, double maxJerk) {
+        return new GoToIntention(maxVelocity, maxAcceleration, maxJerk);
     }
 
-    public static Intention Goto(Vector location) {
-        return new GotoIntention(location);
+    public static Intention GoTo(Vector location) {
+        return new GoToIntention(location);
     }
 
-    public static Intention Goto(Vector location, double maxVelocity) {
-        return new GotoIntention(location, maxVelocity);
+    public static Intention GoTo(Vector location, double maxVelocity) {
+        return new GoToIntention(location, maxVelocity);
     }
 
-    public static Intention Goto(Vector location, double maxVelocity, double maxAcceleration) {
-        return new GotoIntention(location, maxVelocity, maxAcceleration);
+    public static Intention GoTo(Vector location, double maxVelocity, double maxAcceleration) {
+        return new GoToIntention(location, maxVelocity, maxAcceleration);
     }
 
-    public static Intention Goto(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
-        return new GotoIntention(location, maxVelocity, maxAcceleration, maxJerk);
+    public static Intention GoTo(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
+        return new GoToIntention(location, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public static Intention Move() {
@@ -96,7 +96,7 @@ public class Intent {
             case DONE:
                 return new DoneIntention();
             case GOTO:
-                return new GotoIntention(option);
+                return new GoToIntention(option);
             case MOVE:
                 return new MoveIntention(option);
             case SHUTDOWN:

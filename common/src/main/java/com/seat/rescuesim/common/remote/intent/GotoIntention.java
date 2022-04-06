@@ -5,7 +5,7 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 
-public class GotoIntention extends Intention {
+public class GoToIntention extends Intention {
     public static final String LOCATION = "location";
     public static final String MAX_ACCELERATION = "max_acceleration";
     public static final String MAX_JERK = "max_jerk";
@@ -20,35 +20,35 @@ public class GotoIntention extends Intention {
     private double maxJerk;
     private double maxVelocity;
 
-    public GotoIntention() {
-        this(null, GotoIntention.DEFAULT_VELOCITY, GotoIntention.DEFAULT_ACCELERATION, GotoIntention.DEFAULT_JERK);
+    public GoToIntention() {
+        this(null, GoToIntention.DEFAULT_VELOCITY, GoToIntention.DEFAULT_ACCELERATION, GoToIntention.DEFAULT_JERK);
     }
 
-    public GotoIntention(double maxVelocity) {
-        this(null, maxVelocity, GotoIntention.DEFAULT_ACCELERATION, GotoIntention.DEFAULT_JERK);
+    public GoToIntention(double maxVelocity) {
+        this(null, maxVelocity, GoToIntention.DEFAULT_ACCELERATION, GoToIntention.DEFAULT_JERK);
     }
 
-    public GotoIntention(double maxVelocity, double maxAcceleration) {
-        this(null, maxVelocity, maxAcceleration, GotoIntention.DEFAULT_JERK);
+    public GoToIntention(double maxVelocity, double maxAcceleration) {
+        this(null, maxVelocity, maxAcceleration, GoToIntention.DEFAULT_JERK);
     }
 
-    public GotoIntention(double maxVelocity, double maxAcceleration, double maxJerk) {
+    public GoToIntention(double maxVelocity, double maxAcceleration, double maxJerk) {
         this(null, maxVelocity, maxAcceleration, maxJerk);
     }
 
-    public GotoIntention(Vector location) {
-        this(location, GotoIntention.DEFAULT_VELOCITY, GotoIntention.DEFAULT_ACCELERATION, GotoIntention.DEFAULT_JERK);
+    public GoToIntention(Vector location) {
+        this(location, GoToIntention.DEFAULT_VELOCITY, GoToIntention.DEFAULT_ACCELERATION, GoToIntention.DEFAULT_JERK);
     }
 
-    public GotoIntention(Vector location, double maxVelocity) {
-        this(location, maxVelocity, GotoIntention.DEFAULT_ACCELERATION, GotoIntention.DEFAULT_JERK);
+    public GoToIntention(Vector location, double maxVelocity) {
+        this(location, maxVelocity, GoToIntention.DEFAULT_ACCELERATION, GoToIntention.DEFAULT_JERK);
     }
 
-    public GotoIntention(Vector location, double maxVelocity, double maxAcceleration) {
-        this(location, maxVelocity, maxAcceleration, GotoIntention.DEFAULT_JERK);
+    public GoToIntention(Vector location, double maxVelocity, double maxAcceleration) {
+        this(location, maxVelocity, maxAcceleration, GoToIntention.DEFAULT_JERK);
     }
 
-    public GotoIntention(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
+    public GoToIntention(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
         super(IntentionType.GOTO);
         this.location = location;
         this.maxVelocity = maxVelocity;
@@ -56,24 +56,24 @@ public class GotoIntention extends Intention {
         this.maxJerk = maxJerk;
     }
 
-    public GotoIntention(JSONOption option) {
+    public GoToIntention(JSONOption option) {
         super(option);
     }
 
     @Override
     protected void decode(JSONObject json) {
         super.decode(json);
-        this.location = (json.hasKey(GotoIntention.LOCATION)) ?
-            new Vector(json.getJSONOption(GotoIntention.LOCATION)) :
+        this.location = (json.hasKey(GoToIntention.LOCATION)) ?
+            new Vector(json.getJSONOption(GoToIntention.LOCATION)) :
             null;
-        this.maxVelocity = (json.hasKey(GotoIntention.MAX_VELOCITY)) ?
-            this.maxVelocity = json.getDouble(GotoIntention.MAX_VELOCITY) :
+        this.maxVelocity = (json.hasKey(GoToIntention.MAX_VELOCITY)) ?
+            this.maxVelocity = json.getDouble(GoToIntention.MAX_VELOCITY) :
             Double.POSITIVE_INFINITY;
-        this.maxAcceleration = (json.hasKey(GotoIntention.MAX_ACCELERATION)) ?
-            this.maxAcceleration = json.getDouble(GotoIntention.MAX_ACCELERATION) :
+        this.maxAcceleration = (json.hasKey(GoToIntention.MAX_ACCELERATION)) ?
+            this.maxAcceleration = json.getDouble(GoToIntention.MAX_ACCELERATION) :
             Double.POSITIVE_INFINITY;
-        this.maxJerk = (json.hasKey(GotoIntention.MAX_JERK)) ?
-            json.getDouble(GotoIntention.MAX_JERK) :
+        this.maxJerk = (json.hasKey(GoToIntention.MAX_JERK)) ?
+            json.getDouble(GoToIntention.MAX_JERK) :
             Double.POSITIVE_INFINITY;
     }
 
@@ -81,16 +81,16 @@ public class GotoIntention extends Intention {
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
         if (this.hasLocation()) {
-            json.put(GotoIntention.LOCATION, this.location.toJSON());
+            json.put(GoToIntention.LOCATION, this.location.toJSON());
         }
         if (this.hasMaxVelocity()) {
-            json.put(GotoIntention.MAX_VELOCITY, this.maxVelocity);
+            json.put(GoToIntention.MAX_VELOCITY, this.maxVelocity);
         }
         if (this.hasMaxAcceleration()) {
-            json.put(GotoIntention.MAX_ACCELERATION, this.maxAcceleration);
+            json.put(GoToIntention.MAX_ACCELERATION, this.maxAcceleration);
         }
         if (this.hasMaxJerk()) {
-            json.put(GotoIntention.MAX_JERK, this.maxJerk);
+            json.put(GoToIntention.MAX_JERK, this.maxJerk);
         }
         return json;
     }
@@ -132,7 +132,7 @@ public class GotoIntention extends Intention {
         return this.maxVelocity != Double.POSITIVE_INFINITY;
     }
 
-    public boolean equals(GotoIntention intent) {
+    public boolean equals(GoToIntention intent) {
         if (intent == null) return false;
         return super.equals(intent) &&
             ((this.hasLocation() && this.location.equals(intent.location)) || this.location == intent.location) &&

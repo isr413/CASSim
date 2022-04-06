@@ -1,10 +1,10 @@
 package com.seat.rescuesim.common.remote.kinetic;
 
-import java.util.Collection;
-
+import com.seat.rescuesim.common.json.JSONException;
+import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteController;
-import com.seat.rescuesim.common.remote.intent.Intent;
+import com.seat.rescuesim.common.remote.intent.IntentRegistry;
 
 public class KineticRemoteController extends RemoteController {
 
@@ -12,84 +12,48 @@ public class KineticRemoteController extends RemoteController {
         super(remoteID);
     }
 
-    public void activate(String sensor) {
-        super.addIntention(Intent.Activate(sensor));
-    }
-
-    public void activateAll() {
-        super.addIntention(Intent.Activate());
-    }
-
-    public void activateAll(Collection<String> sensors) {
-        super.addIntention(Intent.Activate(sensors));
-    }
-
-    public void deactivate(String sensor) {
-        super.addIntention(Intent.Deactivate(sensor));
-    }
-
-    public void deactivateAll() {
-        super.addIntention(Intent.Deactivate());
-    }
-
-    public void deactivateAll(Collection<String> sensors) {
-        super.addIntention(Intent.Deactivate(sensors));
-    }
-
-    public void done() {
-        super.addIntention(Intent.Done());
+    public KineticRemoteController(JSONOption option) throws JSONException {
+        super(option);
     }
 
     public void goTo() {
-        super.addIntention(Intent.Goto());
+        super.addIntention(IntentRegistry.GoTo());
     }
 
     public void goTo(double maxVelocity) {
-        super.addIntention(Intent.Goto(maxVelocity));
+        super.addIntention(IntentRegistry.GoTo(maxVelocity));
     }
 
     public void goTo(double maxVelocity, double maxAcceleration) {
-        super.addIntention(Intent.Goto(maxVelocity, maxAcceleration));
+        super.addIntention(IntentRegistry.GoTo(maxVelocity, maxAcceleration));
     }
 
     public void goTo(double maxVelocity, double maxAcceleration, double maxJerk) {
-        super.addIntention(Intent.Goto(maxVelocity, maxAcceleration, maxJerk));
+        super.addIntention(IntentRegistry.GoTo(maxVelocity, maxAcceleration, maxJerk));
     }
 
     public void goTo(Vector location) {
-        super.addIntention(Intent.Goto(location));
+        super.addIntention(IntentRegistry.GoTo(location));
     }
 
     public void goTo(Vector location, double maxVelocity) {
-        super.addIntention(Intent.Goto(location, maxVelocity));
+        super.addIntention(IntentRegistry.GoTo(location, maxVelocity));
     }
 
     public void goTo(Vector location, double maxVelocity, double maxAcceleration) {
-        super.addIntention(Intent.Goto(location, maxVelocity, maxAcceleration));
+        super.addIntention(IntentRegistry.GoTo(location, maxVelocity, maxAcceleration));
     }
 
     public void goTo(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
-        super.addIntention(Intent.Goto(location, maxVelocity, maxAcceleration, maxJerk));
+        super.addIntention(IntentRegistry.GoTo(location, maxVelocity, maxAcceleration, maxJerk));
     }
 
     public void move() {
-        super.addIntention(Intent.Move());
+        super.addIntention(IntentRegistry.Move());
     }
 
     public void move(Vector jerk) {
-        super.addIntention(Intent.Move(jerk));
-    }
-
-    public void none() {
-        super.addIntention(Intent.None());
-    }
-
-    public void shutdown() {
-        super.addIntention(Intent.Shutdown());
-    }
-
-    public void startup() {
-        super.addIntention(Intent.Startup());
+        super.addIntention(IntentRegistry.Move(jerk));
     }
 
 }

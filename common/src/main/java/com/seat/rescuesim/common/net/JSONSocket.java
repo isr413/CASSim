@@ -15,7 +15,7 @@ import com.seat.rescuesim.common.json.JSONArrayBuilder;
 import com.seat.rescuesim.common.json.JSONBuilder;
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.remote.RemoteController;
+import com.seat.rescuesim.common.remote.intent.IntentionSet;
 import com.seat.rescuesim.common.scenario.ScenarioConfig;
 import com.seat.rescuesim.common.scenario.Snapshot;
 import com.seat.rescuesim.common.util.CoreException;
@@ -96,16 +96,16 @@ public class JSONSocket {
         }
     }
 
-    public HashMap<String, RemoteController> getIntentionsBlocking() throws CoreException, IOException {
+    public HashMap<String, IntentionSet> getIntentionsBlocking() throws CoreException, IOException {
         JSONArray json;
         try {
             json = this.getInputBlocking().someArray();
         } catch (JSONException e) {
             throw new CoreException(e.toString());
         }
-        HashMap<String, RemoteController> controllers = new HashMap<>();
+        HashMap<String, IntentionSet> controllers = new HashMap<>();
         for (int i = 0; i < json.length(); i++) {
-            RemoteController controller = new RemoteController(json.getJSONOption(i));
+            IntentionSet controller = new IntentionSet(json.getJSONOption(i));
             if (controller.hasIntentions()) {
                 controllers.put(controller.getRemoteID(), controller);
             }
@@ -133,9 +133,9 @@ public class JSONSocket {
         this.out.println(option.toString());
     }
 
-    public void sendIntentions(ArrayList<RemoteController> controllers) {
+    public void sendIntentions(ArrayList<IntentionSet> controllers) {
         JSONArrayBuilder json = JSONBuilder.Array();
-        for (RemoteController controller : controllers) {
+        for (IntentionSet controller : controllers) {
             json.put(controller.toJSON());
         }
         this.send(json.toJSON().toString());
