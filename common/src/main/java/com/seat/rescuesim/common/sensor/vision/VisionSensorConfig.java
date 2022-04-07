@@ -13,8 +13,16 @@ public class VisionSensorConfig extends SensorConfig {
         super(proto, count);
     }
 
+    public VisionSensorConfig(VisionSensorProto proto, int count, boolean active) {
+        super(proto, count, active);
+    }
+
     public VisionSensorConfig(VisionSensorProto proto, Collection<String> sensorIDs) {
         super(proto, sensorIDs);
+    }
+
+    public VisionSensorConfig(VisionSensorProto proto, Collection<String> sensorIDs, boolean active) {
+        super(proto, sensorIDs, active);
     }
 
     public VisionSensorConfig(JSONOption option) throws JSONException {

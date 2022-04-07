@@ -18,25 +18,37 @@ public class SensorConfig extends JSONAble {
     public static final String PROTO = "__proto__";
     public static final String SENSOR_IDS = "sensor_ids";
 
+    protected static final boolean DEFAULT_ACTIVE = false;
+
+    private boolean active;
     private int count;
     private SensorProto proto;
     private HashSet<String> sensorIDs;
 
     public SensorConfig(SensorProto proto, int count) {
-        this(proto, count, new HashSet<String>());
+        this(proto, count, SensorConfig.DEFAULT_ACTIVE);
+    }
+
+    public SensorConfig(SensorProto proto, int count, boolean active) {
+        this(proto, count, new HashSet<String>(), active);
         for (int i = 0; i < count; i++) {
             this.sensorIDs.add(String.format("%s:(%d)", proto.getLabel(), i));
         }
     }
 
     public SensorConfig(SensorProto proto, Collection<String> sensorIDs) {
-        this(proto, sensorIDs.size(), new HashSet<String>(sensorIDs));
+        this(proto, sensorIDs.size(), new HashSet<String>(sensorIDs), SensorConfig.DEFAULT_ACTIVE);
     }
 
-    private SensorConfig(SensorProto proto, int count, HashSet<String> sensorIDs) {
+    public SensorConfig(SensorProto proto, Collection<String> sensorIDs, boolean active) {
+        this(proto, sensorIDs.size(), new HashSet<String>(sensorIDs), active);
+    }
+
+    private SensorConfig(SensorProto proto, int count, HashSet<String> sensorIDs, boolean active) {
         this.proto = proto;
         this.count = count;
         this.sensorIDs = sensorIDs;
+        this.active = active;
     }
 
     public SensorConfig(JSONOption option) throws JSONException {
@@ -54,6 +66,7 @@ public class SensorConfig extends JSONAble {
                 this.sensorIDs.add(jsonSensors.getString(i));
             }
         }
+        this.active = json.getBoolean(SensorState.ACTIVE);
     }
 
     protected SensorProto decodeProto(JSONOption option) throws JSONException {
@@ -88,6 +101,14 @@ public class SensorConfig extends JSONAble {
         return this.count > 0;
     }
 
+    public boolean isActive() {
+        return this.active;
+    }
+
+    public boolean isInactive() {
+        return !this.isActive();
+    }
+
     public JSONOption toJSON() {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(SensorConfig.PROTO, this.proto.toJSON());
@@ -99,12 +120,14 @@ public class SensorConfig extends JSONAble {
             }
             json.put(SensorConfig.SENSOR_IDS, jsonSensors.toJSON());
         }
+        json.put(SensorState.ACTIVE, this.active);
         return json.toJSON();
     }
 
     public boolean equals(SensorConfig config) {
         if (config == null) return false;
-        return this.proto.equals(config.proto) && this.count == config.count && this.sensorIDs.equals(config.sensorIDs);
+        return this.proto.equals(config.proto) && this.count == config.count &&
+            this.sensorIDs.equals(config.sensorIDs) && this.active == config.active;
     }
 
 }

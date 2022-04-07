@@ -13,8 +13,16 @@ public class MonitorSensorConfig extends SensorConfig {
         super(proto, count);
     }
 
+    public MonitorSensorConfig(MonitorSensorProto proto, int count, boolean active) {
+        super(proto, count, active);
+    }
+
     public MonitorSensorConfig(MonitorSensorProto proto, Collection<String> sensorIDs) {
         super(proto, sensorIDs);
+    }
+
+    public MonitorSensorConfig(MonitorSensorProto proto, Collection<String> sensorIDs, boolean active) {
+        super(proto, sensorIDs, active);
     }
 
     public MonitorSensorConfig(JSONOption option) throws JSONException {

@@ -13,8 +13,16 @@ public class CommsSensorConfig extends SensorConfig {
         super(proto, count);
     }
 
+    public CommsSensorConfig(CommsSensorProto proto, int count, boolean active) {
+        super(proto, count, active);
+    }
+
     public CommsSensorConfig(CommsSensorProto proto, Collection<String> sensorIDs) {
         super(proto, sensorIDs);
+    }
+
+    public CommsSensorConfig(CommsSensorProto proto, Collection<String> sensorIDs, boolean active) {
+        super(proto, sensorIDs, active);
     }
 
     public CommsSensorConfig(JSONOption option) throws JSONException {
