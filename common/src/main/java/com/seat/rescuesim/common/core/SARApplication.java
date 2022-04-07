@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common.app;
+package com.seat.rescuesim.common.core;
 
 import com.seat.rescuesim.common.scenario.SARConfig;
 import com.seat.rescuesim.common.scenario.ScenarioType;

@@ -3,7 +3,7 @@ package com.seat.rescuesim.common.remote;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-
+import com.seat.rescuesim.common.core.CommonException;
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -15,7 +15,6 @@ import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorRegistry;
 import com.seat.rescuesim.common.sensor.SensorState;
-import com.seat.rescuesim.common.util.CoreException;
 
 /** A serializable snapshot of a Remote. */
 public class RemoteState extends JSONAble {
@@ -121,9 +120,9 @@ public class RemoteState extends JSONAble {
         return new ArrayList<SensorState>(this.sensors.values());
     }
 
-    public SensorState getSensorWithID(String sensorID) throws CoreException {
+    public SensorState getSensorWithID(String sensorID) throws CommonException {
         if (!this.hasSensorWithID(sensorID)) {
-            throw new CoreException(String.format("No sensor %s found on remote %s", sensorID, this.remoteID));
+            throw new CommonException(String.format("No sensor %s found on remote %s", sensorID, this.remoteID));
         }
         return this.sensors.get(sensorID);
     }

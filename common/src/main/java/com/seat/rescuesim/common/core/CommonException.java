@@ -1,15 +1,15 @@
-package com.seat.rescuesim.common.util;
+package com.seat.rescuesim.common.core;
 
 /** An Exception class to represent logical errors in the Common library. */
-public class CoreException extends RuntimeException {
+public class CommonException extends RuntimeException {
 
     /** Accepts the explanation for the error. */
-    public CoreException(String msg) {
+    public CommonException(String msg) {
         super(msg);
     }
 
     /** Accepts the explanation and the cause of the error. */
-    public CoreException(String msg, Throwable cause) {
+    public CommonException(String msg, Throwable cause) {
         super(msg, cause);
     }
 

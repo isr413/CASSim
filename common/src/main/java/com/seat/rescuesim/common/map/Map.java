@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common.map;
 
+import com.seat.rescuesim.common.core.CommonException;
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -9,7 +10,6 @@ import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.util.CoreException;
 
 /** Represents the map grid. */
 public class Map extends JSONAble {
@@ -159,29 +159,29 @@ public class Map extends JSONAble {
     }
 
     /** Returns the Zone located at row y, column x.
-     * @throws CoreException if the either y or x are out of bounds
+     * @throws CommonException if the either y or x are out of bounds
      */
-    public Zone getZone(int y, int x) throws CoreException {
+    public Zone getZone(int y, int x) throws CommonException {
         if (y < 0 || this.height <= y) {
-            throw new CoreException(new IndexOutOfBoundsException(y).toString());
+            throw new CommonException(new IndexOutOfBoundsException(y).toString());
         }
         if (x < 0 || this.width <= x) {
-            throw new CoreException(new IndexOutOfBoundsException(x).toString());
+            throw new CommonException(new IndexOutOfBoundsException(x).toString());
         }
         return this.grid[y][x];
     }
 
     /** Returns the Zone that contains the location with the specified x and y coordinates.
-     * @throws CoreException if the either y or x are out of bounds
+     * @throws CommonException if the either y or x are out of bounds
      */
-    public Zone getZoneAtLocation(double x, double y) throws CoreException {
+    public Zone getZoneAtLocation(double x, double y) throws CommonException {
         return this.getZone((int) (y / this.zoneSize), (int) (x / this.zoneSize));
     }
 
     /** Returns the Zone that contains the location with the specified coordinates.
-     * @throws CoreException if the vector is out of bounds
+     * @throws CommonException if the vector is out of bounds
      */
-    public Zone getZoneAtLocation(Vector location) throws CoreException {
+    public Zone getZoneAtLocation(Vector location) throws CommonException {
         return this.getZoneAtLocation(location.getX(), location.getY());
     }
 

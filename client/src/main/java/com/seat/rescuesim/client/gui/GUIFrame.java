@@ -9,8 +9,10 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import com.seat.rescuesim.common.Snapshot;
+
+
 import com.seat.rescuesim.common.remote.RemoteState;
+import com.seat.rescuesim.common.scenario.Snapshot;
 
 public class GUIFrame extends JFrame {
 

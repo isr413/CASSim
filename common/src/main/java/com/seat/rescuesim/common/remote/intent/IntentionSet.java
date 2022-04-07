@@ -3,7 +3,7 @@ package com.seat.rescuesim.common.remote.intent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
+import com.seat.rescuesim.common.core.CommonException;
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -13,7 +13,6 @@ import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.remote.RemoteState;
-import com.seat.rescuesim.common.util.CoreException;
 import com.seat.rescuesim.common.util.Debugger;
 
 /** A serializable class to assign intentions to a Remote. */
@@ -44,12 +43,12 @@ public class IntentionSet extends JSONAble {
         }
     }
 
-    public boolean addIntention(Intention intent) throws CoreException {
+    public boolean addIntention(Intention intent) throws CommonException {
         if (this.hasIntention(intent)) {
             return true;
         }
         if (this.hasIntentionWithType(intent.getIntentionType())) {
-            throw new CoreException(String.format("Remote %s already has intention %s", this.remoteID,
+            throw new CommonException(String.format("Remote %s already has intention %s", this.remoteID,
                 intent.getLabel()));
         }
         this.intentions.put(intent.getIntentionType(), intent);
@@ -64,9 +63,9 @@ public class IntentionSet extends JSONAble {
         return new HashSet<IntentionType>(this.intentions.keySet());
     }
 
-    public Intention getIntentionWithType(IntentionType intentionType) throws CoreException {
+    public Intention getIntentionWithType(IntentionType intentionType) throws CommonException {
         if (!this.hasIntentionWithType(intentionType)) {
-            throw new CoreException(String.format("Remote %s has no intention for %s", this.remoteID,
+            throw new CommonException(String.format("Remote %s has no intention for %s", this.remoteID,
                 intentionType.getLabel()));
         }
         return this.intentions.get(intentionType);

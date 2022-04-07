@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common.sensor;
 
+import com.seat.rescuesim.common.core.CommonException;
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.sensor.comms.CommsSensorConfig;
@@ -11,7 +12,6 @@ import com.seat.rescuesim.common.sensor.monitor.MonitorSensorState;
 import com.seat.rescuesim.common.sensor.vision.VisionSensorConfig;
 import com.seat.rescuesim.common.sensor.vision.VisionSensorProto;
 import com.seat.rescuesim.common.sensor.vision.VisionSensorState;
-import com.seat.rescuesim.common.util.CoreException;
 
 public class SensorRegistry {
 
@@ -49,7 +49,7 @@ public class SensorRegistry {
 
     @SuppressWarnings("unchecked")
     private static <T> T decodeCommsSensor(JSONOption option, Class<? extends T> classType, SensorType sensorType)
-            throws CoreException, JSONException {
+            throws CommonException, JSONException {
         if (classType == SensorConfig.class || classType == CommsSensorConfig.class) {
             switch (sensorType) {
                 default: return (T) new CommsSensorConfig(option);
@@ -65,12 +65,12 @@ public class SensorRegistry {
                 default: return (T) new CommsSensorState(option);
             }
         }
-        throw new CoreException(String.format("Cannot decode comms sensor %s", option.toString()));
+        throw new CommonException(String.format("Cannot decode comms sensor %s", option.toString()));
     }
 
     @SuppressWarnings("unchecked")
     private static <T> T decodeMonitorSensor(JSONOption option, Class<? extends T> classType, SensorType sensorType)
-            throws CoreException, JSONException {
+            throws CommonException, JSONException {
         if (classType == SensorConfig.class || classType == MonitorSensorConfig.class) {
             switch (sensorType) {
                 default: return (T) new MonitorSensorConfig(option);
@@ -86,12 +86,12 @@ public class SensorRegistry {
                 default: return (T) new MonitorSensorState(option);
             }
         }
-        throw new CoreException(String.format("Cannot decode monitor sensor %s", option.toString()));
+        throw new CommonException(String.format("Cannot decode monitor sensor %s", option.toString()));
     }
 
     @SuppressWarnings("unchecked")
     private static <T> T decodeVisionSensor(JSONOption option, Class<? extends T> classType, SensorType sensorType)
-            throws CoreException, JSONException {
+            throws CommonException, JSONException {
         if (classType == SensorConfig.class || classType == VisionSensorConfig.class) {
             switch (sensorType) {
                 default: return (T) new VisionSensorConfig(option);
@@ -107,11 +107,11 @@ public class SensorRegistry {
                 default: return (T) new VisionSensorState(option);
             }
         }
-        throw new CoreException(String.format("Cannot decode vision sensor %s", option.toString()));
+        throw new CommonException(String.format("Cannot decode vision sensor %s", option.toString()));
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T decodeTo(JSONOption option, Class<? extends T> classType) throws CoreException, JSONException {
+    public static <T> T decodeTo(JSONOption option, Class<? extends T> classType) throws CommonException, JSONException {
         SensorType sensorType = SensorRegistry.decodeType(option);
         if (SensorRegistry.isRegisteredCommsSensor(classType, sensorType)) {
             return SensorRegistry.decodeCommsSensor(option, classType, sensorType);
@@ -137,12 +137,12 @@ public class SensorRegistry {
                 default: return (T) new SensorState(option);
             }
         }
-        throw new CoreException(String.format("Cannot decode sensor %s", option.toString()));
+        throw new CommonException(String.format("Cannot decode sensor %s", option.toString()));
     }
 
-    public static SensorType decodeType(JSONOption option) throws CoreException, JSONException {
+    public static SensorType decodeType(JSONOption option) throws CommonException, JSONException {
         if (!option.isSomeObject()) {
-            throw new CoreException(String.format("Cannot decode sensor type of %s", option.toString()));
+            throw new CommonException(String.format("Cannot decode sensor type of %s", option.toString()));
         }
         return SensorType.decodeType(option.someObject());
     }

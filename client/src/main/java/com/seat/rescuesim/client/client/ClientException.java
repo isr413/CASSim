@@ -1,4 +1,4 @@
-package com.seat.rescuesim.client.util;
+package com.seat.rescuesim.client.client;
 
 public class ClientException extends RuntimeException {
 

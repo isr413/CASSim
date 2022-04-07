@@ -1,9 +1,9 @@
 package com.seat.rescuesim.client.sandbox;
 
 import java.util.ArrayList;
-
-import com.seat.rescuesim.client.core.Application;
+import com.seat.rescuesim.client.client.AppClient;
 import com.seat.rescuesim.common.Snapshot;
+import com.seat.rescuesim.common.app.SARApplication;
 import com.seat.rescuesim.common.base.BaseConfig;
 import com.seat.rescuesim.common.base.BaseSpec;
 import com.seat.rescuesim.common.base.BaseType;
@@ -21,7 +21,7 @@ import com.seat.rescuesim.common.victim.VictimConfig;
 import com.seat.rescuesim.common.victim.VictimSpec;
 import com.seat.rescuesim.common.victim.VictimType;
 
-public class ACSOS implements Application {
+public class ACSOS implements SARApplication {
 
     private static final int MAP_SIZE = 64;
     private static final int ZONE_SIZE = 10;

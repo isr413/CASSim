@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common.app;
+package com.seat.rescuesim.common.core;
 
 import java.util.Collection;
 import java.util.Random;

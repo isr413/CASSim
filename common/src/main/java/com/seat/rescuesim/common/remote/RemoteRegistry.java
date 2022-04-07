@@ -1,7 +1,7 @@
 package com.seat.rescuesim.common.remote;
 
 import java.util.Collection;
-
+import com.seat.rescuesim.common.core.CommonException;
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
@@ -18,7 +18,6 @@ import com.seat.rescuesim.common.remote.mobile.ground.VictimConfig;
 import com.seat.rescuesim.common.remote.mobile.ground.VictimProto;
 import com.seat.rescuesim.common.remote.mobile.ground.VictimState;
 import com.seat.rescuesim.common.sensor.SensorConfig;
-import com.seat.rescuesim.common.util.CoreException;
 
 /** A registry of Remote prototypes and supporting serializable types. */
 public class RemoteRegistry {
@@ -50,7 +49,7 @@ public class RemoteRegistry {
 
     @SuppressWarnings("unchecked")
     public static <T> T decodeAerialRemote(JSONOption option, Class<? extends T> classType, RemoteType remoteType)
-            throws CoreException, JSONException {
+            throws CommonException, JSONException {
         if (classType == RemoteConfig.class || classType == DroneConfig.class) {
             switch (remoteType) {
                 default: return (T) new DroneConfig(option);
@@ -66,12 +65,12 @@ public class RemoteRegistry {
                 default: return (T) new DroneState(option);
             }
         }
-        throw new CoreException(String.format("Cannot decode aerial remote %s", option.toString()));
+        throw new CommonException(String.format("Cannot decode aerial remote %s", option.toString()));
     }
 
     @SuppressWarnings("unchecked")
     public static <T> T decodeBaseRemote(JSONOption option, Class<? extends T> classType, RemoteType remoteType)
-            throws CoreException, JSONException {
+            throws CommonException, JSONException {
         if (classType == RemoteConfig.class || classType == BaseConfig.class) {
             switch (remoteType) {
                 default: return (T) new BaseConfig(option);
@@ -87,12 +86,12 @@ public class RemoteRegistry {
                 default: return (T) new BaseState(option);
             }
         }
-        throw new CoreException(String.format("Cannot decode base remote %s", option.toString()));
+        throw new CommonException(String.format("Cannot decode base remote %s", option.toString()));
     }
 
     @SuppressWarnings("unchecked")
     public static <T> T decodeGroundRemote(JSONOption option, Class<? extends T> classType, RemoteType remoteType)
-            throws CoreException, JSONException {
+            throws CommonException, JSONException {
         if (classType == RemoteConfig.class || classType == VictimConfig.class) {
             switch (remoteType) {
                 default: return (T) new VictimConfig(option);
@@ -108,12 +107,12 @@ public class RemoteRegistry {
                 default: return (T) new VictimState(option);
             }
         }
-        throw new CoreException(String.format("Cannot decode ground remote %s", option.toString()));
+        throw new CommonException(String.format("Cannot decode ground remote %s", option.toString()));
     }
 
     @SuppressWarnings("unchecked")
     public static <T> T decodeMobileRemote(JSONOption option, Class<? extends T> classType, RemoteType remoteType)
-            throws CoreException, JSONException {
+            throws CommonException, JSONException {
         if (RemoteRegistry.isRegisteredAerialRemote(classType, remoteType)) {
             return RemoteRegistry.decodeAerialRemote(option, classType, remoteType);
         }
@@ -135,11 +134,11 @@ public class RemoteRegistry {
                 default: return (T) new MobileRemoteState(option);
             }
         }
-        throw new CoreException(String.format("Cannot decode mobile remote %s", option.toString()));
+        throw new CommonException(String.format("Cannot decode mobile remote %s", option.toString()));
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T decodeTo(JSONOption option, Class<? extends T> classType) throws CoreException, JSONException {
+    public static <T> T decodeTo(JSONOption option, Class<? extends T> classType) throws CommonException, JSONException {
         RemoteType remoteType = RemoteRegistry.decodeType(option);
         if (RemoteRegistry.isRegisteredBaseRemote(classType, remoteType)) {
             return RemoteRegistry.decodeBaseRemote(option, classType, remoteType);
@@ -162,12 +161,12 @@ public class RemoteRegistry {
                 default: return (T) new RemoteState(option);
             }
         }
-        throw new CoreException(String.format("Cannot decode remote %s", option.toString()));
+        throw new CommonException(String.format("Cannot decode remote %s", option.toString()));
     }
 
-    public static RemoteType decodeType(JSONOption option) throws CoreException {
+    public static RemoteType decodeType(JSONOption option) throws CommonException {
         if (!option.isSomeObject()) {
-            throw new CoreException(String.format("Cannot decode remote type of %s", option.toString()));
+            throw new CommonException(String.format("Cannot decode remote type of %s", option.toString()));
         }
         return RemoteType.decodeType(option.someObject());
     }

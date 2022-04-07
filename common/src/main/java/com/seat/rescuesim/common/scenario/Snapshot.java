@@ -3,7 +3,7 @@ package com.seat.rescuesim.common.scenario;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
+import com.seat.rescuesim.common.core.CommonException;
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -14,7 +14,6 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.remote.RemoteRegistry;
 import com.seat.rescuesim.common.remote.RemoteState;
-import com.seat.rescuesim.common.util.CoreException;
 
 /** A serializable class to represent a single snapshot of the current sim state. */
 public class Snapshot extends JSONAble {
@@ -116,9 +115,9 @@ public class Snapshot extends JSONAble {
         return this.remoteIDs;
     }
 
-    public RemoteState getRemoteState(String remoteID) throws CoreException {
+    public RemoteState getRemoteState(String remoteID) throws CommonException {
         if (!this.hasStateWithID(remoteID)) {
-            throw new CoreException(String.format("No state for remote %s", remoteID));
+            throw new CommonException(String.format("No state for remote %s", remoteID));
         }
         return this.state.get(remoteID);
     }
@@ -163,6 +162,10 @@ public class Snapshot extends JSONAble {
         return !this.dynamicRemotes.isEmpty();
     }
 
+    public boolean hasError() {
+        return this.status.equals(ScenarioStatus.ERROR);
+    }
+
     public boolean hasRemoteWithID(String remoteID) {
         return this.remoteIDs.contains(remoteID);
     }
@@ -177,6 +180,14 @@ public class Snapshot extends JSONAble {
 
     public boolean hasState() {
         return !this.state.isEmpty();
+    }
+
+    public boolean isDone() {
+        return this.status.equals(ScenarioStatus.DONE);
+    }
+
+    public boolean isInProgress() {
+        return this.status.equals(ScenarioStatus.START) || this.status.equals(ScenarioStatus.IN_PROGRESS);
     }
 
     public JSONOption toJSON() throws JSONException {

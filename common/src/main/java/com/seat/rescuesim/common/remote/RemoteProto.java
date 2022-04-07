@@ -2,7 +2,7 @@ package com.seat.rescuesim.common.remote;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
+import com.seat.rescuesim.common.core.CommonException;
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -14,7 +14,6 @@ import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 import com.seat.rescuesim.common.sensor.SensorType;
-import com.seat.rescuesim.common.util.CoreException;
 import com.seat.rescuesim.common.util.Debugger;
 
 /** A serializable prototype of a Remote. */
@@ -136,9 +135,9 @@ public class RemoteProto extends JSONAble {
         return this.remoteType;
     }
 
-    public SensorConfig getSensor(int idx) throws CoreException {
+    public SensorConfig getSensor(int idx) throws CommonException {
         if (idx < 0 || this.sensors.size() <= idx) {
-            throw new CoreException(String.format("No sensor at index %d found on proto %s", idx, this.getLabel()));
+            throw new CommonException(String.format("No sensor at index %d found on proto %s", idx, this.getLabel()));
         }
         return this.sensors.get(idx);
     }
@@ -147,13 +146,13 @@ public class RemoteProto extends JSONAble {
         return this.sensors;
     }
 
-    public SensorConfig getSensorWithID(String sensorID) throws CoreException {
+    public SensorConfig getSensorWithID(String sensorID) throws CommonException {
         for (SensorConfig conf : this.sensors) {
             if (conf.hasSensorWithID(sensorID)) {
                 return conf;
             }
         }
-        throw new CoreException(String.format("No sensor with ID %s found on remote %s", sensorID, this.getLabel()));
+        throw new CommonException(String.format("No sensor with ID %s found on remote %s", sensorID, this.getLabel()));
     }
 
     public ArrayList<SensorConfig> getSensorsWithType(SensorType sensorType) {
