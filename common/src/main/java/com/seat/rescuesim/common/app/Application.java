@@ -16,11 +16,7 @@ public interface Application {
 
     int getMissionLength();
 
-    String getScenarioID();
-
-    default long getSeed() {
-        return new Random().nextLong();
-    }
+    Collection<RemoteConfig> getRemoteConfigs();
 
     default ScenarioConfig getScenarioConfig() {
         return new ScenarioConfig(
@@ -34,10 +30,14 @@ public interface Application {
         );
     }
 
-    Collection<RemoteConfig> getRemoteConfigs();
+    String getScenarioID();
 
     default ScenarioType getScenarioType() {
         return ScenarioType.GENERIC;
+    }
+
+    default long getSeed() {
+        return new Random().nextLong();
     }
 
     double getStepSize();

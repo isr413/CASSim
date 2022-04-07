@@ -44,7 +44,13 @@ public abstract class JSONAble {
      * @throws JSONException if the encoding does not decode to this Object
      */
     protected void decode(String encoding) throws JSONException {
-        this.decode(JSONOption.String(encoding));
+        if (JSONOption.isJSON(encoding)) {
+            this.decode(JSONOption.String(encoding));
+        } else if (JSONOption.isQuotedJSON(encoding)) {
+            this.decode(JSONOption.QuotedString(encoding));
+        } else {
+            throw new JSONException(String.format("Cannot decode %s", encoding));
+        }
     }
 
     /** Returns the JSON serialization of this Object.
@@ -55,31 +61,31 @@ public abstract class JSONAble {
     }
 
     /** Returns true if the the JSONAble has the same encoding. */
-    public boolean equals(JSONAble json) {
+    public boolean equals(JSONAble json) throws JSONException {
         if (json == null) return false;
         return this.equals(json.encode());
     }
 
     /** Returns true if the the JSONArray has the same encoding. */
-    public boolean equals(JSONArray json) {
+    public boolean equals(JSONArray json) throws JSONException {
         if (json == null) return false;
         return this.equals(json.toString());
     }
 
     /** Returns true if the the JSONObject has the same encoding. */
-    public boolean equals(JSONObject json) {
+    public boolean equals(JSONObject json) throws JSONException {
         if (json == null) return false;
         return this.equals(json.toString());
     }
 
     /** Returns true if the the JSONOption has the same encoding. */
-    public boolean equals(JSONOption option) {
+    public boolean equals(JSONOption option) throws JSONException {
         if (option == null) return false;
         return this.equals(option.toString());
     }
 
     /** Returns true if the encoding would deserialize to this Object. */
-    public boolean equals(String encoding) {
+    public boolean equals(String encoding) throws JSONException {
         if (encoding == null) return false;
         return this.encode().equals(encoding);
     }
@@ -88,7 +94,7 @@ public abstract class JSONAble {
     public abstract JSONOption toJSON();
 
     /** Returns the String encoding representation of this Object. */
-    public String toString() {
+    public String toString() throws JSONException {
         return this.encode();
     }
 
