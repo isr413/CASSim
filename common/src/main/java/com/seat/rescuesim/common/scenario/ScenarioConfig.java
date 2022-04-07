@@ -137,7 +137,7 @@ public class ScenarioConfig extends JSONAble {
         }
     }
 
-    protected JSONObjectBuilder getJSONBuilder() {
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(ScenarioType.SCENARIO_TYPE, this.scenarioType.getType());
         json.put(ScenarioConfig.SCENARIO_ID, this.scenarioID);

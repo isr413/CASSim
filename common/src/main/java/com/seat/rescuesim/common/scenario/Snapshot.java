@@ -179,7 +179,7 @@ public class Snapshot extends JSONAble {
         return !this.state.isEmpty();
     }
 
-    public JSONOption toJSON() {
+    public JSONOption toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(Snapshot.HASH, this.hash);
         json.put(ScenarioType.SCENARIO_TYPE, this.scenarioType.getType());
