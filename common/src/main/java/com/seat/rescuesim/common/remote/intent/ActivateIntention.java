@@ -22,14 +22,13 @@ public class ActivateIntention extends Intention {
     }
 
     public ActivateIntention(String sensor) {
-        super(IntentionType.ACTIVATE);
-        this.activations = new HashSet<>();
+        this();
         this.addActivation(sensor);
     }
 
     public ActivateIntention(Collection<String> sensors) {
-        super(IntentionType.ACTIVATE);
-        this.activations = new HashSet<>(sensors);
+        this();
+        this.addActivations(sensors);
     }
 
     public ActivateIntention(JSONOption option) {
@@ -71,6 +70,7 @@ public class ActivateIntention extends Intention {
     }
 
     public boolean addActivations(Collection<String> sensors) {
+        if (sensors == null) return false;
         boolean flag = true;
         for (String sensor : sensors) {
             flag = this.addActivation(sensor) && flag;

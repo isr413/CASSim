@@ -23,14 +23,13 @@ public class DeactivateIntention extends Intention {
     }
 
     public DeactivateIntention(String sensor) {
-        super(IntentionType.DEACTIVATE);
-        this.deactivations = new HashSet<>();
+        this();
         this.addDeactivation(sensor);
     }
 
     public DeactivateIntention(Collection<String> sensors) {
-        super(IntentionType.DEACTIVATE);
-        this.deactivations = new HashSet<>(sensors);
+        this();
+        this.addDeactivations(sensors);
     }
 
     public DeactivateIntention(JSONOption option) {
@@ -106,6 +105,7 @@ public class DeactivateIntention extends Intention {
     }
 
     public boolean removeDeactivations(Collection<String> sensors) {
+        if (sensors == null) return false;
         boolean flag = true;
         for (String sensor : sensors) {
             flag = this.removeDeactivation(sensor) && flag;
