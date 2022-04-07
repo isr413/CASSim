@@ -9,8 +9,12 @@ public enum SensorType implements SerializableEnum {
     NONE(0),
     GENERIC(1),
     COMMS(2),
-    MONITOR(3),
-    VISION(4);
+    BLUETOOTH_COMMS(3),
+    LTE_RADIO_COMMS(4),
+    MONITOR(5),
+    HRVM_MONITOR(6),
+    VISION(7),
+    CMOS_CAMERA_VISION(8);
 
     public static final String SENSOR_TYPE = "sensor_type";
 

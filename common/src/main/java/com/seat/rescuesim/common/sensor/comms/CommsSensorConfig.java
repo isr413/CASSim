@@ -31,9 +31,4 @@ public class CommsSensorConfig extends SensorConfig {
         return (CommsSensorProto) super.getProto();
     }
 
-    @Override
-    public CommsSensorType getSpecType() {
-        return (CommsSensorType) super.getSpecType();
-    }
-
 }

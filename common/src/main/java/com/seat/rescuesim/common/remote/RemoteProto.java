@@ -162,7 +162,7 @@ public class RemoteProto extends JSONAble {
     public ArrayList<SensorConfig> getSensorsWithType(SensorType sensorType) {
         ArrayList<SensorConfig> confs = new ArrayList<>();
         for (SensorConfig conf : this.sensors) {
-            if (conf.getSpecType().equals(sensorType)) {
+            if (conf.getSensorType().equals(sensorType)) {
                 confs.add(conf);
             }
         }
@@ -200,7 +200,7 @@ public class RemoteProto extends JSONAble {
 
     public boolean hasSensorWithType(SensorType sensorType) {
         for (SensorConfig conf : this.sensors) {
-            if (conf.getSpecType().equals(sensorType)) {
+            if (conf.getSensorType().equals(sensorType)) {
                 return true;
             }
         }

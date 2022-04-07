@@ -11,7 +11,6 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable configuration of a generic Sensor. */
 public class SensorConfig extends JSONAble {
@@ -73,10 +72,6 @@ public class SensorConfig extends JSONAble {
 
     public SensorType getSensorType() {
         return this.proto.getSensorType();
-    }
-
-    public SerializableEnum getSpecType() {
-        return this.proto.getSpecType();
     }
 
     public boolean hasProto() {

@@ -31,9 +31,4 @@ public class MonitorSensorConfig extends SensorConfig {
         return (MonitorSensorProto) super.getProto();
     }
 
-    @Override
-    public MonitorSensorType getSpecType() {
-        return (MonitorSensorType) super.getSpecType();
-    }
-
 }

@@ -12,12 +12,12 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 public class SensorProto extends JSONAble {
     public static final String ACCURACY = "accuracy";
     public static final String BATTERY_USAGE = "battery_usage";
+    public static final SensorType DEFAULT_SENSOR_TYPE = SensorType.GENERIC;
     public static final String RANGE = "range";
 
     protected static final double DEFAULT_ACCURACY = 1.0;
     protected static final double DEFAULT_BATTERY_USAGE = 0.0;
     protected static final double DEFAULT_RANGE = Double.POSITIVE_INFINITY;
-    protected static final SensorType DEFAULT_SENSOR_TYPE = SensorType.GENERIC;
 
     private double accuracy;
     private double batteryUsage;

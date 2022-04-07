@@ -6,7 +6,6 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable generic Sensor state. */
 public class SensorState extends JSONAble {
@@ -14,18 +13,17 @@ public class SensorState extends JSONAble {
     public static final String SENSOR_ID = "sensor_id";
 
     protected static final boolean DEFAULT_ACTIVE = false;
-    protected static final SensorType DEFAULT_SENSOR_TYPE = SensorType.GENERIC;
 
     private boolean active;
     private String sensorID;
     private SensorType sensorType;
 
     public SensorState(String sensorID) {
-        this(SensorState.DEFAULT_SENSOR_TYPE, sensorID, SensorState.DEFAULT_ACTIVE);
+        this(SensorProto.DEFAULT_SENSOR_TYPE, sensorID, SensorState.DEFAULT_ACTIVE);
     }
 
     public SensorState(String sensorID, boolean active) {
-        this(SensorState.DEFAULT_SENSOR_TYPE, sensorID, active);
+        this(SensorProto.DEFAULT_SENSOR_TYPE, sensorID, active);
     }
 
     public SensorState(SensorType sensorType, String sensorID) {
@@ -67,10 +65,6 @@ public class SensorState extends JSONAble {
 
     public SensorType getSensorType() {
         return this.sensorType;
-    }
-
-    public SerializableEnum getSpecType() {
-        return SensorState.DEFAULT_SENSOR_TYPE;
     }
 
     public boolean isActive() {

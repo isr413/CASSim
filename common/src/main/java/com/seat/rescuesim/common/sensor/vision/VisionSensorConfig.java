@@ -31,9 +31,4 @@ public class VisionSensorConfig extends SensorConfig {
         return (VisionSensorProto) super.getProto();
     }
 
-    @Override
-    public VisionSensorType getSpecType() {
-        return (VisionSensorType) super.getSpecType();
-    }
-
 }
