@@ -23,18 +23,20 @@ public class SensorConfig extends JSONAble {
     private HashSet<String> sensorIDs;
 
     public SensorConfig(SensorProto proto, int count) {
-        this.proto = proto;
-        this.count = count;
-        this.sensorIDs = new HashSet<>();
+        this(proto, count, new HashSet<String>());
         for (int i = 0; i < count; i++) {
             this.sensorIDs.add(String.format("%s:(%d)", proto.getLabel(), i));
         }
     }
 
     public SensorConfig(SensorProto proto, Collection<String> sensorIDs) {
+        this(proto, sensorIDs.size(), new HashSet<String>(sensorIDs));
+    }
+
+    private SensorConfig(SensorProto proto, int count, HashSet<String> sensorIDs) {
         this.proto = proto;
-        this.count = sensorIDs.size();
-        this.sensorIDs = new HashSet<>(sensorIDs);
+        this.count = count;
+        this.sensorIDs = sensorIDs;
     }
 
     public SensorConfig(JSONOption option) throws JSONException {

@@ -19,20 +19,12 @@ public class VisionSensorState extends SensorState {
 
     private HashSet<String> observations;
 
-    public VisionSensorState(String sensorID) {
-        this(VisionSensorProto.DEFAULT_VISION_SENSOR_TYPE, sensorID, SensorState.DEFAULT_ACTIVE, null);
-    }
-
     public VisionSensorState(String sensorID, boolean active) {
         this(VisionSensorProto.DEFAULT_VISION_SENSOR_TYPE, sensorID, active, null);
     }
 
     public VisionSensorState(String sensorID, boolean active, Collection<String> observations) {
         this(VisionSensorProto.DEFAULT_VISION_SENSOR_TYPE, sensorID, active, observations);
-    }
-
-    public VisionSensorState(SensorType sensorType, String sensorID) {
-        this(sensorType, sensorID, SensorState.DEFAULT_ACTIVE, null);
     }
 
     public VisionSensorState(SensorType sensorType, String sensorID, boolean active) {

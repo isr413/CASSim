@@ -6,7 +6,6 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable prototype of a generic Sensor. */
 public class SensorProto extends JSONAble {
@@ -41,19 +40,19 @@ public class SensorProto extends JSONAble {
         this(SensorProto.DEFAULT_SENSOR_TYPE, range, accuracy, batteryUsage);
     }
 
-    protected SensorProto(SensorType sensorType) {
+    public SensorProto(SensorType sensorType) {
         this(sensorType, SensorProto.DEFAULT_RANGE, SensorProto.DEFAULT_ACCURACY, SensorProto.DEFAULT_BATTERY_USAGE);
     }
 
-    protected SensorProto(SensorType sensorType, double range) {
+    public SensorProto(SensorType sensorType, double range) {
         this(sensorType, range, SensorProto.DEFAULT_ACCURACY, SensorProto.DEFAULT_BATTERY_USAGE);
     }
 
-    protected SensorProto(SensorType sensorType, double range, double accuracy) {
+    public SensorProto(SensorType sensorType, double range, double accuracy) {
         this(sensorType, range, accuracy, SensorProto.DEFAULT_BATTERY_USAGE);
     }
 
-    protected SensorProto(SensorType sensorType, double range, double accuracy, double batteryUsage) {
+    public SensorProto(SensorType sensorType, double range, double accuracy, double batteryUsage) {
         this.sensorType = sensorType;
         this.range = range;
         this.accuracy = accuracy;
@@ -86,7 +85,7 @@ public class SensorProto extends JSONAble {
     }
 
     public String getLabel() {
-        return String.format("s:%s:%s", this.sensorType.getLabel(), this.getSpecType().getLabel());
+        return String.format("s:%s", this.sensorType.getLabel());
     }
 
     public double getSensorAccuracy() {
@@ -101,8 +100,28 @@ public class SensorProto extends JSONAble {
         return this.sensorType;
     }
 
-    public SerializableEnum getSpecType() {
-        return SensorProto.DEFAULT_SENSOR_TYPE;
+    public boolean hasAccuracy() {
+        return this.accuracy > 0;
+    }
+
+    public boolean hasBatteryUsage() {
+        return this.batteryUsage > 0;
+    }
+
+    public boolean hasLimitedRange() {
+        return !this.hasUnlimitedRange();
+    }
+
+    public boolean hasPerfectAccuracy() {
+        return this.accuracy >= 1;
+    }
+
+    public boolean hasRange() {
+        return this.range > 0;
+    }
+
+    public boolean hasUnlimitedRange() {
+        return this.range == Double.POSITIVE_INFINITY;
     }
 
     public JSONOption toJSON() {

@@ -19,20 +19,12 @@ public class CommsSensorState extends SensorState {
 
     private HashSet<String> connections;
 
-    public CommsSensorState(String sensorID) {
-        this(CommsSensorProto.DEFAULT_COMMS_SENSOR_TYPE, sensorID, SensorState.DEFAULT_ACTIVE, null);
-    }
-
     public CommsSensorState(String sensorID, boolean active) {
         this(CommsSensorProto.DEFAULT_COMMS_SENSOR_TYPE, sensorID, active, null);
     }
 
     public CommsSensorState(String sensorID, boolean active, Collection<String> connections) {
         this(CommsSensorProto.DEFAULT_COMMS_SENSOR_TYPE, sensorID, active, connections);
-    }
-
-    public CommsSensorState(SensorType sensorType, String sensorID) {
-        this(sensorType, sensorID, SensorState.DEFAULT_ACTIVE, null);
     }
 
     public CommsSensorState(SensorType sensorType, String sensorID, boolean active) {

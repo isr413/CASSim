@@ -12,22 +12,12 @@ public class SensorState extends JSONAble {
     public static final String ACTIVE = "active";
     public static final String SENSOR_ID = "sensor_id";
 
-    protected static final boolean DEFAULT_ACTIVE = false;
-
     private boolean active;
     private String sensorID;
     private SensorType sensorType;
 
-    public SensorState(String sensorID) {
-        this(SensorProto.DEFAULT_SENSOR_TYPE, sensorID, SensorState.DEFAULT_ACTIVE);
-    }
-
     public SensorState(String sensorID, boolean active) {
         this(SensorProto.DEFAULT_SENSOR_TYPE, sensorID, active);
-    }
-
-    public SensorState(SensorType sensorType, String sensorID) {
-        this(sensorType, sensorID, SensorState.DEFAULT_ACTIVE);
     }
 
     public SensorState(SensorType sensorType, String sensorID, boolean active) {
@@ -81,7 +71,8 @@ public class SensorState extends JSONAble {
 
     public boolean equals(SensorState state) {
         if (state == null) return false;
-        return this.sensorType.equals(state.sensorType) && this.sensorID.equals(state.sensorID);
+        return this.sensorType.equals(state.sensorType) && this.sensorID.equals(state.sensorID) &&
+            this.active == state.active;
     }
 
 }
