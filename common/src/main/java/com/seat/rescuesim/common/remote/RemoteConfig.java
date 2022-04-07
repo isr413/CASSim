@@ -19,19 +19,25 @@ public class RemoteConfig extends JSONAble {
     public static final String PROTO = "__proto__";
     public static final String REMOTE_IDS = "remote_ids";
 
-    protected static final boolean DEFAULT_DYNAMIC = false;
+    protected static final boolean DEFAULT_ACTIVE = true;
+    protected static final boolean DEFAULT_DYNAMIC = true;
 
+    private boolean active;
     private int count;
     private boolean dynamic;
     private RemoteProto proto;
     private HashSet<String> remoteIDs;
 
     public RemoteConfig(RemoteProto proto, int count) {
-        this(proto, count, RemoteConfig.DEFAULT_DYNAMIC);
+        this(proto, count, RemoteConfig.DEFAULT_DYNAMIC, RemoteConfig.DEFAULT_ACTIVE);
     }
 
     public RemoteConfig(RemoteProto proto, int count, boolean dynamic) {
-        this(proto, count, new HashSet<String>(), dynamic);
+        this(proto, count, dynamic, RemoteConfig.DEFAULT_ACTIVE);
+    }
+
+    public RemoteConfig(RemoteProto proto, int count, boolean dynamic, boolean active) {
+        this(proto, count, new HashSet<String>(), dynamic, active);
         for (int i = 0; i < count; i++) {
             this.remoteIDs.add(String.format("%s:(%d)", proto.getLabel(), i));
         }
@@ -42,14 +48,19 @@ public class RemoteConfig extends JSONAble {
     }
 
     public RemoteConfig(RemoteProto proto, Collection<String> remoteIDs, boolean dynamic) {
-        this(proto, remoteIDs.size(), new HashSet<String>(remoteIDs), dynamic);
+        this(proto, remoteIDs.size(), dynamic, RemoteConfig.DEFAULT_ACTIVE);
     }
 
-    private RemoteConfig(RemoteProto proto, int count, HashSet<String> remoteIDs, boolean dynamic) {
+    public RemoteConfig(RemoteProto proto, Collection<String> remoteIDs, boolean dynamic, boolean active) {
+        this(proto, remoteIDs.size(), new HashSet<String>(remoteIDs), dynamic, active);
+    }
+
+    private RemoteConfig(RemoteProto proto, int count, HashSet<String> remoteIDs, boolean dynamic, boolean active) {
         this.proto = proto;
         this.count = remoteIDs.size();
         this.remoteIDs = remoteIDs;
         this.dynamic = dynamic;
+        this.active = active;
     }
 
     public RemoteConfig(JSONOption option) throws JSONException {
@@ -68,6 +79,7 @@ public class RemoteConfig extends JSONAble {
             }
         }
         this.dynamic = json.getBoolean(RemoteConfig.DYNAMIC);
+        this.active = json.getBoolean(RemoteState.ACTIVE);
     }
 
     protected RemoteProto decodeProto(JSONOption option) throws JSONException {
@@ -106,8 +118,16 @@ public class RemoteConfig extends JSONAble {
         return this.remoteIDs.contains(remoteID);
     }
 
+    public boolean isActive() {
+        return this.active;
+    }
+
     public boolean isDynamic() {
         return this.dynamic;
+    }
+
+    public boolean isInactive() {
+        return !this.isActive();
     }
 
     public boolean isPassive() {
@@ -126,13 +146,14 @@ public class RemoteConfig extends JSONAble {
             json.put(RemoteConfig.REMOTE_IDS, jsonRemotes.toJSON());
         }
         json.put(RemoteConfig.DYNAMIC, this.dynamic);
+        json.put(RemoteState.ACTIVE, this.active);
         return json.toJSON();
     }
 
     public boolean equals(RemoteConfig config) {
         if (config == null) return false;
         return this.proto.equals(config.proto) && this.count == config.count &&
-            this.remoteIDs.equals(config.remoteIDs) && this.dynamic == config.dynamic;
+            this.remoteIDs.equals(config.remoteIDs) && this.dynamic == config.dynamic && this.active == config.active;
     }
 
 }
