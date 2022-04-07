@@ -6,7 +6,7 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.remote.RemoteConfig;
 
-/** A serializable configuration of a Kinetic Remote. */
+/** A serializable configuration of a Mobile Remote. */
 public class MobileRemoteConfig extends RemoteConfig {
 
     public MobileRemoteConfig(MobileRemoteProto proto, int count) {

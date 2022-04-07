@@ -11,7 +11,7 @@ import com.seat.rescuesim.common.remote.RemoteProto;
 import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 
-/** A serializable prototype of a kinetic Remote. */
+/** A serializable prototype of a Mobile Remote. */
 public class MobileRemoteProto extends RemoteProto {
     public static final RemoteType DEFAULT_MOBILE_REMOTE_TYPE = RemoteType.MOBILE;
     public static final String MAX_ACCELERATION = "max_acceleration";

@@ -11,7 +11,7 @@ import com.seat.rescuesim.common.remote.RemoteState;
 import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.sensor.SensorState;
 
-/** A serializable state of a kinetic Remote. */
+/** A serializable state of a Mobile Remote. */
 public class MobileRemoteState extends RemoteState {
     public static final String ACCELERATION = "acceleration";
     public static final String VELOCITY = "velocity";
@@ -82,12 +82,12 @@ public class MobileRemoteState extends RemoteState {
         return this.velocity.getMagnitude() > 0;
     }
 
-    public boolean isKinetic() {
+    public boolean isMobile() {
         return this.hasVelocity() || this.hasAcceleration();
     }
 
-    public boolean isStatic() {
-        return !this.isKinetic();
+    public boolean isStationary() {
+        return !this.isMobile();
     }
 
     public boolean equals(MobileRemoteState state) {
