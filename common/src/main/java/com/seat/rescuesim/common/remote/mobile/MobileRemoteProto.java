@@ -224,12 +224,12 @@ public class MobileRemoteProto extends RemoteProto {
         return this.maxVelocity != Double.POSITIVE_INFINITY;
     }
 
-    public boolean isKinetic() {
+    public boolean isMobile() {
         return this.hasVelocity() && this.hasAcceleration() && this.hasJerk();
     }
 
-    public boolean isStatic() {
-        return !this.isKinetic();
+    public boolean isStationary() {
+        return !this.isMobile();
     }
 
     public boolean equals(MobileRemoteProto proto) {

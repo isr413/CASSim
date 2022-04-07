@@ -12,13 +12,14 @@ import com.seat.rescuesim.common.sensor.SensorState;
 /** A serializable Drone state. */
 public class DroneState extends MobileRemoteState {
 
-    public DroneState(String remoteID, Vector location, double battery, Vector velocity, Vector acceleration) {
-        this(remoteID, location, battery, null, velocity, acceleration);
+    public DroneState(String remoteID, Vector location, double battery, boolean active, Vector velocity,
+            Vector acceleration) {
+        this(remoteID, location, battery, active, null, velocity, acceleration);
     }
 
-    public DroneState(String remoteID, Vector location, double battery, Collection<SensorState> sensors,
+    public DroneState(String remoteID, Vector location, double battery, boolean active, Collection<SensorState> sensors,
             Vector velocity, Vector acceleration) {
-        super(RemoteType.DRONE, remoteID, location, battery, sensors, velocity, acceleration);
+        super(RemoteType.DRONE, remoteID, location, battery, active, sensors, velocity, acceleration);
     }
 
     public DroneState(JSONOption option) throws JSONException {

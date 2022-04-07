@@ -19,25 +19,36 @@ public class RemoteConfig extends JSONAble {
     public static final String PROTO = "__proto__";
     public static final String REMOTE_IDS = "remote_ids";
 
+    protected static final boolean DEFAULT_DYNAMIC = false;
+
     private int count;
     private boolean dynamic;
     private RemoteProto proto;
     private HashSet<String> remoteIDs;
 
+    public RemoteConfig(RemoteProto proto, int count) {
+        this(proto, count, RemoteConfig.DEFAULT_DYNAMIC);
+    }
+
     public RemoteConfig(RemoteProto proto, int count, boolean dynamic) {
-        this.proto = proto;
-        this.count = count;
-        this.remoteIDs = new HashSet<>();
+        this(proto, count, new HashSet<String>(), dynamic);
         for (int i = 0; i < count; i++) {
             this.remoteIDs.add(String.format("%s:(%d)", proto.getLabel(), i));
         }
-        this.dynamic = dynamic;
+    }
+
+    public RemoteConfig(RemoteProto proto, Collection<String> remoteIDs) {
+        this(proto, remoteIDs.size(), RemoteConfig.DEFAULT_DYNAMIC);
     }
 
     public RemoteConfig(RemoteProto proto, Collection<String> remoteIDs, boolean dynamic) {
+        this(proto, remoteIDs.size(), new HashSet<String>(remoteIDs), dynamic);
+    }
+
+    private RemoteConfig(RemoteProto proto, int count, HashSet<String> remoteIDs, boolean dynamic) {
         this.proto = proto;
         this.count = remoteIDs.size();
-        this.remoteIDs = new HashSet<>(remoteIDs);
+        this.remoteIDs = remoteIDs;
         this.dynamic = dynamic;
     }
 

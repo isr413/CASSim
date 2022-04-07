@@ -55,27 +55,27 @@ public class RemoteProto extends JSONAble {
         this(RemoteProto.DEFAULT_REMOTE_TYPE, location, maxBatteryPower, sensors);
     }
 
-    protected RemoteProto(RemoteType remoteType) {
+    public RemoteProto(RemoteType remoteType) {
         this(remoteType, null, RemoteProto.DEFAULT_BATTERY_POWER, null);
     }
 
-    protected RemoteProto(RemoteType remoteType, double maxBatteryPower) {
+    public RemoteProto(RemoteType remoteType, double maxBatteryPower) {
         this(remoteType, null, maxBatteryPower, null);
     }
 
-    protected RemoteProto(RemoteType remoteType, Vector location) {
+    public RemoteProto(RemoteType remoteType, Vector location) {
         this(remoteType, location, RemoteProto.DEFAULT_BATTERY_POWER, null);
     }
 
-    protected RemoteProto(RemoteType remoteType, Vector location, double maxBatteryPower) {
+    public RemoteProto(RemoteType remoteType, Vector location, double maxBatteryPower) {
         this(remoteType, location, maxBatteryPower, null);
     }
 
-    protected RemoteProto(RemoteType remoteType, double maxBatteryPower, Collection<SensorConfig> sensors) {
+    public RemoteProto(RemoteType remoteType, double maxBatteryPower, Collection<SensorConfig> sensors) {
         this(remoteType, null, maxBatteryPower, sensors);
     }
 
-    protected RemoteProto(RemoteType remoteType, Vector location, double maxBatteryPower,
+    public RemoteProto(RemoteType remoteType, Vector location, double maxBatteryPower,
             Collection<SensorConfig> sensors) {
         this.remoteType = remoteType;
         this.location = location; // a remote with a null location should be randomly assigned a location

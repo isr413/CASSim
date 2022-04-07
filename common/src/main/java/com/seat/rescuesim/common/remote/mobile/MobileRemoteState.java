@@ -19,24 +19,26 @@ public class MobileRemoteState extends RemoteState {
     private Vector acceleration;
     private Vector velocity;
 
-    public MobileRemoteState(String remoteID, Vector location, double battery, Vector velocity, Vector acceleration) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, remoteID, location, battery, null, velocity, acceleration);
+    public MobileRemoteState(String remoteID, Vector location, double battery, boolean active, Vector velocity,
+            Vector acceleration) {
+        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, remoteID, location, battery, active,
+            null, velocity, acceleration);
     }
 
-    public MobileRemoteState(String remoteID, Vector location, double battery, Collection<SensorState> sensors,
-            Vector velocity, Vector acceleration) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, remoteID, location, battery, sensors, velocity,
+    public MobileRemoteState(String remoteID, Vector location, double battery, boolean active,
+            Collection<SensorState> sensors, Vector velocity, Vector acceleration) {
+        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, remoteID, location, battery, active, sensors, velocity,
             acceleration);
     }
 
-    public MobileRemoteState(RemoteType remoteType, String remoteID, Vector location, double battery, Vector velocity,
-            Vector acceleration) {
-        this(remoteType, remoteID, location, battery, null, velocity, acceleration);
+    public MobileRemoteState(RemoteType remoteType, String remoteID, Vector location, double battery, boolean active,
+            Vector velocity, Vector acceleration) {
+        this(remoteType, remoteID, location, battery, active, null, velocity, acceleration);
     }
 
-    public MobileRemoteState(RemoteType remoteType, String remoteID, Vector location, double battery,
+    public MobileRemoteState(RemoteType remoteType, String remoteID, Vector location, double battery, boolean active,
             Collection<SensorState> sensors, Vector velocity, Vector acceleration) {
-        super(remoteType, remoteID, location, battery, sensors);
+        super(remoteType, remoteID, location, battery, active, sensors);
         this.velocity = velocity;
         this.acceleration = acceleration;
     }

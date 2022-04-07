@@ -19,34 +19,38 @@ import com.seat.rescuesim.common.util.CoreException;
 
 /** A serializable snapshot of a Remote. */
 public class RemoteState extends JSONAble {
+    public static final String ACTIVE = "active";
     public static final String BATTERY = "battery";
     public static final String LOCATION = "location";
     public static final String REMOTE_ID = "remote_id";
 
+    private boolean active;
     private double battery;
     private Vector location;
     private String remoteID;
     private RemoteType remoteType;
     private HashMap<String, SensorState> sensors;
 
-    public RemoteState(String remoteID, Vector location, double battery) {
-        this(RemoteProto.DEFAULT_REMOTE_TYPE, remoteID, location, battery, null);
+    public RemoteState(String remoteID, Vector location, double battery, boolean active) {
+        this(RemoteProto.DEFAULT_REMOTE_TYPE, remoteID, location, battery, active, null);
     }
 
-    public RemoteState(String remoteID, Vector location, double battery, Collection<SensorState> sensors) {
-        this(RemoteProto.DEFAULT_REMOTE_TYPE, remoteID, location, battery, sensors);
+    public RemoteState(String remoteID, Vector location, double battery, boolean active,
+            Collection<SensorState> sensors) {
+        this(RemoteProto.DEFAULT_REMOTE_TYPE, remoteID, location, battery, active, sensors);
     }
 
-    protected RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery) {
-        this(remoteType, remoteID, location, battery, null);
+    public RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery, boolean active) {
+        this(remoteType, remoteID, location, battery, active, null);
     }
 
-    protected RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery,
+    public RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery, boolean active,
             Collection<SensorState> sensors) {
         this.remoteType = remoteType;
         this.remoteID = remoteID;
         this.location = location;
         this.battery = battery;
+        this.active = active;
         this.sensors = new HashMap<>();
         if (sensors != null) {
             for (SensorState sensor : sensors) {
@@ -65,6 +69,7 @@ public class RemoteState extends JSONAble {
         this.remoteID = json.getString(RemoteState.REMOTE_ID);
         this.location = new Vector(json.getJSONOption(RemoteProto.LOCATION));
         this.battery = json.getDouble(RemoteState.BATTERY);
+        this.active = json.getBoolean(RemoteState.ACTIVE);
         this.sensors = new HashMap<>();
         if (json.hasKey(RemoteProto.SENSORS)) {
             JSONArray jsonState = json.getJSONArray(RemoteProto.SENSORS);
@@ -81,6 +86,7 @@ public class RemoteState extends JSONAble {
         json.put(RemoteState.REMOTE_ID, this.remoteID);
         json.put(RemoteProto.LOCATION, this.location.toJSON());
         json.put(RemoteState.BATTERY, this.battery);
+        json.put(RemoteState.ACTIVE, this.active);
         if (this.hasSensors()) {
             JSONArrayBuilder jsonSensors = JSONBuilder.Array();
             for (SensorState sensor : this.sensors.values()) {
@@ -130,12 +136,20 @@ public class RemoteState extends JSONAble {
         return !this.sensors.isEmpty();
     }
 
+    public boolean isActive() {
+        return this.active && this.isEnabled();
+    }
+
     public boolean isDisabled() {
         return !this.isEnabled();
     }
 
     public boolean isEnabled() {
         return this.battery > 0;
+    }
+
+    public boolean isInactive() {
+        return !this.isActive();
     }
 
     public JSONOption toJSON() {
@@ -145,7 +159,7 @@ public class RemoteState extends JSONAble {
     public boolean equals(RemoteState state) {
         if (state == null) return false;
         return this.remoteType.equals(state.remoteType) && this.remoteID.equals(state.remoteID) &&
-            this.location.equals(state.location) && this.battery == state.battery &&
+            this.location.equals(state.location) && this.battery == state.battery && this.active == state.active &&
             this.sensors.equals(state.sensors);
     }
 

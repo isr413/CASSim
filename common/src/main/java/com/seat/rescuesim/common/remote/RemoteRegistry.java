@@ -39,7 +39,7 @@ public class RemoteRegistry {
 
     public static RemoteProto GenericRemote(Vector location, double maxBatteryPower,
             Collection<SensorConfig> sensors) {
-        return new RemoteProto(RemoteType.GENERIC, location, maxBatteryPower, sensors);
+        return new RemoteProto(location, maxBatteryPower, sensors);
     }
 
     public static VictimProto Victim(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors,
