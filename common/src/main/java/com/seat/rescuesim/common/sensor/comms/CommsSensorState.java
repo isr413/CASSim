@@ -54,7 +54,7 @@ public class CommsSensorState extends SensorState {
     }
 
     @Override
-    protected JSONObjectBuilder getJSONBuilder() {
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
         if (this.hasConnections()) {
             JSONArrayBuilder jsonObservations = JSONBuilder.Array();

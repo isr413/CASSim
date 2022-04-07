@@ -174,7 +174,7 @@ public class MobileRemoteProto extends RemoteProto {
     }
 
     @Override
-    protected JSONObjectBuilder getJSONBuilder() {
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
         if (this.hasMaxAcceleration()) {
             json.put(MobileRemoteProto.MAX_VELOCITY, this.maxVelocity);

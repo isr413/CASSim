@@ -54,7 +54,7 @@ public class VisionSensorState extends SensorState {
     }
 
     @Override
-    protected JSONObjectBuilder getJSONBuilder() {
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
         if (this.hasObservations()) {
             JSONArrayBuilder jsonObservations = JSONBuilder.Array();

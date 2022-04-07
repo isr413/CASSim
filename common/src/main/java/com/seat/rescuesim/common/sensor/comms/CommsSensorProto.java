@@ -75,7 +75,7 @@ public class CommsSensorProto extends SensorProto {
     }
 
     @Override
-    protected JSONObjectBuilder getJSONBuilder() {
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
         json.put(CommsSensorProto.DELAY, this.delay);
         return json;

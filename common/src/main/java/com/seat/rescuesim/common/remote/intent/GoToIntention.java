@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common.remote.intent;
 
+import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
@@ -56,12 +57,12 @@ public class GoToIntention extends Intention {
         this.maxJerk = maxJerk;
     }
 
-    public GoToIntention(JSONOption option) {
+    public GoToIntention(JSONOption option) throws JSONException {
         super(option);
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.location = (json.hasKey(GoToIntention.LOCATION)) ?
             new Vector(json.getJSONOption(GoToIntention.LOCATION)) :
@@ -78,7 +79,7 @@ public class GoToIntention extends Intention {
     }
 
     @Override
-    protected JSONObjectBuilder getJSONBuilder() {
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
         if (this.hasLocation()) {
             json.put(GoToIntention.LOCATION, this.location.toJSON());

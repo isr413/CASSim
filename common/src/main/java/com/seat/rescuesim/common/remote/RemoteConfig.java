@@ -114,7 +114,7 @@ public class RemoteConfig extends JSONAble {
         return !this.isDynamic();
     }
 
-    public JSONOption toJSON() {
+    public JSONOption toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(RemoteConfig.PROTO, this.proto.toJSON());
         json.put(RemoteConfig.COUNT, this.count);

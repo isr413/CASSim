@@ -35,7 +35,7 @@ public class MonitorSensorState extends SensorState {
     }
 
     @Override
-    protected JSONObjectBuilder getJSONBuilder() {
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
         if (this.hasMonitorID()) {
             json.put(MonitorSensorState.MONITOR_ID, this.monitorID);

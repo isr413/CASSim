@@ -70,7 +70,7 @@ public class RemoteController extends JSONAble {
         this.addIntention(IntentRegistry.Startup());
     }
 
-    public JSONOption toJSON() {
+    public JSONOption toJSON() throws JSONException {
         return this.intentions.toJSON();
     }
 

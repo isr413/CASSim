@@ -1,5 +1,6 @@
 package com.seat.rescuesim.common.remote.intent;
 
+import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
@@ -19,16 +20,23 @@ public class MoveIntention extends Intention {
         this.jerk = jerk;
     }
 
-    public MoveIntention(JSONOption option) {
+    public MoveIntention(JSONOption option) throws JSONException {
         super(option);
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.jerk = (json.hasKey(MoveIntention.JERK)) ?
             new Vector(json.getJSONOption(MoveIntention.JERK)) :
             new Vector();
+    }
+
+    @Override
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
+        JSONObjectBuilder json = super.getJSONBuilder();
+        json.put(MoveIntention.JERK, this.jerk.toJSON());
+        return json;
     }
 
     public Vector getJerk() {
@@ -42,13 +50,6 @@ public class MoveIntention extends Intention {
 
     public boolean hasJerk() {
         return this.jerk.getMagnitude() > 0;
-    }
-
-    @Override
-    public JSONOption toJSON() {
-        JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(MoveIntention.JERK, this.jerk.toJSON());
-        return json.toJSON();
     }
 
     public boolean equals(MoveIntention intent) {

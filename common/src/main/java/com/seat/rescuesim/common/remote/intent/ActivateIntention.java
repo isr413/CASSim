@@ -6,6 +6,7 @@ import java.util.HashSet;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
 import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
@@ -31,12 +32,12 @@ public class ActivateIntention extends Intention {
         this.addActivations(sensors);
     }
 
-    public ActivateIntention(JSONOption option) {
+    public ActivateIntention(JSONOption option) throws JSONException {
         super(option);
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.activations = new HashSet<>();
         if (json.hasKey(ActivateIntention.ACTIVATIONS)) {
@@ -48,7 +49,7 @@ public class ActivateIntention extends Intention {
     }
 
     @Override
-    protected JSONObjectBuilder getJSONBuilder() {
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
         if (this.hasActivations()) {
             JSONArrayBuilder jsonSensors = JSONBuilder.Array();

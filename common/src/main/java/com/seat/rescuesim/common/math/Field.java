@@ -80,7 +80,7 @@ public class Field extends JSONAble {
         return this.point;
     }
 
-    public JSONOption toJSON() {
+    public JSONOption toJSON() throws JSONException {
         JSONArrayBuilder json = JSONBuilder.Array();
         json.put(this.type.getType());
         json.put(this.point.toJSON());

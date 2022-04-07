@@ -91,7 +91,7 @@ public class DroneProto extends MobileRemoteProto {
     }
 
     @Override
-    protected JSONObjectBuilder getJSONBuilder() {
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
         json.put(DroneProto.BATTERY_USAGE, this.batteryUsage.toJSON());
         return json;

@@ -109,7 +109,7 @@ public class SensorConfig extends JSONAble {
         return !this.isActive();
     }
 
-    public JSONOption toJSON() {
+    public JSONOption toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(SensorConfig.PROTO, this.proto.toJSON());
         json.put(SensorConfig.COUNT, this.count);

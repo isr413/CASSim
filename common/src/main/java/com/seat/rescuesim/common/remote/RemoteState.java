@@ -80,7 +80,7 @@ public class RemoteState extends JSONAble {
         }
     }
 
-    protected JSONObjectBuilder getJSONBuilder() {
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(RemoteType.REMOTE_TYPE, this.remoteType.getType());
         json.put(RemoteState.REMOTE_ID, this.remoteID);
@@ -152,7 +152,7 @@ public class RemoteState extends JSONAble {
         return !this.isActive();
     }
 
-    public JSONOption toJSON() {
+    public JSONOption toJSON() throws JSONException {
         return this.getJSONBuilder().toJSON();
     }
 

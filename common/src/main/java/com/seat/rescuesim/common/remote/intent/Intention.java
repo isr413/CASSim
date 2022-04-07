@@ -2,6 +2,7 @@ package com.seat.rescuesim.common.remote.intent;
 
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONBuilder;
+import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
@@ -14,16 +15,16 @@ public abstract class Intention extends JSONAble {
         this.intentType = intentType;
     }
 
-    public Intention(JSONOption option) {
+    public Intention(JSONOption option) throws JSONException {
         super(option);
     }
 
     @Override
-    protected void decode(JSONObject json) {
+    protected void decode(JSONObject json) throws JSONException {
         this.intentType = IntentionType.decodeType(json);
     }
 
-    protected JSONObjectBuilder getJSONBuilder() {
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(IntentionType.INTENTION_TYPE, this.intentType.getType());
         return json;
@@ -37,7 +38,7 @@ public abstract class Intention extends JSONAble {
         return String.format("i:%s", this.intentType.getLabel());
     }
 
-    public JSONOption toJSON() {
+    public JSONOption toJSON() throws JSONException {
         return this.getJSONBuilder().toJSON();
     }
 

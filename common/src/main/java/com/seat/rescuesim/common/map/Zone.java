@@ -90,7 +90,7 @@ public class Zone extends JSONAble {
         return !(this.ground == null || this.ground.getFieldType().equals(FieldType.NONE));
     }
 
-    public JSONOption toJSON() {
+    public JSONOption toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(ZoneType.ZONE_TYPE, this.type.getType());
         json.put(Zone.ZONE_LOCATION, this.location.toJSON());

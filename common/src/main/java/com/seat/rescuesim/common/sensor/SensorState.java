@@ -37,7 +37,7 @@ public class SensorState extends JSONAble {
         this.active = json.getBoolean(SensorState.ACTIVE);
     }
 
-    protected JSONObjectBuilder getJSONBuilder() {
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(SensorType.SENSOR_TYPE, this.sensorType.getType());
         json.put(SensorState.SENSOR_ID, this.sensorID);
@@ -65,7 +65,7 @@ public class SensorState extends JSONAble {
         return !this.isActive();
     }
 
-    public JSONOption toJSON() {
+    public JSONOption toJSON() throws JSONException {
         return this.getJSONBuilder().toJSON();
     }
 

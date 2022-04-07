@@ -103,7 +103,7 @@ public class RemoteProto extends JSONAble {
         }
     }
 
-    protected JSONObjectBuilder getJSONBuilder() {
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(RemoteType.REMOTE_TYPE, this.remoteType.getType());
         if (this.hasLocation()) {
@@ -208,7 +208,7 @@ public class RemoteProto extends JSONAble {
         return this.maxBatteryPower > 0;
     }
 
-    public JSONOption toJSON() {
+    public JSONOption toJSON() throws JSONException {
         return this.getJSONBuilder().toJSON();
     }
 

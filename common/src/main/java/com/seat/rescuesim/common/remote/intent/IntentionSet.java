@@ -112,7 +112,7 @@ public class IntentionSet extends JSONAble {
         return true;
     }
 
-    public JSONOption toJSON() {
+    public JSONOption toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(RemoteState.REMOTE_ID, this.remoteID);
         if (this.hasIntentions()) {

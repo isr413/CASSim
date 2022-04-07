@@ -256,7 +256,7 @@ public class Vector extends JSONAble {
     }
 
     /** Returns a decodable JSON representation of this vector. */
-    public JSONOption toJSON() {
+    public JSONOption toJSON() throws JSONException {
         JSONArrayBuilder json = JSONBuilder.Array();
         json.put(this.x);
         json.put(this.y);

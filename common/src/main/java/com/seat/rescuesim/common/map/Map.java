@@ -198,7 +198,7 @@ public class Map extends JSONAble {
         return !this.isInbounds(location);
     }
 
-    public JSONOption toJSON() {
+    public JSONOption toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(MapType.MAP_TYPE, this.type.getType());
         json.put(Map.MAP_WIDTH, this.width);

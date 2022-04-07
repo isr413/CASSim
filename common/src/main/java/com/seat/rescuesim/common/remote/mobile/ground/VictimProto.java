@@ -102,7 +102,7 @@ public class VictimProto extends MobileRemoteProto {
     }
 
     @Override
-    protected JSONObjectBuilder getJSONBuilder() {
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
         json.put(VictimProto.SPEED_MEAN, this.speedMean);
         json.put(VictimProto.SPEED_STDDEV, this.speedStdDev);

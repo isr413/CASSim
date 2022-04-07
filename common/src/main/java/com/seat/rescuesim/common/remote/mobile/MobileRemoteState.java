@@ -59,7 +59,7 @@ public class MobileRemoteState extends RemoteState {
     }
 
     @Override
-    protected JSONObjectBuilder getJSONBuilder() {
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
         json.put(MobileRemoteState.VELOCITY, this.velocity.toJSON());
         json.put(MobileRemoteState.ACCELERATION, this.acceleration.toJSON());

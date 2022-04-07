@@ -71,7 +71,7 @@ public class SensorProto extends JSONAble {
         this.batteryUsage = json.getDouble(SensorProto.BATTERY_USAGE);
     }
 
-    protected JSONObjectBuilder getJSONBuilder() {
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(SensorType.SENSOR_TYPE, this.sensorType.getType());
         json.put(SensorProto.RANGE, this.range);
@@ -124,7 +124,7 @@ public class SensorProto extends JSONAble {
         return this.range == Double.POSITIVE_INFINITY;
     }
 
-    public JSONOption toJSON() {
+    public JSONOption toJSON() throws JSONException {
         return this.getJSONBuilder().toJSON();
     }
 
