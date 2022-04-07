@@ -91,7 +91,7 @@ public abstract class JSONAble {
     }
 
     /** Child classes must implement JSONOption representation. */
-    public abstract JSONOption toJSON();
+    public abstract JSONOption toJSON() throws JSONException;
 
     /** Returns the String encoding representation of this Object. */
     public String toString() throws JSONException {

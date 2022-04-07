@@ -147,7 +147,7 @@ public class JSONOption {
     /** Returns the String representation of the option being wrapped (pretty printed).
      * @throws JSONException if the JSONOption cannot be converted to a JSON string
      */
-    public String toString(int tabSize) {
+    public String toString(int tabSize) throws JSONException {
         if (this.isSomeArray()) {
             return this.arrayOption.toString(tabSize);
         }
@@ -166,8 +166,12 @@ public class JSONOption {
             this.json = json;
         }
 
-        public JSONArrayOption(String encoding) {
-            this.json = new org.json.JSONArray(encoding);
+        public JSONArrayOption(String encoding) throws JSONException {
+            try {
+                this.json = new org.json.JSONArray(encoding);
+            } catch(org.json.JSONException e) {
+                throw new JSONException(e.toString());
+            }
         }
 
         /** Throws a JSONException if the idx is out of bounds. */
@@ -287,15 +291,23 @@ public class JSONOption {
         /** Returns the String representation of the JSONArray.
          * @throws JSONException if the JSONArray cannot be converted to a JSON string
          */
-        public String toString() {
-            return this.json.toString();
+        public String toString() throws JSONException {
+            try {
+                return this.json.toString();
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
+            }
         }
 
         /** Returns the String representation of the JSONArray (pretty printed).
          * @throws JSONException if the JSONArray cannot be converted to a JSON string
          */
-        public String toString(int tabSize) {
-            return this.json.toString(tabSize);
+        public String toString(int tabSize) throws JSONException {
+            try {
+                return this.json.toString(tabSize);
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
+            }
         }
 
     }
@@ -310,7 +322,11 @@ public class JSONOption {
         }
 
         public JSONObjectOption(String encoding) {
-            this.json = new org.json.JSONObject(encoding);
+            try {
+                this.json = new org.json.JSONObject(encoding);
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
+            }
         }
 
         /** Throws a JSONException if the key is not in the JSONObject. */
@@ -435,15 +451,23 @@ public class JSONOption {
         /** Returns the String representation of the JSONObject.
          * @throws JSONException if the JSONObject cannot be converted to a JSON string
          */
-        public String toString() {
-            return this.json.toString();
+        public String toString() throws JSONException {
+            try {
+                return this.json.toString();
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
+            }
         }
 
         /** Returns the String representation of the JSONObject (pretty printed).
          * @throws JSONException if the JSONObject cannot be converted to a JSON string
          */
-        public String toString(int tabSize) {
-            return this.json.toString(tabSize);
+        public String toString(int tabSize) throws JSONException {
+            try {
+                return this.json.toString(tabSize);
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
+            }
         }
 
     }

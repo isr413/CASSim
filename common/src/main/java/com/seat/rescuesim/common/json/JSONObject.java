@@ -52,11 +52,11 @@ public interface JSONObject {
     /** Returns the String representation of the JSONObject.
      * @throws JSONException if the JSONObject cannot be converted to a JSON string
      */
-    String toString() throws JSONException;;
+    String toString() throws JSONException;
 
     /** Returns the String representation of the JSONObject (pretty printed).
      * @throws JSONException if the JSONObject cannot be converted to a JSON string
      */
-    String toString(int tabSize) throws JSONException;;
+    String toString(int tabSize) throws JSONException;
 
 }
