@@ -1,24 +1,24 @@
-package com.seat.rescuesim.common.remote.kinetic.victim;
+package com.seat.rescuesim.common.remote.mobile.ground;
 
 import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.remote.kinetic.KineticRemoteState;
-import com.seat.rescuesim.common.remote.kinetic.KineticRemoteType;
+import com.seat.rescuesim.common.remote.RemoteType;
+import com.seat.rescuesim.common.remote.mobile.MobileRemoteState;
 import com.seat.rescuesim.common.sensor.SensorState;
 
 /** A serializable Victim state. */
-public class VictimState extends KineticRemoteState {
+public class VictimState extends MobileRemoteState {
 
     public VictimState(String remoteID, Vector location, double battery, Vector velocity, Vector acceleration) {
-        super(KineticRemoteType.VICTIM, remoteID, location, battery, velocity, acceleration);
+        this(remoteID, location, battery, null, velocity, acceleration);
     }
 
     public VictimState(String remoteID, Vector location, double battery, Collection<SensorState> sensors,
             Vector velocity, Vector acceleration) {
-        super(KineticRemoteType.VICTIM, remoteID, location, battery, sensors, velocity, acceleration);
+        super(RemoteType.VICTIM, remoteID, location, battery, sensors, velocity, acceleration);
     }
 
     public VictimState(JSONOption option) throws JSONException {

@@ -12,7 +12,6 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.json.SerializableEnum;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorRegistry;
 import com.seat.rescuesim.common.sensor.SensorState;
@@ -24,8 +23,6 @@ public class RemoteState extends JSONAble {
     public static final String LOCATION = "location";
     public static final String REMOTE_ID = "remote_id";
 
-    protected static final RemoteType DEFAULT_REMOTE_TYPE = RemoteType.GENERIC;
-
     private double battery;
     private Vector location;
     private String remoteID;
@@ -33,11 +30,11 @@ public class RemoteState extends JSONAble {
     private HashMap<String, SensorState> sensors;
 
     public RemoteState(String remoteID, Vector location, double battery) {
-        this(RemoteState.DEFAULT_REMOTE_TYPE, remoteID, location, battery, null);
+        this(RemoteProto.DEFAULT_REMOTE_TYPE, remoteID, location, battery, null);
     }
 
     public RemoteState(String remoteID, Vector location, double battery, Collection<SensorState> sensors) {
-        this(RemoteState.DEFAULT_REMOTE_TYPE, remoteID, location, battery, sensors);
+        this(RemoteProto.DEFAULT_REMOTE_TYPE, remoteID, location, battery, sensors);
     }
 
     protected RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery) {
@@ -123,10 +120,6 @@ public class RemoteState extends JSONAble {
             throw new CoreException(String.format("No sensor %s found on remote %s", sensorID, this.remoteID));
         }
         return this.sensors.get(sensorID);
-    }
-
-    public SerializableEnum getSpecType() {
-        return RemoteState.DEFAULT_REMOTE_TYPE;
     }
 
     public boolean hasSensorWithID(String sensorID) {

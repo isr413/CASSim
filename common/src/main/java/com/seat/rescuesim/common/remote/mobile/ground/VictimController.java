@@ -1,10 +1,10 @@
-package com.seat.rescuesim.common.remote.kinetic.victim;
+package com.seat.rescuesim.common.remote.mobile.ground;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.remote.kinetic.KineticRemoteController;
+import com.seat.rescuesim.common.remote.mobile.MobileRemoteController;
 
-public class VictimController extends KineticRemoteController {
+public class VictimController extends MobileRemoteController {
 
     public VictimController(String remoteID) {
         super(remoteID);

@@ -24,9 +24,4 @@ public class BaseState extends RemoteState {
         super(option);
     }
 
-    @Override
-    public RemoteType getSpecType() {
-        return RemoteType.BASE;
-    }
-
 }

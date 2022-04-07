@@ -1,13 +1,13 @@
-package com.seat.rescuesim.common.remote.kinetic.victim;
+package com.seat.rescuesim.common.remote.mobile.ground;
 
 import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.remote.kinetic.KineticRemoteConfig;
+import com.seat.rescuesim.common.remote.mobile.MobileRemoteConfig;
 
 /** A serializable configuration of a Victim Remote. */
-public class VictimConfig extends KineticRemoteConfig {
+public class VictimConfig extends MobileRemoteConfig {
 
     public VictimConfig(VictimProto proto, int count, boolean dynamic) {
         super(proto, count, dynamic);

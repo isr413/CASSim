@@ -7,8 +7,10 @@ import com.seat.rescuesim.common.json.SerializableEnum;
 public enum RemoteType implements SerializableEnum {
     NONE(0),
     GENERIC(1),
-    KINETIC(2),
-    BASE(3);
+    BASE(2),
+    MOBILE(3),
+    DRONE(4),
+    VICTIM(5);
 
     public static final String REMOTE_TYPE = "remote_type";
 

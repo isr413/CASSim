@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common.remote.kinetic;
+package com.seat.rescuesim.common.remote.mobile;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
@@ -6,13 +6,13 @@ import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteController;
 import com.seat.rescuesim.common.remote.intent.IntentRegistry;
 
-public class KineticRemoteController extends RemoteController {
+public class MobileRemoteController extends RemoteController {
 
-    public KineticRemoteController(String remoteID) {
+    public MobileRemoteController(String remoteID) {
         super(remoteID);
     }
 
-    public KineticRemoteController(JSONOption option) throws JSONException {
+    public MobileRemoteController(JSONOption option) throws JSONException {
         super(option);
     }
 

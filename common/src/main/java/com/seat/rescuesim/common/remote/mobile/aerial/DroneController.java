@@ -1,10 +1,10 @@
-package com.seat.rescuesim.common.remote.kinetic.drone;
+package com.seat.rescuesim.common.remote.mobile.aerial;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.remote.kinetic.KineticRemoteController;
+import com.seat.rescuesim.common.remote.mobile.MobileRemoteController;
 
-public class DroneController extends KineticRemoteController {
+public class DroneController extends MobileRemoteController {
 
     public DroneController(String remoteID) {
         super(remoteID);

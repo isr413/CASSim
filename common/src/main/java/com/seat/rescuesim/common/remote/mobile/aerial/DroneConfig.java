@@ -1,13 +1,13 @@
-package com.seat.rescuesim.common.remote.kinetic.drone;
+package com.seat.rescuesim.common.remote.mobile.aerial;
 
 import java.util.Collection;
 
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.remote.kinetic.KineticRemoteConfig;
+import com.seat.rescuesim.common.remote.mobile.MobileRemoteConfig;
 
 /** A serializable configuration of a Drone Remote. */
-public class DroneConfig extends KineticRemoteConfig {
+public class DroneConfig extends MobileRemoteConfig {
 
     public DroneConfig(DroneProto proto, int count, boolean dynamic) {
         super(proto, count, dynamic);

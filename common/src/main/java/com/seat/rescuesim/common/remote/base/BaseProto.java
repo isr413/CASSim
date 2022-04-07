@@ -42,12 +42,7 @@ public class BaseProto extends RemoteProto {
 
     @Override
     public String getLabel() {
-        return String.format("b:%s", this.getSpecType().getLabel());
-    }
-
-    @Override
-    public RemoteType getSpecType() {
-        return RemoteType.BASE;
+        return String.format("b:%s", this.getRemoteType().getLabel());
     }
 
 }

@@ -5,7 +5,6 @@ import java.util.Collection;
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.remote.RemoteConfig;
-import com.seat.rescuesim.common.remote.RemoteType;
 
 /** A serializable configuration of a Base Remote. */
 public class BaseConfig extends RemoteConfig {
@@ -30,10 +29,6 @@ public class BaseConfig extends RemoteConfig {
     @Override
     public BaseProto getProto() {
         return (BaseProto) super.getProto();
-    }
-
-    public RemoteType getSpecType() {
-        return this.getProto().getSpecType();
     }
 
 }

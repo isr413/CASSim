@@ -11,7 +11,6 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.json.SerializableEnum;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 import com.seat.rescuesim.common.sensor.SensorType;
@@ -20,12 +19,12 @@ import com.seat.rescuesim.common.util.Debugger;
 
 /** A serializable prototype of a Remote. */
 public class RemoteProto extends JSONAble {
+    public static final RemoteType DEFAULT_REMOTE_TYPE = RemoteType.GENERIC;
     public static final String LOCATION = "location";
     public static final String MAX_BATTERY = "max_battery";
     public static final String SENSORS = "sensors";
 
     protected static final double DEFAULT_BATTERY_POWER = 1.0;
-    protected static final RemoteType DEFAULT_REMOTE_TYPE = RemoteType.GENERIC;
 
     private Vector location;
     private double maxBatteryPower;
@@ -91,11 +90,9 @@ public class RemoteProto extends JSONAble {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.remoteType = RemoteType.decodeType(json);
-        if (json.hasKey(RemoteProto.LOCATION)) {
-            this.location = new Vector(json.getJSONOption(RemoteProto.LOCATION));
-        } else {
-            this.location = null;
-        }
+        this.location = (json.hasKey(RemoteProto.LOCATION)) ?
+            this.location = new Vector(json.getJSONOption(RemoteProto.LOCATION)) :
+            null;
         this.maxBatteryPower = json.getDouble(RemoteProto.MAX_BATTERY);
         this.sensors = new ArrayList<>();
         if (json.hasKey(RemoteProto.SENSORS)) {
@@ -124,7 +121,7 @@ public class RemoteProto extends JSONAble {
     }
 
     public String getLabel() {
-        return String.format("r:%s:%s", this.remoteType.getLabel(), this.getSpecType().getLabel());
+        return String.format("r:%s", this.remoteType.getLabel());
     }
 
     public Vector getLocation() {
@@ -171,10 +168,6 @@ public class RemoteProto extends JSONAble {
                 this.getLabel()));
         }
         return confs;
-    }
-
-    public SerializableEnum getSpecType() {
-        return RemoteProto.DEFAULT_REMOTE_TYPE;
     }
 
     public boolean hasLocation() {

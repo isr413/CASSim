@@ -11,9 +11,8 @@ import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.remote.RemoteConfig;
 import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.remote.base.BaseConfig;
-import com.seat.rescuesim.common.remote.kinetic.KineticRemoteType;
-import com.seat.rescuesim.common.remote.kinetic.drone.DroneConfig;
-import com.seat.rescuesim.common.remote.kinetic.victim.VictimConfig;
+import com.seat.rescuesim.common.remote.mobile.aerial.DroneConfig;
+import com.seat.rescuesim.common.remote.mobile.ground.VictimConfig;
 
 public class SARConfig extends ScenarioConfig {
     public static final String DISASTER_SCALE = "disaster_scale";
@@ -98,7 +97,7 @@ public class SARConfig extends ScenarioConfig {
     private void countBases() {
         this.numBases = 0;
         for (RemoteConfig config : this.getRemotes()) {
-            if (config.getSpecType().equals(RemoteType.BASE)) {
+            if (config.getRemoteType().equals(RemoteType.BASE)) {
                 this.numBases += config.getCount();
             }
         }
@@ -107,7 +106,7 @@ public class SARConfig extends ScenarioConfig {
     private void countDrones() {
         this.numDrones = 0;
         for (RemoteConfig config : this.getRemotes()) {
-            if (config.getSpecType().equals(KineticRemoteType.DRONE)) {
+            if (config.getRemoteType().equals(RemoteType.DRONE)) {
                 this.numDrones += config.getCount();
             }
         }
@@ -116,7 +115,7 @@ public class SARConfig extends ScenarioConfig {
     private void countVictims() {
         this.numVictims = 0;
         for (RemoteConfig config : this.getRemotes()) {
-            if (config.getSpecType().equals(KineticRemoteType.VICTIM)) {
+            if (config.getRemoteType().equals(RemoteType.VICTIM)) {
                 this.numVictims += config.getCount();
             }
         }
@@ -131,7 +130,7 @@ public class SARConfig extends ScenarioConfig {
     public ArrayList<BaseConfig> getBases() {
         ArrayList<BaseConfig> baseConfig = new ArrayList<>();
         for (RemoteConfig config : this.getRemotes()) {
-            if (config.getSpecType().equals(RemoteType.BASE)) {
+            if (config.getRemoteType().equals(RemoteType.BASE)) {
                 baseConfig.add((BaseConfig) config);
             }
         }
@@ -145,7 +144,7 @@ public class SARConfig extends ScenarioConfig {
     public ArrayList<DroneConfig> getDrones() {
         ArrayList<DroneConfig> droneConfig = new ArrayList<>();
         for (RemoteConfig config : this.getRemotes()) {
-            if (config.getSpecType().equals(KineticRemoteType.DRONE)) {
+            if (config.getRemoteType().equals(RemoteType.DRONE)) {
                 droneConfig.add((DroneConfig) config);
             }
         }
@@ -167,7 +166,7 @@ public class SARConfig extends ScenarioConfig {
     public ArrayList<VictimConfig> getVictims() {
         ArrayList<VictimConfig> victimConfig = new ArrayList<>();
         for (RemoteConfig config : this.getRemotes()) {
-            if (config.getSpecType().equals(KineticRemoteType.VICTIM)) {
+            if (config.getRemoteType().equals(RemoteType.VICTIM)) {
                 victimConfig.add((VictimConfig) config);
             }
         }

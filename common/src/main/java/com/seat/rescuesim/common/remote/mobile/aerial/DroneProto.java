@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common.remote.kinetic.drone;
+package com.seat.rescuesim.common.remote.mobile.aerial;
 
 import java.util.Collection;
 
@@ -8,19 +8,19 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteProto;
-import com.seat.rescuesim.common.remote.kinetic.KineticRemoteProto;
-import com.seat.rescuesim.common.remote.kinetic.KineticRemoteType;
+import com.seat.rescuesim.common.remote.RemoteType;
+import com.seat.rescuesim.common.remote.mobile.MobileRemoteProto;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable prototype of a Drone Remote. */
-public class DroneProto extends KineticRemoteProto {
+public class DroneProto extends MobileRemoteProto {
     public static final String BATTERY_USAGE = "battery_usage";
 
     private Vector batteryUsage; // [static (hovering), horizontal movement, vertical movement]
 
     public DroneProto(Vector batteryUsage) {
-        this(null, RemoteProto.DEFAULT_BATTERY_POWER, null, batteryUsage, KineticRemoteProto.DEFAULT_VELOCITY,
-            KineticRemoteProto.DEFAULT_ACCELERATION, KineticRemoteProto.DEFAULT_JERK);
+        this(null, RemoteProto.DEFAULT_BATTERY_POWER, null, batteryUsage, MobileRemoteProto.DEFAULT_VELOCITY,
+            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
     }
 
     public DroneProto(Vector batteryUsage, double maxVelocity, double maxAcceleration, double maxJerk) {
@@ -28,8 +28,8 @@ public class DroneProto extends KineticRemoteProto {
     }
 
     public DroneProto(double maxBatteryPower, Vector batteryUsage) {
-        this(null, maxBatteryPower, null, batteryUsage, KineticRemoteProto.DEFAULT_VELOCITY,
-            KineticRemoteProto.DEFAULT_ACCELERATION, KineticRemoteProto.DEFAULT_JERK);
+        this(null, maxBatteryPower, null, batteryUsage, MobileRemoteProto.DEFAULT_VELOCITY,
+            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
     }
 
     public DroneProto(double maxBatteryPower, Vector batteryUsage, double maxVelocity, double maxAcceleration,
@@ -38,8 +38,8 @@ public class DroneProto extends KineticRemoteProto {
     }
 
     public DroneProto(Vector location, Vector batteryUsage) {
-        this(location, RemoteProto.DEFAULT_BATTERY_POWER, null, batteryUsage, KineticRemoteProto.DEFAULT_VELOCITY,
-            KineticRemoteProto.DEFAULT_ACCELERATION, KineticRemoteProto.DEFAULT_JERK);
+        this(location, RemoteProto.DEFAULT_BATTERY_POWER, null, batteryUsage, MobileRemoteProto.DEFAULT_VELOCITY,
+            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
     }
 
     public DroneProto(Vector location, Vector batteryUsage, double maxVelocity, double maxAcceleration,
@@ -48,8 +48,8 @@ public class DroneProto extends KineticRemoteProto {
     }
 
     public DroneProto(Vector location, double maxBatteryPower, Vector batteryUsage) {
-        this(location, maxBatteryPower, null, batteryUsage, KineticRemoteProto.DEFAULT_VELOCITY,
-            KineticRemoteProto.DEFAULT_ACCELERATION, KineticRemoteProto.DEFAULT_JERK);
+        this(location, maxBatteryPower, null, batteryUsage, MobileRemoteProto.DEFAULT_VELOCITY,
+            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
     }
 
     public DroneProto(Vector location, double maxBatteryPower, Vector batteryUsage, double maxVelocity,
@@ -58,8 +58,8 @@ public class DroneProto extends KineticRemoteProto {
     }
 
     public DroneProto(double maxBatteryPower, Collection<SensorConfig> sensors, Vector batteryUsage) {
-        this(null, maxBatteryPower, sensors, batteryUsage, KineticRemoteProto.DEFAULT_VELOCITY,
-            KineticRemoteProto.DEFAULT_ACCELERATION, KineticRemoteProto.DEFAULT_JERK);
+        this(null, maxBatteryPower, sensors, batteryUsage, MobileRemoteProto.DEFAULT_VELOCITY,
+            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
     }
 
     public DroneProto(double maxBatteryPower, Collection<SensorConfig> sensors, Vector batteryUsage, double maxVelocity,
@@ -68,13 +68,13 @@ public class DroneProto extends KineticRemoteProto {
     }
 
     public DroneProto(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors, Vector batteryUsage) {
-        this(location, maxBatteryPower, sensors, batteryUsage, KineticRemoteProto.DEFAULT_VELOCITY,
-            KineticRemoteProto.DEFAULT_ACCELERATION, KineticRemoteProto.DEFAULT_JERK);
+        this(location, maxBatteryPower, sensors, batteryUsage, MobileRemoteProto.DEFAULT_VELOCITY,
+            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
     }
 
     public DroneProto(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors, Vector batteryUsage,
             double maxVelocity, double maxAcceleration, double maxJerk) {
-        super(KineticRemoteType.DRONE, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
+        super(RemoteType.DRONE, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
         this.batteryUsage = batteryUsage;
     }
 
@@ -107,7 +107,7 @@ public class DroneProto extends KineticRemoteProto {
 
     @Override
     public String getLabel() {
-        return String.format("d:%s", this.getSpecType().getLabel());
+        return String.format("d:%s", this.getRemoteType().getLabel());
     }
 
     public double getStaticBatteryUsage() {

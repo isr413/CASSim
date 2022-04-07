@@ -48,7 +48,7 @@ public class SensorRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T decodeComms(JSONOption option, Class<? extends T> classType, SensorType sensorType)
+    private static <T> T decodeCommsSensor(JSONOption option, Class<? extends T> classType, SensorType sensorType)
             throws CoreException, JSONException {
         if (classType == SensorConfig.class || classType == CommsSensorConfig.class) {
             switch (sensorType) {
@@ -69,7 +69,7 @@ public class SensorRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T decodeMonitor(JSONOption option, Class<? extends T> classType, SensorType sensorType)
+    private static <T> T decodeMonitorSensor(JSONOption option, Class<? extends T> classType, SensorType sensorType)
             throws CoreException, JSONException {
         if (classType == SensorConfig.class || classType == MonitorSensorConfig.class) {
             switch (sensorType) {
@@ -90,7 +90,7 @@ public class SensorRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T decodeVision(JSONOption option, Class<? extends T> classType, SensorType sensorType)
+    private static <T> T decodeVisionSensor(JSONOption option, Class<? extends T> classType, SensorType sensorType)
             throws CoreException, JSONException {
         if (classType == SensorConfig.class || classType == VisionSensorConfig.class) {
             switch (sensorType) {
@@ -113,14 +113,14 @@ public class SensorRegistry {
     @SuppressWarnings("unchecked")
     public static <T> T decodeTo(JSONOption option, Class<? extends T> classType) throws CoreException, JSONException {
         SensorType sensorType = SensorRegistry.decodeType(option);
-        if (SensorRegistry.isRegisteredComms(classType, sensorType)) {
-            return SensorRegistry.decodeComms(option, classType, sensorType);
+        if (SensorRegistry.isRegisteredCommsSensor(classType, sensorType)) {
+            return SensorRegistry.decodeCommsSensor(option, classType, sensorType);
         }
-        if (SensorRegistry.isRegisteredMonitor(classType, sensorType)) {
-            return SensorRegistry.decodeMonitor(option, classType, sensorType);
+        if (SensorRegistry.isRegisteredMonitorSensor(classType, sensorType)) {
+            return SensorRegistry.decodeMonitorSensor(option, classType, sensorType);
         }
-        if (SensorRegistry.isRegisteredVision(classType, sensorType)) {
-            return SensorRegistry.decodeVision(option, classType, sensorType);
+        if (SensorRegistry.isRegisteredVisionSensor(classType, sensorType)) {
+            return SensorRegistry.decodeVisionSensor(option, classType, sensorType);
         }
         if (classType == SensorConfig.class) {
             switch (sensorType) {
@@ -147,40 +147,40 @@ public class SensorRegistry {
         return SensorType.decodeType(option.someObject());
     }
 
-    private static <T> boolean isRegisteredComms(Class<? extends T> classType) {
+    private static <T> boolean isRegisteredCommsSensor(Class<? extends T> classType) {
         return classType == CommsSensorConfig.class || classType == CommsSensorProto.class ||
             classType == CommsSensorState.class;
     }
 
-    private static <T> boolean isRegisteredComms(Class<? extends T> classType, SensorType sensorType) {
-        return SensorRegistry.isRegisteredComms(classType) || sensorType.equals(SensorType.COMMS) ||
+    private static <T> boolean isRegisteredCommsSensor(Class<? extends T> classType, SensorType sensorType) {
+        return SensorRegistry.isRegisteredCommsSensor(classType) || sensorType.equals(SensorType.COMMS) ||
             sensorType.equals(SensorType.BLUETOOTH_COMMS) || sensorType.equals(SensorType.LTE_RADIO_COMMS);
     }
 
-    private static <T> boolean isRegisteredMonitor(Class<? extends T> classType) {
+    private static <T> boolean isRegisteredMonitorSensor(Class<? extends T> classType) {
         return classType == MonitorSensorConfig.class || classType == MonitorSensorProto.class ||
             classType == MonitorSensorState.class;
     }
 
-    private static <T> boolean isRegisteredMonitor(Class<? extends T> classType, SensorType sensorType) {
-        return SensorRegistry.isRegisteredMonitor(classType) || sensorType.equals(SensorType.MONITOR) ||
+    private static <T> boolean isRegisteredMonitorSensor(Class<? extends T> classType, SensorType sensorType) {
+        return SensorRegistry.isRegisteredMonitorSensor(classType) || sensorType.equals(SensorType.MONITOR) ||
             sensorType.equals(SensorType.HRVM_MONITOR);
     }
 
-    private static <T> boolean isRegisteredVision(Class<? extends T> classType) {
+    private static <T> boolean isRegisteredVisionSensor(Class<? extends T> classType) {
         return classType == VisionSensorConfig.class || classType == VisionSensorProto.class ||
             classType == VisionSensorState.class;
     }
 
-    private static <T> boolean isRegisteredVision(Class<? extends T> classType, SensorType sensorType) {
-        return SensorRegistry.isRegisteredVision(classType) || sensorType.equals(SensorType.VISION) ||
+    private static <T> boolean isRegisteredVisionSensor(Class<? extends T> classType, SensorType sensorType) {
+        return SensorRegistry.isRegisteredVisionSensor(classType) || sensorType.equals(SensorType.VISION) ||
             sensorType.equals(SensorType.CMOS_CAMERA_VISION);
     }
 
     public static <T> boolean isRegistered(Class<? extends T> classType) {
         return classType == SensorConfig.class || classType == SensorProto.class || classType == SensorState.class ||
-            SensorRegistry.isRegisteredComms(classType) || SensorRegistry.isRegisteredMonitor(classType) ||
-            SensorRegistry.isRegisteredVision(classType);
+            SensorRegistry.isRegisteredCommsSensor(classType) || SensorRegistry.isRegisteredMonitorSensor(classType) ||
+            SensorRegistry.isRegisteredVisionSensor(classType);
     }
 
 }

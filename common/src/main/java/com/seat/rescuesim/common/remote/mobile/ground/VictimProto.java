@@ -1,4 +1,4 @@
-package com.seat.rescuesim.common.remote.kinetic.victim;
+package com.seat.rescuesim.common.remote.mobile.ground;
 
 import java.util.Collection;
 
@@ -8,12 +8,12 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteProto;
-import com.seat.rescuesim.common.remote.kinetic.KineticRemoteProto;
-import com.seat.rescuesim.common.remote.kinetic.KineticRemoteType;
+import com.seat.rescuesim.common.remote.RemoteType;
+import com.seat.rescuesim.common.remote.mobile.MobileRemoteProto;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable prototype of a Victim. */
-public class VictimProto extends KineticRemoteProto {
+public class VictimProto extends MobileRemoteProto {
     public static final String SPEED_MEAN = "speed_mean";
     public static final String SPEED_STDDEV = "speed_stddev";
 
@@ -21,8 +21,8 @@ public class VictimProto extends KineticRemoteProto {
     private double speedStdDev;
 
     public VictimProto(double speedMean, double speedStdDev) {
-        this(null, RemoteProto.DEFAULT_BATTERY_POWER, null, speedMean, speedStdDev, KineticRemoteProto.DEFAULT_VELOCITY,
-            KineticRemoteProto.DEFAULT_ACCELERATION, KineticRemoteProto.DEFAULT_JERK);
+        this(null, RemoteProto.DEFAULT_BATTERY_POWER, null, speedMean, speedStdDev, MobileRemoteProto.DEFAULT_VELOCITY,
+            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
     }
 
     public VictimProto(double speedMean, double speedStdDev, double maxVelocity, double maxAcceleration,
@@ -32,8 +32,8 @@ public class VictimProto extends KineticRemoteProto {
     }
 
     public VictimProto(double maxBatteryPower, double speedMean, double speedStdDev) {
-        this(null, maxBatteryPower, null, speedMean, speedStdDev, KineticRemoteProto.DEFAULT_VELOCITY,
-            KineticRemoteProto.DEFAULT_ACCELERATION, KineticRemoteProto.DEFAULT_JERK);
+        this(null, maxBatteryPower, null, speedMean, speedStdDev, MobileRemoteProto.DEFAULT_VELOCITY,
+            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
     }
 
     public VictimProto(double maxBatteryPower, double speedMean, double speedStdDev, double maxVelocity,
@@ -43,8 +43,8 @@ public class VictimProto extends KineticRemoteProto {
 
     public VictimProto(Vector location, double speedMean, double speedStdDev) {
         this(location, RemoteProto.DEFAULT_BATTERY_POWER, null, speedMean, speedStdDev,
-            KineticRemoteProto.DEFAULT_VELOCITY, KineticRemoteProto.DEFAULT_ACCELERATION,
-            KineticRemoteProto.DEFAULT_JERK);
+            MobileRemoteProto.DEFAULT_VELOCITY, MobileRemoteProto.DEFAULT_ACCELERATION,
+            MobileRemoteProto.DEFAULT_JERK);
     }
 
     public VictimProto(Vector location, double speedMean, double speedStdDev, double maxVelocity,
@@ -54,8 +54,8 @@ public class VictimProto extends KineticRemoteProto {
     }
 
     public VictimProto(Vector location, double maxBatteryPower, double speedMean, double speedStdDev) {
-        this(location, maxBatteryPower, null, speedMean, speedStdDev, KineticRemoteProto.DEFAULT_VELOCITY,
-            KineticRemoteProto.DEFAULT_ACCELERATION, KineticRemoteProto.DEFAULT_JERK);
+        this(location, maxBatteryPower, null, speedMean, speedStdDev, MobileRemoteProto.DEFAULT_VELOCITY,
+            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
     }
 
     public VictimProto(Vector location, double maxBatteryPower, double speedMean, double speedStdDev,
@@ -64,8 +64,8 @@ public class VictimProto extends KineticRemoteProto {
     }
 
     public VictimProto(double maxBatteryPower, Collection<SensorConfig> sensors, double speedMean, double speedStdDev) {
-        this(null, maxBatteryPower, sensors, speedMean, speedStdDev, KineticRemoteProto.DEFAULT_VELOCITY,
-            KineticRemoteProto.DEFAULT_ACCELERATION, KineticRemoteProto.DEFAULT_JERK);
+        this(null, maxBatteryPower, sensors, speedMean, speedStdDev, MobileRemoteProto.DEFAULT_VELOCITY,
+            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
     }
 
     public VictimProto(double maxBatteryPower, Collection<SensorConfig> sensors, double speedMean, double speedStdDev,
@@ -75,13 +75,13 @@ public class VictimProto extends KineticRemoteProto {
 
     public VictimProto(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors, double speedMean,
             double speedStdDev) {
-        this(location, maxBatteryPower, sensors, speedMean, speedStdDev, KineticRemoteProto.DEFAULT_VELOCITY,
-            KineticRemoteProto.DEFAULT_ACCELERATION, KineticRemoteProto.DEFAULT_JERK);
+        this(location, maxBatteryPower, sensors, speedMean, speedStdDev, MobileRemoteProto.DEFAULT_VELOCITY,
+            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
     }
 
     public VictimProto(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors, double speedMean,
             double speedStdDev, double maxVelocity, double maxAcceleration, double maxJerk) {
-        super(KineticRemoteType.VICTIM, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
+        super(RemoteType.VICTIM, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
         this.speedMean = speedMean;
         this.speedStdDev = speedStdDev;
     }
@@ -111,7 +111,7 @@ public class VictimProto extends KineticRemoteProto {
 
     @Override
     public String getLabel() {
-        return String.format("v:%s", this.getSpecType().getLabel());
+        return String.format("v:%s", this.getRemoteType().getLabel());
     }
 
     public double getSpeedMean() {

@@ -11,7 +11,6 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
-import com.seat.rescuesim.common.json.SerializableEnum;
 
 /** A serializable Remote configuration. */
 public class RemoteConfig extends JSONAble {
@@ -82,10 +81,6 @@ public class RemoteConfig extends JSONAble {
 
     public RemoteType getRemoteType() {
         return this.proto.getRemoteType();
-    }
-
-    public SerializableEnum getSpecType() {
-        return this.proto.getSpecType();
     }
 
     public boolean hasProto() {
