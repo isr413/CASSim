@@ -3,7 +3,7 @@ package com.seat.rescuesim.common.remote;
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.seat.rescuesim.common.core.TeamCode;
+import com.seat.rescuesim.common.core.TeamColor;
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -20,43 +20,43 @@ public class RemoteConfig extends JSONAble {
     public static final String PROTO = "__proto__";
     public static final String REMOTE_IDS = "remote_ids";
 
-    protected static final TeamCode DEFAULT_TEAM_CODE = TeamCode.NONE;
+    protected static final TeamColor DEFAULT_TEAM_COLOR = TeamColor.NONE;
 
     private boolean active;
     private int count;
     private boolean dynamic;
     private RemoteProto proto;
     private HashSet<String> remoteIDs;
-    private TeamCode team;
+    private TeamColor team;
 
     public RemoteConfig(RemoteProto proto, int count, boolean dynamic, boolean active) {
-        this(proto, count, dynamic, active, RemoteConfig.DEFAULT_TEAM_CODE);
+        this(proto, RemoteConfig.DEFAULT_TEAM_COLOR, count, dynamic, active);
     }
 
-    public RemoteConfig(RemoteProto proto, int count, boolean dynamic, boolean active, TeamCode team) {
-        this(proto, count, new HashSet<String>(), dynamic, active, team);
+    public RemoteConfig(RemoteProto proto, TeamColor team, int count, boolean dynamic, boolean active) {
+        this(proto, team, count, new HashSet<String>(), dynamic, active);
         for (int i = 0; i < count; i++) {
             this.remoteIDs.add(String.format("%s:(%d:%d)", proto.getLabel(), team.getType(), i));
         }
     }
 
     public RemoteConfig(RemoteProto proto, Collection<String> remoteIDs, boolean dynamic, boolean active) {
-        this(proto, remoteIDs.size(), new HashSet<String>(remoteIDs), dynamic, active, RemoteConfig.DEFAULT_TEAM_CODE);
+        this(proto, RemoteConfig.DEFAULT_TEAM_COLOR, remoteIDs.size(), new HashSet<String>(remoteIDs), dynamic, active);
     }
 
-    public RemoteConfig(RemoteProto proto, Collection<String> remoteIDs, boolean dynamic, boolean active,
-            TeamCode team) {
-        this(proto, remoteIDs.size(), new HashSet<String>(remoteIDs), dynamic, active, team);
+    public RemoteConfig(RemoteProto proto, TeamColor team, Collection<String> remoteIDs, boolean dynamic,
+            boolean active) {
+        this(proto, team, remoteIDs.size(), new HashSet<String>(remoteIDs), dynamic, active);
     }
 
-    private RemoteConfig(RemoteProto proto, int count, HashSet<String> remoteIDs, boolean dynamic, boolean active,
-            TeamCode team) {
+    private RemoteConfig(RemoteProto proto, TeamColor team, int count, HashSet<String> remoteIDs, boolean dynamic,
+            boolean active) {
         this.proto = proto;
+        this.team = team;
         this.count = count;
         this.remoteIDs = remoteIDs;
         this.dynamic = dynamic;
         this.active = active;
-        this.team = team;
     }
 
     public RemoteConfig(JSONOption option) throws JSONException {
@@ -66,6 +66,9 @@ public class RemoteConfig extends JSONAble {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.proto = RemoteRegistry.decodeTo(json.getJSONOption(RemoteConfig.PROTO), RemoteProto.class);
+        this.team = (json.hasKey(TeamColor.TEAM)) ?
+            TeamColor.decodeType(json) :
+            RemoteConfig.DEFAULT_TEAM_COLOR;
         this.count = json.getInt(RemoteConfig.COUNT);
         this.remoteIDs = new HashSet<>();
         if (json.hasKey(RemoteConfig.REMOTE_IDS)) {
@@ -76,9 +79,6 @@ public class RemoteConfig extends JSONAble {
         }
         this.dynamic = json.getBoolean(RemoteConfig.DYNAMIC);
         this.active = json.getBoolean(RemoteState.ACTIVE);
-        this.team = (json.hasKey(TeamCode.TEAM)) ?
-            TeamCode.decodeType(json) :
-            RemoteConfig.DEFAULT_TEAM_CODE;
     }
 
     public int getCount() {
@@ -101,7 +101,7 @@ public class RemoteConfig extends JSONAble {
         return this.proto.getRemoteType();
     }
 
-    public TeamCode getTeam() {
+    public TeamColor getTeam() {
         return this.team;
     }
 
@@ -118,7 +118,7 @@ public class RemoteConfig extends JSONAble {
     }
 
     public boolean hasTeam() {
-        return !(this.team == null || this.team.equals(TeamCode.NONE));
+        return !(this.team == null || this.team.equals(TeamColor.NONE));
     }
 
     public boolean isActive() {
@@ -140,6 +140,9 @@ public class RemoteConfig extends JSONAble {
     public JSONOption toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(RemoteConfig.PROTO, this.proto.toJSON());
+        if (this.hasTeam()) {
+            json.put(TeamColor.TEAM, this.team.getType());
+        }
         json.put(RemoteConfig.COUNT, this.count);
         if (this.hasRemoteIDs()) {
             JSONArrayBuilder jsonRemotes = JSONBuilder.Array();
@@ -150,17 +153,14 @@ public class RemoteConfig extends JSONAble {
         }
         json.put(RemoteConfig.DYNAMIC, this.dynamic);
         json.put(RemoteState.ACTIVE, this.active);
-        if (this.hasTeam()) {
-            json.put(TeamCode.TEAM, this.team.getType());
-        }
         return json.toJSON();
     }
 
     public boolean equals(RemoteConfig config) {
         if (config == null) return false;
-        return this.proto.equals(config.proto) && this.count == config.count &&
-            this.remoteIDs.equals(config.remoteIDs) && this.dynamic == config.dynamic &&
-            this.active == config.active && this.team.equals(config.team);
+        return this.proto.equals(config.proto) && this.team.equals(config.team) &&
+            this.count == config.count && this.remoteIDs.equals(config.remoteIDs) && this.dynamic == config.dynamic &&
+            this.active == config.active;
     }
 
 }

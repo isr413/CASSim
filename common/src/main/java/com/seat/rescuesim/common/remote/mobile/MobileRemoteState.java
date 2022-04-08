@@ -2,6 +2,7 @@ package com.seat.rescuesim.common.remote.mobile;
 
 import java.util.Collection;
 
+import com.seat.rescuesim.common.core.TeamColor;
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
@@ -19,26 +20,26 @@ public class MobileRemoteState extends RemoteState {
     private Vector acceleration;
     private Vector velocity;
 
-    public MobileRemoteState(String remoteID, Vector location, double battery, boolean active, Vector velocity,
-            Vector acceleration) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, remoteID, location, battery, active,
+    public MobileRemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active,
+            Vector velocity, Vector acceleration) {
+        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, remoteID, team, location, battery, active,
             null, velocity, acceleration);
     }
 
-    public MobileRemoteState(String remoteID, Vector location, double battery, boolean active,
+    public MobileRemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active,
             Collection<SensorState> sensors, Vector velocity, Vector acceleration) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, remoteID, location, battery, active, sensors, velocity,
+        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, remoteID, team, location, battery, active, sensors, velocity,
             acceleration);
     }
 
-    public MobileRemoteState(RemoteType remoteType, String remoteID, Vector location, double battery, boolean active,
-            Vector velocity, Vector acceleration) {
-        this(remoteType, remoteID, location, battery, active, null, velocity, acceleration);
+    public MobileRemoteState(RemoteType remoteType, String remoteID, TeamColor team, Vector location, double battery,
+            boolean active, Vector velocity, Vector acceleration) {
+        this(remoteType, remoteID, team, location, battery, active, null, velocity, acceleration);
     }
 
-    public MobileRemoteState(RemoteType remoteType, String remoteID, Vector location, double battery, boolean active,
-            Collection<SensorState> sensors, Vector velocity, Vector acceleration) {
-        super(remoteType, remoteID, location, battery, active, sensors);
+    public MobileRemoteState(RemoteType remoteType, String remoteID, TeamColor team, Vector location, double battery,
+            boolean active, Collection<SensorState> sensors, Vector velocity, Vector acceleration) {
+        super(remoteType, remoteID, team, location, battery, active, sensors);
         this.velocity = velocity;
         this.acceleration = acceleration;
     }

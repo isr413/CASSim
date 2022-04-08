@@ -2,7 +2,7 @@ package com.seat.rescuesim.common.remote.mobile.aerial;
 
 import java.util.Collection;
 
-import com.seat.rescuesim.common.core.TeamCode;
+import com.seat.rescuesim.common.core.TeamColor;
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.remote.mobile.MobileRemoteConfig;
@@ -14,17 +14,17 @@ public class DroneRemoteConfig extends MobileRemoteConfig {
         super(proto, count, dynamic, active);
     }
 
-    public DroneRemoteConfig(DroneRemoteProto proto, int count, boolean dynamic, boolean active, TeamCode team) {
-        super(proto, count, dynamic, active, team);
+    public DroneRemoteConfig(DroneRemoteProto proto, TeamColor team, int count, boolean dynamic, boolean active) {
+        super(proto, team, count, dynamic, active);
     }
 
     public DroneRemoteConfig(DroneRemoteProto proto, Collection<String> remoteIDs, boolean dynamic, boolean active) {
         super(proto, remoteIDs, dynamic, active);
     }
 
-    public DroneRemoteConfig(DroneRemoteProto proto, Collection<String> remoteIDs, boolean dynamic, boolean active,
-            TeamCode team) {
-        super(proto, remoteIDs, dynamic, active, team);
+    public DroneRemoteConfig(DroneRemoteProto proto, TeamColor team, Collection<String> remoteIDs, boolean dynamic,
+            boolean active) {
+        super(proto, team, remoteIDs, dynamic, active);
     }
 
     public DroneRemoteConfig(JSONOption option) throws JSONException {

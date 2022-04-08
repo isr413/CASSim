@@ -3,7 +3,9 @@ package com.seat.rescuesim.common.remote;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+
 import com.seat.rescuesim.common.core.CommonException;
+import com.seat.rescuesim.common.core.TeamColor;
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -29,24 +31,27 @@ public class RemoteState extends JSONAble {
     private String remoteID;
     private RemoteType remoteType;
     private HashMap<String, SensorState> sensors;
+    private TeamColor team;
 
-    public RemoteState(String remoteID, Vector location, double battery, boolean active) {
-        this(RemoteProto.DEFAULT_REMOTE_TYPE, remoteID, location, battery, active, null);
+    public RemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active) {
+        this(RemoteProto.DEFAULT_REMOTE_TYPE, remoteID, team, location, battery, active, null);
     }
 
-    public RemoteState(String remoteID, Vector location, double battery, boolean active,
+    public RemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active,
             Collection<SensorState> sensors) {
-        this(RemoteProto.DEFAULT_REMOTE_TYPE, remoteID, location, battery, active, sensors);
+        this(RemoteProto.DEFAULT_REMOTE_TYPE, remoteID, team, location, battery, active, sensors);
     }
 
-    public RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery, boolean active) {
-        this(remoteType, remoteID, location, battery, active, null);
+    public RemoteState(RemoteType remoteType, String remoteID, TeamColor team, Vector location, double battery,
+            boolean active) {
+        this(remoteType, remoteID, team, location, battery, active, null);
     }
 
-    public RemoteState(RemoteType remoteType, String remoteID, Vector location, double battery, boolean active,
-            Collection<SensorState> sensors) {
+    public RemoteState(RemoteType remoteType, String remoteID, TeamColor team, Vector location, double battery,
+            boolean active, Collection<SensorState> sensors) {
         this.remoteType = remoteType;
         this.remoteID = remoteID;
+        this.team = team;
         this.location = location;
         this.battery = battery;
         this.active = active;
@@ -66,6 +71,9 @@ public class RemoteState extends JSONAble {
     protected void decode(JSONObject json) throws JSONException {
         this.remoteType = RemoteType.decodeType(json);
         this.remoteID = json.getString(RemoteState.REMOTE_ID);
+        this.team = (json.hasKey(TeamColor.TEAM)) ?
+            TeamColor.decodeType(json) :
+            TeamColor.NONE;
         this.location = new Vector(json.getJSONOption(RemoteProto.LOCATION));
         this.battery = json.getDouble(RemoteState.BATTERY);
         this.active = json.getBoolean(RemoteState.ACTIVE);
@@ -83,6 +91,9 @@ public class RemoteState extends JSONAble {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(RemoteType.REMOTE_TYPE, this.remoteType.getType());
         json.put(RemoteState.REMOTE_ID, this.remoteID);
+        if (this.hasTeam()) {
+            json.put(TeamColor.TEAM, this.team.getType());
+        }
         json.put(RemoteProto.LOCATION, this.location.toJSON());
         json.put(RemoteState.BATTERY, this.battery);
         json.put(RemoteState.ACTIVE, this.active);
@@ -127,12 +138,20 @@ public class RemoteState extends JSONAble {
         return this.sensors.get(sensorID);
     }
 
+    public TeamColor getTeam() {
+        return this.team;
+    }
+
     public boolean hasSensorWithID(String sensorID) {
         return this.sensors.containsKey(sensorID);
     }
 
     public boolean hasSensors() {
         return !this.sensors.isEmpty();
+    }
+
+    public boolean hasTeam() {
+        return !(this.team == null || this.team.equals(TeamColor.NONE));
     }
 
     public boolean isActive() {
@@ -158,8 +177,8 @@ public class RemoteState extends JSONAble {
     public boolean equals(RemoteState state) {
         if (state == null) return false;
         return this.remoteType.equals(state.remoteType) && this.remoteID.equals(state.remoteID) &&
-            this.location.equals(state.location) && this.battery == state.battery && this.active == state.active &&
-            this.sensors.equals(state.sensors);
+            this.team.equals(state.team) && this.location.equals(state.location) && this.battery == state.battery &&
+            this.active == state.active && this.sensors.equals(state.sensors);
     }
 
 }

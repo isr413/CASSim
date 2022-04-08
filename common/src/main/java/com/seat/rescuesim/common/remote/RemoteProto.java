@@ -2,6 +2,7 @@ package com.seat.rescuesim.common.remote;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
 import com.seat.rescuesim.common.core.CommonException;
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
