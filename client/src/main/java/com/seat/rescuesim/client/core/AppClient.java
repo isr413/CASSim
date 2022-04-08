@@ -58,6 +58,8 @@ public class AppClient {
         this.socket.sendScenarioConfig(this.app.getScenarioConfig());
         Debugger.logger.state(String.format("Scenario <%s> sent", app.getScenarioID()));
 
+        Debugger.logger.info(this.app.getScenarioConfig().toString());
+
         GUIFrame frame = null;
         if (visualDisplay) {
             Debugger.logger.info("Starting visual display ...");
