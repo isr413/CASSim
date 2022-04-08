@@ -16,41 +16,12 @@ public class CommsSensorProto extends SensorProto {
 
     private double delay;
 
-    public CommsSensorProto() {
-        this(CommsSensorProto.DEFAULT_COMMS_SENSOR_TYPE, SensorProto.DEFAULT_RANGE, SensorProto.DEFAULT_ACCURACY,
-            SensorProto.DEFAULT_BATTERY_USAGE, CommsSensorProto.DEFAULT_DELAY);
-    }
-
-    public CommsSensorProto(double range) {
-        this(CommsSensorProto.DEFAULT_COMMS_SENSOR_TYPE, range, SensorProto.DEFAULT_ACCURACY,
-            SensorProto.DEFAULT_BATTERY_USAGE, CommsSensorProto.DEFAULT_DELAY);
-    }
-
-    public CommsSensorProto(double range, double accuracy) {
-        this(CommsSensorProto.DEFAULT_COMMS_SENSOR_TYPE, range, accuracy, SensorProto.DEFAULT_BATTERY_USAGE,
-            CommsSensorProto.DEFAULT_DELAY);
-    }
-
     public CommsSensorProto(double range, double accuracy, double batteryUsage) {
         this(CommsSensorProto.DEFAULT_COMMS_SENSOR_TYPE, range, accuracy, batteryUsage, CommsSensorProto.DEFAULT_DELAY);
     }
 
     public CommsSensorProto(double range, double accuracy, double batteryUsage, double delay) {
         this(CommsSensorProto.DEFAULT_COMMS_SENSOR_TYPE, range, accuracy, batteryUsage, delay);
-    }
-
-    public CommsSensorProto(SensorType sensorType) {
-        this(sensorType, SensorProto.DEFAULT_RANGE, SensorProto.DEFAULT_ACCURACY, SensorProto.DEFAULT_BATTERY_USAGE,
-            CommsSensorProto.DEFAULT_DELAY);
-    }
-
-    public CommsSensorProto(SensorType sensorType, double range) {
-        this(sensorType, range, SensorProto.DEFAULT_ACCURACY, SensorProto.DEFAULT_BATTERY_USAGE,
-            CommsSensorProto.DEFAULT_DELAY);
-    }
-
-    public CommsSensorProto(SensorType sensorType, double range, double accuracy) {
-        this(sensorType, range, accuracy, SensorProto.DEFAULT_BATTERY_USAGE, CommsSensorProto.DEFAULT_DELAY);
     }
 
     public CommsSensorProto(SensorType sensorType, double range, double accuracy, double batteryUsage) {

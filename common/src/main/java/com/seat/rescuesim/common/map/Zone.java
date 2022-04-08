@@ -29,6 +29,10 @@ public class Zone extends JSONAble {
         this(Zone.DEFAULT_ZONE_TYPE, location, size, null, null);
     }
 
+    public Zone(Vector location, int size, Field ground, Field aerial) {
+        this(Zone.DEFAULT_ZONE_TYPE, location, size, ground, aerial);
+    }
+
     public Zone(ZoneType type, Vector location, int size) {
         this(type, location, size, null, null);
     }

@@ -26,51 +26,14 @@ public class MobileRemoteProto extends RemoteProto {
     private double maxJerk;
     private double maxVelocity;
 
-    public MobileRemoteProto() {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, null, RemoteProto.DEFAULT_BATTERY_POWER, null,
-            MobileRemoteProto.DEFAULT_VELOCITY, MobileRemoteProto.DEFAULT_ACCELERATION,
-            MobileRemoteProto.DEFAULT_JERK);
-    }
-
-    public MobileRemoteProto(double maxVelocity, double maxAcceleration, double maxJerk) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, null, RemoteProto.DEFAULT_BATTERY_POWER, null, maxVelocity,
-            maxAcceleration, maxJerk);
-    }
-
-    public MobileRemoteProto(double maxBatteryPower) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, null, maxBatteryPower, null,
-            MobileRemoteProto.DEFAULT_VELOCITY, MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
-    }
-
     public MobileRemoteProto(double maxBatteryPower, double maxVelocity, double maxAcceleration, double maxJerk) {
         this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, null, maxBatteryPower, null, maxVelocity, maxAcceleration,
             maxJerk);
     }
 
-    public MobileRemoteProto(Vector location) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, location, RemoteProto.DEFAULT_BATTERY_POWER, null,
-            MobileRemoteProto.DEFAULT_VELOCITY, MobileRemoteProto.DEFAULT_ACCELERATION,
-            MobileRemoteProto.DEFAULT_JERK);
-    }
-
-    public MobileRemoteProto(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, location, RemoteProto.DEFAULT_BATTERY_POWER, null,
-            maxVelocity, maxAcceleration, maxJerk);
-    }
-
-    public MobileRemoteProto(Vector location, double maxBatteryPower) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, location, maxBatteryPower, null,
-            MobileRemoteProto.DEFAULT_VELOCITY, MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
-    }
-
     public MobileRemoteProto(Vector location, double maxBatteryPower, double maxVelocity, double maxAcceleration,
             double maxJerk) {
         this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, location, maxBatteryPower, null,
-            MobileRemoteProto.DEFAULT_VELOCITY, MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
-    }
-
-    public MobileRemoteProto(double maxBatteryPower, Collection<SensorConfig> sensors) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, null, maxBatteryPower, sensors,
             MobileRemoteProto.DEFAULT_VELOCITY, MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
     }
 
@@ -80,30 +43,10 @@ public class MobileRemoteProto extends RemoteProto {
             maxJerk);
     }
 
-    public MobileRemoteProto(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, location, maxBatteryPower, sensors,
-            MobileRemoteProto.DEFAULT_VELOCITY, MobileRemoteProto.DEFAULT_ACCELERATION,
-            MobileRemoteProto.DEFAULT_JERK);
-    }
-
     public MobileRemoteProto(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors,
             double maxVelocity, double maxAcceleration, double maxJerk) {
         this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, location, maxBatteryPower, sensors, maxVelocity,
             maxAcceleration, maxJerk);
-    }
-
-    public MobileRemoteProto(RemoteType remoteType) {
-        this(remoteType, null, RemoteProto.DEFAULT_BATTERY_POWER, null, MobileRemoteProto.DEFAULT_VELOCITY,
-            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
-    }
-
-    public MobileRemoteProto(RemoteType remoteType, double maxVelocity, double maxAcceleration, double maxJerk) {
-        this(remoteType, null, RemoteProto.DEFAULT_BATTERY_POWER, null, maxVelocity, maxAcceleration, maxJerk);
-    }
-
-    public MobileRemoteProto(RemoteType remoteType, double maxBatteryPower) {
-        this(remoteType, null, maxBatteryPower, null, MobileRemoteProto.DEFAULT_VELOCITY,
-            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
     }
 
     public MobileRemoteProto(RemoteType remoteType, double maxBatteryPower, double maxVelocity, double maxAcceleration,
@@ -111,40 +54,14 @@ public class MobileRemoteProto extends RemoteProto {
         this(remoteType, null, maxBatteryPower, null, maxVelocity, maxAcceleration, maxJerk);
     }
 
-    public MobileRemoteProto(RemoteType remoteType, Vector location) {
-        this(remoteType, location, RemoteProto.DEFAULT_BATTERY_POWER, null, MobileRemoteProto.DEFAULT_VELOCITY,
-            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
-    }
-
-    public MobileRemoteProto(RemoteType remoteType, Vector location, double maxVelocity, double maxAcceleration,
-            double maxJerk) {
-        this(remoteType, location, RemoteProto.DEFAULT_BATTERY_POWER, null, maxVelocity, maxAcceleration, maxJerk);
-    }
-
-    public MobileRemoteProto(RemoteType remoteType, Vector location, double maxBatteryPower) {
-        this(remoteType, location, maxBatteryPower, null, MobileRemoteProto.DEFAULT_VELOCITY,
-            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
-    }
-
     public MobileRemoteProto(RemoteType remoteType, Vector location, double maxBatteryPower, double maxVelocity,
             double maxAcceleration, double maxJerk) {
         this(remoteType, location, maxBatteryPower, null, maxVelocity, maxAcceleration, maxJerk);
     }
 
-    public MobileRemoteProto(RemoteType remoteType, double maxBatteryPower, Collection<SensorConfig> sensors) {
-        this(remoteType, null, maxBatteryPower, sensors, MobileRemoteProto.DEFAULT_VELOCITY,
-            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
-    }
-
     public MobileRemoteProto(RemoteType remoteType, double maxBatteryPower, Collection<SensorConfig> sensors,
             double maxVelocity, double maxAcceleration, double maxJerk) {
         this(remoteType, null, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
-    }
-
-    public MobileRemoteProto(RemoteType remoteType, Vector location, double maxBatteryPower,
-            Collection<SensorConfig> sensors) {
-        this(remoteType, location, maxBatteryPower, sensors, MobileRemoteProto.DEFAULT_VELOCITY,
-            MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
     }
 
     public MobileRemoteProto(RemoteType remoteType, Vector location, double maxBatteryPower,

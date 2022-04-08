@@ -12,16 +12,8 @@ import com.seat.rescuesim.common.sensor.SensorConfig;
 /** A serializable prototype of a Base Remote. */
 public class BaseRemoteProto extends RemoteProto {
 
-    public BaseRemoteProto() {
-        this(null, RemoteProto.DEFAULT_BATTERY_POWER, null);
-    }
-
     public BaseRemoteProto(double maxBatteryPower) {
         this(null, maxBatteryPower, null);
-    }
-
-    public BaseRemoteProto(Vector location) {
-        this(location, RemoteProto.DEFAULT_BATTERY_POWER, null);
     }
 
     public BaseRemoteProto(Vector location, double maxBatteryPower) {

@@ -23,33 +23,8 @@ public class SensorProto extends JSONAble {
     private double range;
     private SensorType sensorType;
 
-    public SensorProto() {
-        this(SensorProto.DEFAULT_SENSOR_TYPE, SensorProto.DEFAULT_RANGE, SensorProto.DEFAULT_ACCURACY,
-            SensorProto.DEFAULT_BATTERY_USAGE);
-    }
-
-    public SensorProto(double range) {
-        this(SensorProto.DEFAULT_SENSOR_TYPE, range, SensorProto.DEFAULT_ACCURACY, SensorProto.DEFAULT_BATTERY_USAGE);
-    }
-
-    public SensorProto(double range, double accuracy) {
-        this(SensorProto.DEFAULT_SENSOR_TYPE, range, accuracy, SensorProto.DEFAULT_BATTERY_USAGE);
-    }
-
     public SensorProto(double range, double accuracy, double batteryUsage) {
         this(SensorProto.DEFAULT_SENSOR_TYPE, range, accuracy, batteryUsage);
-    }
-
-    public SensorProto(SensorType sensorType) {
-        this(sensorType, SensorProto.DEFAULT_RANGE, SensorProto.DEFAULT_ACCURACY, SensorProto.DEFAULT_BATTERY_USAGE);
-    }
-
-    public SensorProto(SensorType sensorType, double range) {
-        this(sensorType, range, SensorProto.DEFAULT_ACCURACY, SensorProto.DEFAULT_BATTERY_USAGE);
-    }
-
-    public SensorProto(SensorType sensorType, double range, double accuracy) {
-        this(sensorType, range, accuracy, SensorProto.DEFAULT_BATTERY_USAGE);
     }
 
     public SensorProto(SensorType sensorType, double range, double accuracy, double batteryUsage) {

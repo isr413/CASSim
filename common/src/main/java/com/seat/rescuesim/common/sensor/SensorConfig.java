@@ -18,26 +18,16 @@ public class SensorConfig extends JSONAble {
     public static final String PROTO = "__proto__";
     public static final String SENSOR_IDS = "sensor_ids";
 
-    protected static final boolean DEFAULT_ACTIVE = false;
-
     private boolean active;
     private int count;
     private SensorProto proto;
     private HashSet<String> sensorIDs;
-
-    public SensorConfig(SensorProto proto, int count) {
-        this(proto, count, SensorConfig.DEFAULT_ACTIVE);
-    }
 
     public SensorConfig(SensorProto proto, int count, boolean active) {
         this(proto, count, new HashSet<String>(), active);
         for (int i = 0; i < count; i++) {
             this.sensorIDs.add(String.format("%s:(%d)", proto.getLabel(), i));
         }
-    }
-
-    public SensorConfig(SensorProto proto, Collection<String> sensorIDs) {
-        this(proto, sensorIDs.size(), new HashSet<String>(sensorIDs), SensorConfig.DEFAULT_ACTIVE);
     }
 
     public SensorConfig(SensorProto proto, Collection<String> sensorIDs, boolean active) {

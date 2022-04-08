@@ -23,20 +23,10 @@ public class RemoteProto extends JSONAble {
     public static final String MAX_BATTERY = "max_battery";
     public static final String SENSORS = "sensors";
 
-    protected static final double DEFAULT_BATTERY_POWER = 1.0;
-
     private Vector location;
     private double maxBatteryPower;
     private RemoteType remoteType;
     private ArrayList<SensorConfig> sensors;
-
-    public RemoteProto() {
-        this(RemoteProto.DEFAULT_REMOTE_TYPE, null, RemoteProto.DEFAULT_BATTERY_POWER, null);
-    }
-
-    public RemoteProto(Vector location) {
-        this(RemoteProto.DEFAULT_REMOTE_TYPE, location, RemoteProto.DEFAULT_BATTERY_POWER, null);
-    }
 
     public RemoteProto(double maxBatteryPower) {
         this(RemoteProto.DEFAULT_REMOTE_TYPE, null, maxBatteryPower, null);
@@ -54,16 +44,8 @@ public class RemoteProto extends JSONAble {
         this(RemoteProto.DEFAULT_REMOTE_TYPE, location, maxBatteryPower, sensors);
     }
 
-    public RemoteProto(RemoteType remoteType) {
-        this(remoteType, null, RemoteProto.DEFAULT_BATTERY_POWER, null);
-    }
-
     public RemoteProto(RemoteType remoteType, double maxBatteryPower) {
         this(remoteType, null, maxBatteryPower, null);
-    }
-
-    public RemoteProto(RemoteType remoteType, Vector location) {
-        this(remoteType, location, RemoteProto.DEFAULT_BATTERY_POWER, null);
     }
 
     public RemoteProto(RemoteType remoteType, Vector location, double maxBatteryPower) {

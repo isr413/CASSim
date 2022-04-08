@@ -9,16 +9,8 @@ import com.seat.rescuesim.common.sensor.SensorConfig;
 /** A serializable configuration for a Monitor Sensor. */
 public class MonitorSensorConfig extends SensorConfig {
 
-    public MonitorSensorConfig(MonitorSensorProto proto, int count) {
-        super(proto, count);
-    }
-
     public MonitorSensorConfig(MonitorSensorProto proto, int count, boolean active) {
         super(proto, count, active);
-    }
-
-    public MonitorSensorConfig(MonitorSensorProto proto, Collection<String> sensorIDs) {
-        super(proto, sensorIDs);
     }
 
     public MonitorSensorConfig(MonitorSensorProto proto, Collection<String> sensorIDs, boolean active) {

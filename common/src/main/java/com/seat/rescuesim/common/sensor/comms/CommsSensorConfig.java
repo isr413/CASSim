@@ -9,16 +9,8 @@ import com.seat.rescuesim.common.sensor.SensorConfig;
 /** A serializable configuration for a Comms Sensor. */
 public class CommsSensorConfig extends SensorConfig {
 
-    public CommsSensorConfig(CommsSensorProto proto, int count) {
-        super(proto, count);
-    }
-
     public CommsSensorConfig(CommsSensorProto proto, int count, boolean active) {
         super(proto, count, active);
-    }
-
-    public CommsSensorConfig(CommsSensorProto proto, Collection<String> sensorIDs) {
-        super(proto, sensorIDs);
     }
 
     public CommsSensorConfig(CommsSensorProto proto, Collection<String> sensorIDs, boolean active) {
