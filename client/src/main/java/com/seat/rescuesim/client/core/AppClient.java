@@ -12,6 +12,9 @@ import com.seat.rescuesim.common.util.Debugger;
 
 public class AppClient {
 
+    protected final static double DEFAULT_DELAY = 0.0;
+    protected final static boolean DEFAULT_DISPLAY = false;
+
     private Application app;
     private JSONSocket socket;
 
@@ -36,10 +39,18 @@ public class AppClient {
     }
 
     public void run() throws ClientException, CommonException {
-        this.run(false);
+        this.run(AppClient.DEFAULT_DISPLAY, AppClient.DEFAULT_DELAY);
     }
 
     public void run(boolean visualDisplay) throws ClientException, CommonException {
+        this.run(visualDisplay, AppClient.DEFAULT_DELAY);
+    }
+
+    public void run(double delay) throws ClientException, CommonException {
+        this.run(AppClient.DEFAULT_DISPLAY, delay);
+    }
+
+    public void run(boolean visualDisplay, double delay) throws ClientException, CommonException {
         Debugger.logger.info("Running client ...");
         Debugger.logger.state(String.format("Loaded application <%s>", this.app.getScenarioID()));
 
@@ -80,6 +91,16 @@ public class AppClient {
             Debugger.logger.info("Sending intention(s) ...");
             this.socket.sendIntentions(intentions);
             Debugger.logger.state("Intention(s) sent");
+
+            if (delay == 0) {
+                continue;
+            }
+
+            try {
+                Thread.sleep((long) (delay * 1000));
+            } catch (InterruptedException e) {
+                Debugger.logger.err(e.toString());
+            }
         }
 
         Debugger.logger.state(String.format("Scenario <%s> done", app.getScenarioID()));

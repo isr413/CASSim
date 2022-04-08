@@ -7,6 +7,8 @@ import com.seat.rescuesim.common.core.Application;
 import com.seat.rescuesim.common.util.ArgsParser;
 
 public class App {
+    private static final String DELAY_ARG = "-d";
+    private static final String DISPLAY_ARG = "--display";
     private static final String HOST_ARG = "-h";
     private static final String ID_ARG = "-id";
     private static final String PORT_ARG = "-p";
@@ -35,7 +37,11 @@ public class App {
         } else {
             client = new AppClient(app);
         }
-        client.run();
+        if (parser.hasParam(App.DELAY_ARG)) {
+            client.run(parser.hasParam(App.DISPLAY_ARG), parser.getDouble(App.DELAY_ARG));
+        } else {
+            client.run(parser.hasParam(App.DISPLAY_ARG));
+        }
     }
 
 }
