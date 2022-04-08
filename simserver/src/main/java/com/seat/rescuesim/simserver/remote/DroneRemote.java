@@ -19,7 +19,8 @@ public class DroneRemote extends MobileRemote {
 
     @Override
     public DroneRemoteState getState() {
-        return (DroneRemoteState) super.getState();
+        return new DroneRemoteState(this.getRemoteID(), this.getLocation(), this.getBattery(), this.isActive(),
+            this.getVelocity(), this.getAcceleration());
     }
 
     @Override

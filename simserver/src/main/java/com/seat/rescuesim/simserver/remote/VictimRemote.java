@@ -14,8 +14,10 @@ public class VictimRemote extends MobileRemote {
         return (VictimRemoteProto) super.getProto();
     }
 
+    @Override
     public VictimRemoteState getState() {
-        return (VictimRemoteState) super.getState();
+        return new VictimRemoteState(this.getRemoteID(), this.getLocation(), this.getBattery(), this.isActive(),
+            this.getVelocity(), this.getAcceleration());
     }
 
 }

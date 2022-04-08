@@ -14,8 +14,9 @@ public class BaseRemote extends Remote {
         return (BaseRemoteProto) super.getProto();
     }
 
+    @Override
     public BaseRemoteState getState() {
-        return (BaseRemoteState) super.getState();
+        return new BaseRemoteState(this.getRemoteID(), this.getLocation(), this.getBattery(), this.isActive());
     }
 
 }

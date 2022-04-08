@@ -29,6 +29,8 @@ public class AppServer {
         ScenarioConfig config = this.socket.getScenarioConfigBlocking();
         Debugger.logger.state(String.format("Received scenario config <%s>", config.getScenarioID()));
 
+        Debugger.logger.info(config.toString());
+
         SimScenario scenario = new SimScenario(config);
         Debugger.logger.info(String.format("Running scenario <%s> ...", scenario.getScenarioID()));
 

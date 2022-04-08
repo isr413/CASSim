@@ -12,8 +12,8 @@ import com.seat.rescuesim.simserver.scenario.SimScenario;
 
 public class MobileRemote extends Remote {
 
-    protected Vector acceleration;
-    protected Vector velocity;
+    private Vector acceleration;
+    private Vector velocity;
 
     public MobileRemote(MobileRemoteProto proto, String remoteID, boolean active) {
         super(proto, remoteID, active);
