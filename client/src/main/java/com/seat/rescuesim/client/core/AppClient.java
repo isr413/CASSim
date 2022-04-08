@@ -1,13 +1,13 @@
-package com.seat.rescuesim.client.client;
+package com.seat.rescuesim.client.core;
 
 import java.util.Collection;
 
 import com.seat.rescuesim.client.gui.GUIFrame;
-import com.seat.rescuesim.common.app.Application;
+import com.seat.rescuesim.common.core.Application;
+import com.seat.rescuesim.common.core.CommonException;
 import com.seat.rescuesim.common.net.JSONSocket;
 import com.seat.rescuesim.common.remote.intent.IntentionSet;
 import com.seat.rescuesim.common.scenario.Snapshot;
-import com.seat.rescuesim.common.util.CoreException;
 import com.seat.rescuesim.common.util.Debugger;
 
 public class AppClient {
@@ -15,31 +15,31 @@ public class AppClient {
     private Application app;
     private JSONSocket socket;
 
-    public AppClient(Application app) throws CoreException {
+    public AppClient(Application app) throws CommonException {
         this.app = app;
         this.socket = JSONSocket.Client();
     }
 
-    public AppClient(Application app, String hostname) throws CoreException {
+    public AppClient(Application app, String hostname) throws CommonException {
         this.app = app;
         this.socket = JSONSocket.Client(hostname);
     }
 
-    public AppClient(Application app, int port) throws CoreException {
+    public AppClient(Application app, int port) throws CommonException {
         this.app = app;
         this.socket = JSONSocket.Client(port);
     }
 
-    public AppClient(Application app, String hostname, int port) throws CoreException {
+    public AppClient(Application app, String hostname, int port) throws CommonException {
         this.app = app;
         this.socket = JSONSocket.Client(hostname, port);
     }
 
-    public void run() throws CoreException {
+    public void run() throws ClientException, CommonException {
         this.run(false);
     }
 
-    public void run(boolean visualDisplay) throws CoreException {
+    public void run(boolean visualDisplay) throws ClientException, CommonException {
         Debugger.logger.info("Running client ...");
         Debugger.logger.state(String.format("Loaded application <%s>", this.app.getScenarioID()));
 

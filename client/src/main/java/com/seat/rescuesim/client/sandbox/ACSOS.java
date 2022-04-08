@@ -1,25 +1,25 @@
 package com.seat.rescuesim.client.sandbox;
 
 import java.util.ArrayList;
-import com.seat.rescuesim.client.client.AppClient;
-import com.seat.rescuesim.common.Snapshot;
-import com.seat.rescuesim.common.app.SARApplication;
-import com.seat.rescuesim.common.base.BaseConfig;
-import com.seat.rescuesim.common.base.BaseSpec;
-import com.seat.rescuesim.common.base.BaseType;
-import com.seat.rescuesim.common.drone.DroneConfig;
-import com.seat.rescuesim.common.drone.DroneSpec;
-import com.seat.rescuesim.common.drone.DroneType;
+import java.util.Collection;
+
+import com.seat.rescuesim.common.core.SARApplication;
 import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteConfig;
-import com.seat.rescuesim.common.remote.RemoteController;
+import com.seat.rescuesim.common.remote.base.BaseConfig;
+import com.seat.rescuesim.common.remote.base.BaseProto;
+import com.seat.rescuesim.common.remote.intent.IntentionSet;
+import com.seat.rescuesim.common.remote.mobile.aerial.DroneConfig;
+import com.seat.rescuesim.common.remote.mobile.aerial.DroneProto;
+import com.seat.rescuesim.common.remote.mobile.ground.VictimConfig;
+import com.seat.rescuesim.common.remote.mobile.ground.VictimProto;
+import com.seat.rescuesim.common.scenario.Snapshot;
 import com.seat.rescuesim.common.sensor.SensorConfig;
-import com.seat.rescuesim.common.sensor.SensorSpec;
 import com.seat.rescuesim.common.sensor.SensorType;
-import com.seat.rescuesim.common.victim.VictimConfig;
-import com.seat.rescuesim.common.victim.VictimSpec;
-import com.seat.rescuesim.common.victim.VictimType;
+import com.seat.rescuesim.common.sensor.comms.CommsSensorProto;
+import com.seat.rescuesim.common.sensor.monitor.MonitorSensorProto;
+import com.seat.rescuesim.common.sensor.vision.VisionSensorProto;
 
 public class ACSOS implements SARApplication {
 
@@ -34,82 +34,78 @@ public class ACSOS implements SARApplication {
 
     public ACSOS(String[] args) {}
 
-    private SensorSpec getBluetoothComms() {
-        return new SensorSpec(
-            SensorType.Comms,
+    private CommsSensorProto getBluetoothComms() {
+        return new CommsSensorProto(
+            SensorType.BLUETOOTH_COMMS,
             10,
             1,
-            0.00,
+            0.0,
             0
         );
     }
 
-    private SensorSpec getDroneCamera() {
-        return new SensorSpec(
-            SensorType.Vision,
+    private VisionSensorProto getDroneCamera() {
+        return new VisionSensorProto(
+            SensorType.CMOS_CAMERA_VISION,
             10,
             1,
-            0.00,
+            0.0
+        );
+    }
+
+    private CommsSensorProto getLongRangeComms() {
+        return new CommsSensorProto(
+            SensorType.LTE_RADIO_COMMS,
+            Double.POSITIVE_INFINITY,
+            1,
+            0.0,
             0
         );
     }
 
-    private SensorSpec getLongRangeComms() {
-        return new SensorSpec(
-            SensorType.Comms,
-            100000,
+    private MonitorSensorProto getVictimHRVM() {
+        return new MonitorSensorProto(
+            SensorType.HRVM_MONITOR,
+            0,
             1,
-            0.00,
-            0
+            0.0
         );
     }
 
-    private SensorSpec getVictimMonitor() {
-        return new SensorSpec(
-            SensorType.Comms,
-            1,
-            1,
-            0.00,
-            0
-        );
-    }
-
-    public ArrayList<BaseConfig> getBaseConfigs() {
+    public Collection<BaseConfig> getBaseConfigs() {
         ArrayList<SensorConfig> sensors = new ArrayList<>();
-        sensors.add(new SensorConfig(this.getLongRangeComms(), 1));
-        BaseSpec baseSpec = new BaseSpec(
-            BaseType.DEFAULT,
+        sensors.add(new SensorConfig(this.getLongRangeComms(), 1, true));
+        BaseProto base = new BaseProto(
             BASE_LOCATION,
             1,
             sensors
         );
-        ArrayList<BaseConfig> baseConf = new ArrayList<>();
-        baseConf.add(new BaseConfig(baseSpec, 1, true));
-        return baseConf;
+        ArrayList<BaseConfig> baseConfig = new ArrayList<>();
+        baseConfig.add(new BaseConfig(base, 1, false, true));
+        return baseConfig;
     }
 
     public double getDisasterScale() {
         return 0;
     }
 
-    public ArrayList<DroneConfig> getDroneConfigs() {
+    public Collection<DroneConfig> getDroneConfigs() {
         ArrayList<SensorConfig> sensors = new ArrayList<>();
-        sensors.add(new SensorConfig(this.getLongRangeComms(), 1));
-        sensors.add(new SensorConfig(this.getBluetoothComms(), 1));
-        sensors.add(new SensorConfig(this.getDroneCamera(), 1));
-        DroneSpec droneSpec = new DroneSpec(
-            DroneType.DEFAULT,
+        sensors.add(new SensorConfig(this.getLongRangeComms(), 1, true));
+        sensors.add(new SensorConfig(this.getBluetoothComms(), 1, true));
+        sensors.add(new SensorConfig(this.getDroneCamera(), 1, true));
+        DroneProto drone = new DroneProto(
             BASE_LOCATION,
-            1,
-            new Vector(0.00, 0.00, 0.00),
+            1.0,
             sensors,
+            new Vector(0.0, 0.0, 0.0),
             30.0,
             3.0,
             1.0
         );
-        ArrayList<DroneConfig> droneConf = new ArrayList<>();
-        droneConf.add(new DroneConfig(droneSpec, 1, true));
-        return droneConf;
+        ArrayList<DroneConfig> droneConfig = new ArrayList<>();
+        droneConfig.add(new DroneConfig(drone, 1, true, true));
+        return droneConfig;
     }
 
     public Map getMap() {
@@ -121,7 +117,7 @@ public class ACSOS implements SARApplication {
         return 27*60;
     }
 
-    public ArrayList<RemoteConfig> getRemoteConfigs() {
+    public Collection<RemoteConfig> getRemoteConfigs() {
         ArrayList<RemoteConfig> remotes = new ArrayList<>();
         remotes.addAll(this.getVictimConfigs());
         remotes.addAll(this.getBaseConfigs());
@@ -137,29 +133,26 @@ public class ACSOS implements SARApplication {
         return 0.5;
     }
 
-    public ArrayList<VictimConfig> getVictimConfigs() {
+    public Collection<VictimConfig> getVictimConfigs() {
         ArrayList<SensorConfig> sensors = new ArrayList<>();
-        sensors.add(new SensorConfig(this.getBluetoothComms(), 1));
-        sensors.add(new SensorConfig(this.getVictimMonitor(), 1));
-        VictimSpec victimSpec = new VictimSpec(
-            VictimType.DEFAULT,
+        sensors.add(new SensorConfig(this.getBluetoothComms(), 1, true));
+        sensors.add(new SensorConfig(this.getVictimHRVM(), 1, true));
+        VictimProto victim = new VictimProto(
             null,
-            1,
+            1.0,
             sensors,
-            1.50,
-            1,
-            1,
-            1.25,
-            0.01
+            1.78,
+            1.0,
+            9.00,
+            1.78,
+            1.78
         );
-        ArrayList<VictimConfig> victimConf = new ArrayList<>();
-        victimConf.add(new VictimConfig(victimSpec, 100, false));
-        return victimConf;
+        ArrayList<VictimConfig> victimConfig = new ArrayList<>();
+        victimConfig.add(new VictimConfig(victim, 100, false, true));
+        return victimConfig;
     }
 
-    public void run() {}
-
-    public ArrayList<RemoteController> update(Snapshot snap) {
+    public Collection<IntentionSet> update(Snapshot snap) {
         return new ArrayList<>();
     }
 
