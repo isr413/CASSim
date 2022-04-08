@@ -38,11 +38,6 @@ public class BaseRemoteConfig extends RemoteConfig {
     }
 
     @Override
-    protected BaseRemoteProto decodeProto(JSONOption option) throws JSONException {
-        return new BaseRemoteProto(option);
-    }
-
-    @Override
     public BaseRemoteProto getProto() {
         return (BaseRemoteProto) super.getProto();
     }

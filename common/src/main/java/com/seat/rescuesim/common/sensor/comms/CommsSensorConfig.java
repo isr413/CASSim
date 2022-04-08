@@ -30,11 +30,6 @@ public class CommsSensorConfig extends SensorConfig {
     }
 
     @Override
-    protected CommsSensorProto decodeProto(JSONOption option) throws JSONException {
-        return new CommsSensorProto(option);
-    }
-
-    @Override
     public CommsSensorProto getProto() {
         return (CommsSensorProto) super.getProto();
     }

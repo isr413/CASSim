@@ -38,11 +38,6 @@ public class MobileRemoteConfig extends RemoteConfig {
     }
 
     @Override
-    protected MobileRemoteProto decodeProto(JSONOption option) throws JSONException {
-        return new MobileRemoteProto(option);
-    }
-
-    @Override
     public MobileRemoteProto getProto() {
         return (MobileRemoteProto) super.getProto();
     }

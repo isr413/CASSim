@@ -2,7 +2,6 @@ package com.seat.rescuesim.common.remote;
 
 import java.util.Collection;
 import java.util.HashSet;
-
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
 import com.seat.rescuesim.common.json.JSONArrayBuilder;
@@ -57,7 +56,7 @@ public class RemoteConfig extends JSONAble {
 
     private RemoteConfig(RemoteProto proto, int count, HashSet<String> remoteIDs, boolean dynamic, boolean active) {
         this.proto = proto;
-        this.count = remoteIDs.size();
+        this.count = count;
         this.remoteIDs = remoteIDs;
         this.dynamic = dynamic;
         this.active = active;
@@ -69,7 +68,7 @@ public class RemoteConfig extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.proto = this.decodeProto(json.getJSONOption(RemoteConfig.PROTO));
+        this.proto = RemoteRegistry.decodeTo(json.getJSONOption(RemoteConfig.PROTO), RemoteProto.class);
         this.count = json.getInt(RemoteConfig.COUNT);
         this.remoteIDs = new HashSet<>();
         if (json.hasKey(RemoteConfig.REMOTE_IDS)) {
@@ -80,10 +79,6 @@ public class RemoteConfig extends JSONAble {
         }
         this.dynamic = json.getBoolean(RemoteConfig.DYNAMIC);
         this.active = json.getBoolean(RemoteState.ACTIVE);
-    }
-
-    protected RemoteProto decodeProto(JSONOption option) throws JSONException {
-        return new RemoteProto(option);
     }
 
     public int getCount() {

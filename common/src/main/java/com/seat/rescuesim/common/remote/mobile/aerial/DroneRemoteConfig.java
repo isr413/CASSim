@@ -38,11 +38,6 @@ public class DroneRemoteConfig extends MobileRemoteConfig {
     }
 
     @Override
-    protected DroneRemoteProto decodeProto(JSONOption option) throws JSONException {
-        return new DroneRemoteProto(option);
-    }
-
-    @Override
     public DroneRemoteProto getProto() {
         return (DroneRemoteProto) super.getProto();
     }

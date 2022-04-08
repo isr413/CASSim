@@ -130,9 +130,9 @@ public class ScenarioConfig extends JSONAble {
         this.stepSize = json.getDouble(ScenarioConfig.STEP_SIZE);
         this.remoteConfig = new ArrayList<>();
         if (json.hasKey(ScenarioConfig.REMOTE_CONFIG)) {
-            JSONArray jsonDrones = json.getJSONArray(ScenarioConfig.REMOTE_CONFIG);
-            for (int i = 0; i < jsonDrones.length(); i++) {
-                this.remoteConfig.add(RemoteRegistry.decodeTo(jsonDrones.getJSONOption(i), RemoteConfig.class));
+            JSONArray jsonRemotes = json.getJSONArray(ScenarioConfig.REMOTE_CONFIG);
+            for (int i = 0; i < jsonRemotes.length(); i++) {
+                this.remoteConfig.add(RemoteRegistry.decodeTo(jsonRemotes.getJSONOption(i), RemoteConfig.class));
             }
         }
     }
@@ -171,7 +171,7 @@ public class ScenarioConfig extends JSONAble {
         return this.missionLength;
     }
 
-    public ArrayList<RemoteConfig> getRemotes() {
+    public Collection<RemoteConfig> getRemotes() {
         return this.remoteConfig;
     }
 

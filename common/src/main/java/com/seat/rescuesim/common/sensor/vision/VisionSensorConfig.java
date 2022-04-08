@@ -30,11 +30,6 @@ public class VisionSensorConfig extends SensorConfig {
     }
 
     @Override
-    protected VisionSensorProto decodeProto(JSONOption option) throws JSONException {
-        return new VisionSensorProto(option);
-    }
-
-    @Override
     public VisionSensorProto getProto() {
         return (VisionSensorProto) super.getProto();
     }

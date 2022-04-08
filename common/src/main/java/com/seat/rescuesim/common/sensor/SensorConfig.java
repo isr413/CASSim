@@ -57,7 +57,7 @@ public class SensorConfig extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.proto = this.decodeProto(json.getJSONOption(SensorConfig.PROTO));
+        this.proto = SensorRegistry.decodeTo(json.getJSONOption(SensorConfig.PROTO), SensorProto.class);
         this.count = json.getInt(SensorConfig.COUNT);
         this.sensorIDs = new HashSet<>();
         if (json.hasKey(SensorConfig.SENSOR_IDS)) {
@@ -67,10 +67,6 @@ public class SensorConfig extends JSONAble {
             }
         }
         this.active = json.getBoolean(SensorState.ACTIVE);
-    }
-
-    protected SensorProto decodeProto(JSONOption option) throws JSONException {
-        return new SensorProto(option);
     }
 
     public int getCount() {

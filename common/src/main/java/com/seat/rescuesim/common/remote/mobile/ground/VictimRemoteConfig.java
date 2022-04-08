@@ -38,11 +38,6 @@ public class VictimRemoteConfig extends MobileRemoteConfig {
     }
 
     @Override
-    protected VictimRemoteProto decodeProto(JSONOption option) throws JSONException {
-        return new VictimRemoteProto(option);
-    }
-
-    @Override
     public VictimRemoteProto getProto() {
         return (VictimRemoteProto) super.getProto();
     }

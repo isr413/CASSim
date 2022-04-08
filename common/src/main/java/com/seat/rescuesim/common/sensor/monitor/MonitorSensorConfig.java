@@ -30,11 +30,6 @@ public class MonitorSensorConfig extends SensorConfig {
     }
 
     @Override
-    protected MonitorSensorProto decodeProto(JSONOption option) throws JSONException {
-        return new MonitorSensorProto(option);
-    }
-
-    @Override
     public MonitorSensorProto getProto() {
         return (MonitorSensorProto) super.getProto();
     }
