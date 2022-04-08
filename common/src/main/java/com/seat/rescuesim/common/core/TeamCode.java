@@ -15,10 +15,9 @@ public enum TeamCode implements SerializableEnum {
     MAGENTA(8),
     ORANGE(9),
     PINK(10),
-    PURPLE(11),
-    RED(12),
-    WHITE(13),
-    YELLOW(14);
+    RED(11),
+    WHITE(12),
+    YELLOW(13);
 
     public static final String TEAM = "team";
 

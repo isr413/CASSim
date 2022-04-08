@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-
+import com.seat.rescuesim.common.core.TeamCode;
 import com.seat.rescuesim.common.remote.RemoteState;
 import com.seat.rescuesim.common.scenario.Snapshot;
 
@@ -62,13 +62,14 @@ public class GUIFrame extends JFrame {
 
         private void drawPoints(Graphics g) {
             Graphics2D g2d = (Graphics2D) g;
-            g2d.setPaint(Color.blue);
             g2d.setStroke(new BasicStroke(5));
             for (Point p : this.points) {
                 int x = (int) Math.round(p.x * this.widthScale);
                 int y = (int) Math.round(p.y * this.heightScale);
+                g2d.setPaint(p.color);
                 g2d.drawLine(x, y, x, y);
             }
+            g2d.setPaint(Color.BLACK);
         }
 
         @Override
@@ -102,10 +103,35 @@ public class GUIFrame extends JFrame {
     static class Point {
         public int x;
         public int y;
+        public Color color;
 
         public Point(int x, int y) {
             this.x = x;
             this.y = y;
+        }
+
+        public Point(int x, int y, TeamCode team) {
+            this(x, y);
+            switch (team) {
+                case BLUE: this.color = Color.BLUE; break;
+                case CYAN: this.color = Color.CYAN; break;
+                case DARK_GRAY: this.color = Color.DARK_GRAY; break;
+                case GRAY: this.color = Color.GRAY; break;
+                case GREEN: this.color = Color.GREEN; break;
+                case LIGHT_GRAY: this.color = Color.LIGHT_GRAY; break;
+                case MAGENTA: this.color = Color.MAGENTA; break;
+                case ORANGE: this.color = Color.ORANGE; break;
+                case PINK: this.color = Color.PINK; break;
+                case RED: this.color = Color.RED; break;
+                case WHITE: this.color = Color.WHITE; break;
+                case YELLOW: this.color = Color.YELLOW; break;
+                default: this.color = Color.BLACK; break;
+            }
+        }
+
+        public Point(int x, int y, Color color) {
+            this(x, y);
+            this.color = color;
         }
 
     }
