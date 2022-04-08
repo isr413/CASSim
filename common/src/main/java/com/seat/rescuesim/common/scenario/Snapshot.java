@@ -1,6 +1,7 @@
 package com.seat.rescuesim.common.scenario;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import com.seat.rescuesim.common.core.CommonException;
@@ -38,23 +39,22 @@ public class Snapshot extends JSONAble {
     private double time;
 
     public Snapshot(String hash, ScenarioType scenarioType, String scenarioID, double stepSize,
-            HashSet<String> remoteIDs, HashMap<String, RemoteState> state) {
-        this(hash, scenarioType, scenarioID, ScenarioStatus.START, 0, stepSize, remoteIDs,
-            new HashSet<String>(remoteIDs), new HashSet<String>(remoteIDs), state);
+            Collection<String> remoteIDs, HashMap<String, RemoteState> state) {
+        this(hash, scenarioType, scenarioID, ScenarioStatus.START, 0, stepSize, remoteIDs, remoteIDs, remoteIDs, state);
     }
 
     public Snapshot(String hash, ScenarioType scenarioType, String scenarioID, ScenarioStatus status, double time,
-            double stepSize, HashSet<String> remoteIDs, HashSet<String> activeRemotes, HashSet<String> dynamicRemotes,
-            HashMap<String, RemoteState> state) {
+            double stepSize, Collection<String> remoteIDs, Collection<String> activeRemotes,
+            Collection<String> dynamicRemotes, HashMap<String, RemoteState> state) {
         this.hash = hash;
         this.scenarioType = scenarioType;
         this.scenarioID = scenarioID;
         this.status = status;
         this.time = time;
         this.stepSize = stepSize;
-        this.remoteIDs = remoteIDs;
-        this.activeRemotes = activeRemotes;
-        this.dynamicRemotes = dynamicRemotes;
+        this.remoteIDs = (remoteIDs != null) ? new HashSet<>(remoteIDs) : new HashSet<>();
+        this.activeRemotes = (activeRemotes != null) ? new HashSet<>(activeRemotes) : new HashSet<>();
+        this.dynamicRemotes = (dynamicRemotes != null) ? new HashSet<>(dynamicRemotes) : new HashSet<>();
         this.state = state;
     }
 
@@ -99,11 +99,11 @@ public class Snapshot extends JSONAble {
         }
     }
 
-    public HashSet<String> getActiveRemotes() {
+    public Collection<String> getActiveRemotes() {
         return this.activeRemotes;
     }
 
-    public HashSet<String> getDynamicRemotes() {
+    public Collection<String> getDynamicRemotes() {
         return this.dynamicRemotes;
     }
 
@@ -111,7 +111,7 @@ public class Snapshot extends JSONAble {
         return this.hash;
     }
 
-    public HashSet<String> getRemoteIDs() {
+    public Collection<String> getRemoteIDs() {
         return this.remoteIDs;
     }
 
@@ -130,7 +130,7 @@ public class Snapshot extends JSONAble {
         return this.scenarioType;
     }
 
-    public ArrayList<RemoteState> getState() {
+    public Collection<RemoteState> getState() {
         return new ArrayList<RemoteState>(this.state.values());
     }
 

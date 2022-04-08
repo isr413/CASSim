@@ -16,35 +16,35 @@ public class MobileRemoteController extends RemoteController {
         super(option);
     }
 
-    public void goTo() {
+    public void goToLocation() {
         super.addIntention(IntentRegistry.GoTo());
     }
 
-    public void goTo(double maxVelocity) {
+    public void goToLocation(double maxVelocity) {
         super.addIntention(IntentRegistry.GoTo(maxVelocity));
     }
 
-    public void goTo(double maxVelocity, double maxAcceleration) {
+    public void goToLocation(double maxVelocity, double maxAcceleration) {
         super.addIntention(IntentRegistry.GoTo(maxVelocity, maxAcceleration));
     }
 
-    public void goTo(double maxVelocity, double maxAcceleration, double maxJerk) {
+    public void goToLocation(double maxVelocity, double maxAcceleration, double maxJerk) {
         super.addIntention(IntentRegistry.GoTo(maxVelocity, maxAcceleration, maxJerk));
     }
 
-    public void goTo(Vector location) {
+    public void goToLocation(Vector location) {
         super.addIntention(IntentRegistry.GoTo(location));
     }
 
-    public void goTo(Vector location, double maxVelocity) {
+    public void goToLocation(Vector location, double maxVelocity) {
         super.addIntention(IntentRegistry.GoTo(location, maxVelocity));
     }
 
-    public void goTo(Vector location, double maxVelocity, double maxAcceleration) {
+    public void goToLocation(Vector location, double maxVelocity, double maxAcceleration) {
         super.addIntention(IntentRegistry.GoTo(location, maxVelocity, maxAcceleration));
     }
 
-    public void goTo(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
+    public void goToLocation(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
         super.addIntention(IntentRegistry.GoTo(location, maxVelocity, maxAcceleration, maxJerk));
     }
 
