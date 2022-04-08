@@ -67,14 +67,18 @@ public class SensorProto extends JSONAble {
     protected void decode(JSONObject json) throws JSONException {
         this.sensorType = SensorType.decodeType(json);
         this.accuracy = json.getDouble(SensorProto.ACCURACY);
-        this.range = json.getDouble(SensorProto.RANGE);
+        this.range = (json.hasKey(SensorProto.RANGE)) ?
+            json.getDouble(SensorProto.RANGE) :
+            SensorProto.DEFAULT_RANGE;
         this.batteryUsage = json.getDouble(SensorProto.BATTERY_USAGE);
     }
 
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(SensorType.SENSOR_TYPE, this.sensorType.getType());
-        json.put(SensorProto.RANGE, this.range);
+        if (this.hasLimitedRange()) {
+            json.put(SensorProto.RANGE, this.range);
+        }
         json.put(SensorProto.ACCURACY, this.accuracy);
         json.put(SensorProto.BATTERY_USAGE, this.batteryUsage);
         return json;
