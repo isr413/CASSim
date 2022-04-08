@@ -108,6 +108,10 @@ public class SensorProto extends JSONAble {
         return this.batteryUsage > 0;
     }
 
+    public boolean hasImperfectAccuracy() {
+        return !this.hasPerfectAccuracy();
+    }
+
     public boolean hasLimitedRange() {
         return !this.hasUnlimitedRange();
     }

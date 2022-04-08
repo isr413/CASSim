@@ -1,4 +1,4 @@
-package com.seat.rescuesim.simserver.sim.util;
+package com.seat.rescuesim.simserver.core;
 
 public class SimException extends RuntimeException {
 

@@ -1,29 +1,27 @@
-package com.seat.rescuesim.simserver.sim.sensor;
+package com.seat.rescuesim.simserver.sensor;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
-import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.sensor.SensorSpec;
-import com.seat.rescuesim.common.sensor.VisionSensorState;
-import com.seat.rescuesim.common.util.Debugger;
-import com.seat.rescuesim.simserver.sim.SimScenario;
-import com.seat.rescuesim.simserver.sim.remote.SimRemote;
-import com.seat.rescuesim.simserver.sim.util.SimException;
 
-public class SimVision extends SimSensor {
+import com.seat.rescuesim.common.math.Vector;
+import com.seat.rescuesim.common.sensor.SensorProto;
+import com.seat.rescuesim.common.sensor.vision.VisionSensorProto;
+import com.seat.rescuesim.common.sensor.vision.VisionSensorState;
+import com.seat.rescuesim.common.util.Debugger;
+import com.seat.rescuesim.simserver.core.SimException;
+import com.seat.rescuesim.simserver.remote.Remote;
+import com.seat.rescuesim.simserver.scenario.SimScenario;
+
+public class VisionSensor extends Sensor {
 
     private HashSet<String> observations;
 
-    public SimVision(SensorSpec spec, String label) {
-        super(spec, label);
+    public VisionSensor(SensorProto proto, String sensorID, boolean active) {
+        super(proto, sensorID, active);
         this.observations = new HashSet<>();
     }
 
-    public boolean addObservations(ArrayList<String> remoteIDs) {
-        return this.addObservations(new HashSet<String>(remoteIDs));
-    }
-
-    public boolean addObservations(HashSet<String> remoteIDs) {
+    public boolean addObservations(Collection<String> remoteIDs) {
         boolean flag = true;
         for (String remoteID : remoteIDs) {
             flag = this.addObservationWithID(remoteID) && flag;
@@ -44,15 +42,21 @@ public class SimVision extends SimSensor {
         this.observations = new HashSet<>();
     }
 
-    public HashSet<String> getObservations() {
+    public Collection<String> getObservations() {
         return this.observations;
     }
 
+    @Override
+    public VisionSensorProto getProto() {
+        return (VisionSensorProto) super.getProto();
+    }
+
+    @Override
     public VisionSensorState getState() {
         if (this.isActive()) {
             return new VisionSensorState(this.getSensorType(), this.getSensorID(), this.isActive(), this.observations);
         } else {
-            return new VisionSensorState(this.getSensorType(), this.getSensorID());
+            return new VisionSensorState(this.getSensorType(), this.getSensorID(), this.isActive());
         }
     }
 
@@ -64,11 +68,7 @@ public class SimVision extends SimSensor {
         return this.observations.contains(remoteID);
     }
 
-    public boolean removeObservations(ArrayList<String> remoteIDs) {
-        return this.removeObservations(new HashSet<String>(remoteIDs));
-    }
-
-    public boolean removeObservations(HashSet<String> remoteIDs) {
+    public boolean removeObservations(Collection<String> remoteIDs) {
         boolean flag = true;
         for (String remoteID : remoteIDs) {
             flag = this.removeObservationWithID(remoteID) && flag;
@@ -86,9 +86,9 @@ public class SimVision extends SimSensor {
     }
 
     @Override
-    public void update(SimScenario scenario, SimRemote remote, double stepSize) throws SimException {
+    public void update(SimScenario scenario, Remote remote, double stepSize) throws SimException {
         super.update(scenario, remote, stepSize);
-        if (remote.isInactive() || remote.isDone() || !this.hasRange()) {
+        if (this.isInactive() || remote.isInactive() || !this.hasRange()) {
             if (this.hasObservations()) {
                 this.clearObservations();
             }
@@ -99,7 +99,7 @@ public class SimVision extends SimSensor {
                 continue;
             }
             Vector location = scenario.getRemoteWithID(remoteID).getLocation();
-            if (Vector.dist(remote.getLocation(), location) <= this.getRange()) {
+            if (this.hasUnlimitedRange() || Vector.dist(remote.getLocation(), location) <= this.getRange()) {
                 if (!this.hasObservationWithID(remoteID)) {
                     this.addObservationWithID(remoteID);
                 }

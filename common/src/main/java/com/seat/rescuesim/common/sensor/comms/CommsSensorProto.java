@@ -81,8 +81,12 @@ public class CommsSensorProto extends SensorProto {
         return json;
     }
 
-    public double getSensorDelay() {
+    public double getDelay() {
         return this.delay;
+    }
+
+    public boolean hasDelay() {
+        return this.delay > 0;
     }
 
     public boolean equals(CommsSensorProto proto) {
