@@ -1,6 +1,5 @@
 package com.seat.rescuesim.simserver.sensor;
 
-import com.seat.rescuesim.common.sensor.SensorProto;
 import com.seat.rescuesim.common.sensor.monitor.MonitorSensorProto;
 import com.seat.rescuesim.common.sensor.monitor.MonitorSensorState;
 import com.seat.rescuesim.simserver.core.SimException;
@@ -11,7 +10,7 @@ public class MonitorSensor extends Sensor {
 
     private String monitorID;
 
-    public MonitorSensor(SensorProto proto, String sensorID, boolean active) {
+    public MonitorSensor(MonitorSensorProto proto, String sensorID, boolean active) {
         super(proto, sensorID, active);
         this.monitorID = null;
     }

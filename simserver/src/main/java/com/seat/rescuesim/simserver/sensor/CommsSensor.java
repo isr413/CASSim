@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.sensor.SensorProto;
 import com.seat.rescuesim.common.sensor.comms.CommsSensorProto;
 import com.seat.rescuesim.common.sensor.comms.CommsSensorState;
 import com.seat.rescuesim.common.util.Debugger;
@@ -16,7 +15,7 @@ public class CommsSensor extends Sensor {
 
     private HashSet<String> connections;
 
-    public CommsSensor(SensorProto proto, String sensorID, boolean active) {
+    public CommsSensor(CommsSensorProto proto, String sensorID, boolean active) {
         super(proto, sensorID, active);
         this.connections = new HashSet<>();
     }

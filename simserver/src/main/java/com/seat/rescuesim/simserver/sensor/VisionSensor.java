@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.sensor.SensorProto;
 import com.seat.rescuesim.common.sensor.vision.VisionSensorProto;
 import com.seat.rescuesim.common.sensor.vision.VisionSensorState;
 import com.seat.rescuesim.common.util.Debugger;
@@ -16,7 +15,7 @@ public class VisionSensor extends Sensor {
 
     private HashSet<String> observations;
 
-    public VisionSensor(SensorProto proto, String sensorID, boolean active) {
+    public VisionSensor(VisionSensorProto proto, String sensorID, boolean active) {
         super(proto, sensorID, active);
         this.observations = new HashSet<>();
     }
