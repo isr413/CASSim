@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.seat.rescuesim.common.core.SARApplication;
+import com.seat.rescuesim.common.core.TeamColor;
 import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteConfig;
@@ -81,7 +82,7 @@ public class ACSOS implements SARApplication {
             sensors
         );
         ArrayList<BaseRemoteConfig> baseConfig = new ArrayList<>();
-        baseConfig.add(new BaseRemoteConfig(base, 1, false, true));
+        baseConfig.add(new BaseRemoteConfig(base, TeamColor.GREEN, 1, false, true));
         return baseConfig;
     }
 
@@ -104,7 +105,7 @@ public class ACSOS implements SARApplication {
             1.0
         );
         ArrayList<DroneRemoteConfig> droneConfig = new ArrayList<>();
-        droneConfig.add(new DroneRemoteConfig(drone, 1, true, true));
+        droneConfig.add(new DroneRemoteConfig(drone, TeamColor.BLUE, 1, true, true));
         return droneConfig;
     }
 
@@ -148,7 +149,7 @@ public class ACSOS implements SARApplication {
             1.78
         );
         ArrayList<VictimRemoteConfig> victimConfig = new ArrayList<>();
-        victimConfig.add(new VictimRemoteConfig(victim, 100, false, true));
+        victimConfig.add(new VictimRemoteConfig(victim, TeamColor.RED, 100, false, true));
         return victimConfig;
     }
 

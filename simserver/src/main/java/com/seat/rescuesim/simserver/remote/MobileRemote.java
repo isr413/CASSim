@@ -1,5 +1,6 @@
 package com.seat.rescuesim.simserver.remote;
 
+import com.seat.rescuesim.common.core.TeamColor;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.intent.GoToIntention;
 import com.seat.rescuesim.common.remote.intent.IntentionSet;
@@ -15,8 +16,8 @@ public class MobileRemote extends Remote {
     private Vector acceleration;
     private Vector velocity;
 
-    public MobileRemote(MobileRemoteProto proto, String remoteID, boolean active) {
-        super(proto, remoteID, active);
+    public MobileRemote(MobileRemoteProto proto, String remoteID, TeamColor team, boolean active) {
+        super(proto, remoteID, team, active);
         this.velocity = new Vector();
         this.acceleration = new Vector();
     }
@@ -63,8 +64,8 @@ public class MobileRemote extends Remote {
 
     @Override
     public MobileRemoteState getState() {
-        return new MobileRemoteState(this.getRemoteID(), this.getLocation(), this.getBattery(), this.isActive(),
-            this.velocity, this.acceleration);
+        return new MobileRemoteState(this.getRemoteID(), this.getTeam(), this.getLocation(), this.getBattery(),
+            this.isActive(), this.velocity, this.acceleration);
     }
 
     public Vector getVelocity() {

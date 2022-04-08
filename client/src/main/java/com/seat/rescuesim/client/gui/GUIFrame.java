@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.seat.rescuesim.common.core.TeamCode;
+import com.seat.rescuesim.common.core.TeamColor;
 import com.seat.rescuesim.common.remote.RemoteState;
 import com.seat.rescuesim.common.scenario.Snapshot;
 
@@ -42,7 +42,8 @@ public class GUIFrame extends JFrame {
     public void displaySnap(Snapshot snap, int width, int height) {
         ArrayList<Point> points = new ArrayList<>();
         for (RemoteState state : snap.getState()) {
-            points.add(new Point((int) state.getLocation().getX(), (int) state.getLocation().getY()));
+            points.add(Point.Colored((int) state.getLocation().getX(), (int) state.getLocation().getY(),
+                state.getTeam()));
         }
         this.panel.paintPoints(points, width, height);
     }
@@ -105,28 +106,26 @@ public class GUIFrame extends JFrame {
         public int y;
         public Color color;
 
+        public static Point Colored(int x, int y, TeamColor team) {
+            switch (team) {
+                case BLUE: return new Point(x, y, Color.BLUE);
+                case CYAN: return new Point(x, y, Color.CYAN);
+                case DARK_GRAY: return new Point(x, y, Color.DARK_GRAY);
+                case GRAY: return new Point(x, y, Color.GRAY);
+                case GREEN: return new Point(x, y, Color.GREEN);
+                case LIGHT_GRAY: return new Point(x, y, Color.LIGHT_GRAY);
+                case MAGENTA: return new Point(x, y, Color.MAGENTA);
+                case ORANGE: return new Point(x, y, Color.ORANGE);
+                case PINK: return new Point(x, y, Color.PINK);
+                case RED: return new Point(x, y, Color.RED);
+                case YELLOW: return new Point(x, y, Color.YELLOW);
+                default: return new Point(x, y, Color.BLACK);
+            }
+        }
+
         public Point(int x, int y) {
             this.x = x;
             this.y = y;
-        }
-
-        public Point(int x, int y, TeamCode team) {
-            this(x, y);
-            switch (team) {
-                case BLUE: this.color = Color.BLUE; break;
-                case CYAN: this.color = Color.CYAN; break;
-                case DARK_GRAY: this.color = Color.DARK_GRAY; break;
-                case GRAY: this.color = Color.GRAY; break;
-                case GREEN: this.color = Color.GREEN; break;
-                case LIGHT_GRAY: this.color = Color.LIGHT_GRAY; break;
-                case MAGENTA: this.color = Color.MAGENTA; break;
-                case ORANGE: this.color = Color.ORANGE; break;
-                case PINK: this.color = Color.PINK; break;
-                case RED: this.color = Color.RED; break;
-                case WHITE: this.color = Color.WHITE; break;
-                case YELLOW: this.color = Color.YELLOW; break;
-                default: this.color = Color.BLACK; break;
-            }
         }
 
         public Point(int x, int y, Color color) {

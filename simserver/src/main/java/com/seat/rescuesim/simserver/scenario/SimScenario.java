@@ -88,7 +88,8 @@ public class SimScenario {
                 String remoteID = (i < remoteConfig.getRemoteIDs().size()) ?
                     remoteIDs.next() :
                     String.format("%s:(%d)", remoteProto.getLabel(), remoteCount);
-                Remote remote = RemoteFactory.getRemote(remoteProto, remoteID, remoteConfig.isActive());
+                Remote remote = RemoteFactory.getRemote(remoteProto, remoteID, remoteConfig.getTeam(),
+                    remoteConfig.isActive());
                 remoteCount++;
                 this.allRemotes.put(remoteID, remote);
                 if (remoteConfig.isActive()) {

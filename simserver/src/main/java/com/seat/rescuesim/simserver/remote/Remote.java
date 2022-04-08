@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import com.seat.rescuesim.common.core.TeamColor;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteProto;
 import com.seat.rescuesim.common.remote.RemoteState;
@@ -35,10 +36,12 @@ public class Remote {
     private Vector location;
     private RemoteProto proto;
     private String remoteID;
+    private TeamColor team;
 
-    public Remote(RemoteProto proto, String remoteID, boolean active) {
+    public Remote(RemoteProto proto, String remoteID, TeamColor team, boolean active) {
         this.proto = proto;
         this.remoteID = remoteID;
+        this.team = team;
         this.location = proto.getLocation();
         this.battery = proto.getMaxBatteryPower();
         this.active = active;
@@ -224,6 +227,10 @@ public class Remote {
         return this.proto.getMaxBatteryPower();
     }
 
+    public RemoteProto getProto() {
+        return this.proto;
+    }
+
     public String getRemoteID() {
         return this.remoteID;
     }
@@ -269,12 +276,13 @@ public class Remote {
         return this.allSensors.get(sensorID);
     }
 
-    public RemoteProto getProto() {
-        return this.proto;
+    public RemoteState getState() {
+        return new RemoteState(this.getRemoteType(), this.remoteID, this.team, this.location, this.battery,
+            this.active);
     }
 
-    public RemoteState getState() {
-        return new RemoteState(this.getRemoteType(), this.remoteID, this.location, this.battery, this.active);
+    public TeamColor getTeam() {
+        return this.team;
     }
 
     public boolean hasActiveSensors() {
@@ -333,6 +341,10 @@ public class Remote {
             }
         }
         return false;
+    }
+
+    public boolean hasTeam() {
+        return !(this.team == null || this.team.equals(TeamColor.NONE));
     }
 
     public boolean isActive() {

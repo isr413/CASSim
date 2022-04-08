@@ -1,5 +1,6 @@
 package com.seat.rescuesim.simserver.remote;
 
+import com.seat.rescuesim.common.core.TeamColor;
 import com.seat.rescuesim.common.remote.intent.IntentionSet;
 import com.seat.rescuesim.common.remote.mobile.aerial.DroneRemoteProto;
 import com.seat.rescuesim.common.remote.mobile.aerial.DroneRemoteState;
@@ -8,8 +9,8 @@ import com.seat.rescuesim.simserver.scenario.SimScenario;
 
 public class DroneRemote extends MobileRemote {
 
-    public DroneRemote(DroneRemoteProto proto, String remoteID, boolean active) {
-        super(proto, remoteID, active);
+    public DroneRemote(DroneRemoteProto proto, String remoteID, TeamColor team, boolean active) {
+        super(proto, remoteID, team, active);
     }
 
     @Override
@@ -19,8 +20,8 @@ public class DroneRemote extends MobileRemote {
 
     @Override
     public DroneRemoteState getState() {
-        return new DroneRemoteState(this.getRemoteID(), this.getLocation(), this.getBattery(), this.isActive(),
-            this.getVelocity(), this.getAcceleration());
+        return new DroneRemoteState(this.getRemoteID(), this.getTeam(), this.getLocation(), this.getBattery(),
+            this.isActive(), this.getVelocity(), this.getAcceleration());
     }
 
     @Override
