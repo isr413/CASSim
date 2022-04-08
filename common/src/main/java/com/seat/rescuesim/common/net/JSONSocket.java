@@ -159,7 +159,7 @@ public class JSONSocket {
         return this.clientSocket.getPort();
     }
 
-    public ScenarioConfig getScenarioBlocking() throws CommonException {
+    public ScenarioConfig getScenarioConfigBlocking() throws CommonException {
         return new ScenarioConfig(this.getInputBlocking());
     }
 
@@ -191,7 +191,7 @@ public class JSONSocket {
         }
     }
 
-    public void sendScenario(ScenarioConfig scenario) throws CommonException {
+    public void sendScenarioConfig(ScenarioConfig scenario) throws CommonException {
         try {
             this.send(scenario.encode());
         } catch (JSONException e) {
