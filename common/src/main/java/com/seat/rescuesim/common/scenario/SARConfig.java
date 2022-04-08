@@ -10,9 +10,9 @@ import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.remote.RemoteConfig;
 import com.seat.rescuesim.common.remote.RemoteType;
-import com.seat.rescuesim.common.remote.base.BaseConfig;
-import com.seat.rescuesim.common.remote.mobile.aerial.DroneConfig;
-import com.seat.rescuesim.common.remote.mobile.ground.VictimConfig;
+import com.seat.rescuesim.common.remote.base.BaseRemoteConfig;
+import com.seat.rescuesim.common.remote.mobile.aerial.DroneRemoteConfig;
+import com.seat.rescuesim.common.remote.mobile.ground.VictimRemoteConfig;
 
 public class SARConfig extends ScenarioConfig {
     public static final String DISASTER_SCALE = "disaster_scale";
@@ -127,11 +127,11 @@ public class SARConfig extends ScenarioConfig {
         this.countVictims();
     }
 
-    public ArrayList<BaseConfig> getBases() {
-        ArrayList<BaseConfig> baseConfig = new ArrayList<>();
+    public Collection<BaseRemoteConfig> getBases() {
+        ArrayList<BaseRemoteConfig> baseConfig = new ArrayList<>();
         for (RemoteConfig config : this.getRemotes()) {
             if (config.getRemoteType().equals(RemoteType.BASE)) {
-                baseConfig.add((BaseConfig) config);
+                baseConfig.add((BaseRemoteConfig) config);
             }
         }
         return baseConfig;
@@ -141,11 +141,11 @@ public class SARConfig extends ScenarioConfig {
         return this.disasterScale;
     }
 
-    public ArrayList<DroneConfig> getDrones() {
-        ArrayList<DroneConfig> droneConfig = new ArrayList<>();
+    public Collection<DroneRemoteConfig> getDrones() {
+        ArrayList<DroneRemoteConfig> droneConfig = new ArrayList<>();
         for (RemoteConfig config : this.getRemotes()) {
             if (config.getRemoteType().equals(RemoteType.DRONE)) {
-                droneConfig.add((DroneConfig) config);
+                droneConfig.add((DroneRemoteConfig) config);
             }
         }
         return droneConfig;
@@ -163,11 +163,11 @@ public class SARConfig extends ScenarioConfig {
         return this.numVictims;
     }
 
-    public ArrayList<VictimConfig> getVictims() {
-        ArrayList<VictimConfig> victimConfig = new ArrayList<>();
+    public Collection<VictimRemoteConfig> getVictims() {
+        ArrayList<VictimRemoteConfig> victimConfig = new ArrayList<>();
         for (RemoteConfig config : this.getRemotes()) {
             if (config.getRemoteType().equals(RemoteType.VICTIM)) {
-                victimConfig.add((VictimConfig) config);
+                victimConfig.add((VictimRemoteConfig) config);
             }
         }
         return victimConfig;

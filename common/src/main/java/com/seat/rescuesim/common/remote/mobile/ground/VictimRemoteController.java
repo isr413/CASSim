@@ -4,13 +4,13 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.remote.mobile.MobileRemoteController;
 
-public class VictimController extends MobileRemoteController {
+public class VictimRemoteController extends MobileRemoteController {
 
-    public VictimController(String remoteID) {
+    public VictimRemoteController(String remoteID) {
         super(remoteID);
     }
 
-    public VictimController(JSONOption option) throws JSONException {
+    public VictimRemoteController(JSONOption option) throws JSONException {
         super(option);
     }
 

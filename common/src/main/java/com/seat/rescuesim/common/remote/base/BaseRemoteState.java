@@ -10,18 +10,18 @@ import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.sensor.SensorState;
 
 /** A serializable Base state. */
-public class BaseState extends RemoteState {
+public class BaseRemoteState extends RemoteState {
 
-    public BaseState(String remoteID, Vector location, double battery, boolean active) {
+    public BaseRemoteState(String remoteID, Vector location, double battery, boolean active) {
         this(remoteID, location, battery, active, null);
     }
 
-    public BaseState(String remoteID, Vector location, double battery, boolean active,
+    public BaseRemoteState(String remoteID, Vector location, double battery, boolean active,
             Collection<SensorState> sensors) {
         super(RemoteType.BASE, remoteID, location, battery, active, sensors);
     }
 
-    public BaseState(JSONOption option) throws JSONException {
+    public BaseRemoteState(JSONOption option) throws JSONException {
         super(option);
     }
 

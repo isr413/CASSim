@@ -10,33 +10,33 @@ import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable prototype of a Base Remote. */
-public class BaseProto extends RemoteProto {
+public class BaseRemoteProto extends RemoteProto {
 
-    public BaseProto() {
+    public BaseRemoteProto() {
         this(null, RemoteProto.DEFAULT_BATTERY_POWER, null);
     }
 
-    public BaseProto(double maxBatteryPower) {
+    public BaseRemoteProto(double maxBatteryPower) {
         this(null, maxBatteryPower, null);
     }
 
-    public BaseProto(Vector location) {
+    public BaseRemoteProto(Vector location) {
         this(location, RemoteProto.DEFAULT_BATTERY_POWER, null);
     }
 
-    public BaseProto(Vector location, double maxBatteryPower) {
+    public BaseRemoteProto(Vector location, double maxBatteryPower) {
         this(location, maxBatteryPower, null);
     }
 
-    public BaseProto(double maxBatteryPower, Collection<SensorConfig> sensors) {
+    public BaseRemoteProto(double maxBatteryPower, Collection<SensorConfig> sensors) {
         this(null, maxBatteryPower, sensors);
     }
 
-    public BaseProto(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {
+    public BaseRemoteProto(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {
         super(RemoteType.BASE, location, maxBatteryPower, sensors);
     }
 
-    public BaseProto(JSONOption option) throws JSONException {
+    public BaseRemoteProto(JSONOption option) throws JSONException {
         super(option);
     }
 

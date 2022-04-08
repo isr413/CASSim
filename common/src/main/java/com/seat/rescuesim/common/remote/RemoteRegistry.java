@@ -5,30 +5,31 @@ import com.seat.rescuesim.common.core.CommonException;
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.remote.base.BaseConfig;
-import com.seat.rescuesim.common.remote.base.BaseProto;
-import com.seat.rescuesim.common.remote.base.BaseState;
+import com.seat.rescuesim.common.remote.base.BaseRemoteConfig;
+import com.seat.rescuesim.common.remote.base.BaseRemoteProto;
+import com.seat.rescuesim.common.remote.base.BaseRemoteState;
 import com.seat.rescuesim.common.remote.mobile.MobileRemoteConfig;
 import com.seat.rescuesim.common.remote.mobile.MobileRemoteProto;
 import com.seat.rescuesim.common.remote.mobile.MobileRemoteState;
-import com.seat.rescuesim.common.remote.mobile.aerial.DroneConfig;
-import com.seat.rescuesim.common.remote.mobile.aerial.DroneProto;
-import com.seat.rescuesim.common.remote.mobile.aerial.DroneState;
-import com.seat.rescuesim.common.remote.mobile.ground.VictimConfig;
-import com.seat.rescuesim.common.remote.mobile.ground.VictimProto;
-import com.seat.rescuesim.common.remote.mobile.ground.VictimState;
+import com.seat.rescuesim.common.remote.mobile.aerial.DroneRemoteConfig;
+import com.seat.rescuesim.common.remote.mobile.aerial.DroneRemoteProto;
+import com.seat.rescuesim.common.remote.mobile.aerial.DroneRemoteState;
+import com.seat.rescuesim.common.remote.mobile.ground.VictimRemoteConfig;
+import com.seat.rescuesim.common.remote.mobile.ground.VictimRemoteProto;
+import com.seat.rescuesim.common.remote.mobile.ground.VictimRemoteState;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A registry of Remote prototypes and supporting serializable types. */
 public class RemoteRegistry {
 
-    public static BaseProto Base(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {
-        return new BaseProto(location, maxBatteryPower, sensors);
+    public static BaseRemoteProto Base(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {
+        return new BaseRemoteProto(location, maxBatteryPower, sensors);
     }
 
-    public static DroneProto Drone(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors,
+    public static DroneRemoteProto Drone(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors,
             Vector batteryUsage, double maxVelocity, double maxAcceleration, double maxJerk) {
-        return new DroneProto(location, maxBatteryPower, sensors, batteryUsage, maxVelocity, maxAcceleration, maxJerk);
+        return new DroneRemoteProto(location, maxBatteryPower, sensors, batteryUsage, maxVelocity, maxAcceleration,
+            maxJerk);
     }
 
     public static MobileRemoteProto GenericMobileRemote(Vector location, double maxBatteryPower,
@@ -41,28 +42,28 @@ public class RemoteRegistry {
         return new RemoteProto(location, maxBatteryPower, sensors);
     }
 
-    public static VictimProto Victim(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors,
+    public static VictimRemoteProto Victim(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors,
             double speedMean, double speedStdDev, double maxVelocity, double maxAcceleration, double maxJerk) {
-        return new VictimProto(location, maxBatteryPower, sensors, speedMean, speedStdDev, maxVelocity, maxAcceleration,
-            maxJerk);
+        return new VictimRemoteProto(location, maxBatteryPower, sensors, speedMean, speedStdDev, maxVelocity,
+            maxAcceleration, maxJerk);
     }
 
     @SuppressWarnings("unchecked")
     public static <T> T decodeAerialRemote(JSONOption option, Class<? extends T> classType, RemoteType remoteType)
             throws CommonException, JSONException {
-        if (classType == RemoteConfig.class || classType == DroneConfig.class) {
+        if (classType == RemoteConfig.class || classType == DroneRemoteConfig.class) {
             switch (remoteType) {
-                default: return (T) new DroneConfig(option);
+                default: return (T) new DroneRemoteConfig(option);
             }
         }
-        if (classType == RemoteProto.class || classType == DroneProto.class) {
+        if (classType == RemoteProto.class || classType == DroneRemoteProto.class) {
             switch (remoteType) {
-                default: return (T) new DroneProto(option);
+                default: return (T) new DroneRemoteProto(option);
             }
         }
-        if (classType == RemoteState.class || classType == DroneState.class) {
+        if (classType == RemoteState.class || classType == DroneRemoteState.class) {
             switch (remoteType) {
-                default: return (T) new DroneState(option);
+                default: return (T) new DroneRemoteState(option);
             }
         }
         throw new CommonException(String.format("Cannot decode aerial remote %s", option.toString()));
@@ -71,19 +72,19 @@ public class RemoteRegistry {
     @SuppressWarnings("unchecked")
     public static <T> T decodeBaseRemote(JSONOption option, Class<? extends T> classType, RemoteType remoteType)
             throws CommonException, JSONException {
-        if (classType == RemoteConfig.class || classType == BaseConfig.class) {
+        if (classType == RemoteConfig.class || classType == BaseRemoteConfig.class) {
             switch (remoteType) {
-                default: return (T) new BaseConfig(option);
+                default: return (T) new BaseRemoteConfig(option);
             }
         }
-        if (classType == RemoteProto.class || classType == BaseProto.class) {
+        if (classType == RemoteProto.class || classType == BaseRemoteProto.class) {
             switch (remoteType) {
-                default: return (T) new BaseProto(option);
+                default: return (T) new BaseRemoteProto(option);
             }
         }
-        if (classType == RemoteState.class || classType == BaseState.class) {
+        if (classType == RemoteState.class || classType == BaseRemoteState.class) {
             switch (remoteType) {
-                default: return (T) new BaseState(option);
+                default: return (T) new BaseRemoteState(option);
             }
         }
         throw new CommonException(String.format("Cannot decode base remote %s", option.toString()));
@@ -92,19 +93,19 @@ public class RemoteRegistry {
     @SuppressWarnings("unchecked")
     public static <T> T decodeGroundRemote(JSONOption option, Class<? extends T> classType, RemoteType remoteType)
             throws CommonException, JSONException {
-        if (classType == RemoteConfig.class || classType == VictimConfig.class) {
+        if (classType == RemoteConfig.class || classType == VictimRemoteConfig.class) {
             switch (remoteType) {
-                default: return (T) new VictimConfig(option);
+                default: return (T) new VictimRemoteConfig(option);
             }
         }
-        if (classType == RemoteProto.class || classType == VictimProto.class) {
+        if (classType == RemoteProto.class || classType == VictimRemoteProto.class) {
             switch (remoteType) {
-                default: return (T) new VictimProto(option);
+                default: return (T) new VictimRemoteProto(option);
             }
         }
-        if (classType == RemoteState.class || classType == VictimState.class) {
+        if (classType == RemoteState.class || classType == VictimRemoteState.class) {
             switch (remoteType) {
-                default: return (T) new VictimState(option);
+                default: return (T) new VictimRemoteState(option);
             }
         }
         throw new CommonException(String.format("Cannot decode ground remote %s", option.toString()));
@@ -138,7 +139,8 @@ public class RemoteRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T decodeTo(JSONOption option, Class<? extends T> classType) throws CommonException, JSONException {
+    public static <T> T decodeTo(JSONOption option, Class<? extends T> classType)
+            throws CommonException, JSONException {
         RemoteType remoteType = RemoteRegistry.decodeType(option);
         if (RemoteRegistry.isRegisteredBaseRemote(classType, remoteType)) {
             return RemoteRegistry.decodeBaseRemote(option, classType, remoteType);
@@ -172,7 +174,8 @@ public class RemoteRegistry {
     }
 
     private static <T> boolean isRegisteredAerialRemote(Class<? extends T> classType) {
-        return classType == DroneConfig.class || classType == DroneProto.class || classType == DroneState.class;
+        return classType == DroneRemoteConfig.class || classType == DroneRemoteProto.class ||
+            classType == DroneRemoteState.class;
     }
 
     private static <T> boolean isRegisteredAerialRemote(Class<? extends T> classType, RemoteType remoteType) {
@@ -180,7 +183,8 @@ public class RemoteRegistry {
     }
 
     private static <T> boolean isRegisteredBaseRemote(Class<? extends T> classType) {
-        return classType == BaseConfig.class || classType == BaseProto.class || classType == BaseState.class;
+        return classType == BaseRemoteConfig.class || classType == BaseRemoteProto.class ||
+            classType == BaseRemoteState.class;
     }
 
     private static <T> boolean isRegisteredBaseRemote(Class<? extends T> classType, RemoteType remoteType) {
@@ -188,7 +192,8 @@ public class RemoteRegistry {
     }
 
     private static <T> boolean isRegisteredGroundRemote(Class<? extends T> classType) {
-        return classType == VictimConfig.class || classType == VictimProto.class || classType == VictimState.class;
+        return classType == VictimRemoteConfig.class || classType == VictimRemoteProto.class ||
+            classType == VictimRemoteState.class;
     }
 
     private static <T> boolean isRegisteredGroundRemote(Class<? extends T> classType, RemoteType remoteType) {
