@@ -7,13 +7,13 @@ import com.seat.rescuesim.common.core.SARApplication;
 import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteConfig;
-import com.seat.rescuesim.common.remote.base.BaseConfig;
-import com.seat.rescuesim.common.remote.base.BaseProto;
+import com.seat.rescuesim.common.remote.base.BaseRemoteConfig;
+import com.seat.rescuesim.common.remote.base.BaseRemoteProto;
 import com.seat.rescuesim.common.remote.intent.IntentionSet;
-import com.seat.rescuesim.common.remote.mobile.aerial.DroneConfig;
-import com.seat.rescuesim.common.remote.mobile.aerial.DroneProto;
-import com.seat.rescuesim.common.remote.mobile.ground.VictimConfig;
-import com.seat.rescuesim.common.remote.mobile.ground.VictimProto;
+import com.seat.rescuesim.common.remote.mobile.aerial.DroneRemoteConfig;
+import com.seat.rescuesim.common.remote.mobile.aerial.DroneRemoteProto;
+import com.seat.rescuesim.common.remote.mobile.ground.VictimRemoteConfig;
+import com.seat.rescuesim.common.remote.mobile.ground.VictimRemoteProto;
 import com.seat.rescuesim.common.scenario.Snapshot;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 import com.seat.rescuesim.common.sensor.SensorType;
@@ -72,16 +72,16 @@ public class ACSOS implements SARApplication {
         );
     }
 
-    public Collection<BaseConfig> getBaseConfigs() {
+    public Collection<BaseRemoteConfig> getBaseRemoteConfigs() {
         ArrayList<SensorConfig> sensors = new ArrayList<>();
         sensors.add(new SensorConfig(this.getLongRangeComms(), 1, true));
-        BaseProto base = new BaseProto(
+        BaseRemoteProto base = new BaseRemoteProto(
             BASE_LOCATION,
             1,
             sensors
         );
-        ArrayList<BaseConfig> baseConfig = new ArrayList<>();
-        baseConfig.add(new BaseConfig(base, 1, false, true));
+        ArrayList<BaseRemoteConfig> baseConfig = new ArrayList<>();
+        baseConfig.add(new BaseRemoteConfig(base, 1, false, true));
         return baseConfig;
     }
 
@@ -89,12 +89,12 @@ public class ACSOS implements SARApplication {
         return 0;
     }
 
-    public Collection<DroneConfig> getDroneConfigs() {
+    public Collection<DroneRemoteConfig> getDroneRemoteConfigs() {
         ArrayList<SensorConfig> sensors = new ArrayList<>();
         sensors.add(new SensorConfig(this.getLongRangeComms(), 1, true));
         sensors.add(new SensorConfig(this.getBluetoothComms(), 1, true));
         sensors.add(new SensorConfig(this.getDroneCamera(), 1, true));
-        DroneProto drone = new DroneProto(
+        DroneRemoteProto drone = new DroneRemoteProto(
             BASE_LOCATION,
             1.0,
             sensors,
@@ -103,8 +103,8 @@ public class ACSOS implements SARApplication {
             3.0,
             1.0
         );
-        ArrayList<DroneConfig> droneConfig = new ArrayList<>();
-        droneConfig.add(new DroneConfig(drone, 1, true, true));
+        ArrayList<DroneRemoteConfig> droneConfig = new ArrayList<>();
+        droneConfig.add(new DroneRemoteConfig(drone, 1, true, true));
         return droneConfig;
     }
 
@@ -119,9 +119,9 @@ public class ACSOS implements SARApplication {
 
     public Collection<RemoteConfig> getRemoteConfigs() {
         ArrayList<RemoteConfig> remotes = new ArrayList<>();
-        remotes.addAll(this.getVictimConfigs());
-        remotes.addAll(this.getBaseConfigs());
-        remotes.addAll(this.getDroneConfigs());
+        remotes.addAll(this.getVictimRemoteConfigs());
+        remotes.addAll(this.getBaseRemoteConfigs());
+        remotes.addAll(this.getDroneRemoteConfigs());
         return remotes;
     }
 
@@ -133,11 +133,11 @@ public class ACSOS implements SARApplication {
         return 0.5;
     }
 
-    public Collection<VictimConfig> getVictimConfigs() {
+    public Collection<VictimRemoteConfig> getVictimRemoteConfigs() {
         ArrayList<SensorConfig> sensors = new ArrayList<>();
         sensors.add(new SensorConfig(this.getBluetoothComms(), 1, true));
         sensors.add(new SensorConfig(this.getVictimHRVM(), 1, true));
-        VictimProto victim = new VictimProto(
+        VictimRemoteProto victim = new VictimRemoteProto(
             null,
             1.0,
             sensors,
@@ -147,8 +147,8 @@ public class ACSOS implements SARApplication {
             1.78,
             1.78
         );
-        ArrayList<VictimConfig> victimConfig = new ArrayList<>();
-        victimConfig.add(new VictimConfig(victim, 100, false, true));
+        ArrayList<VictimRemoteConfig> victimConfig = new ArrayList<>();
+        victimConfig.add(new VictimRemoteConfig(victim, 100, false, true));
         return victimConfig;
     }
 

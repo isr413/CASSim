@@ -55,7 +55,7 @@ public class AppClient {
         Debugger.logger.state(String.format("Loaded application <%s>", this.app.getScenarioID()));
 
         Debugger.logger.info(String.format("Sending scenario <%s> ...", app.getScenarioID()));
-        this.socket.sendScenario(this.app.getScenarioConfig());
+        this.socket.sendScenarioConfig(this.app.getScenarioConfig());
         Debugger.logger.state(String.format("Scenario <%s> sent", app.getScenarioID()));
 
         GUIFrame frame = null;
@@ -67,6 +67,7 @@ public class AppClient {
         }
 
         while (true) {
+            Debugger.logger.info("Waiting for snap ...");
             Snapshot snap = this.socket.getSnapshotBlocking();
             Debugger.logger.state(String.format("Received snap <%s> for time=%.2f", snap.getHash(), snap.getTime()));
 
