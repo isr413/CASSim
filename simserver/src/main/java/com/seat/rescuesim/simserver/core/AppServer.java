@@ -14,15 +14,15 @@ public class AppServer {
 
     private JSONSocket socket;
 
-    public AppServer() {
+    public AppServer() throws CommonException {
         this.socket = JSONSocket.Server();
     }
 
-    public AppServer(int port) {
+    public AppServer(int port) throws CommonException {
         this.socket = JSONSocket.Server(port);
     }
 
-    public void run() throws CommonException, ServerException {
+    public void run() throws CommonException, ServerException, SimException {
         Debugger.logger.info("Running server ...");
 
         Debugger.logger.info("Waiting for scenario config ...");

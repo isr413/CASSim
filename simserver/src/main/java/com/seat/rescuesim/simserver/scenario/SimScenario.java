@@ -49,6 +49,11 @@ public class SimScenario {
         this.initRemotes();
     }
 
+    private void assertFail(String msg) {
+        Debugger.logger.err(msg);
+        this.setStatus(ScenarioStatus.ERROR);
+    }
+
     private void enforceBounds(MobileRemote remote, Vector prevLocation) {
         if (this.getMap().isInbounds(remote.getLocation())) {
             return;
@@ -86,7 +91,7 @@ public class SimScenario {
                 Remote remote = RemoteFactory.getRemote(remoteProto, remoteID, remoteConfig.isActive());
                 remoteCount++;
                 this.allRemotes.put(remoteID, remote);
-                if (remote.isActive()) {
+                if (remoteConfig.isActive()) {
                     this.activeRemotes.put(remoteID, remote);
                 }
                 if (remoteConfig.isDynamic()) {
@@ -109,6 +114,7 @@ public class SimScenario {
                                 mobileRemote.getProto().getMaxVelocity()
                             ));
                         } else {
+                            // TODO: scale initial velocity
                             mobileRemote.setVelocity(this.rng.getRandomDirection2D());
                         }
                     }
@@ -332,7 +338,11 @@ public class SimScenario {
     }
 
     public boolean isInProgress() {
-        return this.status.equals(ScenarioStatus.START) || this.status.equals(ScenarioStatus.IN_PROGRESS);
+        return this.justStarted() || this.status.equals(ScenarioStatus.IN_PROGRESS);
+    }
+
+    public boolean justStarted() {
+        return this.status.equals(ScenarioStatus.START);
     }
 
     public void setStatus(ScenarioStatus status) {
@@ -358,14 +368,8 @@ public class SimScenario {
                 remote.update(this, stepSize);
             }
             if (this.getMap().isOutOfBounds(remote.getLocation())) {
-                Debugger.logger.err(String.format("Remote %s out of bounds at %s", remote.getLabel(),
+                this.assertFail(String.format("Remote %s out of bounds at %s", remote.getLabel(),
                     remote.getLocation().toString()));
-                this.setStatus(ScenarioStatus.ERROR);
-            }
-            if ((remote.isInactive() || remote.isDone()) && this.hasActiveRemoteWithID(remote.getRemoteID())) {
-                this.activeRemotes.remove(remote.getRemoteID());
-            } else if (remote.isActive() && !this.hasActiveRemoteWithID(remote.getRemoteID())) {
-                this.activeRemotes.put(remote.getRemoteID(), remote);
             }
         }
     }
@@ -378,7 +382,7 @@ public class SimScenario {
                 remote.update(this, intentions.get(remote.getRemoteID()), stepSize);
             } else {
                 RemoteController controller = new RemoteController(remote.getRemoteID());
-                if (this.status.equals(ScenarioStatus.START) && remote.isActive() && remote.hasInactiveSensors()) {
+                if (this.justStarted() && remote.isActive() && remote.hasInactiveSensors()) {
                     controller.activateAllSensors();
                 }
                 if ((remote.isInactive() || remote.isDone()) && remote.hasActiveSensors()) {
@@ -404,16 +408,10 @@ public class SimScenario {
                         this.enforceBounds((MobileRemote) remote, location);
                     }
                 } else {
-                    Debugger.logger.err(String.format("Remote %s out of bounds at %s", remote.getLabel(),
-                        location.toString()));
-                    this.setStatus(ScenarioStatus.ERROR);
+                    this.assertFail(String.format("Remote %s out of bounds at %s", remote.getLabel(),
+                        remote.getLocation().toString()));
                     continue;
                 }
-            }
-            if ((remote.isInactive() || remote.isDone()) && this.hasActiveRemoteWithID(remote.getRemoteID())) {
-                this.activeRemotes.remove(remote.getRemoteID());
-            } else if (remote.isActive() && !this.hasActiveRemoteWithID(remote.getRemoteID())) {
-                this.activeRemotes.put(remote.getRemoteID(), remote);
             }
         }
     }
@@ -436,7 +434,14 @@ public class SimScenario {
         }
         this.updateDynamicRemotes(intentions, stepSize);
         this.updatePassiveRemotes(intentions, stepSize);
-        if (this.status.equals(ScenarioStatus.START)) {
+        for (Remote remote : this.getRemotes()) {
+            if ((remote.isInactive() || remote.isDone()) && this.hasActiveRemoteWithID(remote.getRemoteID())) {
+                this.activeRemotes.remove(remote.getRemoteID());
+            } else if (remote.isActive() && !this.hasActiveRemoteWithID(remote.getRemoteID())) {
+                this.activeRemotes.put(remote.getRemoteID(), remote);
+            }
+        }
+        if (this.justStarted()) {
             this.setStatus(ScenarioStatus.IN_PROGRESS);
         }
         if (this.getMissionLength() <= this.time) {

@@ -112,8 +112,10 @@ public class MobileRemote extends Remote {
     public void update(SimScenario scenario, IntentionSet intentions, double stepSize) throws SimException {
         super.update(scenario, intentions, stepSize);
         if (this.isDisabled() || this.isInactive() || this.isDone()) {
-            this.updateVelocityTo(new Vector(), stepSize);
-            this.updateLocation(this.velocity, stepSize);
+            if (this.isInMotion()) {
+                this.updateVelocityTo(new Vector(), stepSize);
+                this.updateLocation(this.velocity, stepSize);
+            }
             return;
         }
         if (intentions == null) {

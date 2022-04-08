@@ -60,6 +60,9 @@ public class Remote {
                 sensorCount++;
                 Sensor sensor = SensorFactory.getSensor(sensorProto, sensorID, sensorConfig.isActive());
                 this.allSensors.put(sensorID, sensor);
+                if (sensorConfig.isActive()) {
+                    this.activeSensors.put(sensorID, sensor);
+                }
             }
         }
     }
@@ -391,6 +394,9 @@ public class Remote {
 
     public void update(SimScenario scenario, IntentionSet intentions, double stepSize) throws SimException {
         if (this.isDisabled() || this.isDone()) {
+            if (this.isActive()) {
+                this.setInactive();
+            }
             return;
         }
         if (intentions != null) {
@@ -438,6 +444,11 @@ public class Remote {
 
     protected void updateLocation(Vector delta, double stepSize) {
         this.location = Vector.add(this.location, Vector.scale(delta, stepSize));
+    }
+
+    public boolean equals(Remote remote) {
+        if (remote == null) return false;
+        return this.remoteID.equals(remote.remoteID);
     }
 
 }
