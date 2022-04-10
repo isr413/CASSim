@@ -1,6 +1,5 @@
 package com.seat.rescuesim.client.gui;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -16,18 +15,26 @@ import com.seat.rescuesim.common.scenario.Snapshot;
 
 public class GUIFrame extends JFrame {
 
+    protected static final int DEFAULT_PANEL_WIDTH = 1280;
+    protected static final int DEFAULT_PANEL_HEIGHT = 720;
+    protected static final String DEFAULT_TITLE = "App";
+
     private GUIPanel panel;
 
-    public GUIFrame() {
-        this("App");
+    public GUIFrame(int mapWidth, int mapHeight, int zoneSize) {
+        this(GUIFrame.DEFAULT_TITLE, mapWidth, mapHeight, zoneSize);
     }
 
-    public GUIFrame(String title) {
-        this(title, 1280, 720);
+    public GUIFrame(String title, int mapWidth, int mapHeight, int zoneSize) {
+        this(title, GUIFrame.DEFAULT_PANEL_WIDTH, GUIFrame.DEFAULT_PANEL_HEIGHT, mapWidth, mapHeight, zoneSize);
     }
 
-    public GUIFrame(String title, int width, int height) {
-        this.panel = new GUIPanel(width, height);
+    public GUIFrame(int width, int height, int mapWidth, int mapHeight, int zoneSize) {
+        this(GUIFrame.DEFAULT_TITLE, width, height, mapWidth, mapHeight, zoneSize);
+    }
+
+    public GUIFrame(String title, int width, int height, int mapWidth, int mapHeight, int zoneSize) {
+        this.panel = new GUIPanel(width, height, mapWidth, mapHeight, zoneSize);
         add(this.panel);
         setTitle(title);
         setSize(width, height);
@@ -36,46 +43,82 @@ public class GUIFrame extends JFrame {
     }
 
     public void displaySnap(Snapshot snap) {
-        this.displaySnap(snap, this.panel.getWidth(), this.panel.getHeight());
-    }
-
-    public void displaySnap(Snapshot snap, int width, int height) {
         ArrayList<Point> points = new ArrayList<>();
         for (RemoteState state : snap.getState()) {
             points.add(Point.Colored((int) state.getLocation().getX(), (int) state.getLocation().getY(),
                 state.getTeam()));
         }
-        this.panel.paintPoints(points, width, height);
+        this.panel.paintPoints(points);
     }
 
     static class GUIPanel extends JPanel implements ActionListener {
 
+        protected static final Color DEFAULT_GRID_COLOR = Color.LIGHT_GRAY;
+        protected static final Color DEFAULT_MAP_BOUNDS_COLOR = Color.DARK_GRAY;
+
         private int height;
-        private double heightScale;
+        private int mapHeight;
+        private int mapWidth;
         private ArrayList<Point> points = new ArrayList<>();
         private int width;
-        private double widthScale;
+        private int zoneSize;
 
-        public GUIPanel(int width, int height) {
+        public GUIPanel(int width, int height, int mapWidth, int mapHeight, int zoneSize) {
             this.width = width;
             this.height = height;
+            this.mapWidth = mapWidth;
+            this.mapHeight = mapHeight;
+            this.zoneSize = zoneSize;
         }
 
-        private void drawPoints(Graphics g) {
+        private void drawDisplay(Graphics g) {
             Graphics2D g2d = (Graphics2D) g;
-            g2d.setStroke(new BasicStroke(5));
+            this.drawGridLines(g2d);
+            this.drawMapBounds(g2d);
+            this.drawPoints(g2d);
+        }
+
+        private void drawPoints(Graphics2D g2d) {
             for (Point p : this.points) {
-                int x = (int) Math.round(p.x * this.widthScale);
-                int y = (int) Math.round(p.y * this.heightScale);
                 g2d.setPaint(p.color);
-                g2d.drawLine(x, y, x, y);
+                g2d.drawLine(this.getMapX() + p.x, this.getMapY() + p.y, this.getMapX() + p.x, this.getMapY() + p.y);
             }
-            g2d.setPaint(Color.BLACK);
+        }
+
+        private void drawGridLines(Graphics2D g2d) {
+            g2d.setPaint(GUIPanel.DEFAULT_GRID_COLOR);
+            for (int i = this.getMapX() + this.zoneSize; i < this.getMapX() + this.mapWidth; i += this.zoneSize) {
+                g2d.drawLine(i, this.getMapY(), i, this.getMapY() + this.mapHeight);
+            }
+            for (int j = this.getMapY() + this.zoneSize; j < this.getMapY() + this.mapHeight; j += this.zoneSize) {
+                g2d.drawLine(this.getMapX(), j, this.getMapX() + this.mapWidth, j);
+            }
+        }
+
+        private void drawMapBounds(Graphics2D g2d) {
+            g2d.setPaint(GUIPanel.DEFAULT_MAP_BOUNDS_COLOR);
+            g2d.drawRect(this.getMapX(), this.getMapY(), this.mapWidth, this.mapHeight);
+        }
+
+        private int getMapX() {
+            return this.getCenterX() - (this.mapWidth / 2);
+        }
+
+        private int getMapY() {
+            return this.getCenterY() - (this.mapHeight / 2);
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
             repaint();
+        }
+
+        public int getCenterX() {
+            return this.width / 2;
+        }
+
+        public int getCenterY() {
+            return this.height / 2;
         }
 
         public int getHeight() {
@@ -89,13 +132,11 @@ public class GUIFrame extends JFrame {
         @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
-            drawPoints(g);
+            drawDisplay(g);
         }
 
-        public void paintPoints(ArrayList<Point> points, int width, int height) {
+        public void paintPoints(ArrayList<Point> points) {
             this.points = points;
-            this.widthScale = ((float) this.width) / width;
-            this.heightScale = ((float) this.height * 0.95) / height;
             repaint();
         }
 

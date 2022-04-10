@@ -63,7 +63,8 @@ public class AppClient {
         GUIFrame frame = null;
         if (visualDisplay) {
             Debugger.logger.info("Starting visual display ...");
-            frame = new GUIFrame(app.getScenarioID());
+            frame = new GUIFrame(app.getScenarioID(), this.app.getMap().getWidth(), this.app.getMap().getHeight(),
+                this.app.getMap().getZoneSize());
             frame.setVisible(true);
             Debugger.logger.state("Frame set to visible");
         }
@@ -85,7 +86,7 @@ public class AppClient {
             Debugger.logger.info(snap.toString());
             if (visualDisplay && frame != null) {
                 Debugger.logger.info(String.format("Displaying snap <%s> ...", snap.getHash()));
-                frame.displaySnap(snap, app.getMap().getWidth(), app.getMap().getHeight());
+                frame.displaySnap(snap);
             }
 
             Debugger.logger.info("Updating application ...");
