@@ -1,8 +1,10 @@
 package com.seat.rescuesim.client.gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -51,6 +53,11 @@ public class GUIMapFrame extends JFrame {
     }
 
     public GUIMapFrame(String title, int panelWidth, int panelHeight, int mapWidth, int mapHeight, int zoneSize) {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        if (screenSize.getWidth() < panelWidth || screenSize.getHeight() < panelHeight) {
+            panelWidth = (int) screenSize.getWidth();
+            panelHeight = (int) screenSize.getHeight();
+        }
         this.panel = new GUIMapPanel(panelWidth, panelHeight, mapWidth, mapHeight, zoneSize);
         add(this.panel);
         setTitle(title);
