@@ -2,7 +2,7 @@ package com.seat.rescuesim.client.core;
 
 import java.util.Collection;
 
-import com.seat.rescuesim.client.gui.GUIFrame;
+import com.seat.rescuesim.client.gui.GUIMapFrame;
 import com.seat.rescuesim.common.core.Application;
 import com.seat.rescuesim.common.core.CommonException;
 import com.seat.rescuesim.common.net.JSONSocket;
@@ -60,11 +60,10 @@ public class AppClient {
 
         Debugger.logger.info(this.app.getScenarioConfig().toString());
 
-        GUIFrame frame = null;
+        GUIMapFrame frame = null;
         if (visualDisplay) {
             Debugger.logger.info("Starting visual display ...");
-            frame = new GUIFrame(app.getScenarioID(), this.app.getMap().getWidth(), this.app.getMap().getHeight(),
-                this.app.getMap().getZoneSize());
+            frame = new GUIMapFrame(app.getScenarioID(), this.app.getMap());
             frame.setVisible(true);
             Debugger.logger.state("Frame set to visible");
         }

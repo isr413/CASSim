@@ -10,34 +10,51 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.seat.rescuesim.common.core.TeamColor;
+import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.remote.RemoteState;
 import com.seat.rescuesim.common.scenario.Snapshot;
 
-public class GUIFrame extends JFrame {
+public class GUIMapFrame extends JFrame {
 
     protected static final int DEFAULT_PANEL_WIDTH = 1280;
     protected static final int DEFAULT_PANEL_HEIGHT = 720;
     protected static final String DEFAULT_TITLE = "App";
 
-    private GUIPanel panel;
+    private GUIMapPanel panel;
 
-    public GUIFrame(int mapWidth, int mapHeight, int zoneSize) {
-        this(GUIFrame.DEFAULT_TITLE, mapWidth, mapHeight, zoneSize);
+    public GUIMapFrame(Map map) {
+        this(map.getWidth(), map.getHeight(), map.getZoneSize());
     }
 
-    public GUIFrame(String title, int mapWidth, int mapHeight, int zoneSize) {
-        this(title, GUIFrame.DEFAULT_PANEL_WIDTH, GUIFrame.DEFAULT_PANEL_HEIGHT, mapWidth, mapHeight, zoneSize);
+    public GUIMapFrame(int mapWidth, int mapHeight, int zoneSize) {
+        this(GUIMapFrame.DEFAULT_TITLE, mapWidth, mapHeight, zoneSize);
     }
 
-    public GUIFrame(int width, int height, int mapWidth, int mapHeight, int zoneSize) {
-        this(GUIFrame.DEFAULT_TITLE, width, height, mapWidth, mapHeight, zoneSize);
+    public GUIMapFrame(String title, Map map) {
+        this(title, map.getWidth(), map.getHeight(), map.getZoneSize());
     }
 
-    public GUIFrame(String title, int width, int height, int mapWidth, int mapHeight, int zoneSize) {
-        this.panel = new GUIPanel(width, height, mapWidth, mapHeight, zoneSize);
+    public GUIMapFrame(String title, int mapWidth, int mapHeight, int zoneSize) {
+        this(title, GUIMapFrame.DEFAULT_PANEL_WIDTH, GUIMapFrame.DEFAULT_PANEL_HEIGHT, mapWidth, mapHeight, zoneSize);
+    }
+
+    public GUIMapFrame(int panelWidth, int panelHeight, Map map) {
+        this(panelWidth, panelHeight, map.getWidth(), map.getHeight(), map.getZoneSize());
+    }
+
+    public GUIMapFrame(int panelWidth, int panelHeight, int mapWidth, int mapHeight, int zoneSize) {
+        this(GUIMapFrame.DEFAULT_TITLE, panelWidth, panelHeight, mapWidth, mapHeight, zoneSize);
+    }
+
+    public GUIMapFrame(String title, int panelWidth, int panelHeight, Map map) {
+        this(title, panelWidth, panelHeight, map.getWidth(), map.getHeight(), map.getZoneSize());
+    }
+
+    public GUIMapFrame(String title, int panelWidth, int panelHeight, int mapWidth, int mapHeight, int zoneSize) {
+        this.panel = new GUIMapPanel(panelWidth, panelHeight, mapWidth, mapHeight, zoneSize);
         add(this.panel);
         setTitle(title);
-        setSize(width, height);
+        setSize(panelWidth, panelHeight);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
@@ -51,7 +68,7 @@ public class GUIFrame extends JFrame {
         this.panel.paintPoints(points);
     }
 
-    static class GUIPanel extends JPanel implements ActionListener {
+    static class GUIMapPanel extends JPanel implements ActionListener {
 
         protected static final Color DEFAULT_GRID_COLOR = Color.LIGHT_GRAY;
         protected static final Color DEFAULT_MAP_BOUNDS_COLOR = Color.DARK_GRAY;
@@ -63,7 +80,7 @@ public class GUIFrame extends JFrame {
         private int width;
         private int zoneSize;
 
-        public GUIPanel(int width, int height, int mapWidth, int mapHeight, int zoneSize) {
+        public GUIMapPanel(int width, int height, int mapWidth, int mapHeight, int zoneSize) {
             this.width = width;
             this.height = height;
             this.mapWidth = mapWidth;
@@ -86,7 +103,7 @@ public class GUIFrame extends JFrame {
         }
 
         private void drawGridLines(Graphics2D g2d) {
-            g2d.setPaint(GUIPanel.DEFAULT_GRID_COLOR);
+            g2d.setPaint(GUIMapPanel.DEFAULT_GRID_COLOR);
             for (int i = this.getMapX() + this.zoneSize; i < this.getMapX() + this.mapWidth; i += this.zoneSize) {
                 g2d.drawLine(i, this.getMapY(), i, this.getMapY() + this.mapHeight);
             }
@@ -96,7 +113,7 @@ public class GUIFrame extends JFrame {
         }
 
         private void drawMapBounds(Graphics2D g2d) {
-            g2d.setPaint(GUIPanel.DEFAULT_MAP_BOUNDS_COLOR);
+            g2d.setPaint(GUIMapPanel.DEFAULT_MAP_BOUNDS_COLOR);
             g2d.drawRect(this.getMapX(), this.getMapY(), this.mapWidth, this.mapHeight);
         }
 
