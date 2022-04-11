@@ -9,7 +9,6 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteState;
-import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.sensor.SensorState;
 
 /** A serializable state of a Mobile Remote. */
@@ -22,24 +21,12 @@ public class MobileRemoteState extends RemoteState {
 
     public MobileRemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active,
             Vector velocity, Vector acceleration) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, remoteID, team, location, battery, active,
-            null, velocity, acceleration);
+        this(remoteID, team, location, battery, active, null, velocity, acceleration);
     }
 
     public MobileRemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active,
             Collection<SensorState> sensors, Vector velocity, Vector acceleration) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, remoteID, team, location, battery, active, sensors, velocity,
-            acceleration);
-    }
-
-    public MobileRemoteState(RemoteType remoteType, String remoteID, TeamColor team, Vector location, double battery,
-            boolean active, Vector velocity, Vector acceleration) {
-        this(remoteType, remoteID, team, location, battery, active, null, velocity, acceleration);
-    }
-
-    public MobileRemoteState(RemoteType remoteType, String remoteID, TeamColor team, Vector location, double battery,
-            boolean active, Collection<SensorState> sensors, Vector velocity, Vector acceleration) {
-        super(remoteType, remoteID, team, location, battery, active, sensors);
+        super(remoteID, team, location, battery, active, sensors);
         this.velocity = velocity;
         this.acceleration = acceleration;
     }

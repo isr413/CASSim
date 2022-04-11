@@ -9,10 +9,13 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.map.Map;
 import com.seat.rescuesim.common.remote.RemoteConfig;
-import com.seat.rescuesim.common.remote.RemoteType;
+import com.seat.rescuesim.common.remote.RemoteProto;
 import com.seat.rescuesim.common.remote.base.BaseRemoteConfig;
+import com.seat.rescuesim.common.remote.base.BaseRemoteProto;
 import com.seat.rescuesim.common.remote.mobile.aerial.DroneRemoteConfig;
+import com.seat.rescuesim.common.remote.mobile.aerial.DroneRemoteProto;
 import com.seat.rescuesim.common.remote.mobile.ground.VictimRemoteConfig;
+import com.seat.rescuesim.common.remote.mobile.ground.VictimRemoteProto;
 
 public class SARConfig extends ScenarioConfig {
     public static final String DISASTER_SCALE = "disaster_scale";
@@ -21,6 +24,18 @@ public class SARConfig extends ScenarioConfig {
     public static final String NUM_VICTIMS = "num_victims";
 
     protected static final double DEFAULT_DISASTER_SCALE = 0.0;
+
+    private static boolean isBaseRemoteProto(RemoteProto proto) {
+        return BaseRemoteProto.class.isAssignableFrom(proto.getClass());
+    }
+
+    private static boolean isDroneRemoteProto(RemoteProto proto) {
+        return DroneRemoteProto.class.isAssignableFrom(proto.getClass());
+    }
+
+    private static boolean isVictimRemoteProto(RemoteProto proto) {
+        return VictimRemoteProto.class.isAssignableFrom(proto.getClass());
+    }
 
     private double disasterScale;
     private int numBases;
@@ -97,7 +112,7 @@ public class SARConfig extends ScenarioConfig {
     private void countBases() {
         this.numBases = 0;
         for (RemoteConfig config : this.getRemotes()) {
-            if (config.getRemoteType().equals(RemoteType.BASE)) {
+            if (SARConfig.isBaseRemoteProto(config.getProto())) {
                 this.numBases += config.getCount();
             }
         }
@@ -106,7 +121,7 @@ public class SARConfig extends ScenarioConfig {
     private void countDrones() {
         this.numDrones = 0;
         for (RemoteConfig config : this.getRemotes()) {
-            if (config.getRemoteType().equals(RemoteType.DRONE)) {
+            if (SARConfig.isDroneRemoteProto(config.getProto())) {
                 this.numDrones += config.getCount();
             }
         }
@@ -115,7 +130,7 @@ public class SARConfig extends ScenarioConfig {
     private void countVictims() {
         this.numVictims = 0;
         for (RemoteConfig config : this.getRemotes()) {
-            if (config.getRemoteType().equals(RemoteType.VICTIM)) {
+            if (SARConfig.isVictimRemoteProto(config.getProto())) {
                 this.numVictims += config.getCount();
             }
         }
@@ -130,7 +145,7 @@ public class SARConfig extends ScenarioConfig {
     public Collection<BaseRemoteConfig> getBases() {
         ArrayList<BaseRemoteConfig> baseConfig = new ArrayList<>();
         for (RemoteConfig config : this.getRemotes()) {
-            if (config.getRemoteType().equals(RemoteType.BASE)) {
+            if (SARConfig.isBaseRemoteProto(config.getProto())) {
                 baseConfig.add((BaseRemoteConfig) config);
             }
         }
@@ -144,7 +159,7 @@ public class SARConfig extends ScenarioConfig {
     public Collection<DroneRemoteConfig> getDrones() {
         ArrayList<DroneRemoteConfig> droneConfig = new ArrayList<>();
         for (RemoteConfig config : this.getRemotes()) {
-            if (config.getRemoteType().equals(RemoteType.DRONE)) {
+            if (SARConfig.isDroneRemoteProto(config.getProto())) {
                 droneConfig.add((DroneRemoteConfig) config);
             }
         }
@@ -166,7 +181,7 @@ public class SARConfig extends ScenarioConfig {
     public Collection<VictimRemoteConfig> getVictims() {
         ArrayList<VictimRemoteConfig> victimConfig = new ArrayList<>();
         for (RemoteConfig config : this.getRemotes()) {
-            if (config.getRemoteType().equals(RemoteType.VICTIM)) {
+            if (SARConfig.isVictimRemoteProto(config.getProto())) {
                 victimConfig.add((VictimRemoteConfig) config);
             }
         }

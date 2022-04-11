@@ -13,7 +13,6 @@ import com.seat.rescuesim.common.remote.RemoteConfig;
 import com.seat.rescuesim.common.remote.RemoteController;
 import com.seat.rescuesim.common.remote.RemoteProto;
 import com.seat.rescuesim.common.remote.RemoteState;
-import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.remote.intent.IntentionSet;
 import com.seat.rescuesim.common.scenario.ScenarioConfig;
 import com.seat.rescuesim.common.scenario.ScenarioStatus;
@@ -102,7 +101,7 @@ public class SimScenario {
                     remote.setLocation(this.rng.getRandomLocation2D(this.getMapWidth(), this.getMapHeight()));
                 }
                 if (remoteConfig.isPassive() && remote.isActive() && remote.isMobile()) {
-                    if (remoteConfig.getRemoteType().equals(RemoteType.VICTIM)) {
+                    if (VictimRemote.class.isAssignableFrom(remote.getClass())) {
                         VictimRemote victim = (VictimRemote) remote;
                         victim.setVelocity(this.rng.getRandomSpeed2D(
                             victim.getProto().getSpeedMean(),

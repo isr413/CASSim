@@ -10,7 +10,6 @@ import com.seat.rescuesim.common.core.TeamColor;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteProto;
 import com.seat.rescuesim.common.remote.RemoteState;
-import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.remote.intent.ActivateIntention;
 import com.seat.rescuesim.common.remote.intent.DeactivateIntention;
 import com.seat.rescuesim.common.remote.intent.Intention;
@@ -235,7 +234,7 @@ public class Remote {
         return this.remoteID;
     }
 
-    public RemoteType getRemoteType() {
+    public String getRemoteType() {
         return this.proto.getRemoteType();
     }
 
@@ -277,8 +276,7 @@ public class Remote {
     }
 
     public RemoteState getState() {
-        return new RemoteState(this.getRemoteType(), this.remoteID, this.team, this.location, this.battery,
-            this.active);
+        return new RemoteState(this.remoteID, this.team, this.location, this.battery, this.active);
     }
 
     public TeamColor getTeam() {

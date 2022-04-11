@@ -7,7 +7,6 @@ import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.remote.mobile.MobileRemoteProto;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 
@@ -39,7 +38,7 @@ public class VictimRemoteProto extends MobileRemoteProto {
 
     public VictimRemoteProto(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors,
             double speedMean, double speedStdDev, double maxVelocity, double maxAcceleration, double maxJerk) {
-        super(RemoteType.VICTIM, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
+        super(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
         this.speedMean = speedMean;
         this.speedStdDev = speedStdDev;
     }
@@ -65,11 +64,6 @@ public class VictimRemoteProto extends MobileRemoteProto {
         json.put(VictimRemoteProto.SPEED_MEAN, this.speedMean);
         json.put(VictimRemoteProto.SPEED_STDDEV, this.speedStdDev);
         return json;
-    }
-
-    @Override
-    public String getLabel() {
-        return String.format("v:%s", this.getRemoteType().getLabel());
     }
 
     public double getSpeedMean() {

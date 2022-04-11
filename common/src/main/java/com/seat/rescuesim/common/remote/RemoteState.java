@@ -29,27 +29,15 @@ public class RemoteState extends JSONAble {
     private double battery;
     private Vector location;
     private String remoteID;
-    private RemoteType remoteType;
     private HashMap<String, SensorState> sensors;
     private TeamColor team;
 
     public RemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active) {
-        this(RemoteProto.DEFAULT_REMOTE_TYPE, remoteID, team, location, battery, active, null);
+        this(remoteID, team, location, battery, active, null);
     }
 
     public RemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active,
             Collection<SensorState> sensors) {
-        this(RemoteProto.DEFAULT_REMOTE_TYPE, remoteID, team, location, battery, active, sensors);
-    }
-
-    public RemoteState(RemoteType remoteType, String remoteID, TeamColor team, Vector location, double battery,
-            boolean active) {
-        this(remoteType, remoteID, team, location, battery, active, null);
-    }
-
-    public RemoteState(RemoteType remoteType, String remoteID, TeamColor team, Vector location, double battery,
-            boolean active, Collection<SensorState> sensors) {
-        this.remoteType = remoteType;
         this.remoteID = remoteID;
         this.team = team;
         this.location = location;
@@ -69,7 +57,6 @@ public class RemoteState extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.remoteType = RemoteType.decodeType(json);
         this.remoteID = json.getString(RemoteState.REMOTE_ID);
         this.team = (json.hasKey(TeamColor.TEAM)) ?
             TeamColor.decodeType(json) :
@@ -89,7 +76,7 @@ public class RemoteState extends JSONAble {
 
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(RemoteType.REMOTE_TYPE, this.remoteType.getType());
+        json.put(RemoteRegistry.REMOTE_TYPE, this.getRemoteType());
         json.put(RemoteState.REMOTE_ID, this.remoteID);
         if (this.hasTeam()) {
             json.put(TeamColor.TEAM, this.team.getType());
@@ -112,7 +99,7 @@ public class RemoteState extends JSONAble {
     }
 
     public String getLabel() {
-        return String.format("%s:%s", this.remoteID, this.remoteType.getLabel());
+        return String.format("%s:<%s>", this.remoteID, this.getRemoteType());
     }
 
     public Vector getLocation() {
@@ -123,8 +110,8 @@ public class RemoteState extends JSONAble {
         return this.remoteID;
     }
 
-    public RemoteType getRemoteType() {
-        return this.remoteType;
+    public String getRemoteType() {
+        return this.getClass().getName();
     }
 
     public ArrayList<SensorState> getSensors() {
@@ -176,7 +163,7 @@ public class RemoteState extends JSONAble {
 
     public boolean equals(RemoteState state) {
         if (state == null) return false;
-        return this.remoteType.equals(state.remoteType) && this.remoteID.equals(state.remoteID) &&
+        return this.getRemoteType().equals(state.getRemoteType()) && this.remoteID.equals(state.remoteID) &&
             this.team.equals(state.team) && this.location.equals(state.location) && this.battery == state.battery &&
             this.active == state.active && this.sensors.equals(state.sensors);
     }

@@ -19,47 +19,28 @@ import com.seat.rescuesim.common.util.Debugger;
 
 /** A serializable prototype of a Remote. */
 public class RemoteProto extends JSONAble {
-    public static final RemoteType DEFAULT_REMOTE_TYPE = RemoteType.GENERIC;
     public static final String LOCATION = "location";
     public static final String MAX_BATTERY = "max_battery";
     public static final String SENSORS = "sensors";
 
     private Vector location;
     private double maxBatteryPower;
-    private RemoteType remoteType;
     private ArrayList<SensorConfig> sensors;
 
     public RemoteProto(double maxBatteryPower) {
-        this(RemoteProto.DEFAULT_REMOTE_TYPE, null, maxBatteryPower, null);
+        this(null, maxBatteryPower, null);
     }
 
     public RemoteProto(Vector location, double maxBatteryPower) {
-        this(RemoteProto.DEFAULT_REMOTE_TYPE, location, maxBatteryPower, null);
+        this(location, maxBatteryPower, null);
     }
 
     public RemoteProto(double maxBatteryPower, Collection<SensorConfig> sensors) {
-        this(RemoteProto.DEFAULT_REMOTE_TYPE, null, maxBatteryPower, sensors);
+        this(null, maxBatteryPower, sensors);
     }
 
-    public RemoteProto(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {
-        this(RemoteProto.DEFAULT_REMOTE_TYPE, location, maxBatteryPower, sensors);
-    }
-
-    public RemoteProto(RemoteType remoteType, double maxBatteryPower) {
-        this(remoteType, null, maxBatteryPower, null);
-    }
-
-    public RemoteProto(RemoteType remoteType, Vector location, double maxBatteryPower) {
-        this(remoteType, location, maxBatteryPower, null);
-    }
-
-    public RemoteProto(RemoteType remoteType, double maxBatteryPower, Collection<SensorConfig> sensors) {
-        this(remoteType, null, maxBatteryPower, sensors);
-    }
-
-    public RemoteProto(RemoteType remoteType, Vector location, double maxBatteryPower,
+    public RemoteProto(Vector location, double maxBatteryPower,
             Collection<SensorConfig> sensors) {
-        this.remoteType = remoteType;
         this.location = location; // a remote with a null location should be randomly assigned a location
         this.maxBatteryPower = maxBatteryPower;
         this.sensors = (sensors != null) ? new ArrayList<>(sensors) : new ArrayList<>();
@@ -71,7 +52,6 @@ public class RemoteProto extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.remoteType = RemoteType.decodeType(json);
         this.location = (json.hasKey(RemoteProto.LOCATION)) ?
             this.location = new Vector(json.getJSONOption(RemoteProto.LOCATION)) :
             null;
@@ -87,7 +67,7 @@ public class RemoteProto extends JSONAble {
 
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(RemoteType.REMOTE_TYPE, this.remoteType.getType());
+        json.put(RemoteRegistry.REMOTE_TYPE, this.getRemoteType());
         if (this.hasLocation()) {
             json.put(RemoteProto.LOCATION, this.location.toJSON());
         }
@@ -103,7 +83,7 @@ public class RemoteProto extends JSONAble {
     }
 
     public String getLabel() {
-        return String.format("r:%s", this.remoteType.getLabel());
+        return String.format("r:<%s>", this.getRemoteType());
     }
 
     public Vector getLocation() {
@@ -114,8 +94,8 @@ public class RemoteProto extends JSONAble {
         return this.maxBatteryPower;
     }
 
-    public RemoteType getRemoteType() {
-        return this.remoteType;
+    public String getRemoteType() {
+        return this.getClass().getName();
     }
 
     public SensorConfig getSensor(int idx) throws CommonException {
@@ -196,7 +176,7 @@ public class RemoteProto extends JSONAble {
 
     public boolean equals(RemoteProto proto) {
         if (proto == null) return false;
-        return this.remoteType.equals(proto.remoteType) &&
+        return this.getRemoteType().equals(proto.getRemoteType()) &&
             ((this.hasLocation() && this.location.equals(proto.location)) || this.location == proto.location) &&
             this.maxBatteryPower == proto.maxBatteryPower && this.sensors.equals(proto.sensors);
     }

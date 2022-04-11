@@ -8,12 +8,10 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteProto;
-import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable prototype of a Mobile Remote. */
 public class MobileRemoteProto extends RemoteProto {
-    public static final RemoteType DEFAULT_MOBILE_REMOTE_TYPE = RemoteType.MOBILE;
     public static final String MAX_ACCELERATION = "max_acceleration";
     public static final String MAX_JERK = "max_jerk";
     public static final String MAX_VELOCITY = "max_velocity";
@@ -27,46 +25,22 @@ public class MobileRemoteProto extends RemoteProto {
     private double maxVelocity;
 
     public MobileRemoteProto(double maxBatteryPower, double maxVelocity, double maxAcceleration, double maxJerk) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, null, maxBatteryPower, null, maxVelocity, maxAcceleration,
-            maxJerk);
+        this(null, maxBatteryPower, null, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public MobileRemoteProto(Vector location, double maxBatteryPower, double maxVelocity, double maxAcceleration,
             double maxJerk) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, location, maxBatteryPower, null,
-            MobileRemoteProto.DEFAULT_VELOCITY, MobileRemoteProto.DEFAULT_ACCELERATION, MobileRemoteProto.DEFAULT_JERK);
+        this(location, maxBatteryPower, null, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public MobileRemoteProto(double maxBatteryPower, Collection<SensorConfig> sensors, double maxVelocity,
             double maxAcceleration, double maxJerk) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, null, maxBatteryPower, sensors, maxVelocity, maxAcceleration,
-            maxJerk);
+        this(null, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
     }
 
     public MobileRemoteProto(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors,
             double maxVelocity, double maxAcceleration, double maxJerk) {
-        this(MobileRemoteProto.DEFAULT_MOBILE_REMOTE_TYPE, location, maxBatteryPower, sensors, maxVelocity,
-            maxAcceleration, maxJerk);
-    }
-
-    public MobileRemoteProto(RemoteType remoteType, double maxBatteryPower, double maxVelocity, double maxAcceleration,
-            double maxJerk) {
-        this(remoteType, null, maxBatteryPower, null, maxVelocity, maxAcceleration, maxJerk);
-    }
-
-    public MobileRemoteProto(RemoteType remoteType, Vector location, double maxBatteryPower, double maxVelocity,
-            double maxAcceleration, double maxJerk) {
-        this(remoteType, location, maxBatteryPower, null, maxVelocity, maxAcceleration, maxJerk);
-    }
-
-    public MobileRemoteProto(RemoteType remoteType, double maxBatteryPower, Collection<SensorConfig> sensors,
-            double maxVelocity, double maxAcceleration, double maxJerk) {
-        this(remoteType, null, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
-    }
-
-    public MobileRemoteProto(RemoteType remoteType, Vector location, double maxBatteryPower,
-            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
-        super(remoteType, location, maxBatteryPower, sensors);
+        super(location, maxBatteryPower, sensors);
         this.maxVelocity = maxVelocity;
         this.maxAcceleration = maxAcceleration;
         this.maxJerk = maxJerk;

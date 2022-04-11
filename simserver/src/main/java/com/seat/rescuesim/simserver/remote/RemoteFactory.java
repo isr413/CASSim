@@ -12,13 +12,15 @@ public class RemoteFactory {
 
     public static Remote getRemote(RemoteProto proto, String remoteID, TeamColor team, boolean active)
             throws SimException {
-        switch (proto.getRemoteType()) {
-            case BASE: return new BaseRemote((BaseRemoteProto) proto, remoteID, team, active);
-            case DRONE: return new DroneRemote((DroneRemoteProto) proto, remoteID, team, active);
-            case MOBILE: return new MobileRemote((MobileRemoteProto) proto, remoteID, team, active);
-            case VICTIM: return new VictimRemote((VictimRemoteProto) proto, remoteID, team, active);
-            default: return new Remote(proto, remoteID, team, active);
-        }
+        if (DroneRemoteProto.class.isAssignableFrom(proto.getClass()))
+            return new DroneRemote((DroneRemoteProto) proto, remoteID, team, active);
+        if (VictimRemoteProto.class.isAssignableFrom(proto.getClass()))
+            return new VictimRemote((VictimRemoteProto) proto, remoteID, team, active);
+        if (BaseRemoteProto.class.isAssignableFrom(proto.getClass()))
+            return new BaseRemote((BaseRemoteProto) proto, remoteID, team, active);
+        if (MobileRemoteProto.class.isAssignableFrom(proto.getClass()))
+            return new MobileRemote((MobileRemoteProto) proto, remoteID, team, active);
+        return new Remote(proto, remoteID, team, active);
     }
 
 }

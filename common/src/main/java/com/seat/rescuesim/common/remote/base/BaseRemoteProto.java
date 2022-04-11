@@ -6,7 +6,6 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteProto;
-import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 
 /** A serializable prototype of a Base Remote. */
@@ -25,16 +24,11 @@ public class BaseRemoteProto extends RemoteProto {
     }
 
     public BaseRemoteProto(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {
-        super(RemoteType.BASE, location, maxBatteryPower, sensors);
+        super(location, maxBatteryPower, sensors);
     }
 
     public BaseRemoteProto(JSONOption option) throws JSONException {
         super(option);
-    }
-
-    @Override
-    public String getLabel() {
-        return String.format("b:%s", this.getRemoteType().getLabel());
     }
 
 }

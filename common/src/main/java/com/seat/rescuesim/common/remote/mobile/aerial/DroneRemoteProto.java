@@ -7,7 +7,6 @@ import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
-import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.remote.mobile.MobileRemoteProto;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 
@@ -36,7 +35,7 @@ public class DroneRemoteProto extends MobileRemoteProto {
 
     public DroneRemoteProto(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors,
             Vector batteryUsage, double maxVelocity, double maxAcceleration, double maxJerk) {
-        super(RemoteType.DRONE, location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
+        super(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
         this.batteryUsage = batteryUsage;
     }
 
@@ -65,11 +64,6 @@ public class DroneRemoteProto extends MobileRemoteProto {
 
     public double getHorizontalKineticBatteryUsage() {
         return this.batteryUsage.getY();
-    }
-
-    @Override
-    public String getLabel() {
-        return String.format("d:%s", this.getRemoteType().getLabel());
     }
 
     public double getStaticBatteryUsage() {

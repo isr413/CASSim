@@ -7,7 +7,6 @@ import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.remote.RemoteState;
-import com.seat.rescuesim.common.remote.RemoteType;
 import com.seat.rescuesim.common.sensor.SensorState;
 
 /** A serializable Base state. */
@@ -19,7 +18,7 @@ public class BaseRemoteState extends RemoteState {
 
     public BaseRemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active,
             Collection<SensorState> sensors) {
-        super(RemoteType.BASE, remoteID, team, location, battery, active, sensors);
+        super(remoteID, team, location, battery, active, sensors);
     }
 
     public BaseRemoteState(JSONOption option) throws JSONException {

@@ -97,8 +97,8 @@ public class RemoteConfig extends JSONAble {
         return this.remoteIDs;
     }
 
-    public RemoteType getRemoteType() {
-        return this.proto.getRemoteType();
+    public String getRemoteType() {
+        return this.getClass().getName();
     }
 
     public TeamColor getTeam() {
@@ -106,7 +106,7 @@ public class RemoteConfig extends JSONAble {
     }
 
     public boolean hasProto() {
-        return this.proto != null && !this.proto.getRemoteType().equals(RemoteType.NONE);
+        return this.proto != null;
     }
 
     public boolean hasRemoteIDs() {
@@ -139,6 +139,7 @@ public class RemoteConfig extends JSONAble {
 
     public JSONOption toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
+        json.put(RemoteRegistry.REMOTE_TYPE, this.getRemoteType());
         json.put(RemoteConfig.PROTO, this.proto.toJSON());
         if (this.hasTeam()) {
             json.put(TeamColor.TEAM, this.team.getType());
@@ -158,9 +159,9 @@ public class RemoteConfig extends JSONAble {
 
     public boolean equals(RemoteConfig config) {
         if (config == null) return false;
-        return this.proto.equals(config.proto) && this.team.equals(config.team) &&
-            this.count == config.count && this.remoteIDs.equals(config.remoteIDs) && this.dynamic == config.dynamic &&
-            this.active == config.active;
+        return this.getRemoteType().equals(config.getRemoteType()) && this.proto.equals(config.proto) &&
+            this.team.equals(config.team) && this.count == config.count && this.remoteIDs.equals(config.remoteIDs) &&
+            this.dynamic == config.dynamic && this.active == config.active;
     }
 
 }
