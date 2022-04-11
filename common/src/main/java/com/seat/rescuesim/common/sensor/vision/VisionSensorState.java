@@ -11,7 +11,6 @@ import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.sensor.SensorState;
-import com.seat.rescuesim.common.sensor.SensorType;
 
 /** A serializable Vision Sensor state. */
 public class VisionSensorState extends SensorState {
@@ -20,20 +19,11 @@ public class VisionSensorState extends SensorState {
     private HashSet<String> observations;
 
     public VisionSensorState(String sensorID, boolean active) {
-        this(VisionSensorProto.DEFAULT_VISION_SENSOR_TYPE, sensorID, active, null);
+        this(sensorID, active, null);
     }
 
     public VisionSensorState(String sensorID, boolean active, Collection<String> observations) {
-        this(VisionSensorProto.DEFAULT_VISION_SENSOR_TYPE, sensorID, active, observations);
-    }
-
-    public VisionSensorState(SensorType sensorType, String sensorID, boolean active) {
-        this(sensorType, sensorID, active, null);
-    }
-
-    public VisionSensorState(SensorType sensorType, String sensorID, boolean active,
-            Collection<String> observations) {
-        super(sensorType, sensorID, active);
+        super(sensorID, active);
         this.observations = (observations != null) ? new HashSet<>(observations) : new HashSet<>();
     }
 

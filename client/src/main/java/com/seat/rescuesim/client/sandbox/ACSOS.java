@@ -17,7 +17,6 @@ import com.seat.rescuesim.common.remote.mobile.ground.VictimRemoteConfig;
 import com.seat.rescuesim.common.remote.mobile.ground.VictimRemoteProto;
 import com.seat.rescuesim.common.scenario.Snapshot;
 import com.seat.rescuesim.common.sensor.SensorConfig;
-import com.seat.rescuesim.common.sensor.SensorType;
 import com.seat.rescuesim.common.sensor.comms.CommsSensorProto;
 import com.seat.rescuesim.common.sensor.monitor.MonitorSensorProto;
 import com.seat.rescuesim.common.sensor.vision.VisionSensorProto;
@@ -37,7 +36,6 @@ public class ACSOS implements SARApplication {
 
     private CommsSensorProto getBluetoothComms() {
         return new CommsSensorProto(
-            SensorType.BLUETOOTH_COMMS,
             10,
             1,
             0.0,
@@ -47,7 +45,6 @@ public class ACSOS implements SARApplication {
 
     private VisionSensorProto getDroneCamera() {
         return new VisionSensorProto(
-            SensorType.CMOS_CAMERA_VISION,
             10,
             1,
             0.0
@@ -56,7 +53,6 @@ public class ACSOS implements SARApplication {
 
     private CommsSensorProto getLongRangeComms() {
         return new CommsSensorProto(
-            SensorType.LTE_RADIO_COMMS,
             Double.POSITIVE_INFINITY,
             1,
             0.0,
@@ -66,7 +62,6 @@ public class ACSOS implements SARApplication {
 
     private MonitorSensorProto getVictimHRVM() {
         return new MonitorSensorProto(
-            SensorType.HRVM_MONITOR,
             0,
             1,
             0.0

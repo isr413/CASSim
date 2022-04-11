@@ -14,7 +14,7 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorConfig;
-import com.seat.rescuesim.common.sensor.SensorType;
+import com.seat.rescuesim.common.sensor.SensorRegistry;
 import com.seat.rescuesim.common.util.Debugger;
 
 /** A serializable prototype of a Remote. */
@@ -60,7 +60,7 @@ public class RemoteProto extends JSONAble {
         if (json.hasKey(RemoteProto.SENSORS)) {
             JSONArray jsonSensors = json.getJSONArray(RemoteProto.SENSORS);
             for (int i = 0; i < jsonSensors.length(); i++) {
-                this.sensors.add(new SensorConfig(jsonSensors.getJSONOption(i)));
+                this.sensors.add(SensorRegistry.decodeTo(jsonSensors.getJSONOption(i), SensorConfig.class));
             }
         }
     }
@@ -118,7 +118,7 @@ public class RemoteProto extends JSONAble {
         throw new CommonException(String.format("No sensor with ID %s found on remote %s", sensorID, this.getLabel()));
     }
 
-    public ArrayList<SensorConfig> getSensorsWithType(SensorType sensorType) {
+    public ArrayList<SensorConfig> getSensorsWithType(String sensorType) {
         ArrayList<SensorConfig> confs = new ArrayList<>();
         for (SensorConfig conf : this.sensors) {
             if (conf.getSensorType().equals(sensorType)) {
@@ -126,7 +126,7 @@ public class RemoteProto extends JSONAble {
             }
         }
         if (confs.isEmpty()) {
-            Debugger.logger.warn(String.format("No sensors with type %s found on remote %s", sensorType.getLabel(),
+            Debugger.logger.warn(String.format("No sensors with type %s found on remote %s", sensorType,
                 this.getLabel()));
         }
         return confs;
@@ -153,7 +153,7 @@ public class RemoteProto extends JSONAble {
         return false;
     }
 
-    public boolean hasSensorWithType(SensorType sensorType) {
+    public boolean hasSensorWithType(String sensorType) {
         for (SensorConfig conf : this.sensors) {
             if (conf.getSensorType().equals(sensorType)) {
                 return true;

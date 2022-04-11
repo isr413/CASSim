@@ -11,7 +11,6 @@ import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.sensor.SensorState;
-import com.seat.rescuesim.common.sensor.SensorType;
 
 /** A serializable Comms Sensor state. */
 public class CommsSensorState extends SensorState {
@@ -20,20 +19,12 @@ public class CommsSensorState extends SensorState {
     private HashSet<String> connections;
 
     public CommsSensorState(String sensorID, boolean active) {
-        this(CommsSensorProto.DEFAULT_COMMS_SENSOR_TYPE, sensorID, active, null);
+        this(sensorID, active, null);
     }
 
-    public CommsSensorState(String sensorID, boolean active, Collection<String> connections) {
-        this(CommsSensorProto.DEFAULT_COMMS_SENSOR_TYPE, sensorID, active, connections);
-    }
-
-    public CommsSensorState(SensorType sensorType, String sensorID, boolean active) {
-        this(sensorType, sensorID, active, null);
-    }
-
-    public CommsSensorState(SensorType sensorType, String sensorID, boolean active,
+    public CommsSensorState(String sensorID, boolean active,
             Collection<String> connections) {
-        super(sensorType, sensorID, active);
+        super(sensorID, active);
         this.connections = (connections != null) ? new HashSet<>(connections) : new HashSet<>();
     }
 

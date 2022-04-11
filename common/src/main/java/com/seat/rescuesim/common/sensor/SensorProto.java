@@ -11,7 +11,6 @@ import com.seat.rescuesim.common.json.JSONOption;
 public class SensorProto extends JSONAble {
     public static final String ACCURACY = "accuracy";
     public static final String BATTERY_USAGE = "battery_usage";
-    public static final SensorType DEFAULT_SENSOR_TYPE = SensorType.GENERIC;
     public static final String RANGE = "range";
 
     protected static final double DEFAULT_ACCURACY = 1.0;
@@ -21,14 +20,8 @@ public class SensorProto extends JSONAble {
     private double accuracy;
     private double batteryUsage;
     private double range;
-    private SensorType sensorType;
 
     public SensorProto(double range, double accuracy, double batteryUsage) {
-        this(SensorProto.DEFAULT_SENSOR_TYPE, range, accuracy, batteryUsage);
-    }
-
-    public SensorProto(SensorType sensorType, double range, double accuracy, double batteryUsage) {
-        this.sensorType = sensorType;
         this.range = range;
         this.accuracy = accuracy;
         this.batteryUsage = batteryUsage;
@@ -40,7 +33,6 @@ public class SensorProto extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.sensorType = SensorType.decodeType(json);
         this.accuracy = json.getDouble(SensorProto.ACCURACY);
         this.range = (json.hasKey(SensorProto.RANGE)) ?
             json.getDouble(SensorProto.RANGE) :
@@ -50,7 +42,7 @@ public class SensorProto extends JSONAble {
 
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(SensorType.SENSOR_TYPE, this.sensorType.getType());
+        json.put(SensorRegistry.SENSOR_TYPE, this.getSensorType());
         if (this.hasLimitedRange()) {
             json.put(SensorProto.RANGE, this.range);
         }
@@ -64,7 +56,7 @@ public class SensorProto extends JSONAble {
     }
 
     public String getLabel() {
-        return String.format("s:%s", this.sensorType.getLabel());
+        return String.format("s:%s", this.getSensorType());
     }
 
     public double getSensorAccuracy() {
@@ -75,8 +67,8 @@ public class SensorProto extends JSONAble {
         return this.range;
     }
 
-    public SensorType getSensorType() {
-        return this.sensorType;
+    public String getSensorType() {
+        return this.getClass().getName();
     }
 
     public boolean hasAccuracy() {
@@ -113,7 +105,7 @@ public class SensorProto extends JSONAble {
 
     public boolean equals(SensorProto proto) {
         if (proto == null) return false;
-        return this.sensorType.equals(proto.sensorType) && this.range == proto.range &&
+        return this.getSensorType().equals(proto.getSensorType()) && this.range == proto.range &&
             this.accuracy == proto.accuracy && this.batteryUsage == proto.batteryUsage;
     }
 

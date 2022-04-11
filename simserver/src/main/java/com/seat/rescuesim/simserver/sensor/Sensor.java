@@ -2,7 +2,6 @@ package com.seat.rescuesim.simserver.sensor;
 
 import com.seat.rescuesim.common.sensor.SensorProto;
 import com.seat.rescuesim.common.sensor.SensorState;
-import com.seat.rescuesim.common.sensor.SensorType;
 import com.seat.rescuesim.simserver.core.SimException;
 import com.seat.rescuesim.simserver.remote.Remote;
 import com.seat.rescuesim.simserver.scenario.SimScenario;
@@ -43,12 +42,12 @@ public class Sensor {
         return this.sensorID;
     }
 
-    public SensorType getSensorType() {
+    public String getSensorType() {
         return this.proto.getSensorType();
     }
 
     public SensorState getState() {
-        return new SensorState(this.getSensorType(), this.sensorID, this.active);
+        return new SensorState(this.sensorID, this.active);
     }
 
     public boolean hasAccuracy() {

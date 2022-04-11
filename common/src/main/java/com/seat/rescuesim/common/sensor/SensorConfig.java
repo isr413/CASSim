@@ -71,12 +71,12 @@ public class SensorConfig extends JSONAble {
         return this.sensorIDs;
     }
 
-    public SensorType getSensorType() {
-        return this.proto.getSensorType();
+    public String getSensorType() {
+        return this.getClass().getName();
     }
 
     public boolean hasProto() {
-        return this.proto != null && !this.proto.getSensorType().equals(SensorType.NONE);
+        return this.proto != null;
     }
 
     public boolean hasSensorWithID(String sensorID) {
@@ -97,6 +97,7 @@ public class SensorConfig extends JSONAble {
 
     public JSONOption toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
+        json.put(SensorRegistry.SENSOR_TYPE, this.getSensorType());
         json.put(SensorConfig.PROTO, this.proto.toJSON());
         json.put(SensorConfig.COUNT, this.count);
         if (this.hasSensors()) {
@@ -112,8 +113,8 @@ public class SensorConfig extends JSONAble {
 
     public boolean equals(SensorConfig config) {
         if (config == null) return false;
-        return this.proto.equals(config.proto) && this.count == config.count &&
-            this.sensorIDs.equals(config.sensorIDs) && this.active == config.active;
+        return this.getSensorType().equals(config.getSensorType()) && this.proto.equals(config.proto) &&
+            this.count == config.count && this.sensorIDs.equals(config.sensorIDs) && this.active == config.active;
     }
 
 }

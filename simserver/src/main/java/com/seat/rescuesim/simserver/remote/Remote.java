@@ -18,7 +18,6 @@ import com.seat.rescuesim.common.remote.intent.IntentionType;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 import com.seat.rescuesim.common.sensor.SensorProto;
 import com.seat.rescuesim.common.sensor.SensorState;
-import com.seat.rescuesim.common.sensor.SensorType;
 import com.seat.rescuesim.common.util.Debugger;
 import com.seat.rescuesim.simserver.core.SimException;
 import com.seat.rescuesim.simserver.scenario.SimScenario;
@@ -147,16 +146,16 @@ public class Remote {
         return this.activeSensors.values();
     }
 
-    public Collection<Sensor> getActiveSensorsWithType(SensorType type) {
+    public Collection<Sensor> getActiveSensorsWithType(String sensorType) {
         ArrayList<Sensor> sensors = new ArrayList<>();
         for (Sensor sensor : this.activeSensors.values()) {
-            if (sensor.getSensorType().equals(type)) {
+            if (sensor.getSensorType().equals(sensorType)) {
                 sensors.add(sensor);
             }
         }
         if (sensors.isEmpty()) {
             Debugger.logger.warn(String.format("Remote %s has no active sensors with type %s", this.getRemoteID(),
-                type.getLabel()));
+                sensorType));
         }
         return sensors;
     }
@@ -190,19 +189,19 @@ public class Remote {
         return sensors;
     }
 
-    public Collection<Sensor> getInactiveSensorsWithType(SensorType type) {
+    public Collection<Sensor> getInactiveSensorsWithType(String sensorType) {
         ArrayList<Sensor> sensors = new ArrayList<>();
         for (Sensor sensor : this.allSensors.values()) {
             if (this.hasActiveSensorWithID(sensor.getSensorID())) {
                 continue;
             }
-            if (sensor.getSensorType().equals(type)) {
+            if (sensor.getSensorType().equals(sensorType)) {
                 sensors.add(sensor);
             }
         }
         if (sensors.isEmpty()) {
             Debugger.logger.warn(String.format("Remote %s has no inactive sensors with type %s", this.getRemoteID(),
-                type.getLabel()));
+                sensorType));
         }
         return sensors;
     }
@@ -254,16 +253,16 @@ public class Remote {
         return state;
     }
 
-    public Collection<Sensor> getSensorsWithType(SensorType type) {
+    public Collection<Sensor> getSensorsWithType(String sensorType) {
         ArrayList<Sensor> sensors = new ArrayList<>();
         for (Sensor sensor : this.allSensors.values()) {
-            if (sensor.getSensorType().equals(type)) {
+            if (sensor.getSensorType().equals(sensorType)) {
                 sensors.add(sensor);
             }
         }
         if (sensors.isEmpty()) {
             Debugger.logger.warn(String.format("Remote %s has no sensors with type %s", this.getRemoteID(),
-                type.getLabel()));
+                sensorType));
         }
         return sensors;
     }
@@ -291,9 +290,9 @@ public class Remote {
         return this.activeSensors.containsKey(sensorID);
     }
 
-    public boolean hasActiveSensorWithType(SensorType type) {
+    public boolean hasActiveSensorWithType(String sensorType) {
         for (Sensor sensor : this.activeSensors.values()) {
-            if (sensor.getSensorType().equals(type)) {
+            if (sensor.getSensorType().equals(sensorType)) {
                 return true;
             }
         }
@@ -308,12 +307,12 @@ public class Remote {
         return this.hasSensorWithID(sensorID) && !this.hasActiveSensorWithID(sensorID);
     }
 
-    public boolean hasInactiveSensorWithType(SensorType type) {
+    public boolean hasInactiveSensorWithType(String sensorType) {
         for (Sensor sensor : this.activeSensors.values()) {
             if (this.hasActiveSensorWithID(sensor.getSensorID())) {
                 continue;
             }
-            if (sensor.getSensorType().equals(type)) {
+            if (sensor.getSensorType().equals(sensorType)) {
                 return true;
             }
         }
@@ -332,9 +331,9 @@ public class Remote {
         return this.allSensors.containsKey(sensorID);
     }
 
-    public boolean hasSensorWithType(SensorType type) {
+    public boolean hasSensorWithType(String sensorType) {
         for (Sensor sensor : this.allSensors.values()) {
-            if (sensor.getSensorType().equals(type)) {
+            if (sensor.getSensorType().equals(sensorType)) {
                 return true;
             }
         }

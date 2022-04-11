@@ -5,7 +5,6 @@ import com.seat.rescuesim.common.json.JSONObject;
 import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.sensor.SensorState;
-import com.seat.rescuesim.common.sensor.SensorType;
 
 /** A serializable Monitor Sensor state. */
 public class MonitorSensorState extends SensorState {
@@ -14,19 +13,11 @@ public class MonitorSensorState extends SensorState {
     private String monitorID;
 
     public MonitorSensorState(String sensorID, boolean active) {
-        this(MonitorSensorProto.DEFAULT_MONITOR_SENSOR_TYPE, sensorID, active, null);
+        this(sensorID, active, null);
     }
 
     public MonitorSensorState(String sensorID, boolean active, String monitorID) {
-        this(MonitorSensorProto.DEFAULT_MONITOR_SENSOR_TYPE, sensorID, active, monitorID);
-    }
-
-    public MonitorSensorState(SensorType sensorType, String sensorID, boolean active) {
-        this(sensorType, sensorID, active, null);
-    }
-
-    public MonitorSensorState(SensorType sensorType, String sensorID, boolean active, String monitorID) {
-        super(sensorType, sensorID, active);
+        super(sensorID, active);
         this.monitorID = monitorID;
     }
 

@@ -94,7 +94,7 @@ public class RemoteRegistry {
         return RemoteRegistry.isRegistered(classType.getName());
     }
 
-    public static <T> boolean isRegistered(String className) {
+    public static boolean isRegistered(String className) {
         return RemoteRegistry.REGISTRY.containsKey(className);
     }
 

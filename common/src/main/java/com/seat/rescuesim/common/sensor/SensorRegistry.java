@@ -1,5 +1,8 @@
 package com.seat.rescuesim.common.sensor;
 
+import java.util.HashMap;
+import java.util.function.Function;
+
 import com.seat.rescuesim.common.core.CommonException;
 import com.seat.rescuesim.common.json.JSONException;
 import com.seat.rescuesim.common.json.JSONOption;
@@ -14,13 +17,30 @@ import com.seat.rescuesim.common.sensor.vision.VisionSensorProto;
 import com.seat.rescuesim.common.sensor.vision.VisionSensorState;
 
 public class SensorRegistry {
+    public static final String SENSOR_TYPE = "sensor_type";
+
+    private static final HashMap<String, Function<JSONOption, Object>> REGISTRY =
+            new HashMap<String, Function<JSONOption, Object>>(){{
+        put(SensorConfig.class.getName(), (option) -> new SensorConfig(option));
+        put(SensorProto.class.getName(), (option) -> new SensorProto(option));
+        put(SensorState.class.getName(), (option) -> new SensorState(option));
+        put(CommsSensorConfig.class.getName(), (option) -> new CommsSensorConfig(option));
+        put(CommsSensorProto.class.getName(), (option) -> new CommsSensorProto(option));
+        put(CommsSensorState.class.getName(), (option) -> new CommsSensorState(option));
+        put(MonitorSensorConfig.class.getName(), (option) -> new MonitorSensorConfig(option));
+        put(MonitorSensorProto.class.getName(), (option) -> new MonitorSensorProto(option));
+        put(MonitorSensorState.class.getName(), (option) -> new MonitorSensorState(option));
+        put(VisionSensorConfig.class.getName(), (option) -> new VisionSensorConfig(option));
+        put(VisionSensorProto.class.getName(), (option) -> new VisionSensorProto(option));
+        put(VisionSensorState.class.getName(), (option) -> new VisionSensorState(option));
+    }};
 
     public static CommsSensorProto BluetoothComms(double range, double accuracy, double batteryUsage, double delay) {
-        return new CommsSensorProto(SensorType.BLUETOOTH_COMMS, range, accuracy, batteryUsage, delay);
+        return new CommsSensorProto(range, accuracy, batteryUsage, delay);
     }
 
     public static VisionSensorProto CMOSCameraVision(double range, double accuracy, double batteryUsage) {
-        return new VisionSensorProto(SensorType.CMOS_CAMERA_VISION, range, accuracy, batteryUsage);
+        return new VisionSensorProto(range, accuracy, batteryUsage);
     }
 
     public static CommsSensorProto GenericComms(double range, double accuracy, double batteryUsage, double delay) {
@@ -40,147 +60,38 @@ public class SensorRegistry {
     }
 
     public static MonitorSensorProto HRVMMonitor(double range, double accuracy, double batteryUsage) {
-        return new MonitorSensorProto(SensorType.HRVM_MONITOR, range, accuracy, batteryUsage);
+        return new MonitorSensorProto(range, accuracy, batteryUsage);
     }
 
     public static CommsSensorProto LTERadioComms(double range, double accuracy, double batteryUsage, double delay) {
-        return new CommsSensorProto(SensorType.LTE_RADIO_COMMS, range, accuracy, batteryUsage, delay);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T decodeCommsSensor(JSONOption option, Class<? extends T> classType, SensorType sensorType)
-            throws CommonException, JSONException {
-        if (classType == SensorConfig.class || classType == CommsSensorConfig.class) {
-            switch (sensorType) {
-                default: return (T) new CommsSensorConfig(option);
-            }
-        }
-        if (classType == SensorProto.class || classType == CommsSensorProto.class) {
-            switch (sensorType) {
-                default: return (T) new CommsSensorProto(option);
-            }
-        }
-        if (classType == SensorState.class || classType == CommsSensorState.class) {
-            switch (sensorType) {
-                default: return (T) new CommsSensorState(option);
-            }
-        }
-        throw new CommonException(String.format("Cannot decode comms sensor %s", option.toString()));
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T decodeMonitorSensor(JSONOption option, Class<? extends T> classType, SensorType sensorType)
-            throws CommonException, JSONException {
-        if (classType == SensorConfig.class || classType == MonitorSensorConfig.class) {
-            switch (sensorType) {
-                default: return (T) new MonitorSensorConfig(option);
-            }
-        }
-        if (classType == SensorProto.class || classType == MonitorSensorProto.class) {
-            switch (sensorType) {
-                default: return (T) new MonitorSensorProto(option);
-            }
-        }
-        if (classType == SensorState.class || classType == MonitorSensorState.class) {
-            switch (sensorType) {
-                default: return (T) new MonitorSensorState(option);
-            }
-        }
-        throw new CommonException(String.format("Cannot decode monitor sensor %s", option.toString()));
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T decodeVisionSensor(JSONOption option, Class<? extends T> classType, SensorType sensorType)
-            throws CommonException, JSONException {
-        if (classType == SensorConfig.class || classType == VisionSensorConfig.class) {
-            switch (sensorType) {
-                default: return (T) new VisionSensorConfig(option);
-            }
-        }
-        if (classType == SensorProto.class || classType == VisionSensorProto.class) {
-            switch (sensorType) {
-                default: return (T) new VisionSensorProto(option);
-            }
-        }
-        if (classType == SensorState.class || classType == VisionSensorState.class) {
-            switch (sensorType) {
-                default: return (T) new VisionSensorState(option);
-            }
-        }
-        throw new CommonException(String.format("Cannot decode vision sensor %s", option.toString()));
+        return new CommsSensorProto(range, accuracy, batteryUsage, delay);
     }
 
     @SuppressWarnings("unchecked")
     public static <T> T decodeTo(JSONOption option, Class<? extends T> classType) throws CommonException, JSONException {
-        SensorType sensorType = SensorRegistry.decodeType(option);
-        if (SensorRegistry.isRegisteredCommsSensor(classType, sensorType)) {
-            return SensorRegistry.decodeCommsSensor(option, classType, sensorType);
-        }
-        if (SensorRegistry.isRegisteredMonitorSensor(classType, sensorType)) {
-            return SensorRegistry.decodeMonitorSensor(option, classType, sensorType);
-        }
-        if (SensorRegistry.isRegisteredVisionSensor(classType, sensorType)) {
-            return SensorRegistry.decodeVisionSensor(option, classType, sensorType);
-        }
-        if (classType == SensorConfig.class) {
-            switch (sensorType) {
-                default: return (T) new SensorConfig(option);
+        String sensorType = SensorRegistry.decodeType(option);
+        if (!SensorRegistry.isRegistered(sensorType)) {
+            if (!SensorRegistry.isRegistered(classType)) {
+                throw new CommonException(String.format("Cannot decode sensor %s", option.toString()));
             }
+            return (T) SensorRegistry.REGISTRY.get(classType.getName()).apply(option);
         }
-        if (classType == SensorProto.class) {
-            switch (sensorType) {
-                default: return (T) new SensorProto(option);
-            }
-        }
-        if (classType == SensorState.class) {
-            switch (sensorType) {
-                default: return (T) new SensorState(option);
-            }
-        }
-        throw new CommonException(String.format("Cannot decode sensor %s", option.toString()));
+        return (T) SensorRegistry.REGISTRY.get(sensorType).apply(option);
     }
 
-    public static SensorType decodeType(JSONOption option) throws CommonException, JSONException {
+    public static String decodeType(JSONOption option) throws CommonException {
         if (!option.isSomeObject()) {
             throw new CommonException(String.format("Cannot decode sensor type of %s", option.toString()));
         }
-        return SensorType.decodeType(option.someObject());
+        return option.someObject().getString(SensorRegistry.SENSOR_TYPE);
     }
 
-    private static <T> boolean isRegisteredCommsSensor(Class<? extends T> classType) {
-        return classType == CommsSensorConfig.class || classType == CommsSensorProto.class ||
-            classType == CommsSensorState.class;
+    public static <T> boolean isRegistered(Class<T> classType) {
+        return SensorRegistry.isRegistered(classType.getName());
     }
 
-    private static <T> boolean isRegisteredCommsSensor(Class<? extends T> classType, SensorType sensorType) {
-        return SensorRegistry.isRegisteredCommsSensor(classType) || sensorType.equals(SensorType.COMMS) ||
-            sensorType.equals(SensorType.BLUETOOTH_COMMS) || sensorType.equals(SensorType.LTE_RADIO_COMMS);
-    }
-
-    private static <T> boolean isRegisteredMonitorSensor(Class<? extends T> classType) {
-        return classType == MonitorSensorConfig.class || classType == MonitorSensorProto.class ||
-            classType == MonitorSensorState.class;
-    }
-
-    private static <T> boolean isRegisteredMonitorSensor(Class<? extends T> classType, SensorType sensorType) {
-        return SensorRegistry.isRegisteredMonitorSensor(classType) || sensorType.equals(SensorType.MONITOR) ||
-            sensorType.equals(SensorType.HRVM_MONITOR);
-    }
-
-    private static <T> boolean isRegisteredVisionSensor(Class<? extends T> classType) {
-        return classType == VisionSensorConfig.class || classType == VisionSensorProto.class ||
-            classType == VisionSensorState.class;
-    }
-
-    private static <T> boolean isRegisteredVisionSensor(Class<? extends T> classType, SensorType sensorType) {
-        return SensorRegistry.isRegisteredVisionSensor(classType) || sensorType.equals(SensorType.VISION) ||
-            sensorType.equals(SensorType.CMOS_CAMERA_VISION);
-    }
-
-    public static <T> boolean isRegistered(Class<? extends T> classType) {
-        return classType == SensorConfig.class || classType == SensorProto.class || classType == SensorState.class ||
-            SensorRegistry.isRegisteredCommsSensor(classType) || SensorRegistry.isRegisteredMonitorSensor(classType) ||
-            SensorRegistry.isRegisteredVisionSensor(classType);
+    public static boolean isRegistered(String className) {
+        return SensorRegistry.REGISTRY.containsKey(className);
     }
 
 }

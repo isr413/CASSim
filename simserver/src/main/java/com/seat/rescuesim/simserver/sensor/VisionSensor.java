@@ -52,11 +52,7 @@ public class VisionSensor extends Sensor {
 
     @Override
     public VisionSensorState getState() {
-        if (this.isActive()) {
-            return new VisionSensorState(this.getSensorType(), this.getSensorID(), this.isActive(), this.observations);
-        } else {
-            return new VisionSensorState(this.getSensorType(), this.getSensorID(), this.isActive());
-        }
+        return new VisionSensorState(this.getSensorID(), this.isActive(), this.observations);
     }
 
     public boolean hasObservations() {

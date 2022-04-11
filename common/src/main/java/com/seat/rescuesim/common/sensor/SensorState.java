@@ -14,14 +14,8 @@ public class SensorState extends JSONAble {
 
     private boolean active;
     private String sensorID;
-    private SensorType sensorType;
 
     public SensorState(String sensorID, boolean active) {
-        this(SensorProto.DEFAULT_SENSOR_TYPE, sensorID, active);
-    }
-
-    public SensorState(SensorType sensorType, String sensorID, boolean active) {
-        this.sensorType = sensorType;
         this.sensorID = sensorID;
         this.active = active;
     }
@@ -32,29 +26,28 @@ public class SensorState extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.sensorType = SensorType.decodeType(json);
         this.sensorID = json.getString(SensorState.SENSOR_ID);
         this.active = json.getBoolean(SensorState.ACTIVE);
     }
 
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(SensorType.SENSOR_TYPE, this.sensorType.getType());
+        json.put(SensorRegistry.SENSOR_TYPE, this.getSensorType());
         json.put(SensorState.SENSOR_ID, this.sensorID);
         json.put(SensorState.ACTIVE, this.active);
         return json;
     }
 
     public String getLabel() {
-        return String.format("%s:%s", this.sensorID, this.sensorType.getLabel());
+        return String.format("%s:%s", this.sensorID, this.getSensorType());
     }
 
     public String getSensorID() {
         return this.sensorID;
     }
 
-    public SensorType getSensorType() {
-        return this.sensorType;
+    public String getSensorType() {
+        return this.getClass().getName();
     }
 
     public boolean isActive() {
@@ -71,7 +64,7 @@ public class SensorState extends JSONAble {
 
     public boolean equals(SensorState state) {
         if (state == null) return false;
-        return this.sensorType.equals(state.sensorType) && this.sensorID.equals(state.sensorID) &&
+        return this.getSensorType().equals(state.getSensorType()) && this.sensorID.equals(state.sensorID) &&
             this.active == state.active;
     }
 
