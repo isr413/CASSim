@@ -81,7 +81,7 @@ public class SARConfig extends ScenarioConfig {
 
     public SARConfig(String scenarioID, long seed, Map map, double disasterScale, int missionLength,
             double stepSize, Collection<RemoteConfig> remoteConfig) {
-        super(ScenarioType.SAR, scenarioID, seed, map, missionLength, stepSize, remoteConfig);
+        super(scenarioID, seed, map, missionLength, stepSize, remoteConfig);
         this.disasterScale = disasterScale;
         this.init();
     }

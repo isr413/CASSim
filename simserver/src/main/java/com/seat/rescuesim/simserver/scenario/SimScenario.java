@@ -16,7 +16,6 @@ import com.seat.rescuesim.common.remote.RemoteState;
 import com.seat.rescuesim.common.remote.intent.IntentionSet;
 import com.seat.rescuesim.common.scenario.ScenarioConfig;
 import com.seat.rescuesim.common.scenario.ScenarioStatus;
-import com.seat.rescuesim.common.scenario.ScenarioType;
 import com.seat.rescuesim.common.scenario.Snapshot;
 import com.seat.rescuesim.common.util.Debugger;
 import com.seat.rescuesim.common.util.Random;
@@ -245,14 +244,13 @@ public class SimScenario {
         return this.config.getScenarioID();
     }
 
-    public ScenarioType getScenarioType() {
+    public String getScenarioType() {
         return this.config.getScenarioType();
     }
 
     public Snapshot getSnapshot() {
         return new Snapshot(
             LocalTime.now().toString(),
-            this.getScenarioType(),
             this.getScenarioID(),
             this.status,
             this.time,

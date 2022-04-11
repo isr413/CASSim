@@ -32,22 +32,20 @@ public class Snapshot extends JSONAble {
     private String hash;
     private HashSet<String> remoteIDs;
     private String scenarioID;
-    private ScenarioType scenarioType;
     private HashMap<String, RemoteState> state;
     private ScenarioStatus status;
     private double stepSize;
     private double time;
 
-    public Snapshot(String hash, ScenarioType scenarioType, String scenarioID, double stepSize,
-            Collection<String> remoteIDs, HashMap<String, RemoteState> state) {
-        this(hash, scenarioType, scenarioID, ScenarioStatus.START, 0, stepSize, remoteIDs, remoteIDs, remoteIDs, state);
+    public Snapshot(String hash, String scenarioID, double stepSize, Collection<String> remoteIDs,
+            HashMap<String, RemoteState> state) {
+        this(hash, scenarioID, ScenarioStatus.START, 0, stepSize, remoteIDs, remoteIDs, remoteIDs, state);
     }
 
-    public Snapshot(String hash, ScenarioType scenarioType, String scenarioID, ScenarioStatus status, double time,
-            double stepSize, Collection<String> remoteIDs, Collection<String> activeRemotes,
-            Collection<String> dynamicRemotes, HashMap<String, RemoteState> state) {
+    public Snapshot(String hash, String scenarioID, ScenarioStatus status, double time, double stepSize,
+            Collection<String> remoteIDs, Collection<String> activeRemotes, Collection<String> dynamicRemotes,
+            HashMap<String, RemoteState> state) {
         this.hash = hash;
-        this.scenarioType = scenarioType;
         this.scenarioID = scenarioID;
         this.status = status;
         this.time = time;
@@ -65,7 +63,6 @@ public class Snapshot extends JSONAble {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.hash = json.getString(Snapshot.HASH);
-        this.scenarioType = ScenarioType.decodeType(json);
         this.scenarioID = json.getString(Snapshot.SCENARIO_ID);
         this.status = ScenarioStatus.values()[json.getInt(ScenarioStatus.STATUS)];
         this.time = json.getDouble(Snapshot.TIME);
@@ -124,10 +121,6 @@ public class Snapshot extends JSONAble {
 
     public String getScenarioID() {
         return this.scenarioID;
-    }
-
-    public ScenarioType getScenarioType() {
-        return this.scenarioType;
     }
 
     public Collection<RemoteState> getState() {
@@ -193,7 +186,6 @@ public class Snapshot extends JSONAble {
     public JSONOption toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(Snapshot.HASH, this.hash);
-        json.put(ScenarioType.SCENARIO_TYPE, this.scenarioType.getType());
         json.put(Snapshot.SCENARIO_ID, this.scenarioID);
         json.put(ScenarioStatus.STATUS, this.status.getType());
         json.put(Snapshot.TIME, this.time);
