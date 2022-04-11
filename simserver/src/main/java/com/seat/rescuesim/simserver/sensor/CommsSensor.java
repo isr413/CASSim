@@ -103,7 +103,7 @@ public class CommsSensor extends Sensor {
             }
             Vector location = scenario.getRemoteWithID(remoteID).getLocation();
             if ((this.hasUnlimitedRange() || Vector.dist(remote.getLocation(), location) <= this.getRange()) &&
-                    scenario.getRemoteWithID(remoteID).hasSensorWithType(this.getSensorType())) {
+                    scenario.getRemoteWithID(remoteID).hasSensorWithModel(this.getSensorModel())) {
                 if (!this.hasConnectionWithID(remoteID)) {
                     this.connections.add(remoteID);
                 }

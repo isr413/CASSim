@@ -148,7 +148,7 @@ public class SimScenario {
         return activeDynamicRemoteIDs;
     }
 
-    public ArrayList<Remote> getActiveDynamicRemotes() {
+    public Collection<Remote> getActiveDynamicRemotes() {
         ArrayList<Remote> activeDynamicRemotes = new ArrayList<>();
         for (String remoteID : this.activeRemotes.keySet()) {
             if (this.hasDynamicRemoteWithID(remoteID)) {

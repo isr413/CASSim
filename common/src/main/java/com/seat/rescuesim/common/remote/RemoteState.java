@@ -17,7 +17,6 @@ import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorRegistry;
 import com.seat.rescuesim.common.sensor.SensorState;
-import com.seat.rescuesim.common.util.Debugger;
 
 /** A serializable snapshot of a Remote. */
 public class RemoteState extends JSONAble {
@@ -119,21 +118,14 @@ public class RemoteState extends JSONAble {
         return new ArrayList<SensorState>(this.sensors.values());
     }
 
-    public SensorState getSensorWithID(String sensorID) throws CommonException {
-        if (!this.hasSensorWithID(sensorID)) {
-            throw new CommonException(String.format("No sensor %s found on remote %s", sensorID, this.remoteID));
-        }
-        return this.sensors.get(sensorID);
-    }
-
-    public SensorState getSensorWithModel(String sensorModel) throws CommonException {
+    public Collection<SensorState> getSensorsWithModel(String sensorModel) {
+        ArrayList<SensorState> sensors = new ArrayList<>();
         for (SensorState state : this.sensors.values()) {
             if (state.getSensorModel().equals(sensorModel)) {
-                return state;
+                sensors.add(state);
             }
         }
-        throw new CommonException(String.format("No sensor of model %s found on remote %s", sensorModel,
-            this.remoteID));
+        return sensors;
     }
 
     public Collection<SensorState> getSensorsWithType(Class<? extends SensorState> classType) {
@@ -143,11 +135,14 @@ public class RemoteState extends JSONAble {
                 sensors.add(state);
             }
         }
-        if (sensors.isEmpty()) {
-            Debugger.logger.warn(String.format("No sensor of type %s found on remote %s", classType.getName(),
-                this.remoteID));
-        }
         return sensors;
+    }
+
+    public SensorState getSensorWithID(String sensorID) throws CommonException {
+        if (!this.hasSensorWithID(sensorID)) {
+            throw new CommonException(String.format("No sensor %s found on remote %s", sensorID, this.remoteID));
+        }
+        return this.sensors.get(sensorID);
     }
 
     public TeamColor getTeam() {

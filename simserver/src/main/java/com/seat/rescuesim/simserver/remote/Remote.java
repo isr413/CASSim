@@ -146,16 +146,26 @@ public class Remote {
         return this.activeSensors.values();
     }
 
-    public Collection<Sensor> getActiveSensorsWithType(String sensorType) {
+    public Collection<Sensor> getActiveSensorsWithModel(String sensorModel) {
         ArrayList<Sensor> sensors = new ArrayList<>();
         for (Sensor sensor : this.activeSensors.values()) {
-            if (sensor.getSensorType().equals(sensorType)) {
+            if (sensor.getSensorModel().equals(sensorModel)) {
+                sensors.add(sensor);
+            }
+        }
+        return sensors;
+    }
+
+    public Collection<Sensor> getActiveSensorsWithType(Class<? extends SensorProto> classType) {
+        ArrayList<Sensor> sensors = new ArrayList<>();
+        for (Sensor sensor : this.activeSensors.values()) {
+            if (classType.isAssignableFrom(sensor.getProto().getClass())) {
                 sensors.add(sensor);
             }
         }
         if (sensors.isEmpty()) {
             Debugger.logger.warn(String.format("Remote %s has no active sensors with type %s", this.getRemoteID(),
-                sensorType));
+                classType.getName()));
         }
         return sensors;
     }
@@ -189,19 +199,22 @@ public class Remote {
         return sensors;
     }
 
-    public Collection<Sensor> getInactiveSensorsWithType(String sensorType) {
+    public Collection<Sensor> getInactiveSensorsWithModel(String sensorModel) {
         ArrayList<Sensor> sensors = new ArrayList<>();
-        for (Sensor sensor : this.allSensors.values()) {
-            if (this.hasActiveSensorWithID(sensor.getSensorID())) {
-                continue;
-            }
-            if (sensor.getSensorType().equals(sensorType)) {
+        for (Sensor sensor : this.getInactiveSensors()) {
+            if (sensor.getSensorModel().equals(sensorModel)) {
                 sensors.add(sensor);
             }
         }
-        if (sensors.isEmpty()) {
-            Debugger.logger.warn(String.format("Remote %s has no inactive sensors with type %s", this.getRemoteID(),
-                sensorType));
+        return sensors;
+    }
+
+    public Collection<Sensor> getInactiveSensorsWithType(Class<? extends SensorProto> classType) {
+        ArrayList<Sensor> sensors = new ArrayList<>();
+        for (Sensor sensor : this.getInactiveSensors()) {
+            if (classType.isAssignableFrom(sensor.getProto().getClass())) {
+                sensors.add(sensor);
+            }
         }
         return sensors;
     }
@@ -253,16 +266,22 @@ public class Remote {
         return state;
     }
 
-    public Collection<Sensor> getSensorsWithType(String sensorType) {
+    public Collection<Sensor> getSensorsWithModel(String sensorModel) {
         ArrayList<Sensor> sensors = new ArrayList<>();
         for (Sensor sensor : this.allSensors.values()) {
-            if (sensor.getSensorType().equals(sensorType)) {
+            if (sensor.getSensorModel().equals(sensorModel)) {
                 sensors.add(sensor);
             }
         }
-        if (sensors.isEmpty()) {
-            Debugger.logger.warn(String.format("Remote %s has no sensors with type %s", this.getRemoteID(),
-                sensorType));
+        return sensors;
+    }
+
+    public Collection<Sensor> getSensorsWithType(Class<? extends SensorProto> classType) {
+        ArrayList<Sensor> sensors = new ArrayList<>();
+        for (Sensor sensor : this.allSensors.values()) {
+            if (classType.isAssignableFrom(sensor.getProto().getClass())) {
+                sensors.add(sensor);
+            }
         }
         return sensors;
     }
@@ -290,9 +309,18 @@ public class Remote {
         return this.activeSensors.containsKey(sensorID);
     }
 
-    public boolean hasActiveSensorWithType(String sensorType) {
+    public boolean hasActiveSensorWithModel(String sensorModel) {
         for (Sensor sensor : this.activeSensors.values()) {
-            if (sensor.getSensorType().equals(sensorType)) {
+            if (sensor.getSensorModel().equals(sensorModel)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasActiveSensorWithType(Class<? extends SensorProto> classType) {
+        for (Sensor sensor : this.activeSensors.values()) {
+            if (classType.isAssignableFrom(sensor.getProto().getClass())) {
                 return true;
             }
         }
@@ -307,12 +335,18 @@ public class Remote {
         return this.hasSensorWithID(sensorID) && !this.hasActiveSensorWithID(sensorID);
     }
 
-    public boolean hasInactiveSensorWithType(String sensorType) {
-        for (Sensor sensor : this.activeSensors.values()) {
-            if (this.hasActiveSensorWithID(sensor.getSensorID())) {
-                continue;
+    public boolean hasInactiveSensorWithModel(String sensorModel) {
+        for (Sensor sensor : this.getInactiveSensors()) {
+            if (sensor.getSensorModel().equals(sensorModel)) {
+                return true;
             }
-            if (sensor.getSensorType().equals(sensorType)) {
+        }
+        return false;
+    }
+
+    public boolean hasInactiveSensorWithType(Class<? extends SensorProto> classType) {
+        for (Sensor sensor : this.getInactiveSensors()) {
+            if (classType.isAssignableFrom(sensor.getProto().getClass())) {
                 return true;
             }
         }
@@ -331,9 +365,18 @@ public class Remote {
         return this.allSensors.containsKey(sensorID);
     }
 
-    public boolean hasSensorWithType(String sensorType) {
+    public boolean hasSensorWithModel(String sensorModel) {
         for (Sensor sensor : this.allSensors.values()) {
-            if (sensor.getSensorType().equals(sensorType)) {
+            if (sensor.getSensorModel().equals(sensorModel)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasSensorWithType(Class<? extends SensorProto> classType) {
+        for (Sensor sensor : this.allSensors.values()) {
+            if (classType.isAssignableFrom(sensor.getProto().getClass())) {
                 return true;
             }
         }

@@ -16,7 +16,6 @@ import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorConfig;
 import com.seat.rescuesim.common.sensor.SensorProto;
 import com.seat.rescuesim.common.sensor.SensorRegistry;
-import com.seat.rescuesim.common.util.Debugger;
 
 /** A serializable prototype of a Remote. */
 public class RemoteProto extends JSONAble {
@@ -110,23 +109,14 @@ public class RemoteProto extends JSONAble {
         return this.sensors;
     }
 
-    public SensorConfig getSensorWithID(String sensorID) throws CommonException {
-        for (SensorConfig config : this.sensors) {
-            if (config.hasSensorWithID(sensorID)) {
-                return config;
+    public Collection<SensorConfig> getSensorsWithModel(String sensorModel) {
+        ArrayList<SensorConfig> sensors = new ArrayList<>();
+        for (SensorConfig state : this.sensors) {
+            if (state.getSensorModel().equals(sensorModel)) {
+                sensors.add(state);
             }
         }
-        throw new CommonException(String.format("No sensor with ID %s found on remote %s", sensorID, this.getLabel()));
-    }
-
-    public SensorConfig getSensorWithModel(String sensorModel) throws CommonException {
-        for (SensorConfig config : this.sensors) {
-            if (config.getSensorModel().equals(sensorModel)) {
-                return config;
-            }
-        }
-        throw new CommonException(String.format("No sensor of model %s found on remote %s", sensorModel,
-            this.getLabel()));
+        return sensors;
     }
 
     public Collection<SensorConfig> getSensorsWithType(Class<? extends SensorProto> classType) {
@@ -136,11 +126,16 @@ public class RemoteProto extends JSONAble {
                 confs.add(config);
             }
         }
-        if (confs.isEmpty()) {
-            Debugger.logger.warn(String.format("No sensors of type %s found on remote %s", classType.getName(),
-                this.getLabel()));
-        }
         return confs;
+    }
+
+    public SensorConfig getSensorWithID(String sensorID) throws CommonException {
+        for (SensorConfig config : this.sensors) {
+            if (config.hasSensorWithID(sensorID)) {
+                return config;
+            }
+        }
+        throw new CommonException(String.format("No sensor with ID %s found on remote %s", sensorID, this.getLabel()));
     }
 
     public boolean hasLocation() {
