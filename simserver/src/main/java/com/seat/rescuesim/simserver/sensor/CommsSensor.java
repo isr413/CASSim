@@ -56,7 +56,8 @@ public class CommsSensor extends Sensor {
 
     @Override
     public CommsSensorState getState() {
-        return new CommsSensorState(this.getSensorID(), this.isActive(), this.connections);
+        return new CommsSensorState(this.getProto().getCommsType(), this.getSensorID(), this.isActive(),
+            this.connections);
     }
 
     public boolean hasConnections() {

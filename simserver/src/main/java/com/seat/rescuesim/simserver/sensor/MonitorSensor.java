@@ -30,7 +30,8 @@ public class MonitorSensor extends Sensor {
 
     @Override
     public MonitorSensorState getState() {
-        return new MonitorSensorState(this.getSensorID(), this.isActive(), this.monitorID);
+        return new MonitorSensorState(this.getProto().getMonitorType(), this.getSensorID(), this.isActive(),
+            this.monitorID);
     }
 
     public boolean hasMonitorID() {
