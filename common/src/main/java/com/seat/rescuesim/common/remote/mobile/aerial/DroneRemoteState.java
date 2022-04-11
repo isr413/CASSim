@@ -26,4 +26,9 @@ public class DroneRemoteState extends MobileRemoteState {
         super(option);
     }
 
+    @Override
+    public String getLabel() {
+        return String.format("%s:<drone>", this.getRemoteID());
+    }
+
 }

@@ -25,4 +25,9 @@ public class BaseRemoteState extends RemoteState {
         super(option);
     }
 
+    @Override
+    public String getLabel() {
+        return String.format("%s:<base>", this.getRemoteID());
+    }
+
 }

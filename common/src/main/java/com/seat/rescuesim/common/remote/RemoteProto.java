@@ -83,7 +83,7 @@ public class RemoteProto extends JSONAble {
     }
 
     public String getLabel() {
-        return String.format("r:<%s>", this.getRemoteType());
+        return "r:<remote>";
     }
 
     public Vector getLocation() {

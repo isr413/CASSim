@@ -58,6 +58,11 @@ public class MobileRemoteState extends RemoteState {
         return this.acceleration;
     }
 
+    @Override
+    public String getLabel() {
+        return String.format("%s:<mobile>", this.getRemoteID());
+    }
+
     public Vector getVelocity() {
         return this.velocity;
     }

@@ -45,28 +45,30 @@ public class RemoteRegistry {
         put(VictimRemoteState.class.getName(), (option) -> new VictimRemoteState(option));
     }};
 
-    public static BaseRemoteProto Base(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {
+    public static BaseRemoteProto BaseRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors) {
         return new BaseRemoteProto(location, maxBatteryPower, sensors);
     }
 
-    public static DroneRemoteProto Drone(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors,
-            Vector batteryUsage, double maxVelocity, double maxAcceleration, double maxJerk) {
+    public static DroneRemoteProto DroneRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, Vector batteryUsage, double maxVelocity, double maxAcceleration,
+            double maxJerk) {
         return new DroneRemoteProto(location, maxBatteryPower, sensors, batteryUsage, maxVelocity, maxAcceleration,
             maxJerk);
     }
 
-    public static MobileRemoteProto GenericMobileRemote(Vector location, double maxBatteryPower,
+    public static MobileRemoteProto MobileRemote(Vector location, double maxBatteryPower,
             Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
         return new MobileRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
     }
 
-    public static RemoteProto GenericRemote(Vector location, double maxBatteryPower,
-            Collection<SensorConfig> sensors) {
+    public static RemoteProto Remote(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {
         return new RemoteProto(location, maxBatteryPower, sensors);
     }
 
-    public static VictimRemoteProto Victim(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors,
-            double speedMean, double speedStdDev, double maxVelocity, double maxAcceleration, double maxJerk) {
+    public static VictimRemoteProto VictimRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, double speedMean, double speedStdDev, double maxVelocity,
+            double maxAcceleration, double maxJerk) {
         return new VictimRemoteProto(location, maxBatteryPower, sensors, speedMean, speedStdDev, maxVelocity,
             maxAcceleration, maxJerk);
     }

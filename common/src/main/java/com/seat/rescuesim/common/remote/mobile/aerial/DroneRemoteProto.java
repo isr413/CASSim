@@ -64,7 +64,7 @@ public class DroneRemoteProto extends MobileRemoteProto {
 
     @Override
     public String getLabel() {
-        return "r:<d>";
+        return "r:<drone>";
     }
 
     public double getHorizontalKineticBatteryUsage() {

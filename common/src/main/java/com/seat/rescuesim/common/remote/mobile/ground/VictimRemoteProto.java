@@ -68,7 +68,7 @@ public class VictimRemoteProto extends MobileRemoteProto {
 
     @Override
     public String getLabel() {
-        return "r:<v>";
+        return "r:<victim>";
     }
 
     public double getSpeedMean() {

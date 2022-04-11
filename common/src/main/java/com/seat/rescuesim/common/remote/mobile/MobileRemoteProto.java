@@ -79,6 +79,11 @@ public class MobileRemoteProto extends RemoteProto {
         return json;
     }
 
+    @Override
+    public String getLabel() {
+        return "r:<mobile>";
+    }
+
     public double getMaxAcceleration() {
         return this.maxAcceleration;
     }

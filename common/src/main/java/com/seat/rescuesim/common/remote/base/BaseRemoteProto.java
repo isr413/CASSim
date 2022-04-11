@@ -33,7 +33,7 @@ public class BaseRemoteProto extends RemoteProto {
 
     @Override
     public String getLabel() {
-        return "r:<b>";
+        return "r:<base>";
     }
 
 }

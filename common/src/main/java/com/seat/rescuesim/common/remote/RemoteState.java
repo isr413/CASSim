@@ -99,7 +99,7 @@ public class RemoteState extends JSONAble {
     }
 
     public String getLabel() {
-        return String.format("%s:<%s>", this.remoteID, this.getRemoteType());
+        return String.format("%s:<remote>", this.remoteID);
     }
 
     public Vector getLocation() {

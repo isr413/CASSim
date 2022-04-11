@@ -26,4 +26,9 @@ public class VictimRemoteState extends MobileRemoteState {
         super(option);
     }
 
+    @Override
+    public String getLabel() {
+        return String.format("%s:<victim>", this.getRemoteID());
+    }
+
 }
