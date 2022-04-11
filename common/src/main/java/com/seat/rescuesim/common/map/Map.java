@@ -18,46 +18,31 @@ public class Map extends JSONAble {
     public static final String MAP_WIDTH = "map_width";
     public static final String ZONE_SIZE = "zone_size";
 
-    protected static final MapType CUSTOM_MAP_TYPE = MapType.CUSTOM;
-    protected static final MapType DEFAULT_MAP_TYPE = MapType.GENERIC;
-
+    private boolean defaultGrid;
     private Zone[][] grid;
     private int height;     // number of zones in each column of the grid
-    private MapType type;
     private int width;      // number of zones in each row of the grid
     private int zoneSize;   // zones in the same map grid must have a uniform size
 
     public Map(int zoneSize, int width, int height) {
-        this(Map.DEFAULT_MAP_TYPE, zoneSize, width, height);
-    }
-
-    public Map(MapType type, int zoneSize, int width, int height) {
-        this(type, new Zone[height][width], zoneSize, width, height);
-        for (int y = 0; y < this.height; y++) {
-            for (int x = 0; x < this.width; x++) {
-                this.grid[y][x] = new Zone(
-                    new Vector(this.zoneSize*(x + 0.5), this.zoneSize*(y + 0.5)),
-                    this.zoneSize
-                );
-            }
-        }
-    }
-
-    public Map(Zone[][] grid, int zoneSize, int mapSize) {
-       this(Map.CUSTOM_MAP_TYPE, grid, zoneSize, mapSize, mapSize);
-    }
-
-    public Map(MapType type, Zone[][] grid, int zoneSize, int mapSize) {
-        this(type, grid, zoneSize, mapSize, mapSize);
+        this(null, zoneSize, width, height);
     }
 
     public Map(Zone[][] grid, int zoneSize, int width, int height) {
-        this(Map.CUSTOM_MAP_TYPE, grid, zoneSize, width, height);
-    }
-
-    public Map(MapType type, Zone[][] grid, int zoneSize, int width, int height) {
-        this.type = type;
-        this.grid = grid;
+        this.defaultGrid = (grid == null);
+        if (this.defaultGrid) {
+            this.grid = new Zone[height][width];
+            for (int y = 0; y < this.height; y++) {
+                for (int x = 0; x < this.width; x++) {
+                    this.grid[y][x] = new Zone(
+                        new Vector(this.zoneSize*(x + 0.5), this.zoneSize*(y + 0.5)),
+                        this.zoneSize
+                    );
+                }
+            }
+        } else {
+            this.grid = grid;
+        }
         this.zoneSize = zoneSize;
         this.width = width;
         this.height = height;
@@ -69,7 +54,6 @@ public class Map extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = MapType.decodeType(json);
         this.width = json.getInt(Map.MAP_WIDTH);
         this.height = json.getInt(Map.MAP_HEIGHT);
         this.zoneSize = json.getInt(Map.ZONE_SIZE);
@@ -80,6 +64,15 @@ public class Map extends JSONAble {
                 JSONArray jsonRow = jsonGrid.getJSONArray(y);
                 for (int x = 0; x < this.width; x++) {
                     this.grid[y][x] = new Zone(jsonRow.getJSONOption(x));
+                }
+            }
+        } else {
+            for (int y = 0; y < this.height; y++) {
+                for (int x = 0; x < this.width; x++) {
+                    this.grid[y][x] = new Zone(
+                        new Vector(this.zoneSize*(x + 0.5), this.zoneSize*(y + 0.5)),
+                        this.zoneSize
+                    );
                 }
             }
         }
@@ -146,10 +139,6 @@ public class Map extends JSONAble {
         return String.format("<(%d, %d)>", this.width, this.height);
     }
 
-    public MapType getMapType() {
-        return this.type;
-    }
-
     public int getWidth() {
         return this.width * this.zoneSize;
     }
@@ -200,11 +189,10 @@ public class Map extends JSONAble {
 
     public JSONOption toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(MapType.MAP_TYPE, this.type.getType());
         json.put(Map.MAP_WIDTH, this.width);
         json.put(Map.MAP_HEIGHT, this.height);
         json.put(Map.ZONE_SIZE, this.zoneSize);
-        if (!(this.type.equals(Map.DEFAULT_MAP_TYPE) || this.type.equals(MapType.NONE))) {
+        if (!this.defaultGrid) {
             JSONArrayBuilder jsonGrid = JSONBuilder.Array();
             for (int y = 0; y < this.height; y++) {
                 JSONArrayBuilder jsonRow = JSONBuilder.Array();
@@ -220,11 +208,7 @@ public class Map extends JSONAble {
 
     public boolean equals(Map map) {
         if (map == null) return false;
-        boolean flag = this.type.equals(map.type) && this.width == map.width && this.height == map.height &&
-            this.zoneSize == map.zoneSize;
-        if (!flag) {
-            return false;
-        }
+        if (!(this.width == map.width && this.height == map.height && this.zoneSize == map.zoneSize)) return false;
         for (int y = 0; y < this.height; y++) {
             for (int x = 0; x < this.width; x++) {
                 if (!this.grid[y][x].equals(map.grid[y][x])) {

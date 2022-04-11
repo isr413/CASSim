@@ -17,28 +17,16 @@ public class Zone extends JSONAble {
     public static final String ZONE_LOCATION = "location";
     public static final String ZONE_SIZE = "size";
 
-    protected static final ZoneType DEFAULT_ZONE_TYPE = ZoneType.OPEN;
-
     private Field aerial;
     private Field ground;
     private Vector location;
     private int size;
-    private ZoneType type;
 
     public Zone(Vector location, int size) {
-        this(Zone.DEFAULT_ZONE_TYPE, location, size, null, null);
+        this(location, size, null, null);
     }
 
     public Zone(Vector location, int size, Field ground, Field aerial) {
-        this(Zone.DEFAULT_ZONE_TYPE, location, size, ground, aerial);
-    }
-
-    public Zone(ZoneType type, Vector location, int size) {
-        this(type, location, size, null, null);
-    }
-
-    public Zone(ZoneType type, Vector location, int size, Field ground, Field aerial) {
-        this.type = type;
         this.location = location;
         this.size = size;
         this.ground = (ground != null) ? ground : new Field();
@@ -51,7 +39,6 @@ public class Zone extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.type = ZoneType.decodeType(json);
         this.location = new Vector(json.getJSONOption(Zone.ZONE_LOCATION));
         this.size = json.getInt(Zone.ZONE_SIZE);
         this.ground = (json.hasKey(Zone.ZONE_GROUND)) ?
@@ -71,7 +58,7 @@ public class Zone extends JSONAble {
     }
 
     public String getLabel() {
-        return String.format("<%d, %s>", this.type.getType(), this.location.toString());
+        return String.format("<z: %s>", this.location.toString());
     }
 
     public Vector getLocation() {
@@ -80,10 +67,6 @@ public class Zone extends JSONAble {
 
     public int getSize() {
         return this.size;
-    }
-
-    public ZoneType getType() {
-        return this.type;
     }
 
     public boolean hasAerialField() {
@@ -96,7 +79,6 @@ public class Zone extends JSONAble {
 
     public JSONOption toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(ZoneType.ZONE_TYPE, this.type.getType());
         json.put(Zone.ZONE_LOCATION, this.location.toJSON());
         json.put(Zone.ZONE_SIZE, this.size);
         if (this.hasGroundField()) {
