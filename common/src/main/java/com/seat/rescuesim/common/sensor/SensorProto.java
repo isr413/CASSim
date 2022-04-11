@@ -56,7 +56,7 @@ public class SensorProto extends JSONAble {
     }
 
     public String getLabel() {
-        return String.format("s:%s", this.getSensorType());
+        return "s:<sensor>";
     }
 
     public double getSensorAccuracy() {

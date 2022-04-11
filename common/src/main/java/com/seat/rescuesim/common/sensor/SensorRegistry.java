@@ -17,6 +17,9 @@ import com.seat.rescuesim.common.sensor.vision.VisionSensorProto;
 import com.seat.rescuesim.common.sensor.vision.VisionSensorState;
 
 public class SensorRegistry {
+    public static final String BLUETOOTH_COMMS = "bluetooth";
+    public static final String HRVM = "hrvm";
+    public static final String LTE_RADIO_COMMS = "lte_radio";
     public static final String SENSOR_TYPE = "sensor_type";
 
     private static final HashMap<String, Function<JSONOption, Object>> REGISTRY =
@@ -35,36 +38,32 @@ public class SensorRegistry {
         put(VisionSensorState.class.getName(), (option) -> new VisionSensorState(option));
     }};
 
-    public static CommsSensorProto BluetoothComms(double range, double accuracy, double batteryUsage, double delay) {
+    public static CommsSensorProto BluetoothSensor(double range, double accuracy, double batteryUsage, double delay) {
+        return new CommsSensorProto(SensorRegistry.BLUETOOTH_COMMS, range, accuracy, batteryUsage, delay);
+    }
+
+    public static CommsSensorProto CommsSensor(double range, double accuracy, double batteryUsage, double delay) {
         return new CommsSensorProto(range, accuracy, batteryUsage, delay);
     }
 
-    public static VisionSensorProto CMOSCameraVision(double range, double accuracy, double batteryUsage) {
-        return new VisionSensorProto(range, accuracy, batteryUsage);
+    public static MonitorSensorProto HRVMSensor(double range, double accuracy, double batteryUsage) {
+        return new MonitorSensorProto(SensorRegistry.HRVM, range, accuracy, batteryUsage);
     }
 
-    public static CommsSensorProto GenericComms(double range, double accuracy, double batteryUsage, double delay) {
-        return new CommsSensorProto(range, accuracy, batteryUsage, delay);
+    public static CommsSensorProto LTERadioSensor(double range, double accuracy, double batteryUsage, double delay) {
+        return new CommsSensorProto(SensorRegistry.LTE_RADIO_COMMS, range, accuracy, batteryUsage, delay);
     }
 
-    public static MonitorSensorProto GenericMonitor(double range, double accuracy, double batteryUsage) {
+    public static MonitorSensorProto MonitorSensor(double range, double accuracy, double batteryUsage) {
         return new MonitorSensorProto(range, accuracy, batteryUsage);
     }
 
-    public static SensorProto GenericSensor(double range, double accuracy, double batteryUsage) {
+    public static SensorProto Sensor(double range, double accuracy, double batteryUsage) {
         return new SensorProto(range, accuracy, batteryUsage);
     }
 
-    public static VisionSensorProto GenericVision(double range, double accuracy, double batteryUsage) {
+    public static VisionSensorProto VisionSensor(double range, double accuracy, double batteryUsage) {
         return new VisionSensorProto(range, accuracy, batteryUsage);
-    }
-
-    public static MonitorSensorProto HRVMMonitor(double range, double accuracy, double batteryUsage) {
-        return new MonitorSensorProto(range, accuracy, batteryUsage);
-    }
-
-    public static CommsSensorProto LTERadioComms(double range, double accuracy, double batteryUsage, double delay) {
-        return new CommsSensorProto(range, accuracy, batteryUsage, delay);
     }
 
     @SuppressWarnings("unchecked")

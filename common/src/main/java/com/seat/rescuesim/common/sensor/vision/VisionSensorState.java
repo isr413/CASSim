@@ -56,6 +56,11 @@ public class VisionSensorState extends SensorState {
         return json;
     }
 
+    @Override
+    public String getLabel() {
+        return String.format("%s:<vision>", this.getSensorID());
+    }
+
     public HashSet<String> getObservations() {
         return this.observations;
     }

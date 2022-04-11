@@ -16,15 +16,16 @@ import com.seat.rescuesim.common.sensor.SensorState;
 public class CommsSensorState extends SensorState {
     public static final String CONNECTIONS = "connections";
 
+    private String commsType;
     private HashSet<String> connections;
 
-    public CommsSensorState(String sensorID, boolean active) {
-        this(sensorID, active, null);
+    public CommsSensorState(String commsType, String sensorID, boolean active) {
+        this(commsType, sensorID, active, null);
     }
 
-    public CommsSensorState(String sensorID, boolean active,
-            Collection<String> connections) {
+    public CommsSensorState(String commsType, String sensorID, boolean active, Collection<String> connections) {
         super(sensorID, active);
+        this.commsType = commsType;
         this.connections = (connections != null) ? new HashSet<>(connections) : new HashSet<>();
     }
 
@@ -35,6 +36,9 @@ public class CommsSensorState extends SensorState {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
+        this.commsType = (json.hasKey(CommsSensorProto.COMMS_TYPE)) ?
+            json.getString(CommsSensorProto.COMMS_TYPE) :
+            CommsSensorProto.DEFAULT_COMMS_TYPE;
         this.connections = new HashSet<>();
         if (json.hasKey(CommsSensorState.CONNECTIONS)) {
             JSONArray jsonConnections = json.getJSONArray(CommsSensorState.CONNECTIONS);
@@ -47,6 +51,7 @@ public class CommsSensorState extends SensorState {
     @Override
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
+        json.put(CommsSensorProto.COMMS_TYPE, this.commsType);
         if (this.hasConnections()) {
             JSONArrayBuilder jsonObservations = JSONBuilder.Array();
             for (String remoteID : this.connections) {
@@ -57,8 +62,17 @@ public class CommsSensorState extends SensorState {
         return json;
     }
 
+    public String getCommsType() {
+        return this.commsType;
+    }
+
     public HashSet<String> getConnections() {
         return this.connections;
+    }
+
+    @Override
+    public String getLabel() {
+        return String.format("%s:<%s>", this.getSensorID(), this.commsType);
     }
 
     public boolean hasConnections() {
@@ -71,7 +85,8 @@ public class CommsSensorState extends SensorState {
 
     public boolean equals(CommsSensorState state) {
         if (state == null) return false;
-        return super.equals(state) && this.connections.equals(state.connections);
+        return super.equals(state) && this.commsType.equals(state.commsType) &&
+            this.connections.equals(state.connections);
     }
 
 }
