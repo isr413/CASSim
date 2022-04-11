@@ -56,7 +56,7 @@ public class VisionSensorState extends SensorState {
         return json;
     }
 
-    public HashSet<String> getObservations() {
+    public Collection<String> getObservations() {
         return this.observations;
     }
 

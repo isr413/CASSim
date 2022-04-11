@@ -14,6 +14,7 @@ import com.seat.rescuesim.common.json.JSONObjectBuilder;
 import com.seat.rescuesim.common.json.JSONOption;
 import com.seat.rescuesim.common.math.Vector;
 import com.seat.rescuesim.common.sensor.SensorConfig;
+import com.seat.rescuesim.common.sensor.SensorProto;
 import com.seat.rescuesim.common.sensor.SensorRegistry;
 import com.seat.rescuesim.common.util.Debugger;
 
@@ -74,8 +75,8 @@ public class RemoteProto extends JSONAble {
         json.put(RemoteProto.MAX_BATTERY, this.maxBatteryPower);
         if (this.hasSensors()) {
             JSONArrayBuilder jsonSensors = JSONBuilder.Array();
-            for (SensorConfig conf : this.sensors) {
-                jsonSensors.put(conf.toJSON());
+            for (SensorConfig config : this.sensors) {
+                jsonSensors.put(config.toJSON());
             }
             json.put(RemoteProto.SENSORS, jsonSensors.toJSON());
         }
@@ -105,28 +106,38 @@ public class RemoteProto extends JSONAble {
         return this.sensors.get(idx);
     }
 
-    public ArrayList<SensorConfig> getSensors() {
+    public Collection<SensorConfig> getSensors() {
         return this.sensors;
     }
 
     public SensorConfig getSensorWithID(String sensorID) throws CommonException {
-        for (SensorConfig conf : this.sensors) {
-            if (conf.hasSensorWithID(sensorID)) {
-                return conf;
+        for (SensorConfig config : this.sensors) {
+            if (config.hasSensorWithID(sensorID)) {
+                return config;
             }
         }
         throw new CommonException(String.format("No sensor with ID %s found on remote %s", sensorID, this.getLabel()));
     }
 
-    public ArrayList<SensorConfig> getSensorsWithType(String sensorType) {
+    public SensorConfig getSensorWithModel(String sensorModel) throws CommonException {
+        for (SensorConfig config : this.sensors) {
+            if (config.getSensorModel().equals(sensorModel)) {
+                return config;
+            }
+        }
+        throw new CommonException(String.format("No sensor of model %s found on remote %s", sensorModel,
+            this.getLabel()));
+    }
+
+    public Collection<SensorConfig> getSensorsWithType(Class<? extends SensorProto> classType) {
         ArrayList<SensorConfig> confs = new ArrayList<>();
-        for (SensorConfig conf : this.sensors) {
-            if (conf.getSensorType().equals(sensorType)) {
-                confs.add(conf);
+        for (SensorConfig config : this.sensors) {
+            if (classType.isAssignableFrom(config.getProto().getClass())) {
+                confs.add(config);
             }
         }
         if (confs.isEmpty()) {
-            Debugger.logger.warn(String.format("No sensors with type %s found on remote %s", sensorType,
+            Debugger.logger.warn(String.format("No sensors of type %s found on remote %s", classType.getName(),
                 this.getLabel()));
         }
         return confs;
@@ -145,17 +156,26 @@ public class RemoteProto extends JSONAble {
     }
 
     public boolean hasSensorWithID(String sensorID) {
-        for (SensorConfig conf : this.sensors) {
-            if (conf.hasSensorWithID(sensorID)) {
+        for (SensorConfig config : this.sensors) {
+            if (config.hasSensorWithID(sensorID)) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean hasSensorWithType(String sensorType) {
-        for (SensorConfig conf : this.sensors) {
-            if (conf.getSensorType().equals(sensorType)) {
+    public boolean hasSensorWithModel(String sensorModel) {
+        for (SensorConfig config : this.sensors) {
+            if (config.getSensorModel().equals(sensorModel)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasSensorWithType(Class<? extends SensorProto> classType) {
+        for (SensorConfig config : this.sensors) {
+            if (classType.isAssignableFrom(config.getProto().getClass())) {
                 return true;
             }
         }

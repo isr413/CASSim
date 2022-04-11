@@ -1,8 +1,10 @@
 package com.seat.rescuesim.common.remote.intent;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+
 import com.seat.rescuesim.common.core.CommonException;
 import com.seat.rescuesim.common.json.JSONAble;
 import com.seat.rescuesim.common.json.JSONArray;
@@ -55,11 +57,11 @@ public class IntentionSet extends JSONAble {
         return true;
     }
 
-    public ArrayList<Intention> getIntentions() {
+    public Collection<Intention> getIntentions() {
         return new ArrayList<Intention>(this.intentions.values());
     }
 
-    public HashSet<IntentionType> getIntentionTypes() {
+    public Collection<IntentionType> getIntentionTypes() {
         return new HashSet<IntentionType>(this.intentions.keySet());
     }
 

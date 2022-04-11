@@ -1,7 +1,9 @@
 package com.seat.rescuesim.common.util;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+
 import com.seat.rescuesim.common.core.CommonException;
 
 public class ArgsParser {
@@ -33,7 +35,7 @@ public class ArgsParser {
         }
     }
 
-    public HashSet<String> getArgs() {
+    public Collection<String> getArgs() {
         return new HashSet<String>(this.parsedArgs.values());
     }
 
@@ -70,7 +72,7 @@ public class ArgsParser {
         }
     }
 
-    public HashSet<String> getParams() {
+    public Collection<String> getParams() {
         return new HashSet<String>(this.parsedArgs.keySet());
     }
 

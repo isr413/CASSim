@@ -79,7 +79,7 @@ public class ActivateIntention extends Intention {
         return flag;
     }
 
-    public HashSet<String> getActivations() {
+    public Collection<String> getActivations() {
         return this.activations;
     }
 

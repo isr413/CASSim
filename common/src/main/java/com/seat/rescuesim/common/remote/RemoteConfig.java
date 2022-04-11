@@ -93,7 +93,7 @@ public class RemoteConfig extends JSONAble {
         return this.proto;
     }
 
-    public HashSet<String> getRemoteIDs() {
+    public Collection<String> getRemoteIDs() {
         return this.remoteIDs;
     }
 

@@ -56,7 +56,7 @@ public class CommsSensorState extends SensorState {
         return json;
     }
 
-    public HashSet<String> getConnections() {
+    public Collection<String> getConnections() {
         return this.connections;
     }
 

@@ -42,12 +42,16 @@ public class Sensor {
         return this.sensorID;
     }
 
+    public String getSensorModel() {
+        return this.proto.getSensorModel();
+    }
+
     public String getSensorType() {
         return this.proto.getSensorType();
     }
 
     public SensorState getState() {
-        return new SensorState(this.sensorID, this.active);
+        return new SensorState(this.getSensorModel(), this.sensorID, this.active);
     }
 
     public boolean hasAccuracy() {
