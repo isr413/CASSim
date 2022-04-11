@@ -66,6 +66,11 @@ public class VictimRemoteProto extends MobileRemoteProto {
         return json;
     }
 
+    @Override
+    public String getLabel() {
+        return "r:<v>";
+    }
+
     public double getSpeedMean() {
         return this.speedMean;
     }

@@ -31,4 +31,9 @@ public class BaseRemoteProto extends RemoteProto {
         super(option);
     }
 
+    @Override
+    public String getLabel() {
+        return "r:<b>";
+    }
+
 }

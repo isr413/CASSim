@@ -62,6 +62,11 @@ public class DroneRemoteProto extends MobileRemoteProto {
         return this.batteryUsage;
     }
 
+    @Override
+    public String getLabel() {
+        return "r:<d>";
+    }
+
     public double getHorizontalKineticBatteryUsage() {
         return this.batteryUsage.getY();
     }
