@@ -1,5 +1,6 @@
 package com.seat.rescuesim.client.gui;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -97,6 +98,7 @@ public class GUIMapFrame extends JFrame {
 
         private void drawDisplay(Graphics g) {
             Graphics2D g2d = (Graphics2D) g;
+            g2d.setStroke(new BasicStroke(4));
             this.drawGridLines(g2d);
             this.drawMapBounds(g2d);
             this.drawPoints(g2d);
@@ -175,10 +177,8 @@ public class GUIMapFrame extends JFrame {
             switch (team) {
                 case BLUE: return new Point(x, y, Color.BLUE);
                 case CYAN: return new Point(x, y, Color.CYAN);
-                case DARK_GRAY: return new Point(x, y, Color.DARK_GRAY);
                 case GRAY: return new Point(x, y, Color.GRAY);
                 case GREEN: return new Point(x, y, Color.GREEN);
-                case LIGHT_GRAY: return new Point(x, y, Color.LIGHT_GRAY);
                 case MAGENTA: return new Point(x, y, Color.MAGENTA);
                 case ORANGE: return new Point(x, y, Color.ORANGE);
                 case PINK: return new Point(x, y, Color.PINK);

@@ -7,15 +7,13 @@ public enum TeamColor implements SerializableEnum {
     NONE(0),
     BLUE(1),
     CYAN(2),
-    DARK_GRAY(3),
-    GRAY(4),
-    GREEN(5),
-    LIGHT_GRAY(6),
-    MAGENTA(7),
-    ORANGE(8),
-    PINK(9),
-    RED(10),
-    YELLOW(11);
+    GRAY(3),
+    GREEN(4),
+    MAGENTA(5),
+    ORANGE(6),
+    PINK(7),
+    RED(8),
+    YELLOW(9);
 
     public static final String TEAM = "team";
 
