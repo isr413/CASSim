@@ -11,7 +11,9 @@ import com.seat.rescuesim.common.json.JSONOption;
 public class SensorProto extends JSONAble {
     public static final String ACCURACY = "accuracy";
     public static final String BATTERY_USAGE = "battery_usage";
+    public static final String DEFAULT_SENSOR_MODEL = "generic";
     public static final String RANGE = "range";
+    public static final String SENSOR_MODEL = "sensor_model";
 
     protected static final double DEFAULT_ACCURACY = 1.0;
     protected static final double DEFAULT_BATTERY_USAGE = 0.0;
@@ -20,8 +22,14 @@ public class SensorProto extends JSONAble {
     private double accuracy;
     private double batteryUsage;
     private double range;
+    private String sensorModel;
 
     public SensorProto(double range, double accuracy, double batteryUsage) {
+        this(SensorProto.DEFAULT_SENSOR_MODEL, range, accuracy, batteryUsage);
+    }
+
+    public SensorProto(String sensorModel, double range, double accuracy, double batteryUsage) {
+        this.sensorModel = sensorModel;
         this.range = range;
         this.accuracy = accuracy;
         this.batteryUsage = batteryUsage;
@@ -33,6 +41,9 @@ public class SensorProto extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
+        this.sensorModel = (json.hasKey(SensorProto.SENSOR_MODEL)) ?
+            json.getString(SensorProto.SENSOR_MODEL) :
+            SensorProto.DEFAULT_SENSOR_MODEL;
         this.accuracy = json.getDouble(SensorProto.ACCURACY);
         this.range = (json.hasKey(SensorProto.RANGE)) ?
             json.getDouble(SensorProto.RANGE) :
@@ -42,6 +53,9 @@ public class SensorProto extends JSONAble {
 
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
+        if (this.hasSensorModel()) {
+            json.put(SensorProto.SENSOR_MODEL, this.sensorModel);
+        }
         json.put(SensorRegistry.SENSOR_TYPE, this.getSensorType());
         if (this.hasLimitedRange()) {
             json.put(SensorProto.RANGE, this.range);
@@ -56,7 +70,7 @@ public class SensorProto extends JSONAble {
     }
 
     public String getLabel() {
-        return "s:<sensor>";
+        return String.format("s:<%s>", this.sensorModel);
     }
 
     public double getSensorAccuracy() {
@@ -65,6 +79,10 @@ public class SensorProto extends JSONAble {
 
     public double getSensorRange() {
         return this.range;
+    }
+
+    public String getSensorModel() {
+        return this.sensorModel;
     }
 
     public String getSensorType() {
@@ -95,6 +113,11 @@ public class SensorProto extends JSONAble {
         return this.range > 0;
     }
 
+    public boolean hasSensorModel() {
+        return !(this.sensorModel == null || this.sensorModel.isEmpty() || this.sensorModel.isEmpty() ||
+            this.sensorModel.equals(SensorProto.DEFAULT_SENSOR_MODEL));
+    }
+
     public boolean hasUnlimitedRange() {
         return this.range == Double.POSITIVE_INFINITY;
     }
@@ -105,8 +128,8 @@ public class SensorProto extends JSONAble {
 
     public boolean equals(SensorProto proto) {
         if (proto == null) return false;
-        return this.getSensorType().equals(proto.getSensorType()) && this.range == proto.range &&
-            this.accuracy == proto.accuracy && this.batteryUsage == proto.batteryUsage;
+        return this.getSensorType().equals(proto.getSensorType()) && this.sensorModel.equals(proto.sensorModel) &&
+            this.range == proto.range && this.accuracy == proto.accuracy && this.batteryUsage == proto.batteryUsage;
     }
 
 }

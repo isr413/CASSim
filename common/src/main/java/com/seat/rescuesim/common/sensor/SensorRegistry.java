@@ -18,6 +18,7 @@ import com.seat.rescuesim.common.sensor.vision.VisionSensorState;
 
 public class SensorRegistry {
     public static final String BLUETOOTH_COMMS = "bluetooth";
+    public static final String CMOS_CAMERA = "cmos_camera";
     public static final String HRVM = "hrvm";
     public static final String LTE_RADIO_COMMS = "lte_radio";
     public static final String SENSOR_TYPE = "sensor_type";
@@ -40,6 +41,10 @@ public class SensorRegistry {
 
     public static CommsSensorProto BluetoothSensor(double range, double accuracy, double batteryUsage, double delay) {
         return new CommsSensorProto(SensorRegistry.BLUETOOTH_COMMS, range, accuracy, batteryUsage, delay);
+    }
+
+    public static VisionSensorProto CMOSCameraSensor(double range, double accuracy, double batteryUsage) {
+        return new VisionSensorProto(SensorRegistry.CMOS_CAMERA, range, accuracy, batteryUsage);
     }
 
     public static CommsSensorProto CommsSensor(double range, double accuracy, double batteryUsage, double delay) {

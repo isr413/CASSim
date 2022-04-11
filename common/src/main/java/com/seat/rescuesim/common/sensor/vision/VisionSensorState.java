@@ -18,12 +18,12 @@ public class VisionSensorState extends SensorState {
 
     private HashSet<String> observations;
 
-    public VisionSensorState(String sensorID, boolean active) {
-        this(sensorID, active, null);
+    public VisionSensorState(String sensorModel, String sensorID, boolean active) {
+        this(sensorModel, sensorID, active, null);
     }
 
-    public VisionSensorState(String sensorID, boolean active, Collection<String> observations) {
-        super(sensorID, active);
+    public VisionSensorState(String sensorModel, String sensorID, boolean active, Collection<String> observations) {
+        super(sensorModel, sensorID, active);
         this.observations = (observations != null) ? new HashSet<>(observations) : new HashSet<>();
     }
 
@@ -54,11 +54,6 @@ public class VisionSensorState extends SensorState {
             json.put(VisionSensorState.OBSERVATIONS, jsonObservations.toJSON());
         }
         return json;
-    }
-
-    @Override
-    public String getLabel() {
-        return String.format("%s:<vision>", this.getSensorID());
     }
 
     public HashSet<String> getObservations() {

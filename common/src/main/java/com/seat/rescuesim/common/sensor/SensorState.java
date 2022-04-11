@@ -14,8 +14,10 @@ public class SensorState extends JSONAble {
 
     private boolean active;
     private String sensorID;
+    private String sensorModel;
 
-    public SensorState(String sensorID, boolean active) {
+    public SensorState(String sensorModel, String sensorID, boolean active) {
+        this.sensorModel = sensorModel;
         this.sensorID = sensorID;
         this.active = active;
     }
@@ -26,6 +28,9 @@ public class SensorState extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
+        this.sensorModel = (json.hasKey(SensorProto.SENSOR_MODEL)) ?
+            json.getString(SensorProto.SENSOR_MODEL) :
+            SensorProto.DEFAULT_SENSOR_MODEL;
         this.sensorID = json.getString(SensorState.SENSOR_ID);
         this.active = json.getBoolean(SensorState.ACTIVE);
     }
@@ -33,21 +38,33 @@ public class SensorState extends JSONAble {
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(SensorRegistry.SENSOR_TYPE, this.getSensorType());
+        if (this.hasSensorModel()) {
+            json.put(SensorProto.SENSOR_MODEL, this.sensorModel);
+        }
         json.put(SensorState.SENSOR_ID, this.sensorID);
         json.put(SensorState.ACTIVE, this.active);
         return json;
     }
 
     public String getLabel() {
-        return String.format("%s:<sensor>", this.sensorID);
+        return String.format("%s:<%s>", this.sensorID, this.sensorModel);
     }
 
     public String getSensorID() {
         return this.sensorID;
     }
 
+    public String getSensorModel() {
+        return this.sensorModel;
+    }
+
     public String getSensorType() {
         return this.getClass().getName();
+    }
+
+    public boolean hasSensorModel() {
+        return !(this.sensorModel == null || this.sensorModel.isEmpty() || this.sensorModel.isEmpty() ||
+            this.sensorModel.equals(SensorProto.DEFAULT_SENSOR_MODEL));
     }
 
     public boolean isActive() {
@@ -64,8 +81,8 @@ public class SensorState extends JSONAble {
 
     public boolean equals(SensorState state) {
         if (state == null) return false;
-        return this.getSensorType().equals(state.getSensorType()) && this.sensorID.equals(state.sensorID) &&
-            this.active == state.active;
+        return this.getSensorType().equals(state.getSensorType()) && this.sensorModel.equals(state.sensorModel) &&
+            this.sensorID.equals(state.sensorID) && this.active == state.active;
     }
 
 }
