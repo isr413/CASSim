@@ -83,24 +83,8 @@ public class Grid extends JSONAble {
         }
     }
 
-    public Vector bounceLocation(Vector location, Vector nextLocation) {
-        Vector edgePoint = this.edgePointBetween(location, nextLocation);
-        if (edgePoint == null) {
-            return null;
-        }
-        double deltaX = nextLocation.getX() - edgePoint.getX();
-        double deltaY = nextLocation.getY() - edgePoint.getY();
-        if ((edgePoint.getX() == 0 || edgePoint.getX() == this.getWidth()) &&
-                (edgePoint.getY() == 0 || edgePoint.getY() == this.getHeight())) {
-            return new Vector(edgePoint.getX() - deltaX, edgePoint.getY() - deltaY);
-        } else if (edgePoint.getY() == 0 || edgePoint.getY() == this.getHeight()) {
-            return new Vector(edgePoint.getX() + deltaX, edgePoint.getY() - deltaY);
-        } else {
-            return new Vector(edgePoint.getX() - deltaX, edgePoint.getY() + deltaY);
-        }
-    }
-
-    public Vector edgePointBetween(Vector location, Vector nextLocation) {
+    public Vector getBoundsCollisionLocation(Vector location, Vector velocity) {
+        Vector nextLocation = Vector.add(location, velocity);
         if (this.isInbounds(nextLocation)) {
             return null;
         }
@@ -128,15 +112,11 @@ public class Grid extends JSONAble {
         }
     }
 
-    public Zone[][] getZones() {
-        return this.zones;
-    }
-
     public int getHeight() {
         return this.height * this.zoneSize;
     }
 
-    public int getHeightInUnits() {
+    public int getHeightInZones() {
         return this.height;
     }
 
@@ -144,11 +124,29 @@ public class Grid extends JSONAble {
         return String.format("<g: (%d, %d)>", this.width, this.height);
     }
 
+    public Vector getLocationAfterBounce(Vector location, Vector velocity) {
+        Vector nextLocation = Vector.add(location, velocity);
+        Vector boundsCollision = this.getBoundsCollisionLocation(location, nextLocation);
+        if (boundsCollision == null) {
+            return null;
+        }
+        double deltaX = nextLocation.getX() - boundsCollision.getX();
+        double deltaY = nextLocation.getY() - boundsCollision.getY();
+        if ((boundsCollision.getX() == 0 || boundsCollision.getX() == this.getWidth()) &&
+                (boundsCollision.getY() == 0 || boundsCollision.getY() == this.getHeight())) {
+            return new Vector(boundsCollision.getX() - deltaX, boundsCollision.getY() - deltaY);
+        } else if (boundsCollision.getY() == 0 || boundsCollision.getY() == this.getHeight()) {
+            return new Vector(boundsCollision.getX() + deltaX, boundsCollision.getY() - deltaY);
+        } else {
+            return new Vector(boundsCollision.getX() - deltaX, boundsCollision.getY() + deltaY);
+        }
+    }
+
     public int getWidth() {
         return this.width * this.zoneSize;
     }
 
-    public int getWidthInUnits() {
+    public int getWidthInZones() {
         return this.width;
     }
 
@@ -177,6 +175,10 @@ public class Grid extends JSONAble {
      */
     public Zone getZoneAtLocation(Vector location) throws CommonException {
         return this.getZoneAtLocation(location.getX(), location.getY());
+    }
+
+    public Zone[][] getZones() {
+        return this.zones;
     }
 
     public int getZoneSize() {
