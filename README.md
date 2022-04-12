@@ -1,2 +1,2 @@
-# RescueSim
-An implementation of an urban rescue scenario that employs unmanned aerial vehicles for my research dissertation.
+# SEATSim
+An implementation of a JSON RPC simulation to support mission critical scenarios, such as search-and-rescue (SAR) missions and intelligence, surveillance, and reconaissance (ISR) missions.
