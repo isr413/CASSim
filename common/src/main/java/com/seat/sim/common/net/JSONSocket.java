@@ -9,6 +9,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
+
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.JSONArray;
 import com.seat.sim.common.json.JSONArrayBuilder;
@@ -139,7 +141,7 @@ public class JSONSocket {
         }
     }
 
-    public HashMap<String, IntentionSet> getIntentionsBlocking() throws CommonException {
+    public Map<String, IntentionSet> getIntentionsBlocking() throws CommonException {
         try {
             JSONArray json = this.getInputBlocking().someArray();
             HashMap<String, IntentionSet> controllers = new HashMap<>();
