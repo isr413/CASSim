@@ -9,7 +9,7 @@ import com.seat.sim.common.json.JSONOption;
 
 /**
  * The Field class represents forces that can act on Victims or Drones. Things to remember:
- *  - the FieldType determines how the force should be applied (push, pull, etc.)
+ *  - the isPullForce determines how the force should be applied (pull for true or push for false)
  *  - the magnitude determines the size of the force
  *  - the point is a unit vector that determines the direction of the force
  *  - the point vector represents a momentary force applied per second to an actor's location while in the field
@@ -25,30 +25,45 @@ import com.seat.sim.common.json.JSONOption;
  */
 public class Field extends JSONAble {
 
-    protected static final FieldType DEFAULT_FIELD_TYPE = FieldType.NONE;
     protected static final double DEFAULT_MAGNITUDE = 0.0;
 
+    private boolean isPullForce;
     private Vector jerk;
     private double magnitude;
     private Vector point;
-    private FieldType type;
 
-    public Field() {
-        this(Field.DEFAULT_FIELD_TYPE, null, Field.DEFAULT_MAGNITUDE, null);
+    public static Field Drag(Vector jerk) {
+        return new Field(null, Field.DEFAULT_MAGNITUDE, false, Vector.scale(jerk, -1));
     }
 
-    public Field(Vector jerk) {
-        this(FieldType.JERK, null, Field.DEFAULT_MAGNITUDE, jerk);
+    public static Field None() {
+        return new Field(null, Field.DEFAULT_MAGNITUDE, false, null);
     }
 
-    public Field(FieldType type, Vector point, double magnitude) {
-        this(type, point, magnitude, null);
+    public static Field Propel(Vector jerk) {
+        return new Field(null, Field.DEFAULT_MAGNITUDE, false, jerk);
     }
 
-    public Field(FieldType type, Vector point, double magnitude, Vector jerk) {
-        this.type = type;
+    public static Field Pull(Vector point, double magnitude) {
+        return new Field(point, magnitude, true, null);
+    }
+
+    public static Field Pull(Vector point, double magnitude, Vector jerk) {
+        return new Field(point, magnitude, true, jerk);
+    }
+
+    public static Field Push(Vector point, double magnitude) {
+        return new Field(point, magnitude, false, null);
+    }
+
+    public static Field Push(Vector point, double magnitude, Vector jerk) {
+        return new Field(point, magnitude, false, jerk);
+    }
+
+    private Field(Vector point, double magnitude, boolean isPullForce, Vector jerk) {
         this.point = (point != null) ? point : new Vector();
         this.magnitude = magnitude;
+        this.isPullForce = isPullForce;
         this.jerk = (jerk != null) ? jerk : new Vector();
     }
 
@@ -58,14 +73,10 @@ public class Field extends JSONAble {
 
     @Override
     protected void decode(JSONArray json) throws JSONException {
-        this.type = FieldType.decodeType(json);
-        this.point = new Vector(json.getJSONOption(1));
-        this.magnitude = json.getDouble(2);
+        this.point = new Vector(json.getJSONOption(0));
+        this.magnitude = json.getDouble(1);
+        this.isPullForce = json.getBoolean(2);
         this.jerk = new Vector(json.getJSONOption(3));
-    }
-
-    public FieldType getFieldType() {
-        return this.type;
     }
 
     public Vector getJerk() {
@@ -80,19 +91,31 @@ public class Field extends JSONAble {
         return this.point;
     }
 
+    public boolean isNone() {
+        return this.magnitude == 0 && this.jerk.getMagnitude() == 0;
+    }
+
+    public boolean isPullForce() {
+        return this.isPullForce;
+    }
+
+    public boolean isPushForce() {
+        return !this.isPullForce;
+    }
+
     public JSONOption toJSON() throws JSONException {
         JSONArrayBuilder json = JSONBuilder.Array();
-        json.put(this.type.getType());
         json.put(this.point.toJSON());
         json.put(this.magnitude);
+        json.put(this.isPullForce);
         json.put(this.jerk.toJSON());
         return json.toJSON();
     }
 
     public boolean equals(Field field) {
         if (field == null) return false;
-        return this.type.equals(field.type) && this.point.equals(field.point) && this.magnitude == field.magnitude &&
-            this.jerk.equals(field.jerk);
+        return this.point.equals(field.point) && this.magnitude == field.magnitude &&
+            this.isPullForce == field.isPullForce && this.jerk.equals(field.jerk);
     }
 
 }

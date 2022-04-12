@@ -26,8 +26,8 @@ public class Zone extends JSONAble {
     public Zone(Vector location, int size, Field ground, Field aerial) {
         this.location = location;
         this.size = size;
-        this.ground = (ground != null) ? ground : new Field();
-        this.aerial = (aerial != null) ? aerial : new Field();
+        this.ground = (ground != null) ? ground : Field.None();
+        this.aerial = (aerial != null) ? aerial : Field.None();
     }
 
     public Zone(JSONOption option) throws JSONException {
@@ -40,10 +40,10 @@ public class Zone extends JSONAble {
         this.size = json.getInt(Zone.ZONE_SIZE);
         this.ground = (json.hasKey(Zone.ZONE_GROUND)) ?
             this.ground = new Field(json.getJSONOption(Zone.ZONE_GROUND)) :
-            new Field();
+            Field.None();
         this.aerial = (json.hasKey(Zone.ZONE_AERIAL)) ?
             this.aerial = new Field(json.getJSONOption(Zone.ZONE_AERIAL)) :
-            new Field();
+            Field.None();
     }
 
     public Field getAerialField() {
@@ -67,11 +67,11 @@ public class Zone extends JSONAble {
     }
 
     public boolean hasAerialField() {
-        return !(this.aerial == null || this.aerial.getFieldType().equals(FieldType.NONE));
+        return !(this.aerial == null || this.aerial.isNone());
     }
 
     public boolean hasGroundField() {
-        return !(this.ground == null || this.ground.getFieldType().equals(FieldType.NONE));
+        return !(this.ground == null || this.ground.isNone());
     }
 
     public JSONOption toJSON() throws JSONException {
