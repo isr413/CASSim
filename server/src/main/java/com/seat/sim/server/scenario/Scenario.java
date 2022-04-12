@@ -362,61 +362,60 @@ public class Scenario {
         this.time = time;
     }
 
-    private void updateDynamicRemotes(Map<String, IntentionSet> intentions, double stepSize)
-            throws SimException {
-        Debugger.logger.info(String.format("Updating remotes %s ...", this.getDynamicRemoteIDs().toString()));
-        for (Remote remote : this.getDynamicRemotes()) {
-            // TODO: add map effects
-            // TODO: sensor properties (accuracy, delay, interference, etc.)
-            if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
-                remote.update(this, intentions.get(remote.getRemoteID()), stepSize);
+    private void updateRemotes(Map<String, IntentionSet> intentions, double stepSize) throws SimException {
+        for (Remote remote : this.getRemotes()) {
+            if (remote.isDisabled()) {
+                continue;
+            }
+            if (this.hasDynamicRemoteWithID(remote.getRemoteID())) {
+                if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
+                    this.updateDynamicRemote(remote, intentions.get(remote.getRemoteID()), stepSize);
+                } else {
+                    this.updateDynamicRemote(remote, null, stepSize);
+                }
             } else {
-                remote.update(this, stepSize);
+                if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
+                    this.updatePassiveRemote(remote, intentions.get(remote.getRemoteID()), stepSize);
+                } else {
+                    this.updatePassiveRemote(remote, null, stepSize);
+                }
             }
             if (this.getGrid().isOutOfBounds(remote.getLocation())) {
                 this.assertFail(String.format("Remote %s out of bounds at %s", remote.getLabel(),
                     remote.getLocation().toString()));
             }
+            if ((remote.isInactive() || remote.isDone()) && this.hasActiveRemoteWithID(remote.getRemoteID())) {
+                this.activeRemotes.remove(remote.getRemoteID());
+            } else if (remote.isActive() && !this.hasActiveRemoteWithID(remote.getRemoteID())) {
+                this.activeRemotes.put(remote.getRemoteID(), remote);
+            }
         }
     }
 
-    private void updatePassiveRemotes(Map<String, IntentionSet> intentions, double stepSize)
-            throws SimException {
-        Debugger.logger.info(String.format("Updating remotes %s ...", this.getPassiveRemoteIDs().toString()));
-        for (Remote remote : this.getPassiveRemotes()) {
-            if (intentions.containsKey(remote.getRemoteID())) {
-                remote.update(this, intentions.get(remote.getRemoteID()), stepSize);
-            } else {
-                RemoteController controller = new RemoteController(remote.getRemoteID());
-                if (this.justStarted() && remote.isActive() && remote.hasInactiveSensors()) {
-                    controller.activateAllSensors();
-                }
-                if ((remote.isInactive() || remote.isDone()) && remote.hasActiveSensors()) {
-                    controller.deactivateAllSensors();
-                }
-                Vector location = remote.getLocation();
-                if (this.getGrid().isInbounds(location)) {
-                    if (remote.isActive() && remote.isMobile()) {
-                        // TODO: better random walk
-                        /**controller.addIntention(
-                            Intent.Goto(
-                                Vector.scale(
-                                    this.rng.getRandomDirection2D(),
-                                    ((KineticSimRemote) remote).getVelocity().getMagnitude()
-                                )
-                            )
-                        );*/
-                    }
-                    // TODO: add map effects
-                    // TODO: sensor properties (accuracy, delay, interference, etc.)
-                    remote.update(this, controller.getIntentions(), stepSize);
-                    if (remote.isMobile() && this.getGrid().isOutOfBounds(remote.getLocation())) {
-                        this.enforceBounds((MobileRemote) remote, location);
-                    }
-                } else {
-                    this.assertFail(String.format("Remote %s out of bounds at %s", remote.getLabel(),
-                        remote.getLocation().toString()));
-                    continue;
+    private void updateDynamicRemote(Remote remote, IntentionSet intentions, double stepSize) throws SimException {
+        if (intentions != null) {
+            remote.update(this, intentions, stepSize);
+        } else {
+            remote.update(this, stepSize);
+        }
+    }
+
+    private void updatePassiveRemote(Remote remote, IntentionSet intentions, double stepSize) throws SimException {
+        if (intentions != null) {
+            remote.update(this, intentions, stepSize);
+        } else {
+            RemoteController controller = new RemoteController(remote.getRemoteID());
+            if (this.justStarted() && remote.isActive() && remote.hasInactiveSensors()) {
+                controller.activateAllSensors();
+            }
+            if ((remote.isInactive() || remote.isDone()) && remote.hasActiveSensors()) {
+                controller.deactivateAllSensors();
+            }
+            Vector location = remote.getLocation();
+            if (this.getGrid().isInbounds(location)) {
+                remote.update(this, controller.getIntentions(), stepSize);
+                if (remote.isMobile() && this.getGrid().isOutOfBounds(remote.getLocation())) {
+                    this.enforceBounds((MobileRemote) remote, location);
                 }
             }
         }
@@ -438,15 +437,9 @@ public class Scenario {
         if (this.hasError()) {
             this.setStatus(ScenarioStatus.IN_PROGRESS);
         }
-        this.updateDynamicRemotes(intentions, stepSize);
-        this.updatePassiveRemotes(intentions, stepSize);
-        for (Remote remote : this.getRemotes()) {
-            if ((remote.isInactive() || remote.isDone()) && this.hasActiveRemoteWithID(remote.getRemoteID())) {
-                this.activeRemotes.remove(remote.getRemoteID());
-            } else if (remote.isActive() && !this.hasActiveRemoteWithID(remote.getRemoteID())) {
-                this.activeRemotes.put(remote.getRemoteID(), remote);
-            }
-        }
+        Debugger.logger.info("Updating remotes ...");
+        this.updateRemotes(intentions, stepSize);
+        Debugger.logger.state("Updated remotes");
         if (this.justStarted()) {
             this.setStatus(ScenarioStatus.IN_PROGRESS);
         }
