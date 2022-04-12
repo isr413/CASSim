@@ -1,6 +1,5 @@
 package com.seat.rescuesim.client.gui;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -70,8 +69,11 @@ public class GUIMapFrame extends JFrame {
     public void displaySnap(Snapshot snap) {
         ArrayList<Point> points = new ArrayList<>();
         for (RemoteState state : snap.getState()) {
-            points.add(Point.Colored((int) state.getLocation().getX(), (int) state.getLocation().getY(),
-                state.getTeam()));
+            points.add(Point.Colored(
+                (int) Math.round(state.getLocation().getX()),
+                (int) Math.round(state.getLocation().getY()),
+                state.getTeam())
+            );
         }
         this.panel.paintPoints(points);
     }
@@ -80,6 +82,7 @@ public class GUIMapFrame extends JFrame {
 
         protected static final Color DEFAULT_GRID_COLOR = Color.LIGHT_GRAY;
         protected static final Color DEFAULT_MAP_BOUNDS_COLOR = Color.DARK_GRAY;
+        protected static final int DEFAULT_POINT_SIZE = 4;
 
         private int height;
         private int mapHeight;
@@ -98,7 +101,6 @@ public class GUIMapFrame extends JFrame {
 
         private void drawDisplay(Graphics g) {
             Graphics2D g2d = (Graphics2D) g;
-            g2d.setStroke(new BasicStroke(4));
             this.drawGridLines(g2d);
             this.drawMapBounds(g2d);
             this.drawPoints(g2d);
@@ -107,7 +109,12 @@ public class GUIMapFrame extends JFrame {
         private void drawPoints(Graphics2D g2d) {
             for (Point p : this.points) {
                 g2d.setPaint(p.color);
-                g2d.drawLine(this.getMapX() + p.x, this.getMapY() + p.y, this.getMapX() + p.x, this.getMapY() + p.y);
+                g2d.fillOval(
+                    this.getMapX() + p.x - GUIMapPanel.DEFAULT_POINT_SIZE/2,
+                    this.getMapY() + p.y - GUIMapPanel.DEFAULT_POINT_SIZE/2,
+                    GUIMapPanel.DEFAULT_POINT_SIZE,
+                    GUIMapPanel.DEFAULT_POINT_SIZE
+                );
             }
         }
 
@@ -127,11 +134,11 @@ public class GUIMapFrame extends JFrame {
         }
 
         private int getMapX() {
-            return this.getCenterX() - (this.mapWidth / 2);
+            return this.getCenterX() - (int) Math.round(this.mapWidth / 2.0);
         }
 
         private int getMapY() {
-            return this.getCenterY() - (this.mapHeight / 2);
+            return this.getCenterY() - (int) Math.round(this.mapHeight / 2.0);
         }
 
         @Override
@@ -140,11 +147,11 @@ public class GUIMapFrame extends JFrame {
         }
 
         public int getCenterX() {
-            return this.width / 2;
+            return (int) Math.round(this.width / 2.0);
         }
 
         public int getCenterY() {
-            return this.height / 2;
+            return (int) Math.round(this.height / 2.0);
         }
 
         public int getHeight() {
