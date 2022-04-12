@@ -9,7 +9,7 @@ import com.seat.sim.common.sensor.vision.VisionSensorState;
 import com.seat.sim.common.util.Debugger;
 import com.seat.sim.server.core.SimException;
 import com.seat.sim.server.remote.Remote;
-import com.seat.sim.server.scenario.SimScenario;
+import com.seat.sim.server.scenario.Scenario;
 
 public class VisionSensor extends Sensor {
 
@@ -81,7 +81,7 @@ public class VisionSensor extends Sensor {
     }
 
     @Override
-    public void update(SimScenario scenario, Remote remote, double stepSize) throws SimException {
+    public void update(Scenario scenario, Remote remote, double stepSize) throws SimException {
         super.update(scenario, remote, stepSize);
         if (this.isInactive() || remote.isInactive() || !this.hasRange()) {
             if (this.hasObservations()) {

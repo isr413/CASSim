@@ -5,7 +5,7 @@ import com.seat.sim.common.remote.intent.IntentionSet;
 import com.seat.sim.common.remote.mobile.aerial.DroneRemoteProto;
 import com.seat.sim.common.remote.mobile.aerial.DroneRemoteState;
 import com.seat.sim.server.core.SimException;
-import com.seat.sim.server.scenario.SimScenario;
+import com.seat.sim.server.scenario.Scenario;
 
 public class DroneRemote extends MobileRemote {
 
@@ -25,7 +25,7 @@ public class DroneRemote extends MobileRemote {
     }
 
     @Override
-    public void update(SimScenario scenario, IntentionSet intentions, double stepSize) throws SimException {
+    public void update(Scenario scenario, IntentionSet intentions, double stepSize) throws SimException {
         super.update(scenario, intentions, stepSize);
         if (this.isDisabled() || this.isInactive() || this.isDone()) {
             return;

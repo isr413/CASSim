@@ -9,7 +9,7 @@ import com.seat.sim.common.remote.intent.MoveIntention;
 import com.seat.sim.common.remote.mobile.MobileRemoteProto;
 import com.seat.sim.common.remote.mobile.MobileRemoteState;
 import com.seat.sim.server.core.SimException;
-import com.seat.sim.server.scenario.SimScenario;
+import com.seat.sim.server.scenario.Scenario;
 
 public class MobileRemote extends Remote {
 
@@ -109,41 +109,6 @@ public class MobileRemote extends Remote {
         this.velocity = velocity;
     }
 
-    @Override
-    public void update(SimScenario scenario, IntentionSet intentions, double stepSize) throws SimException {
-        super.update(scenario, intentions, stepSize);
-        if (this.isDisabled() || this.isInactive() || this.isDone()) {
-            if (this.isInMotion()) {
-                this.updateVelocityTo(new Vector(), stepSize);
-                this.updateLocation(this.velocity, stepSize);
-            }
-            return;
-        }
-        if (intentions == null) {
-            this.updateVelocity(this.acceleration, stepSize);
-            this.updateLocation(this.velocity, stepSize);
-            return;
-        }
-        if (intentions.hasIntentionWithType(IntentionType.DONE) ||
-                intentions.hasIntentionWithType(IntentionType.SHUTDOWN) ||
-                intentions.hasIntentionWithType(IntentionType.STOP)) {
-            this.updateVelocityTo(new Vector(), stepSize);
-            this.updateLocation(this.velocity, stepSize);
-        } else if (intentions.hasIntentionWithType(IntentionType.GOTO)) {
-            GoToIntention intent = (GoToIntention) intentions.getIntentionWithType(IntentionType.GOTO);
-            this.updateLocationTo(intent.getLocation(), intent.getMaxVelocity(), intent.getMaxAcceleration(),
-                intent.getMaxJerk());
-        } else if (intentions.hasIntentionWithType(IntentionType.MOVE)) {
-            MoveIntention intent = (MoveIntention) intentions.getIntentionWithType(IntentionType.MOVE);
-            this.updateAcceleration(intent.getJerk(), stepSize);
-            this.updateVelocity(this.acceleration, stepSize);
-            this.updateLocation(this.velocity, stepSize);
-        } else {
-            this.updateVelocity(this.acceleration, stepSize);
-            this.updateLocation(this.velocity, stepSize);
-        }
-    }
-
     protected void updateAcceleration(Vector delta, double stepSize) {
         if (this.getMaxJerk() < delta.getMagnitude()) {
             delta = Vector.scale(delta.getUnitVector(), this.getMaxJerk());
@@ -224,6 +189,41 @@ public class MobileRemote extends Remote {
             this.acceleration = Vector.scale(this.acceleration.getUnitVector(), maxAcceleration);
         }
         this.updateVelocity(this.acceleration, stepSize);
+    }
+
+    @Override
+    public void update(Scenario scenario, IntentionSet intentions, double stepSize) throws SimException {
+        super.update(scenario, intentions, stepSize);
+        if (this.isDisabled() || this.isInactive() || this.isDone()) {
+            if (this.isInMotion()) {
+                this.updateVelocityTo(new Vector(), stepSize);
+                this.updateLocation(this.velocity, stepSize);
+            }
+            return;
+        }
+        if (intentions == null) {
+            this.updateVelocity(this.acceleration, stepSize);
+            this.updateLocation(this.velocity, stepSize);
+            return;
+        }
+        if (intentions.hasIntentionWithType(IntentionType.DONE) ||
+                intentions.hasIntentionWithType(IntentionType.SHUTDOWN) ||
+                intentions.hasIntentionWithType(IntentionType.STOP)) {
+            this.updateVelocityTo(new Vector(), stepSize);
+            this.updateLocation(this.velocity, stepSize);
+        } else if (intentions.hasIntentionWithType(IntentionType.GOTO)) {
+            GoToIntention intent = (GoToIntention) intentions.getIntentionWithType(IntentionType.GOTO);
+            this.updateLocationTo(intent.getLocation(), intent.getMaxVelocity(), intent.getMaxAcceleration(),
+                intent.getMaxJerk());
+        } else if (intentions.hasIntentionWithType(IntentionType.MOVE)) {
+            MoveIntention intent = (MoveIntention) intentions.getIntentionWithType(IntentionType.MOVE);
+            this.updateAcceleration(intent.getJerk(), stepSize);
+            this.updateVelocity(this.acceleration, stepSize);
+            this.updateLocation(this.velocity, stepSize);
+        } else {
+            this.updateVelocity(this.acceleration, stepSize);
+            this.updateLocation(this.velocity, stepSize);
+        }
     }
 
 }

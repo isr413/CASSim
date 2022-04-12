@@ -8,12 +8,9 @@ public class App {
 
     public static void main(String[] args) {
         ArgsParser parser = new ArgsParser(args);
-        AppServer server;
-        if (parser.hasParam(App.PORT_ARG)) {
-            server = new AppServer(parser.getInt(App.PORT_ARG));
-        } else {
-            server = new AppServer();
-        }
+        AppServer server = (parser.hasParam(App.PORT_ARG)) ?
+            new AppServer(parser.getInt(App.PORT_ARG)):
+            new AppServer();
         server.run();
     }
 

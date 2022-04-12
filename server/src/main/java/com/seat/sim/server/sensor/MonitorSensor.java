@@ -4,7 +4,7 @@ import com.seat.sim.common.sensor.monitor.MonitorSensorProto;
 import com.seat.sim.common.sensor.monitor.MonitorSensorState;
 import com.seat.sim.server.core.SimException;
 import com.seat.sim.server.remote.Remote;
-import com.seat.sim.server.scenario.SimScenario;
+import com.seat.sim.server.scenario.Scenario;
 
 public class MonitorSensor extends Sensor {
 
@@ -42,7 +42,7 @@ public class MonitorSensor extends Sensor {
     }
 
     @Override
-    public void update(SimScenario scenario, Remote remote, double stepSize) throws SimException {
+    public void update(Scenario scenario, Remote remote, double stepSize) throws SimException {
         super.update(scenario, remote, stepSize);
         if (this.isInactive() || remote.isInactive()) {
             this.clearMonitor();

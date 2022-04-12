@@ -6,8 +6,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 
-import com.seat.sim.common.map.Map;
+import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.RemoteConfig;
 import com.seat.sim.common.remote.RemoteController;
@@ -25,7 +26,7 @@ import com.seat.sim.server.remote.Remote;
 import com.seat.sim.server.remote.RemoteFactory;
 import com.seat.sim.server.remote.VictimRemote;
 
-public class SimScenario {
+public class Scenario {
 
     private HashMap<String, Remote> activeRemotes;
     private HashMap<String, Remote> allRemotes;
@@ -35,16 +36,16 @@ public class SimScenario {
     private ScenarioStatus status;
     private double time;
 
-    public SimScenario(ScenarioConfig config) {
+    public Scenario(ScenarioConfig config) {
         this(config, new Random(config.getSeed()));
     }
 
-    public SimScenario(ScenarioConfig config, Random rng) {
+    public Scenario(ScenarioConfig config, Random rng) {
         this.config = config;
         this.rng = rng;
         this.time = 0;
         this.status = ScenarioStatus.START;
-        this.initRemotes();
+        this.init();
     }
 
     private void assertFail(String msg) {
@@ -53,41 +54,45 @@ public class SimScenario {
     }
 
     private void enforceBounds(MobileRemote remote, Vector prevLocation) {
-        if (this.getMap().isInbounds(remote.getLocation())) {
+        if (this.getGrid().isInbounds(remote.getLocation())) {
             return;
         }
-        Vector edgePoint = this.getMap().edgePointBetween(prevLocation, remote.getLocation());
-        if (edgePoint == null) {
+        Vector boundsCollision = this.getGrid().getBoundsCollisionLocation(prevLocation, remote.getLocation());
+        if (boundsCollision == null) {
             Debugger.logger.err(String.format("Could not compute bounce location for %s on remote %s",
                 remote.getLocation().toString(), remote.getLabel()));
             return;
         }
-        Vector bounce = this.getMap().bounceLocation(prevLocation, remote.getLocation());
-        if (bounce == null) {
+        Vector nextLocation = this.getGrid().getLocationAfterBounce(prevLocation, remote.getLocation());
+        if (nextLocation == null) {
             Debugger.logger.err(String.format("Could not compute bounce location for %s on remote %s",
                 remote.getLocation().toString(), remote.getLabel()));
             return;
         }
-        remote.setLocation(bounce);
-        Vector bounceDirection = Vector.subtract(bounce, edgePoint).getUnitVector();
+        remote.setLocation(nextLocation);
+        Vector bounceDirection = Vector.subtract(nextLocation, boundsCollision).getUnitVector();
         remote.setVelocity(Vector.scale(bounceDirection, remote.getVelocity().getMagnitude()));
         remote.setAcceleration(Vector.scale(bounceDirection, remote.getAcceleration().getMagnitude()));
     }
 
-    private void initRemotes() {
+    private void init() {
         this.allRemotes = new HashMap<>();
         this.activeRemotes = new HashMap<>();
         this.dynamicRemotes = new HashMap<>();
         int remoteCount = 0;
-        for (RemoteConfig remoteConfig : this.config.getRemotes()) {
+        for (RemoteConfig remoteConfig : this.config.getRemoteConfigs()) {
             RemoteProto remoteProto = remoteConfig.getProto();
             Iterator<String> remoteIDs = remoteConfig.getRemoteIDs().iterator();
             for (int i = 0; i < remoteConfig.getCount(); i++) {
                 String remoteID = (i < remoteConfig.getRemoteIDs().size()) ?
                     remoteIDs.next() :
                     String.format("%s:(%d)", remoteProto.getLabel(), remoteCount);
-                Remote remote = RemoteFactory.getRemote(remoteProto, remoteID, remoteConfig.getTeam(),
-                    remoteConfig.isActive());
+                Remote remote = RemoteFactory.getRemote(
+                    remoteProto,
+                    remoteID,
+                    remoteConfig.getTeam(),
+                    remoteConfig.isActive()
+                );
                 remoteCount++;
                 this.allRemotes.put(remoteID, remote);
                 if (remoteConfig.isActive()) {
@@ -97,7 +102,7 @@ public class SimScenario {
                     this.dynamicRemotes.put(remoteID, remote);
                 }
                 if (!remote.hasLocation()) {
-                    remote.setLocation(this.rng.getRandomLocation2D(this.getMapWidth(), this.getMapHeight()));
+                    remote.setLocation(this.rng.getRandomLocation2D(this.getGridWidth(), this.getGridHeight()));
                 }
                 if (remoteConfig.isPassive() && remote.isActive() && remote.isMobile()) {
                     if (VictimRemote.class.isAssignableFrom(remote.getClass())) {
@@ -113,8 +118,7 @@ public class SimScenario {
                                 mobileRemote.getProto().getMaxVelocity()
                             ));
                         } else {
-                            // TODO: scale initial velocity
-                            mobileRemote.setVelocity(this.rng.getRandomDirection2D());
+                            mobileRemote.setVelocity(Vector.scale(this.rng.getRandomDirection2D(), this.getZoneSize()));
                         }
                     }
                 }
@@ -182,16 +186,16 @@ public class SimScenario {
         return this.dynamicRemotes.get(remoteID);
     }
 
-    public Map getMap() {
-        return this.config.getMap();
+    public Grid getGrid() {
+        return this.config.getGrid();
     }
 
-    public int getMapHeight() {
-        return this.getMap().getHeight();
+    public int getGridHeight() {
+        return this.getGrid().getHeight();
     }
 
-    public int getMapWidth() {
-        return this.getMap().getWidth();
+    public int getGridWidth() {
+        return this.getGrid().getWidth();
     }
 
     public int getMissionLength() {
@@ -262,7 +266,7 @@ public class SimScenario {
         );
     }
 
-    private HashMap<String, RemoteState> getState() {
+    public Map<String, RemoteState> getState() {
         HashMap<String, RemoteState> state = new HashMap<>();
         for (String remoteID : this.allRemotes.keySet()) {
             state.put(remoteID, this.allRemotes.get(remoteID).getState());
@@ -280,6 +284,10 @@ public class SimScenario {
 
     public double getTime() {
         return this.time;
+    }
+
+    public int getZoneSize() {
+        return this.getGrid().getZoneSize();
     }
 
     public boolean hasActiveRemotes() {
@@ -354,7 +362,7 @@ public class SimScenario {
         this.time = time;
     }
 
-    private void updateDynamicRemotes(HashMap<String, IntentionSet> intentions, double stepSize)
+    private void updateDynamicRemotes(Map<String, IntentionSet> intentions, double stepSize)
             throws SimException {
         Debugger.logger.info(String.format("Updating remotes %s ...", this.getDynamicRemoteIDs().toString()));
         for (Remote remote : this.getDynamicRemotes()) {
@@ -365,14 +373,14 @@ public class SimScenario {
             } else {
                 remote.update(this, stepSize);
             }
-            if (this.getMap().isOutOfBounds(remote.getLocation())) {
+            if (this.getGrid().isOutOfBounds(remote.getLocation())) {
                 this.assertFail(String.format("Remote %s out of bounds at %s", remote.getLabel(),
                     remote.getLocation().toString()));
             }
         }
     }
 
-    private void updatePassiveRemotes(HashMap<String, IntentionSet> intentions, double stepSize)
+    private void updatePassiveRemotes(Map<String, IntentionSet> intentions, double stepSize)
             throws SimException {
         Debugger.logger.info(String.format("Updating remotes %s ...", this.getPassiveRemoteIDs().toString()));
         for (Remote remote : this.getPassiveRemotes()) {
@@ -387,7 +395,7 @@ public class SimScenario {
                     controller.deactivateAllSensors();
                 }
                 Vector location = remote.getLocation();
-                if (this.getMap().isInbounds(location)) {
+                if (this.getGrid().isInbounds(location)) {
                     if (remote.isActive() && remote.isMobile()) {
                         // TODO: better random walk
                         /**controller.addIntention(
@@ -402,7 +410,7 @@ public class SimScenario {
                     // TODO: add map effects
                     // TODO: sensor properties (accuracy, delay, interference, etc.)
                     remote.update(this, controller.getIntentions(), stepSize);
-                    if (remote.isMobile() && this.getMap().isOutOfBounds(remote.getLocation())) {
+                    if (remote.isMobile() && this.getGrid().isOutOfBounds(remote.getLocation())) {
                         this.enforceBounds((MobileRemote) remote, location);
                     }
                 } else {
@@ -422,7 +430,7 @@ public class SimScenario {
         this.update(null, stepSize);
     }
 
-    public void update(HashMap<String, IntentionSet> intentions, double stepSize) throws SimException {
+    public void update(Map<String, IntentionSet> intentions, double stepSize) throws SimException {
         this.time += stepSize;
         if (this.isDone()) {
             return;

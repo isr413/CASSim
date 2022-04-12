@@ -4,7 +4,7 @@ import com.seat.sim.common.sensor.SensorProto;
 import com.seat.sim.common.sensor.SensorState;
 import com.seat.sim.server.core.SimException;
 import com.seat.sim.server.remote.Remote;
-import com.seat.sim.server.scenario.SimScenario;
+import com.seat.sim.server.scenario.Scenario;
 
 public class Sensor {
 
@@ -98,7 +98,7 @@ public class Sensor {
         return this.getLabel();
     }
 
-    public void update(SimScenario scenario, Remote remote, double stepSize) throws SimException {
+    public void update(Scenario scenario, Remote remote, double stepSize) throws SimException {
         if (this.isActive() && remote.isInactive()) {
             this.setInactive();
         }

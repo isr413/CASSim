@@ -20,7 +20,7 @@ import com.seat.sim.common.sensor.SensorProto;
 import com.seat.sim.common.sensor.SensorState;
 import com.seat.sim.common.util.Debugger;
 import com.seat.sim.server.core.SimException;
-import com.seat.sim.server.scenario.SimScenario;
+import com.seat.sim.server.scenario.Scenario;
 import com.seat.sim.server.sensor.Sensor;
 import com.seat.sim.server.sensor.SensorFactory;
 
@@ -44,14 +44,14 @@ public class Remote {
         this.battery = proto.getMaxBatteryPower();
         this.active = active;
         this.done = false;
-        this.initSensors();
+        this.init();
     }
 
-    private void initSensors() {
+    private void init() {
         this.allSensors = new HashMap<>();
         this.activeSensors = new HashMap<>();
         int sensorCount = 0;
-        for (SensorConfig sensorConfig : this.proto.getSensors()) {
+        for (SensorConfig sensorConfig : this.proto.getSensorConfigs()) {
             SensorProto sensorProto = sensorConfig.getProto();
             Iterator<String> sensorIDs = sensorConfig.getSensorIDs().iterator();
             for (int i = 0; i < sensorConfig.getCount(); i++) {
@@ -440,11 +440,11 @@ public class Remote {
         this.location = location;
     }
 
-    public void update(SimScenario scenario, double stepSize) throws SimException {
+    public void update(Scenario scenario, double stepSize) throws SimException {
         this.update(scenario, null, stepSize);
     }
 
-    public void update(SimScenario scenario, IntentionSet intentions, double stepSize) throws SimException {
+    public void update(Scenario scenario, IntentionSet intentions, double stepSize) throws SimException {
         if (this.isDisabled() || this.isDone()) {
             if (this.isActive()) {
                 this.setInactive();
