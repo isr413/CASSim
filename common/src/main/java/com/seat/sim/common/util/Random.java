@@ -32,6 +32,10 @@ public class Random {
         return new Vector(this.getRandomPoint(width), this.getRandomPoint(height), this.getRandomPoint(elevation));
     }
 
+    public int getRandomNumber(int x) {
+        return this.rng.nextInt(x);
+    }
+
     public double getRandomPoint(int x) {
         return this.rng.nextDouble() * x;
     }

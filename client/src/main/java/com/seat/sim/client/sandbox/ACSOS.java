@@ -1,84 +1,195 @@
 package com.seat.sim.client.sandbox;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 
 import com.seat.sim.common.core.SARApplication;
 import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.map.Map;
+import com.seat.sim.common.map.Zone;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.RemoteConfig;
 import com.seat.sim.common.remote.base.BaseRemoteConfig;
 import com.seat.sim.common.remote.base.BaseRemoteProto;
 import com.seat.sim.common.remote.intent.IntentionSet;
 import com.seat.sim.common.remote.mobile.aerial.DroneRemoteConfig;
+import com.seat.sim.common.remote.mobile.aerial.DroneRemoteController;
 import com.seat.sim.common.remote.mobile.aerial.DroneRemoteProto;
 import com.seat.sim.common.remote.mobile.ground.VictimRemoteConfig;
 import com.seat.sim.common.remote.mobile.ground.VictimRemoteProto;
 import com.seat.sim.common.scenario.Snapshot;
 import com.seat.sim.common.sensor.SensorConfig;
+import com.seat.sim.common.sensor.SensorRegistry;
 import com.seat.sim.common.sensor.comms.CommsSensorProto;
 import com.seat.sim.common.sensor.monitor.MonitorSensorProto;
 import com.seat.sim.common.sensor.vision.VisionSensorProto;
+import com.seat.sim.common.util.Random;
 
 public class ACSOS implements SARApplication {
 
+    private static final int BASE_COUNT = 1;
+    private static final int DRONE_COUNT = 32;
     private static final int MAP_SIZE = 64;
+    private static final int VICTIM_COUNT = 0;
     private static final int ZONE_SIZE = 10;
+
     private static final Vector BASE_LOCATION = new Vector(
-        ((float) MAP_SIZE*ZONE_SIZE)/2.0,
-        ((float) MAP_SIZE*ZONE_SIZE)/2.0
+        (ACSOS.MAP_SIZE * ACSOS.ZONE_SIZE)/2.0,
+        (ACSOS.MAP_SIZE * ACSOS.ZONE_SIZE)/2.0
     );
 
-    public ACSOS() {}
+    private static Map getACSOSMap() {
+        return new Map(ACSOS.ZONE_SIZE, ACSOS.MAP_SIZE, ACSOS.MAP_SIZE);
+    }
 
-    public ACSOS(String[] args) {}
-
-    private CommsSensorProto getBluetoothComms() {
-        return new CommsSensorProto(
-            10,
-            1,
-            0.0,
-            0
+    private static ArrayList<BaseRemoteConfig> getBaseRemoteConfiguration() {
+        return new ArrayList<BaseRemoteConfig>(
+            Arrays.asList(
+                new BaseRemoteConfig(
+                    new BaseRemoteProto(
+                        ACSOS.BASE_LOCATION,
+                        1,
+                        new ArrayList<SensorConfig>(
+                            Arrays.asList(
+                                new SensorConfig(
+                                    ACSOS.getLongRangeComms(),
+                                    1,
+                                    true
+                                )
+                            )
+                        )
+                    ),
+                    TeamColor.GREEN,
+                    ACSOS.BASE_COUNT,
+                    false,
+                    true
+                )
+            )
         );
     }
 
-    private VisionSensorProto getDroneCamera() {
-        return new VisionSensorProto(
-            10,
-            1,
-            0.0
+    private static CommsSensorProto getBluetoothComms() {
+        return SensorRegistry.BluetoothSensor(10, 1, 0, 0);
+    }
+
+    private static VisionSensorProto getDroneCamera() {
+        return SensorRegistry.CMOSCameraSensor(10, 1, 0);
+    }
+
+    private static ArrayList<DroneRemoteConfig> getDroneRemoteConfiguration() {
+        return new ArrayList<DroneRemoteConfig>(
+            Arrays.asList(
+                new DroneRemoteConfig(
+                    new DroneRemoteProto(
+                        ACSOS.BASE_LOCATION,
+                        1,
+                        new ArrayList<SensorConfig>(
+                            Arrays.asList(
+                                new SensorConfig(
+                                    ACSOS.getLongRangeComms(),
+                                    1,
+                                    true
+                                ),
+                                new SensorConfig(
+                                    ACSOS.getBluetoothComms(),
+                                    1,
+                                    true
+                                ),
+                                new SensorConfig(
+                                    ACSOS.getDroneCamera(),
+                                    1,
+                                    true
+                                )
+                            )
+                        ),
+                        new Vector(),
+                        30,
+                        3,
+                        1
+                    ),
+                    TeamColor.BLUE,
+                    ACSOS.DRONE_COUNT,
+                    true,
+                    true
+                )
+            )
         );
     }
 
-    private CommsSensorProto getLongRangeComms() {
-        return new CommsSensorProto(
-            Double.POSITIVE_INFINITY,
-            1,
-            0.0,
-            0
+    private static CommsSensorProto getLongRangeComms() {
+        return SensorRegistry.LTERadioSensor(Double.POSITIVE_INFINITY, 1, 0, 0);
+    }
+
+    private static MonitorSensorProto getVictimHRVM() {
+        return SensorRegistry.HRVMSensor(0, 1, 0);
+    }
+
+    private static ArrayList<VictimRemoteConfig> getVictimRemoteConfiguration() {
+        return new ArrayList<VictimRemoteConfig>(
+            Arrays.asList(
+                new VictimRemoteConfig(
+                    new VictimRemoteProto(
+                        null,
+                        1,
+                        new ArrayList<SensorConfig>(
+                            Arrays.asList(
+                                new SensorConfig(
+                                    ACSOS.getBluetoothComms(),
+                                    1,
+                                    true
+                                ),
+                                new SensorConfig(
+                                    ACSOS.getVictimHRVM(),
+                                    1,
+                                    true
+                                )
+                            )
+                        ),
+                        1.78,
+                        1,
+                        9,
+                        1.78,
+                        1.78
+                    ),
+                    TeamColor.RED,
+                    ACSOS.VICTIM_COUNT,
+                    false,
+                    true
+                )
+            )
         );
     }
 
-    private MonitorSensorProto getVictimHRVM() {
-        return new MonitorSensorProto(
-            0,
-            1,
-            0.0
-        );
+    private ArrayList<BaseRemoteConfig> baseConfigs;
+    private ArrayList<DroneRemoteConfig> droneConfigs;
+    private HashMap<String, Zone> localGoals;
+    private Map map;
+    private ArrayList<RemoteConfig> remoteConfigs;
+    private Random rng;
+    private ArrayList<VictimRemoteConfig> victimConfigs;
+
+    public ACSOS() {
+        this(null);
+    }
+
+    public ACSOS(String[] args) {
+        this.rng = new Random();
+        this.map = ACSOS.getACSOSMap();
+        this.baseConfigs = ACSOS.getBaseRemoteConfiguration();
+        this.droneConfigs = ACSOS.getDroneRemoteConfiguration();
+        this.victimConfigs = ACSOS.getVictimRemoteConfiguration();
+        this.remoteConfigs = new ArrayList<RemoteConfig>(){{
+            addAll(baseConfigs);
+            addAll(droneConfigs);
+            addAll(victimConfigs);
+        }};
+        this.localGoals = null;
     }
 
     public Collection<BaseRemoteConfig> getBaseRemoteConfigs() {
-        ArrayList<SensorConfig> sensors = new ArrayList<>();
-        sensors.add(new SensorConfig(this.getLongRangeComms(), 1, true));
-        BaseRemoteProto base = new BaseRemoteProto(
-            BASE_LOCATION,
-            1,
-            sensors
-        );
-        ArrayList<BaseRemoteConfig> baseConfig = new ArrayList<>();
-        baseConfig.add(new BaseRemoteConfig(base, TeamColor.GREEN, 1, false, true));
-        return baseConfig;
+        return this.baseConfigs;
     }
 
     public double getDisasterScale() {
@@ -86,39 +197,20 @@ public class ACSOS implements SARApplication {
     }
 
     public Collection<DroneRemoteConfig> getDroneRemoteConfigs() {
-        ArrayList<SensorConfig> sensors = new ArrayList<>();
-        sensors.add(new SensorConfig(this.getLongRangeComms(), 1, true));
-        sensors.add(new SensorConfig(this.getBluetoothComms(), 1, true));
-        sensors.add(new SensorConfig(this.getDroneCamera(), 1, true));
-        DroneRemoteProto drone = new DroneRemoteProto(
-            BASE_LOCATION,
-            1.0,
-            sensors,
-            new Vector(0.0, 0.0, 0.0),
-            30.0,
-            3.0,
-            1.0
-        );
-        ArrayList<DroneRemoteConfig> droneConfig = new ArrayList<>();
-        droneConfig.add(new DroneRemoteConfig(drone, TeamColor.BLUE, 1, true, true));
-        return droneConfig;
+        return this.droneConfigs;
     }
 
     public Map getMap() {
-        return new Map(ZONE_SIZE, MAP_SIZE, MAP_SIZE);
+        return this.map;
     }
 
     public int getMissionLength() {
         // 27 minutes
-        return 27*60;
+        return 27 * 60;
     }
 
     public Collection<RemoteConfig> getRemoteConfigs() {
-        ArrayList<RemoteConfig> remotes = new ArrayList<>();
-        remotes.addAll(this.getVictimRemoteConfigs());
-        remotes.addAll(this.getBaseRemoteConfigs());
-        remotes.addAll(this.getDroneRemoteConfigs());
-        return remotes;
+        return this.remoteConfigs;
     }
 
     public String getScenarioID() {
@@ -130,26 +222,29 @@ public class ACSOS implements SARApplication {
     }
 
     public Collection<VictimRemoteConfig> getVictimRemoteConfigs() {
-        ArrayList<SensorConfig> sensors = new ArrayList<>();
-        sensors.add(new SensorConfig(this.getBluetoothComms(), 1, true));
-        sensors.add(new SensorConfig(this.getVictimHRVM(), 1, true));
-        VictimRemoteProto victim = new VictimRemoteProto(
-            null,
-            1.0,
-            sensors,
-            1.78,
-            1.0,
-            9.00,
-            1.78,
-            1.78
-        );
-        ArrayList<VictimRemoteConfig> victimConfig = new ArrayList<>();
-        victimConfig.add(new VictimRemoteConfig(victim, TeamColor.RED, 100, false, true));
-        return victimConfig;
+        return this.victimConfigs;
     }
 
     public Collection<IntentionSet> update(Snapshot snap) {
-        return new ArrayList<>();
+        if (this.localGoals == null) {
+            this.localGoals = new HashMap<>();
+            for (String remoteID : snap.getActiveRemotes()) {
+                this.localGoals.put(
+                    remoteID,
+                    this.map.getZone(
+                        this.rng.getRandomNumber(this.map.getHeightUnits()),
+                        this.rng.getRandomNumber(this.map.getWidthUnits())
+                    )
+                );
+            }
+        }
+        ArrayList<IntentionSet> intentions = new ArrayList<>();
+        for (String remoteID : this.localGoals.keySet()) {
+            DroneRemoteController controller = new DroneRemoteController(remoteID);
+            controller.goToLocation(this.localGoals.get(remoteID).getLocation());
+            intentions.add(controller.getIntentions());
+        }
+        return intentions;
     }
 
 }
