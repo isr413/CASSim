@@ -9,7 +9,6 @@ import com.seat.sim.common.json.JSONObjectBuilder;
 import com.seat.sim.common.json.JSONOption;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.remote.RemoteConfig;
-import com.seat.sim.common.remote.RemoteProto;
 import com.seat.sim.common.remote.base.BaseRemoteConfig;
 import com.seat.sim.common.remote.base.BaseRemoteProto;
 import com.seat.sim.common.remote.mobile.aerial.DroneRemoteConfig;
@@ -25,22 +24,13 @@ public class SARConfig extends ScenarioConfig {
 
     protected static final double DEFAULT_DISASTER_SCALE = 0.0;
 
-    private static boolean isBaseRemoteProto(RemoteProto proto) {
-        return BaseRemoteProto.class.isAssignableFrom(proto.getClass());
-    }
-
-    private static boolean isDroneRemoteProto(RemoteProto proto) {
-        return DroneRemoteProto.class.isAssignableFrom(proto.getClass());
-    }
-
-    private static boolean isVictimRemoteProto(RemoteProto proto) {
-        return VictimRemoteProto.class.isAssignableFrom(proto.getClass());
-    }
-
     private double disasterScale;
-    private int numBases;
-    private int numDrones;
-    private int numVictims;
+    private ArrayList<BaseRemoteConfig> baseConfigs;
+    private ArrayList<String> baseIDs;
+    private ArrayList<DroneRemoteConfig> droneConfigs;
+    private ArrayList<String> droneIDs;
+    private ArrayList<VictimRemoteConfig> victimConfigs;
+    private ArrayList<String> victimIDs;
 
     public SARConfig(Grid grid, int missionLength, double stepSize, Collection<RemoteConfig> remoteConfig) {
         this(ScenarioConfig.DEFAULT_ID, ScenarioConfig.DEFAULT_SEED, grid, SARConfig.DEFAULT_DISASTER_SCALE,
@@ -103,101 +93,83 @@ public class SARConfig extends ScenarioConfig {
     protected JSONObjectBuilder getJSONBuilder() {
         JSONObjectBuilder json = super.getJSONBuilder();
         json.put(SARConfig.DISASTER_SCALE, this.disasterScale);
-        json.put(SARConfig.NUM_VICTIMS, this.numVictims);
-        json.put(SARConfig.NUM_BASES, this.numBases);
-        json.put(SARConfig.NUM_DRONES, this.numDrones);
+        json.put(SARConfig.NUM_BASES, this.getNumberOfBases());
+        json.put(SARConfig.NUM_DRONES, this.getNumberOfDrones());
+        json.put(SARConfig.NUM_VICTIMS, this.getNumberOfVictims());
         return json;
     }
 
-    private void countBases() {
-        this.numBases = 0;
-        for (RemoteConfig config : this.getRemotes()) {
-            if (SARConfig.isBaseRemoteProto(config.getProto())) {
-                this.numBases += config.getCount();
-            }
-        }
-    }
-
-    private void countDrones() {
-        this.numDrones = 0;
-        for (RemoteConfig config : this.getRemotes()) {
-            if (SARConfig.isDroneRemoteProto(config.getProto())) {
-                this.numDrones += config.getCount();
-            }
-        }
-    }
-
-    private void countVictims() {
-        this.numVictims = 0;
-        for (RemoteConfig config : this.getRemotes()) {
-            if (SARConfig.isVictimRemoteProto(config.getProto())) {
-                this.numVictims += config.getCount();
-            }
-        }
-    }
-
     private void init() {
-        this.countBases();
-        this.countDrones();
-        this.countVictims();
-    }
-
-    public Collection<BaseRemoteConfig> getBases() {
-        ArrayList<BaseRemoteConfig> baseConfig = new ArrayList<>();
-        for (RemoteConfig config : this.getRemotes()) {
-            if (SARConfig.isBaseRemoteProto(config.getProto())) {
-                baseConfig.add((BaseRemoteConfig) config);
+        this.baseConfigs = new ArrayList<>();
+        this.baseIDs = new ArrayList<>();
+        this.droneConfigs = new ArrayList<>();
+        this.droneIDs = new ArrayList<>();
+        this.victimConfigs = new ArrayList<>();
+        this.victimIDs = new ArrayList<>();
+        for (RemoteConfig config : this.getRemoteConfigs()) {
+            if (BaseRemoteProto.class.isAssignableFrom(config.getProto().getClass())) {
+                this.baseConfigs.add((BaseRemoteConfig) config);
+                this.baseIDs.addAll(config.getRemoteIDs());
+            } else if (DroneRemoteProto.class.isAssignableFrom(config.getProto().getClass())) {
+                this.droneConfigs.add((DroneRemoteConfig) config);
+                this.droneIDs.addAll(config.getRemoteIDs());
+            } else if (VictimRemoteProto.class.isAssignableFrom(config.getProto().getClass())) {
+                this.victimConfigs.add((VictimRemoteConfig) config);
+                this.victimIDs.addAll(config.getRemoteIDs());
             }
         }
-        return baseConfig;
+    }
+
+    public Collection<BaseRemoteConfig> getBaseConfigs() {
+        return this.baseConfigs;
+    }
+
+    public Collection<String> getBaseRemoteIDs() {
+        return this.baseIDs;
     }
 
     public double getDisasterScale() {
         return this.disasterScale;
     }
 
-    public Collection<DroneRemoteConfig> getDrones() {
-        ArrayList<DroneRemoteConfig> droneConfig = new ArrayList<>();
-        for (RemoteConfig config : this.getRemotes()) {
-            if (SARConfig.isDroneRemoteProto(config.getProto())) {
-                droneConfig.add((DroneRemoteConfig) config);
-            }
-        }
-        return droneConfig;
+    public Collection<DroneRemoteConfig> getDroneConfigs() {
+        return this.droneConfigs;
+    }
+
+    public Collection<String> getDroneRemoteIDs() {
+        return this.droneIDs;
     }
 
     public int getNumberOfBases() {
-        return this.numBases;
+        return this.baseIDs.size();
     }
 
     public int getNumberOfDrones() {
-        return this.numDrones;
+        return this.droneIDs.size();
     }
 
     public int getNumberOfVictims() {
-        return this.numVictims;
+        return this.victimIDs.size();
     }
 
-    public Collection<VictimRemoteConfig> getVictims() {
-        ArrayList<VictimRemoteConfig> victimConfig = new ArrayList<>();
-        for (RemoteConfig config : this.getRemotes()) {
-            if (SARConfig.isVictimRemoteProto(config.getProto())) {
-                victimConfig.add((VictimRemoteConfig) config);
-            }
-        }
-        return victimConfig;
+    public Collection<VictimRemoteConfig> getVictimConfigs() {
+        return this.victimConfigs;
+    }
+
+    public Collection<String> getVictimRemoteIDs() {
+        return this.victimIDs;
     }
 
     public boolean hasBases() {
-        return this.numBases > 0;
+        return !this.baseIDs.isEmpty();
     }
 
     public boolean hasDrones() {
-        return this.numDrones > 0;
+        return !this.droneIDs.isEmpty();
     }
 
     public boolean hasVictims() {
-        return this.numVictims > 0;
+        return !this.victimIDs.isEmpty();
     }
 
     public boolean equals(SARConfig config) {

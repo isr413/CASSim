@@ -20,6 +20,7 @@ import com.seat.sim.common.remote.RemoteRegistry;
 public class ScenarioConfig extends JSONAble {
     public static final String GRID = "grid";
     public static final String MISSION_LENGTH = "mission_length";
+    public static final String NUM_REMOTES = "num_remotes";
     public static final String REMOTE_CONFIG = "remote_config";
     public static final String SCENARIO_ID = "scenario_id";
     public static final String SEED = "seed";
@@ -30,7 +31,8 @@ public class ScenarioConfig extends JSONAble {
 
     private Grid grid;
     private int missionLength;
-    private ArrayList<RemoteConfig> remoteConfig;
+    private ArrayList<RemoteConfig> remoteConfigs;
+    private ArrayList<String> remoteIDs;
     private String scenarioID;
     private long seed;
     private double stepSize;
@@ -53,32 +55,40 @@ public class ScenarioConfig extends JSONAble {
         this(scenarioID, seed, grid, missionLength, stepSize, null);
     }
 
-    public ScenarioConfig(Grid grid, int missionLength, double stepSize, Collection<RemoteConfig> remoteConfig) {
-        this(ScenarioConfig.DEFAULT_ID, ScenarioConfig.DEFAULT_SEED, grid, missionLength, stepSize, remoteConfig);
+    public ScenarioConfig(Grid grid, int missionLength, double stepSize, Collection<RemoteConfig> remoteConfigs) {
+        this(ScenarioConfig.DEFAULT_ID, ScenarioConfig.DEFAULT_SEED, grid, missionLength, stepSize, remoteConfigs);
     }
 
     public ScenarioConfig(String scenarioID, Grid grid, int missionLength, double stepSize,
-            Collection<RemoteConfig> remoteConfig) {
-        this(scenarioID, ScenarioConfig.DEFAULT_SEED, grid, missionLength, stepSize, remoteConfig);
+            Collection<RemoteConfig> remoteConfigs) {
+        this(scenarioID, ScenarioConfig.DEFAULT_SEED, grid, missionLength, stepSize, remoteConfigs);
     }
 
     public ScenarioConfig(long seed, Grid grid, int missionLength, double stepSize,
-            Collection<RemoteConfig> remoteConfig) {
-        this(ScenarioConfig.DEFAULT_ID, seed, grid, missionLength, stepSize, remoteConfig);
+            Collection<RemoteConfig> remoteConfigs) {
+        this(ScenarioConfig.DEFAULT_ID, seed, grid, missionLength, stepSize, remoteConfigs);
     }
 
     public ScenarioConfig(String scenarioID, long seed, Grid grid, int missionLength, double stepSize,
-            Collection<RemoteConfig> remoteConfig) {
+            Collection<RemoteConfig> remoteConfigs) {
         this.scenarioID = scenarioID;
         this.seed = seed;
         this.grid = grid;
         this.missionLength = missionLength;
         this.stepSize = stepSize;
-        this.remoteConfig = (remoteConfig != null ) ? new ArrayList<>(remoteConfig) : new ArrayList<>();
+        this.remoteConfigs = (remoteConfigs != null ) ? new ArrayList<>(remoteConfigs) : new ArrayList<>();
+        this.init();
     }
 
     public ScenarioConfig(JSONOption option) throws JSONException {
         super(option);
+    }
+
+    private void init() {
+        this.remoteIDs = new ArrayList<>();
+        for (RemoteConfig config : this.remoteConfigs) {
+            this.remoteIDs.addAll(config.getRemoteIDs());
+        }
     }
 
     @Override
@@ -88,11 +98,11 @@ public class ScenarioConfig extends JSONAble {
         this.grid = new Grid(json.getJSONOption(ScenarioConfig.GRID));
         this.missionLength = json.getInt(ScenarioConfig.MISSION_LENGTH);
         this.stepSize = json.getDouble(ScenarioConfig.STEP_SIZE);
-        this.remoteConfig = new ArrayList<>();
+        this.remoteConfigs = new ArrayList<>();
         if (json.hasKey(ScenarioConfig.REMOTE_CONFIG)) {
             JSONArray jsonRemotes = json.getJSONArray(ScenarioConfig.REMOTE_CONFIG);
             for (int i = 0; i < jsonRemotes.length(); i++) {
-                this.remoteConfig.add(RemoteRegistry.decodeTo(jsonRemotes.getJSONOption(i), RemoteConfig.class));
+                this.remoteConfigs.add(RemoteRegistry.decodeTo(jsonRemotes.getJSONOption(i), RemoteConfig.class));
             }
         }
     }
@@ -104,9 +114,10 @@ public class ScenarioConfig extends JSONAble {
         json.put(ScenarioConfig.GRID, this.grid.toJSON());
         json.put(ScenarioConfig.MISSION_LENGTH, this.missionLength);
         json.put(ScenarioConfig.STEP_SIZE, this.stepSize);
+        json.put(ScenarioConfig.NUM_REMOTES, this.getNumberOfRemotes());
         if (this.hasRemotes()) {
             JSONArrayBuilder jsonRemotes = JSONBuilder.Array();
-            for (RemoteConfig config : this.remoteConfig) {
+            for (RemoteConfig config : this.remoteConfigs) {
                 jsonRemotes.put(config.toJSON());
             }
             json.put(ScenarioConfig.REMOTE_CONFIG, jsonRemotes.toJSON());
@@ -130,16 +141,16 @@ public class ScenarioConfig extends JSONAble {
         return this.missionLength;
     }
 
-    public Collection<RemoteConfig> getRemotes() {
-        return this.remoteConfig;
+    public int getNumberOfRemotes() {
+        return this.remoteIDs.size();
+    }
+
+    public Collection<RemoteConfig> getRemoteConfigs() {
+        return this.remoteConfigs;
     }
 
     public Collection<String> getRemoteIDs() {
-        ArrayList<String> remoteIDs = new ArrayList<>();
-        for (RemoteConfig config : this.remoteConfig) {
-            remoteIDs.addAll(config.getRemoteIDs());
-        }
-        return remoteIDs;
+        return this.remoteIDs;
     }
 
     public String getScenarioID() {
@@ -159,7 +170,7 @@ public class ScenarioConfig extends JSONAble {
     }
 
     public boolean hasRemotes() {
-        return !this.remoteConfig.isEmpty();
+        return !this.remoteIDs.isEmpty();
     }
 
     public JSONOption toJSON() {
@@ -170,7 +181,7 @@ public class ScenarioConfig extends JSONAble {
         if (config == null) return false;
         return this.getScenarioType().equals(config.getScenarioType()) && this.scenarioID.equals(config.scenarioID) &&
             this.seed == config.seed && this.grid.equals(config.grid) && this.missionLength == config.missionLength &&
-            this.stepSize == config.stepSize && this.remoteConfig.equals(config.remoteConfig);
+            this.stepSize == config.stepSize && this.remoteConfigs.equals(config.remoteConfigs);
     }
 
 }
