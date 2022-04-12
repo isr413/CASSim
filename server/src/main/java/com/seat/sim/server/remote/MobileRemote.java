@@ -109,7 +109,7 @@ public class MobileRemote extends Remote {
         this.velocity = velocity;
     }
 
-    protected void updateAcceleration(Vector delta, double stepSize) {
+    public void updateAcceleration(Vector delta, double stepSize) {
         if (this.getMaxJerk() < delta.getMagnitude()) {
             delta = Vector.scale(delta.getUnitVector(), this.getMaxJerk());
         }
@@ -119,11 +119,11 @@ public class MobileRemote extends Remote {
         }
     }
 
-    protected void updateAccelerationTo(Vector target, double stepSize) {
+    public void updateAccelerationTo(Vector target, double stepSize) {
         this.updateAccelerationTo(target, stepSize, Double.POSITIVE_INFINITY);
     }
 
-    protected void updateAccelerationTo(Vector target, double stepSize, double maxJerk) {
+    public void updateAccelerationTo(Vector target, double stepSize, double maxJerk) {
         Vector jerk = Vector.subtract(target, this.acceleration);
         if (maxJerk < jerk.getMagnitude()) {
             jerk = Vector.scale(jerk.getUnitVector(), maxJerk);
@@ -131,20 +131,20 @@ public class MobileRemote extends Remote {
         this.updateAcceleration(jerk, stepSize);
     }
 
-    protected void updateLocationTo(Vector dest, double stepSize) {
+    public void updateLocationTo(Vector dest, double stepSize) {
         this.updateLocationTo(dest, stepSize, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
             Double.POSITIVE_INFINITY);
     }
 
-    protected void updateLocationTo(Vector dest, double stepSize, double maxVelocity) {
+    public void updateLocationTo(Vector dest, double stepSize, double maxVelocity) {
         this.updateLocationTo(dest, stepSize, maxVelocity, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
     }
 
-    protected void updateLocationTo(Vector dest, double stepSize, double maxVelocity, double maxAcceleration) {
+    public void updateLocationTo(Vector dest, double stepSize, double maxVelocity, double maxAcceleration) {
         this.updateLocationTo(dest, stepSize, maxVelocity, maxAcceleration, Double.POSITIVE_INFINITY);
     }
 
-    protected void updateLocationTo(Vector dest, double stepSize, double maxVelocity, double maxAcceleration,
+    public void updateLocationTo(Vector dest, double stepSize, double maxVelocity, double maxAcceleration,
             double maxJerk) {
         Vector jerk = Vector.subtract(this.getLocation(), this.getNextLocation(stepSize));
         if (maxJerk < jerk.getMagnitude()) {
@@ -161,7 +161,7 @@ public class MobileRemote extends Remote {
         this.updateLocation(this.velocity, stepSize);
     }
 
-    protected void updateVelocity(Vector delta, double stepSize) {
+    public void updateVelocity(Vector delta, double stepSize) {
         if (this.getMaxAcceleration() < delta.getMagnitude()) {
             delta = Vector.scale(delta.getUnitVector(), this.getMaxAcceleration());
         }
@@ -171,15 +171,15 @@ public class MobileRemote extends Remote {
         }
     }
 
-    protected void updateVelocityTo(Vector target, double stepSize) {
+    public void updateVelocityTo(Vector target, double stepSize) {
         this.updateVelocityTo(target, stepSize, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
     }
 
-    protected void updateVelocityTo(Vector target, double stepSize, double maxAcceleration) {
+    public void updateVelocityTo(Vector target, double stepSize, double maxAcceleration) {
         this.updateVelocityTo(target, stepSize, maxAcceleration, Double.POSITIVE_INFINITY);
     }
 
-    protected void updateVelocityTo(Vector target, double stepSize, double maxAcceleration, double maxJerk) {
+    public void updateVelocityTo(Vector target, double stepSize, double maxAcceleration, double maxJerk) {
         Vector jerk = Vector.subtract(target, Vector.add(this.velocity, this.acceleration));
         if (maxJerk < jerk.getMagnitude()) {
             jerk = Vector.scale(jerk.getUnitVector(), maxJerk);

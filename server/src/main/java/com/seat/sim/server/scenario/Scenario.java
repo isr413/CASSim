@@ -8,8 +8,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.seat.sim.common.math.Field;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Vector;
+import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteConfig;
 import com.seat.sim.common.remote.RemoteController;
 import com.seat.sim.common.remote.RemoteProto;
@@ -21,6 +23,7 @@ import com.seat.sim.common.scenario.Snapshot;
 import com.seat.sim.common.util.Debugger;
 import com.seat.sim.common.util.Random;
 import com.seat.sim.server.core.SimException;
+import com.seat.sim.server.remote.DroneRemote;
 import com.seat.sim.server.remote.MobileRemote;
 import com.seat.sim.server.remote.Remote;
 import com.seat.sim.server.remote.RemoteFactory;
@@ -366,6 +369,36 @@ public class Scenario {
         for (Remote remote : this.getRemotes()) {
             if (remote.isDisabled()) {
                 continue;
+            }
+            Zone zone = this.getGrid().getZoneAtLocation(remote.getLocation());
+            Field field = null;
+            if (remote instanceof DroneRemote && zone.hasAerialField()) {
+                field = zone.getAerialField();
+            } else if (remote instanceof VictimRemote && zone.hasGroundField()) {
+                field = zone.getGroundField();
+            }
+            if (field != null) {
+                MobileRemote mobile = (MobileRemote) remote;
+                if (field.isPullForce() && field.getMagnitude() > 0) {
+                    mobile.updateAcceleration(
+                        Vector.scale(
+                            Vector.subtract(field.getPoint(), mobile.getLocation()).getUnitVector(),
+                            field.getMagnitude()
+                        ),
+                        stepSize
+                    );
+                } else if (field.isPushForce() && field.getMagnitude() > 0) {
+                    mobile.updateAcceleration(
+                        Vector.scale(
+                            Vector.subtract(mobile.getLocation(), field.getPoint()).getUnitVector(),
+                            field.getMagnitude()
+                        ),
+                        stepSize
+                    );
+                }
+                if (field.getJerk().getMagnitude() > 0) {
+                    mobile.updateAcceleration(field.getJerk(), stepSize);
+                }
             }
             if (this.hasDynamicRemoteWithID(remote.getRemoteID())) {
                 if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
