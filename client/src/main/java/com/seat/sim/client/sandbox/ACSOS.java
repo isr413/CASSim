@@ -7,15 +7,14 @@ import java.util.HashMap;
 
 import com.seat.sim.common.core.SARApplication;
 import com.seat.sim.common.core.TeamColor;
-import com.seat.sim.common.map.Map;
-import com.seat.sim.common.map.Zone;
+import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Vector;
+import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteConfig;
 import com.seat.sim.common.remote.base.BaseRemoteConfig;
 import com.seat.sim.common.remote.base.BaseRemoteProto;
 import com.seat.sim.common.remote.intent.IntentionSet;
 import com.seat.sim.common.remote.mobile.aerial.DroneRemoteConfig;
-import com.seat.sim.common.remote.mobile.aerial.DroneRemoteController;
 import com.seat.sim.common.remote.mobile.aerial.DroneRemoteProto;
 import com.seat.sim.common.remote.mobile.ground.VictimRemoteConfig;
 import com.seat.sim.common.remote.mobile.ground.VictimRemoteProto;
@@ -32,7 +31,7 @@ public class ACSOS implements SARApplication {
     private static final int BASE_COUNT = 1;
     private static final int DRONE_COUNT = 32;
     private static final int MAP_SIZE = 64;
-    private static final int VICTIM_COUNT = 0;
+    private static final int VICTIM_COUNT = 100;
     private static final int ZONE_SIZE = 10;
 
     private static final Vector BASE_LOCATION = new Vector(
@@ -40,8 +39,8 @@ public class ACSOS implements SARApplication {
         (ACSOS.MAP_SIZE * ACSOS.ZONE_SIZE)/2.0
     );
 
-    private static Map getACSOSMap() {
-        return new Map(ACSOS.ZONE_SIZE, ACSOS.MAP_SIZE, ACSOS.MAP_SIZE);
+    private static Grid getACSOSGrid() {
+        return new Grid(ACSOS.ZONE_SIZE, ACSOS.MAP_SIZE, ACSOS.MAP_SIZE);
     }
 
     private static ArrayList<BaseRemoteConfig> getBaseRemoteConfiguration() {
@@ -164,8 +163,8 @@ public class ACSOS implements SARApplication {
 
     private ArrayList<BaseRemoteConfig> baseConfigs;
     private ArrayList<DroneRemoteConfig> droneConfigs;
+    private Grid grid;
     private HashMap<String, Zone> localGoals;
-    private Map map;
     private ArrayList<RemoteConfig> remoteConfigs;
     private Random rng;
     private ArrayList<VictimRemoteConfig> victimConfigs;
@@ -176,7 +175,7 @@ public class ACSOS implements SARApplication {
 
     public ACSOS(String[] args) {
         this.rng = new Random();
-        this.map = ACSOS.getACSOSMap();
+        this.grid = ACSOS.getACSOSGrid();
         this.baseConfigs = ACSOS.getBaseRemoteConfiguration();
         this.droneConfigs = ACSOS.getDroneRemoteConfiguration();
         this.victimConfigs = ACSOS.getVictimRemoteConfiguration();
@@ -200,8 +199,8 @@ public class ACSOS implements SARApplication {
         return this.droneConfigs;
     }
 
-    public Map getMap() {
-        return this.map;
+    public Grid getGrid() {
+        return this.grid;
     }
 
     public int getMissionLength() {
@@ -231,19 +230,21 @@ public class ACSOS implements SARApplication {
             for (String remoteID : snap.getActiveRemotes()) {
                 this.localGoals.put(
                     remoteID,
-                    this.map.getZone(
-                        this.rng.getRandomNumber(this.map.getHeightUnits()),
-                        this.rng.getRandomNumber(this.map.getWidthUnits())
+                    this.grid.getZone(
+                        this.rng.getRandomNumber(this.grid.getHeightInZones()),
+                        this.rng.getRandomNumber(this.grid.getWidthInZones())
                     )
                 );
             }
         }
         ArrayList<IntentionSet> intentions = new ArrayList<>();
+        /**
         for (String remoteID : this.localGoals.keySet()) {
             DroneRemoteController controller = new DroneRemoteController(remoteID);
             controller.goToLocation(this.localGoals.get(remoteID).getLocation());
             intentions.add(controller.getIntentions());
         }
+        */
         return intentions;
     }
 

@@ -2,7 +2,7 @@ package com.seat.sim.client.core;
 
 import java.util.Collection;
 
-import com.seat.sim.client.gui.GUIMapFrame;
+import com.seat.sim.client.gui.GUIGridFrame;
 import com.seat.sim.common.core.Application;
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.net.JSONSocket;
@@ -60,10 +60,10 @@ public class AppClient {
 
         Debugger.logger.info(this.app.getScenarioConfig().toString());
 
-        GUIMapFrame frame = null;
+        GUIGridFrame frame = null;
         if (visualDisplay) {
             Debugger.logger.info("Starting visual display ...");
-            frame = new GUIMapFrame(app.getScenarioID(), this.app.getMap());
+            frame = new GUIGridFrame(app.getScenarioID(), this.app.getGrid());
             frame.setVisible(true);
             Debugger.logger.state("Frame set to visible");
         }
