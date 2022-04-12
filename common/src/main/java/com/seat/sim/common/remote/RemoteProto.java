@@ -2,6 +2,7 @@ package com.seat.sim.common.remote;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.JSONAble;
@@ -25,7 +26,8 @@ public class RemoteProto extends JSONAble {
 
     private Vector location;
     private double maxBatteryPower;
-    private ArrayList<SensorConfig> sensors;
+    private ArrayList<SensorConfig> sensorConfigs;
+    private HashMap<String, SensorConfig> sensorConfigByID;
 
     public RemoteProto(double maxBatteryPower) {
         this(null, maxBatteryPower, null);
@@ -35,19 +37,28 @@ public class RemoteProto extends JSONAble {
         this(location, maxBatteryPower, null);
     }
 
-    public RemoteProto(double maxBatteryPower, Collection<SensorConfig> sensors) {
-        this(null, maxBatteryPower, sensors);
+    public RemoteProto(double maxBatteryPower, Collection<SensorConfig> sensorConfigs) {
+        this(null, maxBatteryPower, sensorConfigs);
     }
 
-    public RemoteProto(Vector location, double maxBatteryPower,
-            Collection<SensorConfig> sensors) {
+    public RemoteProto(Vector location, double maxBatteryPower, Collection<SensorConfig> sensorConfigs) {
         this.location = location; // a remote with a null location should be randomly assigned a location
         this.maxBatteryPower = maxBatteryPower;
-        this.sensors = (sensors != null) ? new ArrayList<>(sensors) : new ArrayList<>();
+        this.sensorConfigs = (sensorConfigs != null) ? new ArrayList<>(sensorConfigs) : new ArrayList<>();
+        this.init();
     }
 
     public RemoteProto(JSONOption option) throws JSONException {
         super(option);
+    }
+
+    private void init() {
+        this.sensorConfigByID = new HashMap<>();
+        for (SensorConfig config : this.sensorConfigs) {
+            for (String sensorID : config.getSensorIDs()) {
+                this.sensorConfigByID.put(sensorID, config);
+            }
+        }
     }
 
     @Override
@@ -56,13 +67,14 @@ public class RemoteProto extends JSONAble {
             this.location = new Vector(json.getJSONOption(RemoteProto.LOCATION)) :
             null;
         this.maxBatteryPower = json.getDouble(RemoteProto.MAX_BATTERY);
-        this.sensors = new ArrayList<>();
+        this.sensorConfigs = new ArrayList<>();
         if (json.hasKey(RemoteProto.SENSORS)) {
             JSONArray jsonSensors = json.getJSONArray(RemoteProto.SENSORS);
             for (int i = 0; i < jsonSensors.length(); i++) {
-                this.sensors.add(SensorRegistry.decodeTo(jsonSensors.getJSONOption(i), SensorConfig.class));
+                this.sensorConfigs.add(SensorRegistry.decodeTo(jsonSensors.getJSONOption(i), SensorConfig.class));
             }
         }
+        this.init();
     }
 
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
@@ -74,7 +86,7 @@ public class RemoteProto extends JSONAble {
         json.put(RemoteProto.MAX_BATTERY, this.maxBatteryPower);
         if (this.hasSensors()) {
             JSONArrayBuilder jsonSensors = JSONBuilder.Array();
-            for (SensorConfig config : this.sensors) {
+            for (SensorConfig config : this.sensorConfigs) {
                 jsonSensors.put(config.toJSON());
             }
             json.put(RemoteProto.SENSORS, jsonSensors.toJSON());
@@ -94,24 +106,32 @@ public class RemoteProto extends JSONAble {
         return this.maxBatteryPower;
     }
 
+    public int getNumberOfSensors() {
+        return this.getSensorIDs().size();
+    }
+
     public String getRemoteType() {
         return this.getClass().getName();
     }
 
-    public SensorConfig getSensor(int idx) throws CommonException {
-        if (idx < 0 || this.sensors.size() <= idx) {
-            throw new CommonException(String.format("No sensor at index %d found on proto %s", idx, this.getLabel()));
-        }
-        return this.sensors.get(idx);
+    public Collection<SensorConfig> getSensorConfigs() {
+        return this.sensorConfigs;
     }
 
-    public Collection<SensorConfig> getSensors() {
-        return this.sensors;
+    public SensorConfig getSensorConfigWithID(String sensorID) throws CommonException {
+        if (!this.hasSensorWithID(sensorID)) {
+            throw new CommonException(String.format("Remote %s has no sensor %s", this.getLabel(), sensorID));
+        }
+        return this.sensorConfigByID.get(sensorID);
+    }
+
+    public Collection<String> getSensorIDs() {
+        return this.sensorConfigByID.keySet();
     }
 
     public Collection<SensorConfig> getSensorsWithModel(String sensorModel) {
         ArrayList<SensorConfig> sensors = new ArrayList<>();
-        for (SensorConfig state : this.sensors) {
+        for (SensorConfig state : this.sensorConfigs) {
             if (state.getSensorModel().equals(sensorModel)) {
                 sensors.add(state);
             }
@@ -121,7 +141,7 @@ public class RemoteProto extends JSONAble {
 
     public Collection<SensorConfig> getSensorsWithType(Class<? extends SensorProto> classType) {
         ArrayList<SensorConfig> confs = new ArrayList<>();
-        for (SensorConfig config : this.sensors) {
+        for (SensorConfig config : this.sensorConfigs) {
             if (classType.isAssignableFrom(config.getProto().getClass())) {
                 confs.add(config);
             }
@@ -129,38 +149,20 @@ public class RemoteProto extends JSONAble {
         return confs;
     }
 
-    public SensorConfig getSensorWithID(String sensorID) throws CommonException {
-        for (SensorConfig config : this.sensors) {
-            if (config.hasSensorWithID(sensorID)) {
-                return config;
-            }
-        }
-        throw new CommonException(String.format("No sensor with ID %s found on remote %s", sensorID, this.getLabel()));
-    }
-
     public boolean hasLocation() {
         return this.location != null;
     }
 
-    public boolean hasSensor(int idx) {
-        return 0 <= idx && idx < this.sensors.size();
-    }
-
     public boolean hasSensors() {
-        return !this.sensors.isEmpty();
+        return !this.getSensorIDs().isEmpty();
     }
 
     public boolean hasSensorWithID(String sensorID) {
-        for (SensorConfig config : this.sensors) {
-            if (config.hasSensorWithID(sensorID)) {
-                return true;
-            }
-        }
-        return false;
+        return this.sensorConfigByID.containsKey(sensorID);
     }
 
     public boolean hasSensorWithModel(String sensorModel) {
-        for (SensorConfig config : this.sensors) {
+        for (SensorConfig config : this.sensorConfigs) {
             if (config.getSensorModel().equals(sensorModel)) {
                 return true;
             }
@@ -169,7 +171,7 @@ public class RemoteProto extends JSONAble {
     }
 
     public boolean hasSensorWithType(Class<? extends SensorProto> classType) {
-        for (SensorConfig config : this.sensors) {
+        for (SensorConfig config : this.sensorConfigs) {
             if (classType.isAssignableFrom(config.getProto().getClass())) {
                 return true;
             }
@@ -193,7 +195,7 @@ public class RemoteProto extends JSONAble {
         if (proto == null) return false;
         return this.getRemoteType().equals(proto.getRemoteType()) &&
             ((this.hasLocation() && this.location.equals(proto.location)) || this.location == proto.location) &&
-            this.maxBatteryPower == proto.maxBatteryPower && this.sensors.equals(proto.sensors);
+            this.maxBatteryPower == proto.maxBatteryPower && this.sensorConfigs.equals(proto.sensorConfigs);
     }
 
 }

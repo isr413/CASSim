@@ -2,7 +2,9 @@ package com.seat.sim.common.scenario;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
+import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
@@ -24,13 +26,10 @@ public class SARConfig extends ScenarioConfig {
 
     protected static final double DEFAULT_DISASTER_SCALE = 0.0;
 
+    private HashSet<String> baseIDs;
     private double disasterScale;
-    private ArrayList<BaseRemoteConfig> baseConfigs;
-    private ArrayList<String> baseIDs;
-    private ArrayList<DroneRemoteConfig> droneConfigs;
-    private ArrayList<String> droneIDs;
-    private ArrayList<VictimRemoteConfig> victimConfigs;
-    private ArrayList<String> victimIDs;
+    private HashSet<String> droneIDs;
+    private HashSet<String> victimIDs;
 
     public SARConfig(Grid grid, int missionLength, double stepSize, Collection<RemoteConfig> remoteConfig) {
         this(ScenarioConfig.DEFAULT_ID, ScenarioConfig.DEFAULT_SEED, grid, SARConfig.DEFAULT_DISASTER_SCALE,
@@ -80,6 +79,21 @@ public class SARConfig extends ScenarioConfig {
         super(option);
     }
 
+    private void init() {
+        this.baseIDs = new HashSet<>();
+        this.droneIDs = new HashSet<>();
+        this.victimIDs = new HashSet<>();
+        for (RemoteConfig config : this.getRemoteConfigs()) {
+            if (BaseRemoteProto.class.isAssignableFrom(config.getProto().getClass())) {
+                this.baseIDs.addAll(config.getRemoteIDs());
+            } else if (DroneRemoteProto.class.isAssignableFrom(config.getProto().getClass())) {
+                this.droneIDs.addAll(config.getRemoteIDs());
+            } else if (VictimRemoteProto.class.isAssignableFrom(config.getProto().getClass())) {
+                this.victimIDs.addAll(config.getRemoteIDs());
+            }
+        }
+    }
+
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
@@ -99,29 +113,23 @@ public class SARConfig extends ScenarioConfig {
         return json;
     }
 
-    private void init() {
-        this.baseConfigs = new ArrayList<>();
-        this.baseIDs = new ArrayList<>();
-        this.droneConfigs = new ArrayList<>();
-        this.droneIDs = new ArrayList<>();
-        this.victimConfigs = new ArrayList<>();
-        this.victimIDs = new ArrayList<>();
-        for (RemoteConfig config : this.getRemoteConfigs()) {
-            if (BaseRemoteProto.class.isAssignableFrom(config.getProto().getClass())) {
-                this.baseConfigs.add((BaseRemoteConfig) config);
-                this.baseIDs.addAll(config.getRemoteIDs());
-            } else if (DroneRemoteProto.class.isAssignableFrom(config.getProto().getClass())) {
-                this.droneConfigs.add((DroneRemoteConfig) config);
-                this.droneIDs.addAll(config.getRemoteIDs());
-            } else if (VictimRemoteProto.class.isAssignableFrom(config.getProto().getClass())) {
-                this.victimConfigs.add((VictimRemoteConfig) config);
-                this.victimIDs.addAll(config.getRemoteIDs());
-            }
+    public Collection<BaseRemoteConfig> getBaseRemoteConfigs() {
+        ArrayList<BaseRemoteConfig> baseConfigs = new ArrayList<>();
+        for (String remoteID : this.baseIDs) {
+            baseConfigs.add(this.getBaseRemoteConfigWithID(remoteID));
         }
+        return baseConfigs;
     }
 
-    public Collection<BaseRemoteConfig> getBaseConfigs() {
-        return this.baseConfigs;
+    public BaseRemoteConfig getBaseRemoteConfigWithID(String remoteID) throws CommonException {
+        if (!this.hasRemoteWithID(remoteID)) {
+            throw new CommonException(String.format("Scenario %s has no remote %s", this.getScenarioID(), remoteID));
+        }
+        if (!this.hasBaseRemoteWithID(remoteID)) {
+            throw new CommonException(String.format("Scenario %s has no base remote %s", this.getScenarioID(),
+                remoteID));
+        }
+        return (BaseRemoteConfig) this.getRemoteConfigWithID(remoteID);
     }
 
     public Collection<String> getBaseRemoteIDs() {
@@ -132,8 +140,23 @@ public class SARConfig extends ScenarioConfig {
         return this.disasterScale;
     }
 
-    public Collection<DroneRemoteConfig> getDroneConfigs() {
-        return this.droneConfigs;
+    public Collection<DroneRemoteConfig> getDroneRemoteConfigs() {
+        ArrayList<DroneRemoteConfig> droneConfigs = new ArrayList<>();
+        for (String remoteID : this.droneIDs) {
+            droneConfigs.add(this.getDroneRemoteConfigWithID(remoteID));
+        }
+        return droneConfigs;
+    }
+
+    public DroneRemoteConfig getDroneRemoteConfigWithID(String remoteID) throws CommonException {
+        if (!this.hasRemoteWithID(remoteID)) {
+            throw new CommonException(String.format("Scenario %s has no remote %s", this.getScenarioID(), remoteID));
+        }
+        if (!this.hasDroneRemoteWithID(remoteID)) {
+            throw new CommonException(String.format("Scenario %s has no drone remote %s", this.getScenarioID(),
+                remoteID));
+        }
+        return (DroneRemoteConfig) this.getRemoteConfigWithID(remoteID);
     }
 
     public Collection<String> getDroneRemoteIDs() {
@@ -152,24 +175,51 @@ public class SARConfig extends ScenarioConfig {
         return this.victimIDs.size();
     }
 
-    public Collection<VictimRemoteConfig> getVictimConfigs() {
-        return this.victimConfigs;
+    public Collection<VictimRemoteConfig> getVictimRemoteConfigs() {
+        ArrayList<VictimRemoteConfig> victimConfigs = new ArrayList<>();
+        for (String remoteID : this.victimIDs) {
+            victimConfigs.add(this.getVictimRemoteConfigWithID(remoteID));
+        }
+        return victimConfigs;
+    }
+
+    public VictimRemoteConfig getVictimRemoteConfigWithID(String remoteID) throws CommonException {
+        if (!this.hasRemoteWithID(remoteID)) {
+            throw new CommonException(String.format("Scenario %s has no remote %s", this.getScenarioID(), remoteID));
+        }
+        if (!this.hasVictimRemoteWithID(remoteID)) {
+            throw new CommonException(String.format("Scenario %s has no victim remote %s", this.getScenarioID(),
+                remoteID));
+        }
+        return (VictimRemoteConfig) this.getRemoteConfigWithID(remoteID);
     }
 
     public Collection<String> getVictimRemoteIDs() {
         return this.victimIDs;
     }
 
-    public boolean hasBases() {
+    public boolean hasBaseRemotes() {
         return !this.baseIDs.isEmpty();
     }
 
-    public boolean hasDrones() {
+    public boolean hasBaseRemoteWithID(String remoteID) {
+        return this.baseIDs.contains(remoteID);
+    }
+
+    public boolean hasDroneRemotes() {
         return !this.droneIDs.isEmpty();
     }
 
-    public boolean hasVictims() {
+    public boolean hasDroneRemoteWithID(String remoteID) {
+        return this.droneIDs.contains(remoteID);
+    }
+
+    public boolean hasVictimRemotes() {
         return !this.victimIDs.isEmpty();
+    }
+
+    public boolean hasVictimRemoteWithID(String remoteID) {
+        return this.victimIDs.contains(remoteID);
     }
 
     public boolean equals(SARConfig config) {

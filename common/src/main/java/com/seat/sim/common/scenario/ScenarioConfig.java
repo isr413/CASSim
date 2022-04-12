@@ -2,8 +2,9 @@ package com.seat.sim.common.scenario;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Random;
+import java.util.HashMap;
 
+import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.JSONAble;
 import com.seat.sim.common.json.JSONArray;
 import com.seat.sim.common.json.JSONArrayBuilder;
@@ -14,7 +15,9 @@ import com.seat.sim.common.json.JSONObjectBuilder;
 import com.seat.sim.common.json.JSONOption;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.remote.RemoteConfig;
+import com.seat.sim.common.remote.RemoteProto;
 import com.seat.sim.common.remote.RemoteRegistry;
+import com.seat.sim.common.util.Random;
 
 /** A serializable class to store scenario configurations. */
 public class ScenarioConfig extends JSONAble {
@@ -27,12 +30,12 @@ public class ScenarioConfig extends JSONAble {
     public static final String STEP_SIZE = "step_size";
 
     protected static final String DEFAULT_ID = "default";
-    protected static final long DEFAULT_SEED = new Random().nextLong();
+    protected static final long DEFAULT_SEED = new Random().getSeed();
 
     private Grid grid;
     private int missionLength;
     private ArrayList<RemoteConfig> remoteConfigs;
-    private ArrayList<String> remoteIDs;
+    private HashMap<String, RemoteConfig> remoteConfigsByID;
     private String scenarioID;
     private long seed;
     private double stepSize;
@@ -85,9 +88,11 @@ public class ScenarioConfig extends JSONAble {
     }
 
     private void init() {
-        this.remoteIDs = new ArrayList<>();
+        this.remoteConfigsByID = new HashMap<>();
         for (RemoteConfig config : this.remoteConfigs) {
-            this.remoteIDs.addAll(config.getRemoteIDs());
+            for (String remoteID : config.getRemoteIDs()) {
+                this.remoteConfigsByID.put(remoteID, config);
+            }
         }
     }
 
@@ -105,6 +110,7 @@ public class ScenarioConfig extends JSONAble {
                 this.remoteConfigs.add(RemoteRegistry.decodeTo(jsonRemotes.getJSONOption(i), RemoteConfig.class));
             }
         }
+        this.init();
     }
 
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
@@ -142,15 +148,32 @@ public class ScenarioConfig extends JSONAble {
     }
 
     public int getNumberOfRemotes() {
-        return this.remoteIDs.size();
+        return this.getRemoteIDs().size();
     }
 
     public Collection<RemoteConfig> getRemoteConfigs() {
         return this.remoteConfigs;
     }
 
+    public RemoteConfig getRemoteConfigWithID(String remoteID) throws CommonException {
+        if (!this.hasRemoteWithID(remoteID)) {
+            throw new CommonException(String.format("Scenario %s has no remote %s", this.scenarioID, remoteID));
+        }
+        return this.remoteConfigsByID.get(remoteID);
+    }
+
     public Collection<String> getRemoteIDs() {
-        return this.remoteIDs;
+        return this.remoteConfigsByID.keySet();
+    }
+
+    public Collection<RemoteConfig> getRemotesWithType(Class<? extends RemoteProto> classType) {
+        ArrayList<RemoteConfig> confs = new ArrayList<>();
+        for (RemoteConfig config : this.remoteConfigs) {
+            if (classType.isAssignableFrom(config.getProto().getClass())) {
+                confs.add(config);
+            }
+        }
+        return confs;
     }
 
     public String getScenarioID() {
@@ -170,7 +193,20 @@ public class ScenarioConfig extends JSONAble {
     }
 
     public boolean hasRemotes() {
-        return !this.remoteIDs.isEmpty();
+        return !this.getRemoteIDs().isEmpty();
+    }
+
+    public boolean hasRemoteWithID(String remoteID) {
+        return this.remoteConfigsByID.containsKey(remoteID);
+    }
+
+    public boolean hasRemoteWithType(Class<? extends RemoteProto> classType) {
+        for (RemoteConfig config : this.remoteConfigs) {
+            if (classType.isAssignableFrom(config.getProto().getClass())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public JSONOption toJSON() {

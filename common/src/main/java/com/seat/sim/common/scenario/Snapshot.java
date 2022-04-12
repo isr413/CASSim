@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.JSONAble;
 import com.seat.sim.common.json.JSONArray;
@@ -38,13 +40,13 @@ public class Snapshot extends JSONAble {
     private double time;
 
     public Snapshot(String hash, String scenarioID, double stepSize, Collection<String> remoteIDs,
-            HashMap<String, RemoteState> state) {
+            Map<String, RemoteState> state) {
         this(hash, scenarioID, ScenarioStatus.START, 0, stepSize, remoteIDs, remoteIDs, remoteIDs, state);
     }
 
     public Snapshot(String hash, String scenarioID, ScenarioStatus status, double time, double stepSize,
             Collection<String> remoteIDs, Collection<String> activeRemotes, Collection<String> dynamicRemotes,
-            HashMap<String, RemoteState> state) {
+            Map<String, RemoteState> state) {
         this.hash = hash;
         this.scenarioID = scenarioID;
         this.status = status;
@@ -53,7 +55,7 @@ public class Snapshot extends JSONAble {
         this.remoteIDs = (remoteIDs != null) ? new HashSet<>(remoteIDs) : new HashSet<>();
         this.activeRemotes = (activeRemotes != null) ? new HashSet<>(activeRemotes) : new HashSet<>();
         this.dynamicRemotes = (dynamicRemotes != null) ? new HashSet<>(dynamicRemotes) : new HashSet<>();
-        this.state = state;
+        this.state = new HashMap<>(state);
     }
 
     public Snapshot(JSONOption option) throws JSONException {
