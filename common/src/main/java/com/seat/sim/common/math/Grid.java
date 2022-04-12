@@ -83,8 +83,7 @@ public class Grid extends JSONAble {
         }
     }
 
-    public Vector getBoundsCollisionLocation(Vector location, Vector velocity) {
-        Vector nextLocation = Vector.add(location, velocity);
+    public Vector getBoundsCollisionLocation(Vector location, Vector nextLocation) {
         if (this.isInbounds(nextLocation)) {
             return null;
         }
@@ -124,8 +123,7 @@ public class Grid extends JSONAble {
         return String.format("<g: (%d, %d)>", this.width, this.height);
     }
 
-    public Vector getLocationAfterBounce(Vector location, Vector velocity) {
-        Vector nextLocation = Vector.add(location, velocity);
+    public Vector getLocationAfterBounce(Vector location, Vector nextLocation) {
         Vector boundsCollision = this.getBoundsCollisionLocation(location, nextLocation);
         if (boundsCollision == null) {
             return null;
