@@ -1,4 +1,4 @@
-package com.seat.sim.common.map;
+package com.seat.sim.common.math;
 
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.JSONAble;
@@ -9,68 +9,73 @@ import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
 import com.seat.sim.common.json.JSONOption;
-import com.seat.sim.common.math.Vector;
 
 /** Represents the map grid. */
-public class Map extends JSONAble {
-    public static final String MAP_GRID = "map_grid";
-    public static final String MAP_HEIGHT = "map_height";
-    public static final String MAP_WIDTH = "map_width";
+public class Grid extends JSONAble {
+    public static final String GRID_HEIGHT = "grid_height";
+    public static final String GRID_WIDTH = "grid_width";
+    public static final String ZONES = "zones";
     public static final String ZONE_SIZE = "zone_size";
 
-    private boolean defaultGrid;
-    private Zone[][] grid;
     private int height;     // number of zones in each column of the grid
+    private boolean isCustomGrid;
     private int width;      // number of zones in each row of the grid
+    private Zone[][] zones;
     private int zoneSize;   // zones in the same map grid must have a uniform size
 
-    public Map(int zoneSize, int width, int height) {
+    public Grid(int zoneSize, int width, int height) {
         this(null, zoneSize, width, height);
     }
 
-    public Map(Zone[][] grid, int zoneSize, int width, int height) {
-        this.defaultGrid = (grid == null);
-        if (this.defaultGrid) {
-            this.grid = new Zone[height][width];
+    public Grid(Zone[][] zones, int zoneSize, int width, int height) {
+        if (zones != null) {
+            this.isCustomGrid = true;
+            this.zones = zones;
+        } else {
+            this.isCustomGrid = false;
+            this.zones = new Zone[height][width];
             for (int y = 0; y < this.height; y++) {
                 for (int x = 0; x < this.width; x++) {
-                    this.grid[y][x] = new Zone(
+                    this.zones[y][x] = new Zone(
                         new Vector(this.zoneSize*(x + 0.5), this.zoneSize*(y + 0.5)),
                         this.zoneSize
                     );
                 }
             }
-        } else {
-            this.grid = grid;
         }
         this.zoneSize = zoneSize;
         this.width = width;
         this.height = height;
     }
 
-    public Map(JSONOption option) throws JSONException {
+    public Grid(JSONOption option) throws JSONException {
         super(option);
     }
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.width = json.getInt(Map.MAP_WIDTH);
-        this.height = json.getInt(Map.MAP_HEIGHT);
-        this.zoneSize = json.getInt(Map.ZONE_SIZE);
-        this.grid = new Zone[this.height][this.width];
-        if (json.hasKey(Map.MAP_GRID)) {
-            JSONArray jsonGrid = json.getJSONArray(Map.MAP_GRID);
+        this.width = json.getInt(Grid.GRID_WIDTH);
+        this.height = json.getInt(Grid.GRID_HEIGHT);
+        this.zoneSize = json.getInt(Grid.ZONE_SIZE);
+        this.zones = new Zone[this.height][this.width];
+        if (json.hasKey(Grid.ZONES)) {
+            this.isCustomGrid = true;
+            JSONArray jsonZones = json.getJSONArray(Grid.ZONES);
             for (int y = 0; y < this.height; y++) {
-                JSONArray jsonRow = jsonGrid.getJSONArray(y);
+                JSONArray jsonRow = jsonZones.getJSONArray(y);
                 for (int x = 0; x < this.width; x++) {
-                    this.grid[y][x] = new Zone(jsonRow.getJSONOption(x));
+                    this.zones[y][x] = new Zone(jsonRow.getJSONOption(x));
                 }
             }
         } else {
+            this.isCustomGrid = false;
             for (int y = 0; y < this.height; y++) {
                 for (int x = 0; x < this.width; x++) {
-                    this.grid[y][x] = new Zone(
-                        new Vector(this.zoneSize*(x + 0.5), this.zoneSize*(y + 0.5)),
+                    this.zones[y][x] = new Zone(
+                        new Vector(
+                            this.zoneSize * (x + 0.5),
+                            this.zoneSize * (y + 0.5)
+                        ),
                         this.zoneSize
                     );
                 }
@@ -123,27 +128,27 @@ public class Map extends JSONAble {
         }
     }
 
-    public Zone[][] getGrid() {
-        return this.grid;
+    public Zone[][] getZones() {
+        return this.zones;
     }
 
     public int getHeight() {
         return this.height * this.zoneSize;
     }
 
-    public int getHeightUnits() {
+    public int getHeightInUnits() {
         return this.height;
     }
 
     public String getLabel() {
-        return String.format("<(%d, %d)>", this.width, this.height);
+        return String.format("<g: (%d, %d)>", this.width, this.height);
     }
 
     public int getWidth() {
         return this.width * this.zoneSize;
     }
 
-    public int getWidthUnits() {
+    public int getWidthInUnits() {
         return this.width;
     }
 
@@ -157,7 +162,7 @@ public class Map extends JSONAble {
         if (x < 0 || this.width <= x) {
             throw new CommonException(new IndexOutOfBoundsException(x).toString());
         }
-        return this.grid[y][x];
+        return this.zones[y][x];
     }
 
     /** Returns the Zone that contains the location with the specified x and y coordinates.
@@ -189,29 +194,29 @@ public class Map extends JSONAble {
 
     public JSONOption toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(Map.MAP_WIDTH, this.width);
-        json.put(Map.MAP_HEIGHT, this.height);
-        json.put(Map.ZONE_SIZE, this.zoneSize);
-        if (!this.defaultGrid) {
-            JSONArrayBuilder jsonGrid = JSONBuilder.Array();
+        json.put(Grid.GRID_WIDTH, this.width);
+        json.put(Grid.GRID_HEIGHT, this.height);
+        json.put(Grid.ZONE_SIZE, this.zoneSize);
+        if (this.isCustomGrid) {
+            JSONArrayBuilder jsonZones = JSONBuilder.Array();
             for (int y = 0; y < this.height; y++) {
                 JSONArrayBuilder jsonRow = JSONBuilder.Array();
                 for (int x = 0; x < this.width; x++) {
                     jsonRow.put(this.getZone(y, x).toJSON());
                 }
-                jsonGrid.put(jsonRow.toJSON());
+                jsonZones.put(jsonRow.toJSON());
             }
-            json.put(Map.MAP_GRID, jsonGrid.toJSON());
+            json.put(Grid.ZONES, jsonZones.toJSON());
         }
         return json.toJSON();
     }
 
-    public boolean equals(Map map) {
-        if (map == null) return false;
-        if (!(this.width == map.width && this.height == map.height && this.zoneSize == map.zoneSize)) return false;
+    public boolean equals(Grid grid) {
+        if (grid == null) return false;
+        if (!(this.width == grid.width && this.height == grid.height && this.zoneSize == grid.zoneSize)) return false;
         for (int y = 0; y < this.height; y++) {
             for (int x = 0; x < this.width; x++) {
-                if (!this.grid[y][x].equals(map.grid[y][x])) {
+                if (!this.zones[y][x].equals(grid.zones[y][x])) {
                     return false;
                 }
             }

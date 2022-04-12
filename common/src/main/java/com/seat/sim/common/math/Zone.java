@@ -1,4 +1,4 @@
-package com.seat.sim.common.map;
+package com.seat.sim.common.math;
 
 import com.seat.sim.common.json.JSONAble;
 import com.seat.sim.common.json.JSONBuilder;
@@ -6,9 +6,6 @@ import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
 import com.seat.sim.common.json.JSONOption;
-import com.seat.sim.common.math.Field;
-import com.seat.sim.common.math.FieldType;
-import com.seat.sim.common.math.Vector;
 
 /** Represents the single cubic zone within the map grid. */
 public class Zone extends JSONAble {

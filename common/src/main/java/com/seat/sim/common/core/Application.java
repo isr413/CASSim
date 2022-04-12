@@ -3,7 +3,7 @@ package com.seat.sim.common.core;
 import java.util.Collection;
 import java.util.Random;
 
-import com.seat.sim.common.map.Map;
+import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.remote.RemoteConfig;
 import com.seat.sim.common.remote.intent.IntentionSet;
 import com.seat.sim.common.scenario.ScenarioConfig;
@@ -11,7 +11,7 @@ import com.seat.sim.common.scenario.Snapshot;
 
 public interface Application {
 
-    Map getMap();
+    Grid getGrid();
 
     int getMissionLength();
 
@@ -21,7 +21,7 @@ public interface Application {
         return new ScenarioConfig(
             getScenarioID(),
             getSeed(),
-            getMap(),
+            getGrid(),
             getMissionLength(),
             getStepSize(),
             getRemoteConfigs()

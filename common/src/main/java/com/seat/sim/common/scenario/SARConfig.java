@@ -7,7 +7,7 @@ import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
 import com.seat.sim.common.json.JSONOption;
-import com.seat.sim.common.map.Map;
+import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.remote.RemoteConfig;
 import com.seat.sim.common.remote.RemoteProto;
 import com.seat.sim.common.remote.base.BaseRemoteConfig;
@@ -42,46 +42,46 @@ public class SARConfig extends ScenarioConfig {
     private int numDrones;
     private int numVictims;
 
-    public SARConfig(Map map, int missionLength, double stepSize, Collection<RemoteConfig> remoteConfig) {
-        this(ScenarioConfig.DEFAULT_ID, ScenarioConfig.DEFAULT_SEED, map, SARConfig.DEFAULT_DISASTER_SCALE,
+    public SARConfig(Grid grid, int missionLength, double stepSize, Collection<RemoteConfig> remoteConfig) {
+        this(ScenarioConfig.DEFAULT_ID, ScenarioConfig.DEFAULT_SEED, grid, SARConfig.DEFAULT_DISASTER_SCALE,
             missionLength, stepSize, remoteConfig);
     }
 
-    public SARConfig(String scenarioID, Map map, int missionLength, double stepSize,
+    public SARConfig(String scenarioID, Grid grid, int missionLength, double stepSize,
             Collection<RemoteConfig> remoteConfig) {
-        this(scenarioID, ScenarioConfig.DEFAULT_SEED, map, SARConfig.DEFAULT_DISASTER_SCALE, missionLength, stepSize,
+        this(scenarioID, ScenarioConfig.DEFAULT_SEED, grid, SARConfig.DEFAULT_DISASTER_SCALE, missionLength, stepSize,
             remoteConfig);
     }
 
-    public SARConfig(long seed, Map map, int missionLength, double stepSize, Collection<RemoteConfig> remoteConfig) {
-        this(ScenarioConfig.DEFAULT_ID, seed, map, SARConfig.DEFAULT_DISASTER_SCALE, missionLength, stepSize,
+    public SARConfig(long seed, Grid grid, int missionLength, double stepSize, Collection<RemoteConfig> remoteConfig) {
+        this(ScenarioConfig.DEFAULT_ID, seed, grid, SARConfig.DEFAULT_DISASTER_SCALE, missionLength, stepSize,
             remoteConfig);
     }
 
-    public SARConfig(String scenarioID, long seed, Map map, int missionLength, double stepSize,
+    public SARConfig(String scenarioID, long seed, Grid grid, int missionLength, double stepSize,
             Collection<RemoteConfig> remoteConfig) {
-        this(scenarioID, seed, map, SARConfig.DEFAULT_DISASTER_SCALE, missionLength, stepSize, remoteConfig);
+        this(scenarioID, seed, grid, SARConfig.DEFAULT_DISASTER_SCALE, missionLength, stepSize, remoteConfig);
     }
 
-    public SARConfig(Map map, double disasterScale, int missionLength, double stepSize,
+    public SARConfig(Grid grid, double disasterScale, int missionLength, double stepSize,
             Collection<RemoteConfig> remoteConfig) {
-        this(ScenarioConfig.DEFAULT_ID, ScenarioConfig.DEFAULT_SEED, map, disasterScale, missionLength, stepSize,
+        this(ScenarioConfig.DEFAULT_ID, ScenarioConfig.DEFAULT_SEED, grid, disasterScale, missionLength, stepSize,
             remoteConfig);
     }
 
-    public SARConfig(String scenarioID, Map map, double disasterScale, int missionLength, double stepSize,
+    public SARConfig(String scenarioID, Grid grid, double disasterScale, int missionLength, double stepSize,
             Collection<RemoteConfig> remoteConfig) {
-        this(scenarioID, ScenarioConfig.DEFAULT_SEED, map, disasterScale, missionLength, stepSize, remoteConfig);
+        this(scenarioID, ScenarioConfig.DEFAULT_SEED, grid, disasterScale, missionLength, stepSize, remoteConfig);
     }
 
-    public SARConfig(long seed, Map map, double disasterScale, int missionLength, double stepSize,
+    public SARConfig(long seed, Grid grid, double disasterScale, int missionLength, double stepSize,
             Collection<RemoteConfig> remoteConfig) {
-        this(ScenarioConfig.DEFAULT_ID, seed, map, disasterScale, missionLength, stepSize, remoteConfig);
+        this(ScenarioConfig.DEFAULT_ID, seed, grid, disasterScale, missionLength, stepSize, remoteConfig);
     }
 
-    public SARConfig(String scenarioID, long seed, Map map, double disasterScale, int missionLength,
+    public SARConfig(String scenarioID, long seed, Grid grid, double disasterScale, int missionLength,
             double stepSize, Collection<RemoteConfig> remoteConfig) {
-        super(scenarioID, seed, map, missionLength, stepSize, remoteConfig);
+        super(scenarioID, seed, grid, missionLength, stepSize, remoteConfig);
         this.disasterScale = disasterScale;
         this.init();
     }

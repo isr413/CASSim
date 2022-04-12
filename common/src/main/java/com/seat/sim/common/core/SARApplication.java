@@ -10,7 +10,7 @@ public interface SARApplication extends Application {
         return new SARConfig(
             getScenarioID(),
             getSeed(),
-            getMap(),
+            getGrid(),
             getDisasterScale(),
             getMissionLength(),
             getStepSize(),
