@@ -2,6 +2,7 @@ package com.seat.sim.common.sensor.vision;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.seat.sim.common.json.JSONArray;
 import com.seat.sim.common.json.JSONArrayBuilder;
@@ -16,7 +17,7 @@ import com.seat.sim.common.sensor.SensorState;
 public class VisionSensorState extends SensorState {
     public static final String OBSERVATIONS = "observations";
 
-    private HashSet<String> observations;
+    private Set<String> observations;
 
     public VisionSensorState(String sensorModel, String sensorID, boolean active) {
         this(sensorModel, sensorID, active, null);

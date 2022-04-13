@@ -28,9 +28,7 @@ public class SensorState extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.sensorModel = (json.hasKey(SensorProto.SENSOR_MODEL)) ?
-            json.getString(SensorProto.SENSOR_MODEL) :
-            SensorProto.DEFAULT_SENSOR_MODEL;
+        this.sensorModel = json.getString(SensorProto.SENSOR_MODEL);
         this.sensorID = json.getString(SensorState.SENSOR_ID);
         this.active = json.getBoolean(SensorState.ACTIVE);
     }
@@ -38,9 +36,7 @@ public class SensorState extends JSONAble {
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(SensorRegistry.SENSOR_TYPE, this.getSensorType());
-        if (this.hasSensorModel()) {
-            json.put(SensorProto.SENSOR_MODEL, this.sensorModel);
-        }
+        json.put(SensorProto.SENSOR_MODEL, this.sensorModel);
         json.put(SensorState.SENSOR_ID, this.sensorID);
         json.put(SensorState.ACTIVE, this.active);
         return json;
@@ -60,11 +56,6 @@ public class SensorState extends JSONAble {
 
     public String getSensorType() {
         return this.getClass().getName();
-    }
-
-    public boolean hasSensorModel() {
-        return !(this.sensorModel == null || this.sensorModel.isEmpty() || this.sensorModel.isEmpty() ||
-            this.sensorModel.equals(SensorProto.DEFAULT_SENSOR_MODEL));
     }
 
     public boolean isActive() {

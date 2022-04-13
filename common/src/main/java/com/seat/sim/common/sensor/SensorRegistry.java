@@ -1,6 +1,8 @@
 package com.seat.sim.common.sensor;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 import com.seat.sim.common.core.CommonException;
@@ -19,11 +21,12 @@ import com.seat.sim.common.sensor.vision.VisionSensorState;
 public class SensorRegistry {
     public static final String BLUETOOTH_COMMS = "bluetooth";
     public static final String CMOS_CAMERA = "cmos_camera";
+    public static final String GENERIC = "generic";
     public static final String HRVM = "hrvm";
     public static final String LTE_RADIO_COMMS = "lte_radio";
     public static final String SENSOR_TYPE = "sensor_type";
 
-    private static final HashMap<String, Function<JSONOption, Object>> REGISTRY =
+    private static final Map<String, Function<JSONOption, Object>> REGISTRY =
             new HashMap<String, Function<JSONOption, Object>>(){{
         put(SensorConfig.class.getName(), (option) -> new SensorConfig(option));
         put(SensorProto.class.getName(), (option) -> new SensorProto(option));
@@ -51,6 +54,60 @@ public class SensorRegistry {
         return new CommsSensorProto(range, accuracy, batteryUsage, delay);
     }
 
+    public static CommsSensorConfig ConfigureCommsSensor(String sensorModel, double range, double accuracy,
+            double batteryUsage, double delay, int count, boolean active) {
+        return new CommsSensorConfig(
+            new CommsSensorProto(sensorModel, range, accuracy, batteryUsage, delay),
+            count,
+            active
+        );
+    }
+
+    public static CommsSensorConfig ConfigureCommsSensor(String sensorModel, double range, double accuracy,
+            double batteryUsage, double delay, Collection<String> sensorIDs, boolean active) {
+        return new CommsSensorConfig(
+            new CommsSensorProto(sensorModel, range, accuracy, batteryUsage, delay),
+            sensorIDs,
+            active
+        );
+    }
+
+    public static MonitorSensorConfig ConfigureMonitorSensor(String sensorModel, double range, double accuracy,
+            double batteryUsage, int count, boolean active) {
+        return new MonitorSensorConfig(
+            new MonitorSensorProto(sensorModel, range, accuracy, batteryUsage),
+            count,
+            active
+        );
+    }
+
+    public static MonitorSensorConfig ConfigureMonitorSensor(String sensorModel, double range, double accuracy,
+            double batteryUsage, Collection<String> sensorIDs, boolean active) {
+        return new MonitorSensorConfig(
+            new MonitorSensorProto(sensorModel, range, accuracy, batteryUsage),
+            sensorIDs,
+            active
+        );
+    }
+
+    public static VisionSensorConfig ConfigureVisionSensor(String sensorModel, double range, double accuracy,
+            double batteryUsage, int count, boolean active) {
+        return new VisionSensorConfig(
+            new VisionSensorProto(sensorModel, range, accuracy, batteryUsage),
+            count,
+            active
+        );
+    }
+
+    public static VisionSensorConfig ConfigureVisionSensor(String sensorModel, double range, double accuracy,
+            double batteryUsage, Collection<String> sensorIDs, boolean active) {
+        return new VisionSensorConfig(
+            new VisionSensorProto(sensorModel, range, accuracy, batteryUsage),
+            sensorIDs,
+            active
+        );
+    }
+
     public static MonitorSensorProto HRVMSensor(double range, double accuracy, double batteryUsage) {
         return new MonitorSensorProto(SensorRegistry.HRVM, range, accuracy, batteryUsage);
     }
@@ -64,7 +121,7 @@ public class SensorRegistry {
     }
 
     public static SensorProto Sensor(double range, double accuracy, double batteryUsage) {
-        return new SensorProto(range, accuracy, batteryUsage);
+        return new SensorProto(SensorRegistry.GENERIC, range, accuracy, batteryUsage);
     }
 
     public static VisionSensorProto VisionSensor(double range, double accuracy, double batteryUsage) {

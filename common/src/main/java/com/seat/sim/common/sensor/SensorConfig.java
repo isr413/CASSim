@@ -2,6 +2,7 @@ package com.seat.sim.common.sensor;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.seat.sim.common.json.JSONAble;
 import com.seat.sim.common.json.JSONArray;
@@ -21,7 +22,7 @@ public class SensorConfig extends JSONAble {
     private boolean active;
     private int count;
     private SensorProto proto;
-    private HashSet<String> sensorIDs;
+    private Set<String> sensorIDs;
 
     public SensorConfig(SensorProto proto, int count, boolean active) {
         this(proto, count, new HashSet<String>(), active);

@@ -2,6 +2,7 @@ package com.seat.sim.common.sensor.comms;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.seat.sim.common.json.JSONArray;
 import com.seat.sim.common.json.JSONArrayBuilder;
@@ -16,7 +17,7 @@ import com.seat.sim.common.sensor.SensorState;
 public class CommsSensorState extends SensorState {
     public static final String CONNECTIONS = "connections";
 
-    private HashSet<String> connections;
+    private Set<String> connections;
 
     public CommsSensorState(String sensorModel, String sensorID, boolean active) {
         this(sensorModel, sensorID, active, null);
