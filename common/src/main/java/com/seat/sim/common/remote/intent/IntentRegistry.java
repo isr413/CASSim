@@ -64,8 +64,8 @@ public class IntentRegistry {
         return new MoveIntention();
     }
 
-    public static MoveIntention Move(Vector jerk) {
-        return new MoveIntention(jerk);
+    public static MoveIntention Move(Vector acceleration) {
+        return new MoveIntention(acceleration);
     }
 
     public static NoneIntention None() {

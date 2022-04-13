@@ -41,8 +41,8 @@ public class MobileRemoteController extends RemoteController {
         super.addIntention(IntentRegistry.GoTo(location, maxVelocity, maxAcceleration));
     }
 
-    public void move(Vector jerk) {
-        super.addIntention(IntentRegistry.Move(jerk));
+    public void move(Vector acceleration) {
+        super.addIntention(IntentRegistry.Move(acceleration));
     }
 
     public void moveForward() {

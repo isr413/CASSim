@@ -7,17 +7,17 @@ import com.seat.sim.common.json.JSONOption;
 import com.seat.sim.common.math.Vector;
 
 public class MoveIntention extends Intention {
-    private static final String JERK = "jerk";
+    private static final String ACCELERATION = "acceleration";
 
-    private Vector jerk;
+    private Vector acceleration;
 
     public MoveIntention() {
         this(new Vector());
     }
 
-    public MoveIntention(Vector jerk) {
+    public MoveIntention(Vector acceleration) {
         super(IntentionType.MOVE);
-        this.jerk = jerk;
+        this.acceleration = acceleration;
     }
 
     public MoveIntention(JSONOption option) throws JSONException {
@@ -27,20 +27,20 @@ public class MoveIntention extends Intention {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.jerk = (json.hasKey(MoveIntention.JERK)) ?
-            new Vector(json.getJSONOption(MoveIntention.JERK)) :
+        this.acceleration = (json.hasKey(MoveIntention.ACCELERATION)) ?
+            new Vector(json.getJSONOption(MoveIntention.ACCELERATION)) :
             new Vector();
     }
 
     @Override
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(MoveIntention.JERK, this.jerk.toJSON());
+        json.put(MoveIntention.ACCELERATION, this.acceleration.toJSON());
         return json;
     }
 
-    public Vector getJerk() {
-        return this.jerk;
+    public Vector getAcceleration() {
+        return this.acceleration;
     }
 
     @Override
@@ -48,13 +48,13 @@ public class MoveIntention extends Intention {
         return "<MOVE>";
     }
 
-    public boolean hasJerk() {
-        return this.jerk.getMagnitude() > 0;
+    public boolean hasAcceleration() {
+        return this.acceleration.getMagnitude() > 0;
     }
 
     public boolean equals(MoveIntention intent) {
         if (intent == null) return false;
-        return super.equals(intent) && this.jerk.equals(intent.jerk);
+        return super.equals(intent) && this.acceleration.equals(intent.acceleration);
     }
 
 }
