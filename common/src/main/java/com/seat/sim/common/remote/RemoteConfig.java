@@ -28,19 +28,11 @@ public class RemoteConfig extends JSONAble {
     private Set<String> remoteIDs;
     private TeamColor team;
 
-    public RemoteConfig(RemoteProto proto, int count, boolean active, boolean dynamic) {
-        this(proto, TeamColor.NONE, count, active, dynamic);
-    }
-
     public RemoteConfig(RemoteProto proto, TeamColor team, int count, boolean active, boolean dynamic) {
         this(proto, team, count, new HashSet<String>(), active, dynamic);
         for (int i = 0; i < count; i++) {
             this.remoteIDs.add(String.format("%s:(%d:%d)", proto.getLabel(), team.getType(), i));
         }
-    }
-
-    public RemoteConfig(RemoteProto proto, Collection<String> remoteIDs, boolean active, boolean dynamic) {
-        this(proto, TeamColor.NONE, remoteIDs.size(), new HashSet<String>(remoteIDs), active, dynamic);
     }
 
     public RemoteConfig(RemoteProto proto, TeamColor team, Collection<String> remoteIDs, boolean active,
@@ -78,6 +70,26 @@ public class RemoteConfig extends JSONAble {
         }
         this.active = json.getBoolean(RemoteState.ACTIVE);
         this.dynamic = json.getBoolean(RemoteConfig.DYNAMIC);
+    }
+
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
+        JSONObjectBuilder json = JSONBuilder.Object();
+        json.put(RemoteRegistry.REMOTE_TYPE, this.getRemoteType());
+        json.put(RemoteConfig.PROTO, this.proto.toJSON());
+        if (this.hasTeam()) {
+            json.put(TeamColor.TEAM, this.team.getType());
+        }
+        json.put(RemoteConfig.COUNT, this.count);
+        if (this.hasRemoteIDs()) {
+            JSONArrayBuilder jsonRemotes = JSONBuilder.Array();
+            for (String remoteID : this.remoteIDs) {
+                jsonRemotes.put(remoteID);
+            }
+            json.put(RemoteConfig.REMOTE_IDS, jsonRemotes.toJSON());
+        }
+        json.put(RemoteState.ACTIVE, this.active);
+        json.put(RemoteConfig.DYNAMIC, this.dynamic);
+        return json;
     }
 
     public int getCount() {
@@ -137,23 +149,7 @@ public class RemoteConfig extends JSONAble {
     }
 
     public JSONOption toJSON() throws JSONException {
-        JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(RemoteRegistry.REMOTE_TYPE, this.getRemoteType());
-        json.put(RemoteConfig.PROTO, this.proto.toJSON());
-        if (this.hasTeam()) {
-            json.put(TeamColor.TEAM, this.team.getType());
-        }
-        json.put(RemoteConfig.COUNT, this.count);
-        if (this.hasRemoteIDs()) {
-            JSONArrayBuilder jsonRemotes = JSONBuilder.Array();
-            for (String remoteID : this.remoteIDs) {
-                jsonRemotes.put(remoteID);
-            }
-            json.put(RemoteConfig.REMOTE_IDS, jsonRemotes.toJSON());
-        }
-        json.put(RemoteState.ACTIVE, this.active);
-        json.put(RemoteConfig.DYNAMIC, this.dynamic);
-        return json.toJSON();
+        return this.getJSONBuilder().toJSON();
     }
 
     public boolean equals(RemoteConfig config) {

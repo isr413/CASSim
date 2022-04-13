@@ -173,6 +173,10 @@ public class RemoteState extends JSONAble {
         return this.active && this.isEnabled();
     }
 
+    public boolean isAerial() {
+        return false;
+    }
+
     public boolean isDisabled() {
         return !this.isEnabled();
     }
@@ -181,8 +185,20 @@ public class RemoteState extends JSONAble {
         return this.battery > 0;
     }
 
+    public boolean isGround() {
+        return !this.isAerial();
+    }
+
     public boolean isInactive() {
         return !this.isActive();
+    }
+
+    public boolean isMobile() {
+        return false;
+    }
+
+    public boolean isStationary() {
+        return !this.isMobile();
     }
 
     public JSONOption toJSON() throws JSONException {

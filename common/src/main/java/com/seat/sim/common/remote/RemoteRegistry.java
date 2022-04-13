@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import com.seat.sim.common.core.CommonException;
+import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONOption;
 import com.seat.sim.common.math.Vector;
@@ -56,14 +57,67 @@ public class RemoteRegistry {
         return new BaseRemoteProto(location, maxBatteryPower, sensors);
     }
 
-    public static RemoteConfig ConfigureRemote(Vector location, double maxBatteryPower,
-            Collection<SensorConfig> sensors, int count, boolean active, boolean dynamic) {
-        return new RemoteConfig(new RemoteProto(location, maxBatteryPower, sensors), count, active, dynamic);
+    public static RemoteConfig ConfigureMobileRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, TeamColor team, int count,
+            boolean active, boolean dynamic) {
+        return new MobileRemoteConfig(
+            new MobileRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration),
+            team,
+            count,
+            active,
+            dynamic
+        );
+    }
+
+    public static RemoteConfig ConfigureMobileRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, TeamColor team, int count,
+            boolean active, boolean dynamic, double speedMean, double speedStdDev) {
+        return new MobileRemoteConfig(
+            new MobileRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration),
+            team,
+            count,
+            active,
+            dynamic,
+            speedMean,
+            speedStdDev
+        );
+    }
+
+    public static MobileRemoteConfig ConfigureMobileRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, TeamColor team,
+            Collection<String> remoteIDs, boolean active, boolean dynamic) {
+        return new MobileRemoteConfig(
+            new MobileRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration),
+            team,
+            remoteIDs,
+            active,
+            dynamic
+        );
+    }
+
+    public static MobileRemoteConfig ConfigureMobileRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, TeamColor team,
+            Collection<String> remoteIDs, boolean active, boolean dynamic, double speedMean, double speedStdDev) {
+        return new MobileRemoteConfig(
+            new MobileRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration),
+            team,
+            remoteIDs,
+            active,
+            dynamic,
+            speedMean,
+            speedStdDev
+        );
     }
 
     public static RemoteConfig ConfigureRemote(Vector location, double maxBatteryPower,
-            Collection<SensorConfig> sensors, Collection<String> remoteIDs, boolean active, boolean dynamic) {
-        return new RemoteConfig(new RemoteProto(location, maxBatteryPower, sensors), remoteIDs, active, dynamic);
+            Collection<SensorConfig> sensors, TeamColor team, int count, boolean active, boolean dynamic) {
+        return new RemoteConfig(new RemoteProto(location, maxBatteryPower, sensors), team, count, active, dynamic);
+    }
+
+    public static RemoteConfig ConfigureRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, TeamColor team, Collection<String> remoteIDs, boolean active,
+            boolean dynamic) {
+        return new RemoteConfig(new RemoteProto(location, maxBatteryPower, sensors), team, remoteIDs, active, dynamic);
     }
 
     public static AerialRemoteProto DroneRemote(Vector location, double maxBatteryPower,
