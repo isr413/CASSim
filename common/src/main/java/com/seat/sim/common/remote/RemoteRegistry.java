@@ -2,6 +2,7 @@ package com.seat.sim.common.remote;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 import com.seat.sim.common.core.CommonException;
@@ -15,7 +16,7 @@ import com.seat.sim.common.remote.mobile.MobileRemoteConfig;
 import com.seat.sim.common.remote.mobile.MobileRemoteProto;
 import com.seat.sim.common.remote.mobile.MobileRemoteState;
 import com.seat.sim.common.remote.mobile.aerial.DroneRemoteConfig;
-import com.seat.sim.common.remote.mobile.aerial.DroneRemoteProto;
+import com.seat.sim.common.remote.mobile.aerial.AerialRemoteProto;
 import com.seat.sim.common.remote.mobile.aerial.DroneRemoteState;
 import com.seat.sim.common.remote.mobile.ground.VictimRemoteConfig;
 import com.seat.sim.common.remote.mobile.ground.VictimRemoteProto;
@@ -26,7 +27,7 @@ import com.seat.sim.common.sensor.SensorConfig;
 public class RemoteRegistry {
     public static final String REMOTE_TYPE = "remote_type";
 
-    private static final HashMap<String, Function<JSONOption, Object>> REGISTRY =
+    private static final Map<String, Function<JSONOption, Object>> REGISTRY =
             new HashMap<String, Function<JSONOption, Object>>(){{
         put(RemoteConfig.class.getName(), (option) -> new RemoteConfig(option));
         put(RemoteProto.class.getName(), (option) -> new RemoteProto(option));
@@ -38,28 +39,46 @@ public class RemoteRegistry {
         put(MobileRemoteProto.class.getName(), (option) -> new MobileRemoteProto(option));
         put(MobileRemoteState.class.getName(), (option) -> new MobileRemoteState(option));
         put(DroneRemoteConfig.class.getName(), (option) -> new DroneRemoteConfig(option));
-        put(DroneRemoteProto.class.getName(), (option) -> new DroneRemoteProto(option));
+        put(AerialRemoteProto.class.getName(), (option) -> new AerialRemoteProto(option));
         put(DroneRemoteState.class.getName(), (option) -> new DroneRemoteState(option));
         put(VictimRemoteConfig.class.getName(), (option) -> new VictimRemoteConfig(option));
         put(VictimRemoteProto.class.getName(), (option) -> new VictimRemoteProto(option));
         put(VictimRemoteState.class.getName(), (option) -> new VictimRemoteState(option));
     }};
 
+    public static AerialRemoteProto AerialRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, Vector batteryUsage) {
+        return new AerialRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, batteryUsage);
+    }
+
     public static BaseRemoteProto BaseRemote(Vector location, double maxBatteryPower,
             Collection<SensorConfig> sensors) {
         return new BaseRemoteProto(location, maxBatteryPower, sensors);
     }
 
-    public static DroneRemoteProto DroneRemote(Vector location, double maxBatteryPower,
-            Collection<SensorConfig> sensors, Vector batteryUsage, double maxVelocity, double maxAcceleration,
-            double maxJerk) {
-        return new DroneRemoteProto(location, maxBatteryPower, sensors, batteryUsage, maxVelocity, maxAcceleration,
-            maxJerk);
+    public static RemoteConfig ConfigureRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, int count, boolean active, boolean dynamic) {
+        return new RemoteConfig(new RemoteProto(location, maxBatteryPower, sensors), count, active, dynamic);
+    }
+
+    public static RemoteConfig ConfigureRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, Collection<String> remoteIDs, boolean active, boolean dynamic) {
+        return new RemoteConfig(new RemoteProto(location, maxBatteryPower, sensors), remoteIDs, active, dynamic);
+    }
+
+    public static AerialRemoteProto DroneRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, Vector batteryUsage) {
+        return new AerialRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, batteryUsage);
+    }
+
+    public static MobileRemoteProto GroundRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration) {
+        return new MobileRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration);
     }
 
     public static MobileRemoteProto MobileRemote(Vector location, double maxBatteryPower,
-            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, double maxJerk) {
-        return new MobileRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, maxJerk);
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration) {
+        return new MobileRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration);
     }
 
     public static RemoteProto Remote(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {

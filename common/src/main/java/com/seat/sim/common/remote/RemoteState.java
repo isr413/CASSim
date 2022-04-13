@@ -1,8 +1,10 @@
 package com.seat.sim.common.remote;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.core.TeamColor;
@@ -29,7 +31,7 @@ public class RemoteState extends JSONAble {
     private double battery;
     private Vector location;
     private String remoteID;
-    private HashMap<String, SensorState> sensors;
+    private Map<String, SensorState> sensorStates;
     private TeamColor team;
 
     public RemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active) {
@@ -37,18 +39,14 @@ public class RemoteState extends JSONAble {
     }
 
     public RemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active,
-            Collection<SensorState> sensors) {
+            Collection<SensorState> sensorStates) {
         this.remoteID = remoteID;
         this.team = team;
         this.location = location;
         this.battery = battery;
         this.active = active;
-        this.sensors = new HashMap<>();
-        if (sensors != null) {
-            for (SensorState sensor : sensors) {
-                this.sensors.put(sensor.getSensorID(), sensor);
-            }
-        }
+        this.sensorStates = sensorStates.stream()
+            .collect(Collectors.toMap(SensorState::getSensorID, Function.identity()));
     }
 
     public RemoteState(JSONOption option) throws JSONException {
@@ -64,12 +62,12 @@ public class RemoteState extends JSONAble {
         this.location = new Vector(json.getJSONOption(RemoteProto.LOCATION));
         this.battery = json.getDouble(RemoteState.BATTERY);
         this.active = json.getBoolean(RemoteState.ACTIVE);
-        this.sensors = new HashMap<>();
+        this.sensorStates = new HashMap<>();
         if (json.hasKey(RemoteProto.SENSORS)) {
-            JSONArray jsonState = json.getJSONArray(RemoteProto.SENSORS);
-            for (int i = 0; i < jsonState.length(); i++) {
-                SensorState state = SensorRegistry.decodeTo(jsonState.getJSONOption(i), SensorState.class);
-                this.sensors.put(state.getSensorID(), state);
+            JSONArray jsonSensorStates = json.getJSONArray(RemoteProto.SENSORS);
+            for (int i = 0; i < jsonSensorStates.length(); i++) {
+                SensorState sensorState = SensorRegistry.decodeTo(jsonSensorStates.getJSONOption(i), SensorState.class);
+                this.sensorStates.put(sensorState.getSensorID(), sensorState);
             }
         }
     }
@@ -85,11 +83,11 @@ public class RemoteState extends JSONAble {
         json.put(RemoteState.BATTERY, this.battery);
         json.put(RemoteState.ACTIVE, this.active);
         if (this.hasSensors()) {
-            JSONArrayBuilder jsonSensors = JSONBuilder.Array();
-            for (SensorState sensor : this.sensors.values()) {
-                jsonSensors.put(sensor.toJSON());
+            JSONArrayBuilder jsonSensorStates = JSONBuilder.Array();
+            for (SensorState sensorState : this.sensorStates.values()) {
+                jsonSensorStates.put(sensorState.toJSON());
             }
-            json.put(RemoteProto.SENSORS, jsonSensors.toJSON());
+            json.put(RemoteProto.SENSORS, jsonSensorStates.toJSON());
         }
         return json;
     }
@@ -114,65 +112,57 @@ public class RemoteState extends JSONAble {
         return this.getClass().getName();
     }
 
-    public Collection<SensorState> getSensors() {
-        return new ArrayList<SensorState>(this.sensors.values());
+    public Collection<String> getSensorIDs() {
+        return this.sensorStates.keySet();
     }
 
-    public Collection<SensorState> getSensorsWithModel(String sensorModel) {
-        ArrayList<SensorState> sensors = new ArrayList<>();
-        for (SensorState state : this.sensors.values()) {
-            if (state.getSensorModel().equals(sensorModel)) {
-                sensors.add(state);
-            }
-        }
-        return sensors;
+    public Collection<SensorState> getSensorStates() {
+        return this.sensorStates.values();
     }
 
-    public Collection<SensorState> getSensorsWithType(Class<? extends SensorState> classType) {
-        ArrayList<SensorState> sensors = new ArrayList<>();
-        for (SensorState state : this.sensors.values()) {
-            if (classType.isAssignableFrom(state.getClass())) {
-                sensors.add(state);
-            }
-        }
-        return sensors;
+    public Collection<SensorState> getSensorStatesWithModel(String sensorModel) {
+        return this.getSensorStates().stream()
+            .filter(sensorState -> sensorState.getSensorModel().equals(sensorModel))
+            .collect(Collectors.toList());
     }
 
-    public SensorState getSensorWithID(String sensorID) throws CommonException {
-        if (!this.hasSensorWithID(sensorID)) {
-            throw new CommonException(String.format("No sensor %s found on remote %s", sensorID, this.remoteID));
+    @SuppressWarnings("unchecked")
+    public <T extends SensorState> Collection<T> getSensorStatesWithType(Class<? extends T> classType) {
+        return this.getSensorStates().stream()
+            .filter(sensorState -> classType.isAssignableFrom(sensorState.getClass()))
+            .map(sensorState -> (T) sensorState)
+            .collect(Collectors.toList());
+    }
+
+    public SensorState getSensorStateWithID(String sensorID) throws CommonException {
+        if (!this.hasSensorStateWithID(sensorID)) {
+            throw new CommonException(String.format("Remote %s has no sensor %s", this.remoteID, sensorID));
         }
-        return this.sensors.get(sensorID);
+        return this.sensorStates.get(sensorID);
+    }
+
+    public boolean hasLocation() {
+        return this.location != null;
     }
 
     public TeamColor getTeam() {
         return this.team;
     }
 
-    public boolean hasSensorWithID(String sensorID) {
-        return this.sensors.containsKey(sensorID);
-    }
-
-    public boolean hasSensorWithModel(String sensorModel) {
-        for (SensorState state : this.sensors.values()) {
-            if (state.getSensorModel().equals(sensorModel)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean hasSensorWithType(Class<? extends SensorState> classType) {
-        for (SensorState state : this.sensors.values()) {
-            if (classType.isAssignableFrom(state.getClass())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public boolean hasSensors() {
-        return !this.sensors.isEmpty();
+        return !this.sensorStates.isEmpty();
+    }
+
+    public boolean hasSensorStateWithID(String sensorID) {
+        return this.sensorStates.containsKey(sensorID);
+    }
+
+    public boolean hasSensorStateWithModel(String sensorModel) {
+        return !this.getSensorStatesWithModel(sensorModel).isEmpty();
+    }
+
+    public boolean hasSensorStateWithType(Class<? extends SensorState> classType) {
+        return !this.getSensorStatesWithType(classType).isEmpty();
     }
 
     public boolean hasTeam() {
@@ -203,7 +193,7 @@ public class RemoteState extends JSONAble {
         if (state == null) return false;
         return this.getRemoteType().equals(state.getRemoteType()) && this.remoteID.equals(state.remoteID) &&
             this.team.equals(state.team) && this.location.equals(state.location) && this.battery == state.battery &&
-            this.active == state.active && this.sensors.equals(state.sensors);
+            this.active == state.active && this.sensorStates.equals(state.sensorStates);
     }
 
 }

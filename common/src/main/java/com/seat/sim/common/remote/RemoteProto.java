@@ -3,6 +3,9 @@ package com.seat.sim.common.remote;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.JSONAble;
@@ -15,7 +18,6 @@ import com.seat.sim.common.json.JSONObjectBuilder;
 import com.seat.sim.common.json.JSONOption;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.sensor.SensorConfig;
-import com.seat.sim.common.sensor.SensorProto;
 import com.seat.sim.common.sensor.SensorRegistry;
 
 /** A serializable prototype of a Remote. */
@@ -26,8 +28,8 @@ public class RemoteProto extends JSONAble {
 
     private Vector location;
     private double maxBatteryPower;
-    private ArrayList<SensorConfig> sensorConfigs;
-    private HashMap<String, SensorConfig> sensorConfigByID;
+    private Map<String, SensorConfig> sensorConfigByID;
+    private List<SensorConfig> sensorConfigs;
 
     public RemoteProto(double maxBatteryPower) {
         this(null, maxBatteryPower, null);
@@ -130,23 +132,17 @@ public class RemoteProto extends JSONAble {
     }
 
     public Collection<SensorConfig> getSensorsWithModel(String sensorModel) {
-        ArrayList<SensorConfig> sensors = new ArrayList<>();
-        for (SensorConfig state : this.sensorConfigs) {
-            if (state.getSensorModel().equals(sensorModel)) {
-                sensors.add(state);
-            }
-        }
-        return sensors;
+        return this.sensorConfigs.stream()
+            .filter(config -> config.getSensorModel().equals(sensorModel))
+            .collect(Collectors.toList());
     }
 
-    public Collection<SensorConfig> getSensorsWithType(Class<? extends SensorProto> classType) {
-        ArrayList<SensorConfig> confs = new ArrayList<>();
-        for (SensorConfig config : this.sensorConfigs) {
-            if (classType.isAssignableFrom(config.getProto().getClass())) {
-                confs.add(config);
-            }
-        }
-        return confs;
+    @SuppressWarnings("unchecked")
+    public <T extends SensorConfig> Collection<T> getSensorsWithType(Class<? extends T> classType) {
+        return this.sensorConfigs.stream()
+            .filter(config -> classType.isAssignableFrom(config.getClass()))
+            .map(config -> (T) config)
+            .collect(Collectors.toList());
     }
 
     public boolean hasLocation() {
@@ -162,21 +158,11 @@ public class RemoteProto extends JSONAble {
     }
 
     public boolean hasSensorWithModel(String sensorModel) {
-        for (SensorConfig config : this.sensorConfigs) {
-            if (config.getSensorModel().equals(sensorModel)) {
-                return true;
-            }
-        }
-        return false;
+        return !this.getSensorsWithModel(sensorModel).isEmpty();
     }
 
-    public boolean hasSensorWithType(Class<? extends SensorProto> classType) {
-        for (SensorConfig config : this.sensorConfigs) {
-            if (classType.isAssignableFrom(config.getProto().getClass())) {
-                return true;
-            }
-        }
-        return false;
+    public boolean hasSensorWithType(Class<? extends SensorConfig> classType) {
+        return !this.getSensorsWithType(classType).isEmpty();
     }
 
     public boolean isAerial() {
