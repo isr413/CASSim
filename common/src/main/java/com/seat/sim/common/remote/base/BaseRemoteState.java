@@ -9,11 +9,11 @@ import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.sensor.SensorState;
 
-/** A serializable Base state. */
+/** A serializable state of a Base Remote. */
 public class BaseRemoteState extends RemoteState {
 
     public BaseRemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active) {
-        this(remoteID, team, location, battery, active, null);
+        super(remoteID, team, location, battery, active);
     }
 
     public BaseRemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active,

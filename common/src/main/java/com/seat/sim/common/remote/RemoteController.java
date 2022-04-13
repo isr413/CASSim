@@ -9,6 +9,7 @@ import com.seat.sim.common.remote.intent.IntentRegistry;
 import com.seat.sim.common.remote.intent.Intention;
 import com.seat.sim.common.remote.intent.IntentionSet;
 
+/** A controller to signal intents to a Remote. */
 public class RemoteController extends JSONAble {
 
     private IntentionSet intentions;

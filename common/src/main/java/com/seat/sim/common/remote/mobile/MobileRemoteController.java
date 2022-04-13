@@ -6,6 +6,7 @@ import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.RemoteController;
 import com.seat.sim.common.remote.intent.IntentRegistry;
 
+/** A controller to signal intents to a Mobile Remote. */
 public class MobileRemoteController extends RemoteController {
 
     public MobileRemoteController(String remoteID) {

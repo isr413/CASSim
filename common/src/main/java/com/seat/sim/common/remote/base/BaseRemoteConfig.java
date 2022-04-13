@@ -10,21 +10,13 @@ import com.seat.sim.common.remote.RemoteConfig;
 /** A serializable configuration of a Base Remote. */
 public class BaseRemoteConfig extends RemoteConfig {
 
-    public BaseRemoteConfig(BaseRemoteProto proto, int count, boolean dynamic, boolean active) {
-        super(proto, count, dynamic, active);
+    public BaseRemoteConfig(BaseRemoteProto proto, TeamColor team, int count, boolean active, boolean dynamic) {
+        super(proto, team, count, active, dynamic);
     }
 
-    public BaseRemoteConfig(BaseRemoteProto proto, TeamColor team, int count, boolean dynamic, boolean active) {
-        super(proto, team, count, dynamic, active);
-    }
-
-    public BaseRemoteConfig(BaseRemoteProto proto, Collection<String> remoteIDs, boolean dynamic, boolean active) {
-        super(proto, remoteIDs, dynamic, active);
-    }
-
-    public BaseRemoteConfig(BaseRemoteProto proto, TeamColor team, Collection<String> remoteIDs, boolean dynamic,
-            boolean active) {
-        super(proto, team, remoteIDs, dynamic, active);
+    public BaseRemoteConfig(BaseRemoteProto proto, TeamColor team, Collection<String> remoteIDs, boolean active,
+            boolean dynamic) {
+        super(proto, team, remoteIDs.size(), active, dynamic);
     }
 
     public BaseRemoteConfig(JSONOption option) throws JSONException {

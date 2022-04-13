@@ -16,12 +16,15 @@ import com.seat.sim.common.remote.base.BaseRemoteState;
 import com.seat.sim.common.remote.mobile.MobileRemoteConfig;
 import com.seat.sim.common.remote.mobile.MobileRemoteProto;
 import com.seat.sim.common.remote.mobile.MobileRemoteState;
-import com.seat.sim.common.remote.mobile.aerial.DroneRemoteConfig;
+import com.seat.sim.common.remote.mobile.aerial.AerialRemoteConfig;
 import com.seat.sim.common.remote.mobile.aerial.AerialRemoteProto;
-import com.seat.sim.common.remote.mobile.aerial.DroneRemoteState;
-import com.seat.sim.common.remote.mobile.ground.VictimRemoteConfig;
-import com.seat.sim.common.remote.mobile.ground.VictimRemoteProto;
-import com.seat.sim.common.remote.mobile.ground.VictimRemoteState;
+import com.seat.sim.common.remote.mobile.aerial.AerialRemoteState;
+import com.seat.sim.common.remote.mobile.aerial.drone.DroneRemoteConfig;
+import com.seat.sim.common.remote.mobile.aerial.drone.DroneRemoteProto;
+import com.seat.sim.common.remote.mobile.aerial.drone.DroneRemoteState;
+import com.seat.sim.common.remote.mobile.victim.VictimRemoteConfig;
+import com.seat.sim.common.remote.mobile.victim.VictimRemoteProto;
+import com.seat.sim.common.remote.mobile.victim.VictimRemoteState;
 import com.seat.sim.common.sensor.SensorConfig;
 
 /** A registry of Remote prototypes and supporting serializable types. */
@@ -39,8 +42,11 @@ public class RemoteRegistry {
         put(MobileRemoteConfig.class.getName(), (option) -> new MobileRemoteConfig(option));
         put(MobileRemoteProto.class.getName(), (option) -> new MobileRemoteProto(option));
         put(MobileRemoteState.class.getName(), (option) -> new MobileRemoteState(option));
-        put(DroneRemoteConfig.class.getName(), (option) -> new DroneRemoteConfig(option));
+        put(AerialRemoteConfig.class.getName(), (option) -> new AerialRemoteConfig(option));
         put(AerialRemoteProto.class.getName(), (option) -> new AerialRemoteProto(option));
+        put(AerialRemoteState.class.getName(), (option) -> new AerialRemoteState(option));
+        put(DroneRemoteConfig.class.getName(), (option) -> new DroneRemoteConfig(option));
+        put(DroneRemoteProto.class.getName(), (option) -> new DroneRemoteProto(option));
         put(DroneRemoteState.class.getName(), (option) -> new DroneRemoteState(option));
         put(VictimRemoteConfig.class.getName(), (option) -> new VictimRemoteConfig(option));
         put(VictimRemoteProto.class.getName(), (option) -> new VictimRemoteProto(option));
@@ -57,15 +63,82 @@ public class RemoteRegistry {
         return new BaseRemoteProto(location, maxBatteryPower, sensors);
     }
 
-    public static RemoteConfig ConfigureMobileRemote(Vector location, double maxBatteryPower,
-            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, TeamColor team, int count,
-            boolean active, boolean dynamic) {
-        return new MobileRemoteConfig(
-            new MobileRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration),
+    public static AerialRemoteConfig ConfigureAerialRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, Vector batteryUsage,
+            TeamColor team, int count, boolean active, boolean dynamic, double speedMean, double speedStdDev) {
+        return new AerialRemoteConfig(
+            new AerialRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, batteryUsage),
+            team,
+            count,
+            active,
+            dynamic,
+            speedMean,
+            speedStdDev
+        );
+    }
+
+    public static AerialRemoteConfig ConfigureAerialRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, Vector batteryUsage,
+            TeamColor team, Collection<String> remoteIDs, boolean active, boolean dynamic, double speedMean,
+            double speedStdDev) {
+        return new AerialRemoteConfig(
+            new AerialRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, batteryUsage),
+            team,
+            remoteIDs,
+            active,
+            dynamic,
+            speedMean,
+            speedStdDev
+        );
+    }
+
+    public static BaseRemoteConfig ConfigureBaseRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, TeamColor team, int count, boolean active, boolean dynamic) {
+        return new BaseRemoteConfig(new BaseRemoteProto(location, maxBatteryPower, sensors),
             team,
             count,
             active,
             dynamic
+        );
+    }
+
+    public static RemoteConfig ConfigureBaseRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, TeamColor team, Collection<String> remoteIDs, boolean active,
+            boolean dynamic) {
+        return new BaseRemoteConfig(new BaseRemoteProto(location, maxBatteryPower, sensors),
+            team,
+            remoteIDs,
+            active,
+            dynamic
+        );
+    }
+
+    public static DroneRemoteConfig ConfigureDroneRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, Vector batteryUsage,
+            TeamColor team, int count, boolean active, boolean dynamic, double speedMean, double speedStdDev) {
+        return new DroneRemoteConfig(
+            new DroneRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, batteryUsage),
+            team,
+            count,
+            active,
+            dynamic,
+            speedMean,
+            speedStdDev
+        );
+    }
+
+    public static DroneRemoteConfig ConfigureDroneRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, Vector batteryUsage,
+            TeamColor team, Collection<String> remoteIDs, boolean active, boolean dynamic, double speedMean,
+            double speedStdDev) {
+        return new DroneRemoteConfig(
+            new DroneRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, batteryUsage),
+            team,
+            remoteIDs,
+            active,
+            dynamic,
+            speedMean,
+            speedStdDev
         );
     }
 
@@ -85,21 +158,37 @@ public class RemoteRegistry {
 
     public static MobileRemoteConfig ConfigureMobileRemote(Vector location, double maxBatteryPower,
             Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, TeamColor team,
-            Collection<String> remoteIDs, boolean active, boolean dynamic) {
+            Collection<String> remoteIDs, boolean active, boolean dynamic, double speedMean, double speedStdDev) {
         return new MobileRemoteConfig(
             new MobileRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration),
             team,
             remoteIDs,
             active,
-            dynamic
+            dynamic,
+            speedMean,
+            speedStdDev
         );
     }
 
-    public static MobileRemoteConfig ConfigureMobileRemote(Vector location, double maxBatteryPower,
+    public static VictimRemoteConfig ConfigureVictimRemote(Vector location, double maxBatteryPower,
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, TeamColor team, int count,
+            boolean active, boolean dynamic, double speedMean, double speedStdDev) {
+        return new VictimRemoteConfig(
+            new VictimRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration),
+            team,
+            count,
+            active,
+            dynamic,
+            speedMean,
+            speedStdDev
+        );
+    }
+
+    public static VictimRemoteConfig ConfigureVictimRemote(Vector location, double maxBatteryPower,
             Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, TeamColor team,
             Collection<String> remoteIDs, boolean active, boolean dynamic, double speedMean, double speedStdDev) {
-        return new MobileRemoteConfig(
-            new MobileRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration),
+        return new VictimRemoteConfig(
+            new VictimRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration),
             team,
             remoteIDs,
             active,
@@ -120,14 +209,9 @@ public class RemoteRegistry {
         return new RemoteConfig(new RemoteProto(location, maxBatteryPower, sensors), team, remoteIDs, active, dynamic);
     }
 
-    public static AerialRemoteProto DroneRemote(Vector location, double maxBatteryPower,
+    public static DroneRemoteProto DroneRemote(Vector location, double maxBatteryPower,
             Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, Vector batteryUsage) {
-        return new AerialRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, batteryUsage);
-    }
-
-    public static MobileRemoteProto GroundRemote(Vector location, double maxBatteryPower,
-            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration) {
-        return new MobileRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration);
+        return new DroneRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, batteryUsage);
     }
 
     public static MobileRemoteProto MobileRemote(Vector location, double maxBatteryPower,
@@ -140,10 +224,8 @@ public class RemoteRegistry {
     }
 
     public static VictimRemoteProto VictimRemote(Vector location, double maxBatteryPower,
-            Collection<SensorConfig> sensors, double speedMean, double speedStdDev, double maxVelocity,
-            double maxAcceleration, double maxJerk) {
-        return new VictimRemoteProto(location, maxBatteryPower, sensors, speedMean, speedStdDev, maxVelocity,
-            maxAcceleration, maxJerk);
+            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration) {
+        return new VictimRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration);
     }
 
     @SuppressWarnings("unchecked")
