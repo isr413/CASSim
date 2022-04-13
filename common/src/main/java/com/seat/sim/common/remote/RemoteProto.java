@@ -179,12 +179,28 @@ public class RemoteProto extends JSONAble {
         return false;
     }
 
+    public boolean isAerial() {
+        return false;
+    }
+
     public boolean isDisabled() {
         return !this.isEnabled();
     }
 
     public boolean isEnabled() {
         return this.maxBatteryPower > 0;
+    }
+
+    public boolean isGround() {
+        return !this.isAerial();
+    }
+
+    public boolean isMobile() {
+        return false;
+    }
+
+    public boolean isStationary() {
+        return !this.isMobile();
     }
 
     public JSONOption toJSON() throws JSONException {

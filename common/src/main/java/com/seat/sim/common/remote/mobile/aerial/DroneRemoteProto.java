@@ -79,6 +79,11 @@ public class DroneRemoteProto extends MobileRemoteProto {
         return this.batteryUsage.getZ();
     }
 
+    @Override
+    public boolean isAerial() {
+        return true;
+    }
+
     public boolean equals(DroneRemoteProto proto) {
         if (proto == null) return false;
         return super.equals(proto) && this.batteryUsage.equals(proto.batteryUsage);
