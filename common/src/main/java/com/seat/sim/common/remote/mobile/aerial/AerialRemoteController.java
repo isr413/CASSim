@@ -4,13 +4,14 @@ import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONOption;
 import com.seat.sim.common.remote.mobile.MobileRemoteController;
 
-public class DroneRemoteController extends MobileRemoteController {
+/** A controller to signal intents to an Aerial Remote. */
+public class AerialRemoteController extends MobileRemoteController {
 
-    public DroneRemoteController(String remoteID) {
+    public AerialRemoteController(String remoteID) {
         super(remoteID);
     }
 
-    public DroneRemoteController(JSONOption option) throws JSONException {
+    public AerialRemoteController(JSONOption option) throws JSONException {
         super(option);
     }
 
