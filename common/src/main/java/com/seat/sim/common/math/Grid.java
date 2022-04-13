@@ -23,29 +23,29 @@ public class Grid extends JSONAble {
     private Zone[][] zones;
     private int zoneSize;   // zones in the same map grid must have a uniform size
 
-    public Grid(int zoneSize, int width, int height) {
-        this(null, zoneSize, width, height);
+    public Grid(int width, int height, int zoneSize) {
+        this(width, height, zoneSize, null);
     }
 
-    public Grid(Zone[][] zones, int zoneSize, int width, int height) {
+    public Grid(int width, int height, int zoneSize, Zone[][] zones) {
+        this.width = width;
+        this.height = height;
+        this.zoneSize = zoneSize;
         if (zones != null) {
             this.isCustomGrid = true;
             this.zones = zones;
         } else {
             this.isCustomGrid = false;
-            this.zones = new Zone[height][width];
+            this.zones = new Zone[this.height][this.width];
             for (int y = 0; y < this.height; y++) {
                 for (int x = 0; x < this.width; x++) {
                     this.zones[y][x] = new Zone(
-                        new Vector(this.zoneSize*(x + 0.5), this.zoneSize*(y + 0.5)),
+                        new Vector(this.zoneSize * (x + 0.5), this.zoneSize * (y + 0.5)),
                         this.zoneSize
                     );
                 }
             }
         }
-        this.zoneSize = zoneSize;
-        this.width = width;
-        this.height = height;
     }
 
     public Grid(JSONOption option) throws JSONException {
@@ -148,10 +148,10 @@ public class Grid extends JSONAble {
         return this.width;
     }
 
-    /** Returns the Zone located at row y, column x.
+    /** Returns the Zone located at row y, column x, or with coordinates (x, y).
      * @throws CommonException if the either y or x are out of bounds
      */
-    public Zone getZone(int y, int x) throws CommonException {
+    public Zone getZone(int x, int y) throws CommonException {
         if (y < 0 || this.height <= y) {
             throw new CommonException(new IndexOutOfBoundsException(y).toString());
         }
@@ -165,7 +165,7 @@ public class Grid extends JSONAble {
      * @throws CommonException if the either y or x are out of bounds
      */
     public Zone getZoneAtLocation(double x, double y) throws CommonException {
-        return this.getZone((int) (y / this.zoneSize), (int) (x / this.zoneSize));
+        return this.getZone((int) (x / this.zoneSize), (int) (y / this.zoneSize));
     }
 
     /** Returns the Zone that contains the location with the specified coordinates.
@@ -202,7 +202,7 @@ public class Grid extends JSONAble {
             for (int y = 0; y < this.height; y++) {
                 JSONArrayBuilder jsonRow = JSONBuilder.Array();
                 for (int x = 0; x < this.width; x++) {
-                    jsonRow.put(this.getZone(y, x).toJSON());
+                    jsonRow.put(this.getZone(x, y).toJSON());
                 }
                 jsonZones.put(jsonRow.toJSON());
             }
