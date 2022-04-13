@@ -8,28 +8,20 @@ import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.remote.RemoteConfig;
 import com.seat.sim.common.remote.intent.IntentionSet;
 import com.seat.sim.common.remote.mobile.MobileRemoteConfig;
-import com.seat.sim.common.remote.mobile.aerial.DroneRemoteConfig;
-import com.seat.sim.common.remote.mobile.ground.VictimRemoteConfig;
+import com.seat.sim.common.remote.mobile.aerial.AerialRemoteConfig;
 import com.seat.sim.common.scenario.ScenarioConfig;
 import com.seat.sim.common.scenario.Snapshot;
 
 public interface Application {
 
-    default Collection<MobileRemoteConfig> getAerialRemoteConfigs() {
+    default Collection<AerialRemoteConfig> getAerialRemoteConfigs() {
         return this.getRemoteConfigs().stream()
             .filter(config -> config.getProto().isAerial())
-            .map(config -> (DroneRemoteConfig) config)
+            .map(config -> (AerialRemoteConfig) config)
             .collect(Collectors.toList());
     }
 
     Grid getGrid();
-
-    default Collection<MobileRemoteConfig> getGroundRemoteConfigs() {
-        return this.getRemoteConfigs().stream()
-            .filter(config -> config.getProto().isGround())
-            .map(config -> (VictimRemoteConfig) config)
-            .collect(Collectors.toList());
-    }
 
     int getMissionLength();
 

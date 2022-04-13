@@ -120,6 +120,20 @@ public class RemoteProto extends JSONAble {
         return this.sensorConfigs;
     }
 
+    public Collection<SensorConfig> getSensorConfigsWithModel(String sensorModel) {
+        return this.sensorConfigs.stream()
+            .filter(config -> config.getSensorModel().equals(sensorModel))
+            .collect(Collectors.toList());
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends SensorConfig> Collection<T> getSensorConfigsWithType(Class<? extends T> classType) {
+        return this.sensorConfigs.stream()
+            .filter(config -> classType.isAssignableFrom(config.getClass()))
+            .map(config -> (T) config)
+            .collect(Collectors.toList());
+    }
+
     public SensorConfig getSensorConfigWithID(String sensorID) throws CommonException {
         if (!this.hasSensorWithID(sensorID)) {
             throw new CommonException(String.format("Remote %s has no sensor %s", this.getLabel(), sensorID));
@@ -131,22 +145,16 @@ public class RemoteProto extends JSONAble {
         return this.sensorConfigByID.keySet();
     }
 
-    public Collection<SensorConfig> getSensorsWithModel(String sensorModel) {
-        return this.sensorConfigs.stream()
-            .filter(config -> config.getSensorModel().equals(sensorModel))
-            .collect(Collectors.toList());
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends SensorConfig> Collection<T> getSensorsWithType(Class<? extends T> classType) {
-        return this.sensorConfigs.stream()
-            .filter(config -> classType.isAssignableFrom(config.getClass()))
-            .map(config -> (T) config)
-            .collect(Collectors.toList());
-    }
-
     public boolean hasLocation() {
         return this.location != null;
+    }
+
+    public boolean hasSensorConfigWithModel(String sensorModel) {
+        return !this.getSensorConfigsWithModel(sensorModel).isEmpty();
+    }
+
+    public boolean hasSensorConfigWithType(Class<? extends SensorConfig> classType) {
+        return !this.getSensorConfigsWithType(classType).isEmpty();
     }
 
     public boolean hasSensors() {
@@ -155,14 +163,6 @@ public class RemoteProto extends JSONAble {
 
     public boolean hasSensorWithID(String sensorID) {
         return this.sensorConfigByID.containsKey(sensorID);
-    }
-
-    public boolean hasSensorWithModel(String sensorModel) {
-        return !this.getSensorsWithModel(sensorModel).isEmpty();
-    }
-
-    public boolean hasSensorWithType(Class<? extends SensorConfig> classType) {
-        return !this.getSensorsWithType(classType).isEmpty();
     }
 
     public boolean isAerial() {

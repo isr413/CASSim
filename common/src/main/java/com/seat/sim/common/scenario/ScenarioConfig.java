@@ -3,6 +3,9 @@ package com.seat.sim.common.scenario;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.JSONAble;
@@ -15,7 +18,6 @@ import com.seat.sim.common.json.JSONObjectBuilder;
 import com.seat.sim.common.json.JSONOption;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.remote.RemoteConfig;
-import com.seat.sim.common.remote.RemoteProto;
 import com.seat.sim.common.remote.RemoteRegistry;
 import com.seat.sim.common.util.Random;
 
@@ -34,8 +36,8 @@ public class ScenarioConfig extends JSONAble {
 
     private Grid grid;
     private int missionLength;
-    private ArrayList<RemoteConfig> remoteConfigs;
-    private HashMap<String, RemoteConfig> remoteConfigsByID;
+    private List<RemoteConfig> remoteConfigs;
+    private Map<String, RemoteConfig> remoteConfigsByID;
     private String scenarioID;
     private long seed;
     private double stepSize;
@@ -105,9 +107,9 @@ public class ScenarioConfig extends JSONAble {
         this.stepSize = json.getDouble(ScenarioConfig.STEP_SIZE);
         this.remoteConfigs = new ArrayList<>();
         if (json.hasKey(ScenarioConfig.REMOTE_CONFIG)) {
-            JSONArray jsonRemotes = json.getJSONArray(ScenarioConfig.REMOTE_CONFIG);
-            for (int i = 0; i < jsonRemotes.length(); i++) {
-                this.remoteConfigs.add(RemoteRegistry.decodeTo(jsonRemotes.getJSONOption(i), RemoteConfig.class));
+            JSONArray jsonRemoteConfigs = json.getJSONArray(ScenarioConfig.REMOTE_CONFIG);
+            for (int i = 0; i < jsonRemoteConfigs.length(); i++) {
+                this.remoteConfigs.add(RemoteRegistry.decodeTo(jsonRemoteConfigs.getJSONOption(i), RemoteConfig.class));
             }
         }
         this.init();
@@ -122,11 +124,11 @@ public class ScenarioConfig extends JSONAble {
         json.put(ScenarioConfig.STEP_SIZE, this.stepSize);
         json.put(ScenarioConfig.NUM_REMOTES, this.getNumberOfRemotes());
         if (this.hasRemotes()) {
-            JSONArrayBuilder jsonRemotes = JSONBuilder.Array();
+            JSONArrayBuilder jsonRemoteConfigs = JSONBuilder.Array();
             for (RemoteConfig config : this.remoteConfigs) {
-                jsonRemotes.put(config.toJSON());
+                jsonRemoteConfigs.put(config.toJSON());
             }
-            json.put(ScenarioConfig.REMOTE_CONFIG, jsonRemotes.toJSON());
+            json.put(ScenarioConfig.REMOTE_CONFIG, jsonRemoteConfigs.toJSON());
         }
         return json;
     }
@@ -155,6 +157,14 @@ public class ScenarioConfig extends JSONAble {
         return this.remoteConfigs;
     }
 
+    @SuppressWarnings("unchecked")
+    public <T extends RemoteConfig> Collection<T> getRemoteConfigsWithType(Class<? extends T> classType) {
+        return this.getRemoteConfigs().stream()
+            .filter(config -> classType.isAssignableFrom(config.getClass()))
+            .map(config -> (T) config)
+            .collect(Collectors.toList());
+    }
+
     public RemoteConfig getRemoteConfigWithID(String remoteID) throws CommonException {
         if (!this.hasRemoteWithID(remoteID)) {
             throw new CommonException(String.format("Scenario %s has no remote %s", this.scenarioID, remoteID));
@@ -164,16 +174,6 @@ public class ScenarioConfig extends JSONAble {
 
     public Collection<String> getRemoteIDs() {
         return this.remoteConfigsByID.keySet();
-    }
-
-    public Collection<RemoteConfig> getRemotesWithType(Class<? extends RemoteProto> classType) {
-        ArrayList<RemoteConfig> confs = new ArrayList<>();
-        for (RemoteConfig config : this.remoteConfigs) {
-            if (classType.isAssignableFrom(config.getProto().getClass())) {
-                confs.add(config);
-            }
-        }
-        return confs;
     }
 
     public String getScenarioID() {
@@ -192,21 +192,16 @@ public class ScenarioConfig extends JSONAble {
         return this.stepSize;
     }
 
+    public boolean hasRemoteConfigWithType(Class<? extends RemoteConfig> classType) {
+        return !this.getRemoteConfigsWithType(classType).isEmpty();
+    }
+
     public boolean hasRemotes() {
         return !this.getRemoteIDs().isEmpty();
     }
 
     public boolean hasRemoteWithID(String remoteID) {
         return this.remoteConfigsByID.containsKey(remoteID);
-    }
-
-    public boolean hasRemoteWithType(Class<? extends RemoteProto> classType) {
-        for (RemoteConfig config : this.remoteConfigs) {
-            if (classType.isAssignableFrom(config.getProto().getClass())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public JSONOption toJSON() {
