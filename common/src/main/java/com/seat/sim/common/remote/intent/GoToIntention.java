@@ -9,52 +9,37 @@ import com.seat.sim.common.math.Vector;
 public class GoToIntention extends Intention {
     public static final String LOCATION = "location";
     public static final String MAX_ACCELERATION = "max_acceleration";
-    public static final String MAX_JERK = "max_jerk";
     public static final String MAX_VELOCITY = "max_velocity";
-
-    protected static final double DEFAULT_ACCELERATION = Double.POSITIVE_INFINITY;
-    protected static final double DEFAULT_JERK = Double.POSITIVE_INFINITY;
-    protected static final double DEFAULT_VELOCITY = Double.POSITIVE_INFINITY;
 
     private Vector location;
     private double maxAcceleration;
-    private double maxJerk;
     private double maxVelocity;
 
     public GoToIntention() {
-        this(null, GoToIntention.DEFAULT_VELOCITY, GoToIntention.DEFAULT_ACCELERATION, GoToIntention.DEFAULT_JERK);
+        this(null, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
     }
 
     public GoToIntention(double maxVelocity) {
-        this(null, maxVelocity, GoToIntention.DEFAULT_ACCELERATION, GoToIntention.DEFAULT_JERK);
+        this(null, maxVelocity, Double.POSITIVE_INFINITY);
     }
 
     public GoToIntention(double maxVelocity, double maxAcceleration) {
-        this(null, maxVelocity, maxAcceleration, GoToIntention.DEFAULT_JERK);
-    }
-
-    public GoToIntention(double maxVelocity, double maxAcceleration, double maxJerk) {
-        this(null, maxVelocity, maxAcceleration, maxJerk);
+        this(null, maxVelocity, maxAcceleration);
     }
 
     public GoToIntention(Vector location) {
-        this(location, GoToIntention.DEFAULT_VELOCITY, GoToIntention.DEFAULT_ACCELERATION, GoToIntention.DEFAULT_JERK);
+        this(location, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
     }
 
     public GoToIntention(Vector location, double maxVelocity) {
-        this(location, maxVelocity, GoToIntention.DEFAULT_ACCELERATION, GoToIntention.DEFAULT_JERK);
+        this(location, maxVelocity, Double.POSITIVE_INFINITY);
     }
 
     public GoToIntention(Vector location, double maxVelocity, double maxAcceleration) {
-        this(location, maxVelocity, maxAcceleration, GoToIntention.DEFAULT_JERK);
-    }
-
-    public GoToIntention(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
         super(IntentionType.GOTO);
         this.location = location;
         this.maxVelocity = maxVelocity;
         this.maxAcceleration = maxAcceleration;
-        this.maxJerk = maxJerk;
     }
 
     public GoToIntention(JSONOption option) throws JSONException {
@@ -73,9 +58,6 @@ public class GoToIntention extends Intention {
         this.maxAcceleration = (json.hasKey(GoToIntention.MAX_ACCELERATION)) ?
             this.maxAcceleration = json.getDouble(GoToIntention.MAX_ACCELERATION) :
             Double.POSITIVE_INFINITY;
-        this.maxJerk = (json.hasKey(GoToIntention.MAX_JERK)) ?
-            json.getDouble(GoToIntention.MAX_JERK) :
-            Double.POSITIVE_INFINITY;
     }
 
     @Override
@@ -89,9 +71,6 @@ public class GoToIntention extends Intention {
         }
         if (this.hasMaxAcceleration()) {
             json.put(GoToIntention.MAX_ACCELERATION, this.maxAcceleration);
-        }
-        if (this.hasMaxJerk()) {
-            json.put(GoToIntention.MAX_JERK, this.maxJerk);
         }
         return json;
     }
@@ -109,10 +88,6 @@ public class GoToIntention extends Intention {
         return this.maxAcceleration;
     }
 
-    public double getMaxJerk() {
-        return this.maxJerk;
-    }
-
     public double getMaxVelocity() {
         return this.maxVelocity;
     }
@@ -125,10 +100,6 @@ public class GoToIntention extends Intention {
         return this.maxAcceleration != Double.POSITIVE_INFINITY;
     }
 
-    public boolean hasMaxJerk() {
-        return this.maxJerk != Double.POSITIVE_INFINITY;
-    }
-
     public boolean hasMaxVelocity() {
         return this.maxVelocity != Double.POSITIVE_INFINITY;
     }
@@ -137,8 +108,7 @@ public class GoToIntention extends Intention {
         if (intent == null) return false;
         return super.equals(intent) &&
             ((this.hasLocation() && this.location.equals(intent.location)) || this.location == intent.location) &&
-            this.maxVelocity == intent.maxVelocity && this.maxAcceleration == intent.maxAcceleration &&
-            this.maxJerk == intent.maxJerk;
+            this.maxVelocity == intent.maxVelocity && this.maxAcceleration == intent.maxAcceleration;
     }
 
 }

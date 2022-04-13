@@ -8,80 +8,72 @@ import com.seat.sim.common.math.Vector;
 
 public class IntentRegistry {
 
-    public static Intention Activate() {
+    public static ActivateIntention Activate() {
         return new ActivateIntention();
     }
 
-    public static Intention Activate(String sensor) {
-        return new ActivateIntention(sensor);
+    public static ActivateIntention Activate(String sensorID) {
+        return new ActivateIntention(sensorID);
     }
 
-    public static Intention Activate(Collection<String> sensors) {
-        return new ActivateIntention(sensors);
+    public static ActivateIntention Activate(Collection<String> sensorIDs) {
+        return new ActivateIntention(sensorIDs);
     }
 
-    public static Intention Deactivate() {
+    public static DeactivateIntention Deactivate() {
         return new DeactivateIntention();
     }
 
-    public static Intention Deactivate(String sensor) {
-        return new DeactivateIntention(sensor);
+    public static DeactivateIntention Deactivate(String sensorID) {
+        return new DeactivateIntention(sensorID);
     }
 
-    public static Intention Deactivate(Collection<String> sensors) {
-        return new DeactivateIntention(sensors);
+    public static DeactivateIntention Deactivate(Collection<String> sensorIDs) {
+        return new DeactivateIntention(sensorIDs);
     }
 
-    public static Intention Done() {
+    public static DoneIntention Done() {
         return new DoneIntention();
     }
 
-    public static Intention GoTo() {
+    public static GoToIntention GoTo() {
         return new GoToIntention();
     }
 
-    public static Intention GoTo(double maxVelocity) {
+    public static GoToIntention GoTo(double maxVelocity) {
         return new GoToIntention(maxVelocity);
     }
 
-    public static Intention GoTo(double maxVelocity, double maxAcceleration) {
+    public static GoToIntention GoTo(double maxVelocity, double maxAcceleration) {
         return new GoToIntention(maxVelocity, maxAcceleration);
     }
 
-    public static Intention GoTo(double maxVelocity, double maxAcceleration, double maxJerk) {
-        return new GoToIntention(maxVelocity, maxAcceleration, maxJerk);
-    }
-
-    public static Intention GoTo(Vector location) {
+    public static GoToIntention GoTo(Vector location) {
         return new GoToIntention(location);
     }
 
-    public static Intention GoTo(Vector location, double maxVelocity) {
+    public static GoToIntention GoTo(Vector location, double maxVelocity) {
         return new GoToIntention(location, maxVelocity);
     }
 
-    public static Intention GoTo(Vector location, double maxVelocity, double maxAcceleration) {
+    public static GoToIntention GoTo(Vector location, double maxVelocity, double maxAcceleration) {
         return new GoToIntention(location, maxVelocity, maxAcceleration);
     }
 
-    public static Intention GoTo(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
-        return new GoToIntention(location, maxVelocity, maxAcceleration, maxJerk);
-    }
-
-    public static Intention Move() {
+    public static MoveIntention Move() {
         return new MoveIntention();
     }
 
-    public static Intention Move(Vector jerk) {
+    public static MoveIntention Move(Vector jerk) {
         return new MoveIntention(jerk);
     }
 
-    public static Intention None() {
-        return new DoneIntention();
+    public static NoneIntention None() {
+        return new NoneIntention();
     }
 
-    public static Intention Shutdown() {
-        return new DoneIntention();
+    public static ShutdownIntention Shutdown() {
+        return new ShutdownIntention();
     }
 
     public static Intention Some(JSONOption option) throws JSONException {
@@ -89,32 +81,32 @@ public class IntentRegistry {
             throw new JSONException(String.format("Cannot decode intention type of %s", option.toString()));
         }
         switch (IntentionType.decodeType(option.someObject())) {
-            case ACTIVATE:
-                return new ActivateIntention(option);
-            case DEACTIVATE:
-                return new DeactivateIntention(option);
-            case DONE:
-                return new DoneIntention();
-            case GOTO:
-                return new GoToIntention(option);
-            case MOVE:
-                return new MoveIntention(option);
-            case SHUTDOWN:
-                return new ShutdownIntention();
-            case STARTUP:
-                return new StartupIntention();
-            case STOP:
-                return new StopIntention();
-            default:
-                return new NoneIntention();
+            case ACTIVATE: return new ActivateIntention(option);
+            case DEACTIVATE: return new DeactivateIntention(option);
+            case DONE: return new DoneIntention();
+            case GOTO: return new GoToIntention(option);
+            case MOVE: return new MoveIntention(option);
+            case SHUTDOWN: return new ShutdownIntention();
+            case STARTUP: return new StartupIntention();
+            case STEER: return new SteerIntention(option);
+            case STOP: return new StopIntention();
+            default: return new NoneIntention();
         }
     }
 
-    public static Intention Startup() {
+    public static StartupIntention Startup() {
         return new StartupIntention();
     }
 
-    public static Intention Stop() {
+    public static SteerIntention Steer() {
+        return new SteerIntention();
+    }
+
+    public static SteerIntention Steer(Vector direction) {
+        return new SteerIntention(direction);
+    }
+
+    public static StopIntention Stop() {
         return new StopIntention();
     }
 

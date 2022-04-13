@@ -23,14 +23,14 @@ public class DeactivateIntention extends Intention {
         this.deactivations = new HashSet<>();
     }
 
-    public DeactivateIntention(String sensor) {
+    public DeactivateIntention(String sensorID) {
         this();
-        this.addDeactivation(sensor);
+        this.addDeactivation(sensorID);
     }
 
-    public DeactivateIntention(Collection<String> sensors) {
+    public DeactivateIntention(Collection<String> sensorIDs) {
         this();
-        this.addDeactivations(sensors);
+        this.addDeactivations(sensorIDs);
     }
 
     public DeactivateIntention(JSONOption option) throws JSONException {
@@ -42,9 +42,9 @@ public class DeactivateIntention extends Intention {
         super.decode(json);
         this.deactivations = new HashSet<>();
         if (json.hasKey(DeactivateIntention.DEACTIVATIONS)) {
-            JSONArray jsonSensors = json.getJSONArray(DeactivateIntention.DEACTIVATIONS);
-            for (int i = 0; i < jsonSensors.length(); i++) {
-                this.addDeactivation(jsonSensors.getString(i));
+            JSONArray jsonSensorIDs = json.getJSONArray(DeactivateIntention.DEACTIVATIONS);
+            for (int i = 0; i < jsonSensorIDs.length(); i++) {
+                this.addDeactivation(jsonSensorIDs.getString(i));
             }
         }
     }
@@ -53,28 +53,28 @@ public class DeactivateIntention extends Intention {
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
         if (this.hasDeactivations()) {
-            JSONArrayBuilder jsonSensors = JSONBuilder.Array();
-            for (String sensor : this.deactivations) {
-                jsonSensors.put(sensor);
+            JSONArrayBuilder jsonSensorIDs = JSONBuilder.Array();
+            for (String sensorID : this.deactivations) {
+                jsonSensorIDs.put(sensorID);
             }
-            json.put(DeactivateIntention.DEACTIVATIONS, jsonSensors.toJSON());
+            json.put(DeactivateIntention.DEACTIVATIONS, jsonSensorIDs.toJSON());
         }
         return json;
     }
 
-    public boolean addDeactivation(String sensor) {
-        if (this.hasDeactivationOfSensor(sensor)) {
-            Debugger.logger.warn(String.format("Sensor %s is already intended to be deactivated", sensor));
+    public boolean addDeactivation(String sensorID) {
+        if (this.hasDeactivationOfSensor(sensorID)) {
+            Debugger.logger.warn(String.format("Sensor %s is already intended to be deactivated", sensorID));
             return true;
         }
-        this.deactivations.add(sensor);
+        this.deactivations.add(sensorID);
         return true;
     }
 
-    public boolean addDeactivations(Collection<String> sensors) {
+    public boolean addDeactivations(Collection<String> sensorIDs) {
         boolean flag = true;
-        for (String sensor : sensors) {
-            flag = this.addDeactivation(sensor) && flag;
+        for (String sensorID : sensorIDs) {
+            flag = this.addDeactivation(sensorID) && flag;
         }
         return flag;
     }
@@ -88,28 +88,27 @@ public class DeactivateIntention extends Intention {
         return "<DEACTIVATE>";
     }
 
-    public boolean hasDeactivationOfSensor(String sensor) {
-        return this.deactivations.contains(sensor);
+    public boolean hasDeactivationOfSensor(String sensorID) {
+        return this.deactivations.contains(sensorID);
     }
 
     public boolean hasDeactivations() {
         return !this.deactivations.isEmpty();
     }
 
-    public boolean removeDeactivation(String sensor) {
-        if (!this.hasDeactivationOfSensor(sensor)) {
-            Debugger.logger.warn(String.format("Sensor %s is not intended to be deactivated", sensor));
+    public boolean removeDeactivation(String sensorID) {
+        if (!this.hasDeactivationOfSensor(sensorID)) {
+            Debugger.logger.warn(String.format("Sensor %s is not intended to be deactivated", sensorID));
             return true;
         }
-        this.deactivations.remove(sensor);
+        this.deactivations.remove(sensorID);
         return true;
     }
 
-    public boolean removeDeactivations(Collection<String> sensors) {
-        if (sensors == null) return false;
+    public boolean removeDeactivations(Collection<String> sensorIDs) {
         boolean flag = true;
-        for (String sensor : sensors) {
-            flag = this.removeDeactivation(sensor) && flag;
+        for (String sensorID : sensorIDs) {
+            flag = this.removeDeactivation(sensorID) && flag;
         }
         return flag;
     }

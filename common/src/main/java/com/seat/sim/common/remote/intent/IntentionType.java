@@ -13,7 +13,8 @@ public enum IntentionType implements SerializableEnum {
     MOVE(5),
     SHUTDOWN(6),
     STARTUP(7),
-    STOP(8);
+    STEER(8),
+    STOP(9);
 
     public static final String INTENTION_TYPE = "intention_type";
 

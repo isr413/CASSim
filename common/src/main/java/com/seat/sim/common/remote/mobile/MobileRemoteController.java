@@ -17,7 +17,7 @@ public class MobileRemoteController extends RemoteController {
         super(option);
     }
 
-    public void goToLocation() {
+    public void goHome() {
         super.addIntention(IntentRegistry.GoTo());
     }
 
@@ -27,10 +27,6 @@ public class MobileRemoteController extends RemoteController {
 
     public void goToLocation(double maxVelocity, double maxAcceleration) {
         super.addIntention(IntentRegistry.GoTo(maxVelocity, maxAcceleration));
-    }
-
-    public void goToLocation(double maxVelocity, double maxAcceleration, double maxJerk) {
-        super.addIntention(IntentRegistry.GoTo(maxVelocity, maxAcceleration, maxJerk));
     }
 
     public void goToLocation(Vector location) {
@@ -45,16 +41,24 @@ public class MobileRemoteController extends RemoteController {
         super.addIntention(IntentRegistry.GoTo(location, maxVelocity, maxAcceleration));
     }
 
-    public void goToLocation(Vector location, double maxVelocity, double maxAcceleration, double maxJerk) {
-        super.addIntention(IntentRegistry.GoTo(location, maxVelocity, maxAcceleration, maxJerk));
+    public void move(Vector jerk) {
+        super.addIntention(IntentRegistry.Move(jerk));
     }
 
-    public void move() {
+    public void moveForward() {
         super.addIntention(IntentRegistry.Move());
     }
 
-    public void move(Vector jerk) {
-        super.addIntention(IntentRegistry.Move(jerk));
+    public void steer(Vector direction) {
+        super.addIntention(IntentRegistry.Steer(direction));
+    }
+
+    public void steerHome() {
+        super.addIntention(IntentRegistry.Steer());
+    }
+
+    public void stop() {
+        super.addIntention(IntentRegistry.Stop());
     }
 
 }

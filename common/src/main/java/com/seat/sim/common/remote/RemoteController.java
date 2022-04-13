@@ -31,28 +31,28 @@ public class RemoteController extends JSONAble {
         this.intentions.addIntention(intent);
     }
 
-    public void activateSensor(String sensor) {
-        this.addIntention(IntentRegistry.Activate(sensor));
-    }
-
     public void activateAllSensors() {
         this.addIntention(IntentRegistry.Activate());
     }
 
-    public void activateAllSensors(Collection<String> sensors) {
-        this.addIntention(IntentRegistry.Activate(sensors));
+    public void activateAllSensors(Collection<String> sensorIDs) {
+        this.addIntention(IntentRegistry.Activate(sensorIDs));
     }
 
-    public void deactivateSensor(String sensor) {
-        this.addIntention(IntentRegistry.Deactivate(sensor));
+    public void activateSensor(String sensorID) {
+        this.addIntention(IntentRegistry.Activate(sensorID));
     }
 
     public void deactivateAllSensors() {
         this.addIntention(IntentRegistry.Deactivate());
     }
 
-    public void deactivateAllSensors(Collection<String> sensors) {
-        this.addIntention(IntentRegistry.Deactivate(sensors));
+    public void deactivateAllSensors(Collection<String> sensorIDs) {
+        this.addIntention(IntentRegistry.Deactivate(sensorIDs));
+    }
+
+    public void deactivateSensor(String sensorID) {
+        this.addIntention(IntentRegistry.Deactivate(sensorID));
     }
 
     public void done() {
