@@ -1,6 +1,5 @@
 package com.seat.sim.common.sensor;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -52,60 +51,6 @@ public class SensorRegistry {
 
     public static CommsSensorProto CommsSensor(double range, double accuracy, double batteryUsage, double delay) {
         return new CommsSensorProto(range, accuracy, batteryUsage, delay);
-    }
-
-    public static CommsSensorConfig ConfigureCommsSensor(String sensorModel, double range, double accuracy,
-            double batteryUsage, double delay, int count, boolean active) {
-        return new CommsSensorConfig(
-            new CommsSensorProto(sensorModel, range, accuracy, batteryUsage, delay),
-            count,
-            active
-        );
-    }
-
-    public static CommsSensorConfig ConfigureCommsSensor(String sensorModel, double range, double accuracy,
-            double batteryUsage, double delay, Collection<String> sensorIDs, boolean active) {
-        return new CommsSensorConfig(
-            new CommsSensorProto(sensorModel, range, accuracy, batteryUsage, delay),
-            sensorIDs,
-            active
-        );
-    }
-
-    public static MonitorSensorConfig ConfigureMonitorSensor(String sensorModel, double range, double accuracy,
-            double batteryUsage, int count, boolean active) {
-        return new MonitorSensorConfig(
-            new MonitorSensorProto(sensorModel, range, accuracy, batteryUsage),
-            count,
-            active
-        );
-    }
-
-    public static MonitorSensorConfig ConfigureMonitorSensor(String sensorModel, double range, double accuracy,
-            double batteryUsage, Collection<String> sensorIDs, boolean active) {
-        return new MonitorSensorConfig(
-            new MonitorSensorProto(sensorModel, range, accuracy, batteryUsage),
-            sensorIDs,
-            active
-        );
-    }
-
-    public static VisionSensorConfig ConfigureVisionSensor(String sensorModel, double range, double accuracy,
-            double batteryUsage, int count, boolean active) {
-        return new VisionSensorConfig(
-            new VisionSensorProto(sensorModel, range, accuracy, batteryUsage),
-            count,
-            active
-        );
-    }
-
-    public static VisionSensorConfig ConfigureVisionSensor(String sensorModel, double range, double accuracy,
-            double batteryUsage, Collection<String> sensorIDs, boolean active) {
-        return new VisionSensorConfig(
-            new VisionSensorProto(sensorModel, range, accuracy, batteryUsage),
-            sensorIDs,
-            active
-        );
     }
 
     public static MonitorSensorProto HRVMSensor(double range, double accuracy, double batteryUsage) {

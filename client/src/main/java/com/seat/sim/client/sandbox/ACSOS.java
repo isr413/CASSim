@@ -12,12 +12,14 @@ import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteConfig;
-import com.seat.sim.common.remote.RemoteRegistry;
 import com.seat.sim.common.remote.base.BaseRemoteConfig;
+import com.seat.sim.common.remote.base.BaseRemoteProto;
 import com.seat.sim.common.remote.intent.IntentionSet;
 import com.seat.sim.common.remote.mobile.aerial.AerialRemoteController;
 import com.seat.sim.common.remote.mobile.aerial.drone.DroneRemoteConfig;
+import com.seat.sim.common.remote.mobile.aerial.drone.DroneRemoteProto;
 import com.seat.sim.common.remote.mobile.victim.VictimRemoteConfig;
+import com.seat.sim.common.remote.mobile.victim.VictimRemoteProto;
 import com.seat.sim.common.scenario.Snapshot;
 import com.seat.sim.common.sensor.SensorConfig;
 import com.seat.sim.common.sensor.SensorRegistry;
@@ -44,27 +46,25 @@ public class ACSOS implements SARApplication {
         return new Grid(ACSOS.MAP_SIZE, ACSOS.MAP_SIZE, ACSOS.ZONE_SIZE);
     }
 
-    private static ArrayList<BaseRemoteConfig> getBaseRemoteConfiguration() {
-        return new ArrayList<>(
-            Arrays.asList(
-                RemoteRegistry.ConfigureBaseRemote(
-                    ACSOS.BASE_LOCATION,
-                    1,
-                    new ArrayList<SensorConfig>(
-                        Arrays.asList(
-                            new SensorConfig(
-                                ACSOS.getLongRangeComms(),
-                                1,
-                                true
-                            )
+    private static BaseRemoteConfig getBaseRemoteConfiguration() {
+        return new BaseRemoteConfig(
+            new BaseRemoteProto(
+                ACSOS.BASE_LOCATION,
+                1,
+                new ArrayList<SensorConfig>(
+                    Arrays.asList(
+                        new SensorConfig(
+                            ACSOS.getLongRangeComms(),
+                            1,
+                            true
                         )
-                    ),
-                    TeamColor.GREEN,
-                    ACSOS.BASE_COUNT,
-                    true,
-                    false
+                    )
                 )
-            )
+            ),
+            TeamColor.GREEN,
+            ACSOS.BASE_COUNT,
+            true,
+            false
         );
     }
 
@@ -76,42 +76,38 @@ public class ACSOS implements SARApplication {
         return SensorRegistry.CMOSCameraSensor(10, 1, 0);
     }
 
-    private static ArrayList<DroneRemoteConfig> getDroneRemoteConfiguration() {
-        return new ArrayList<>(
-            Arrays.asList(
-                RemoteRegistry.ConfigureDroneRemote(
-                    ACSOS.BASE_LOCATION,
-                    1,
-                    new ArrayList<SensorConfig>(
-                        Arrays.asList(
-                            new SensorConfig(
-                                ACSOS.getLongRangeComms(),
-                                1,
-                                true
-                            ),
-                            new SensorConfig(
-                                ACSOS.getBluetoothComms(),
-                                1,
-                                true
-                            ),
-                            new SensorConfig(
-                                ACSOS.getDroneCamera(),
-                                1,
-                                true
-                            )
+    private static DroneRemoteConfig getDroneRemoteConfiguration() {
+        return new DroneRemoteConfig(
+            new DroneRemoteProto(
+                ACSOS.BASE_LOCATION,
+                1,
+                new ArrayList<SensorConfig>(
+                    Arrays.asList(
+                        new SensorConfig(
+                            ACSOS.getLongRangeComms(),
+                            1,
+                            true
+                        ),
+                        new SensorConfig(
+                            ACSOS.getBluetoothComms(),
+                            1,
+                            true
+                        ),
+                        new SensorConfig(
+                            ACSOS.getDroneCamera(),
+                            1,
+                            true
                         )
-                    ),
-                    30,
-                    10,
-                    new Vector(),
-                    TeamColor.BLUE,
-                    ACSOS.DRONE_COUNT,
-                    true,
-                    true,
-                    0,
-                    0
-                )
-            )
+                    )
+                ),
+                30,
+                10,
+                new Vector()
+            ),
+            TeamColor.BLUE,
+            ACSOS.DRONE_COUNT,
+            true,
+            true
         );
     }
 
@@ -123,36 +119,34 @@ public class ACSOS implements SARApplication {
         return SensorRegistry.HRVMSensor(0, 1, 0);
     }
 
-    private static ArrayList<VictimRemoteConfig> getVictimRemoteConfiguration() {
-        return new ArrayList<>(
-            Arrays.asList(
-                RemoteRegistry.ConfigureVictimRemote(
-                    null,
-                    1,
-                    new ArrayList<SensorConfig>(
-                        Arrays.asList(
-                            new SensorConfig(
-                                ACSOS.getBluetoothComms(),
-                                1,
-                                true
-                            ),
-                            new SensorConfig(
-                                ACSOS.getVictimHRVM(),
-                                1,
-                                true
-                            )
+    private static VictimRemoteConfig getVictimRemoteConfiguration() {
+        return new VictimRemoteConfig(
+            new VictimRemoteProto(
+                null,
+                1,
+                new ArrayList<SensorConfig>(
+                    Arrays.asList(
+                        new SensorConfig(
+                            ACSOS.getBluetoothComms(),
+                            1,
+                            true
+                        ),
+                        new SensorConfig(
+                            ACSOS.getVictimHRVM(),
+                            1,
+                            true
                         )
-                    ),
-                    9,
-                    3,
-                    TeamColor.RED,
-                    ACSOS.VICTIM_COUNT,
-                    true,
-                    false,
-                    1.78,
-                    1
-                )
-            )
+                    )
+                ),
+                9,
+                3
+            ),
+            TeamColor.RED,
+            ACSOS.VICTIM_COUNT,
+            true,
+            false,
+            1.78,
+            1
         );
     }
 
@@ -168,11 +162,13 @@ public class ACSOS implements SARApplication {
     public ACSOS(String[] args) {
         this.rng = new Random();
         this.grid = ACSOS.getACSOSGrid();
-        this.remoteConfigs = new ArrayList<RemoteConfig>(){{
-            addAll(ACSOS.getBaseRemoteConfiguration());
-            addAll(ACSOS.getDroneRemoteConfiguration());
-            addAll(ACSOS.getVictimRemoteConfiguration());
-        }};
+        this.remoteConfigs = new ArrayList<>(
+            Arrays.asList(
+                ACSOS.getBaseRemoteConfiguration(),
+                ACSOS.getDroneRemoteConfiguration(),
+                ACSOS.getVictimRemoteConfiguration()
+            )
+        );
         this.localGoals = null;
     }
 
