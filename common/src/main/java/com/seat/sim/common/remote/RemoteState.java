@@ -45,8 +45,9 @@ public class RemoteState extends JSONAble {
         this.location = location;
         this.battery = battery;
         this.active = active;
-        this.sensorStates = sensorStates.stream()
-            .collect(Collectors.toMap(SensorState::getSensorID, Function.identity()));
+        this.sensorStates = (sensorStates != null) ?
+            sensorStates.stream().collect(Collectors.toMap(SensorState::getSensorID, Function.identity())) :
+            new HashMap<>();
     }
 
     public RemoteState(JSONOption option) throws JSONException {

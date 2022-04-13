@@ -82,7 +82,6 @@ public class AppClient {
                 break;
             }
 
-            Debugger.logger.info(snap.toString());
             if (visualDisplay && frame != null) {
                 Debugger.logger.info(String.format("Displaying snap <%s> ...", snap.getHash()));
                 frame.displaySnap(snap);

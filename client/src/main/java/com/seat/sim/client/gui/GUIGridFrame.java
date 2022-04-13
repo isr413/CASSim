@@ -68,11 +68,11 @@ public class GUIGridFrame extends JFrame {
 
     public void displaySnap(Snapshot snap) {
         ArrayList<Point> points = new ArrayList<>();
-        for (RemoteState state : snap.getState()) {
+        for (RemoteState remoteState : snap.getRemoteStates()) {
             points.add(Point.Colored(
-                (int) Math.round(state.getLocation().getX()),
-                (int) Math.round(state.getLocation().getY()),
-                state.getTeam())
+                (int) Math.round(remoteState.getLocation().getX()),
+                (int) Math.round(remoteState.getLocation().getY()),
+                remoteState.getTeam())
             );
         }
         this.panel.paintPoints(points);
