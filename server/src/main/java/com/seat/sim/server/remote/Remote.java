@@ -3,8 +3,9 @@ package com.seat.sim.server.remote;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.math.Vector;
@@ -12,7 +13,6 @@ import com.seat.sim.common.remote.RemoteProto;
 import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.remote.intent.ActivateIntention;
 import com.seat.sim.common.remote.intent.DeactivateIntention;
-import com.seat.sim.common.remote.intent.Intention;
 import com.seat.sim.common.remote.intent.IntentionSet;
 import com.seat.sim.common.remote.intent.IntentionType;
 import com.seat.sim.common.sensor.SensorConfig;
@@ -27,8 +27,8 @@ import com.seat.sim.server.sensor.SensorFactory;
 public class Remote {
 
     private boolean active;
-    private HashMap<String, Sensor> activeSensors;
-    private HashMap<String, Sensor> allSensors;
+    private Map<String, Sensor> activeSensors;
+    private Map<String, Sensor> allSensors;
     private double battery;
     private boolean done;
     private Vector location;
@@ -68,8 +68,11 @@ public class Remote {
         }
     }
 
-    public boolean activateSensors() throws SimException {
-        return this.activateSensors(this.getInactiveSensorIDs());
+    public boolean activateAllSensors() {
+        this.getSensors().stream()
+            .filter(sensor -> this.hasInactiveSensorWithID(sensor.getSensorID()))
+            .forEach(sensor -> this.activateSensorWithID(sensor.getSensorID()));
+        return true;
     }
 
     public boolean activateSensors(Collection<String> sensorIDs) throws SimException {
@@ -103,8 +106,11 @@ public class Remote {
         return true;
     }
 
-    public boolean deactivateSensors() throws SimException {
-        return this.deactivateSensors(this.getActiveSensorIDs());
+    public boolean deactivateAllSensors() {
+        this.getSensors().stream()
+            .filter(sensor -> this.hasActiveSensorWithID(sensor.getSensorID()))
+            .forEach(sensor -> this.deactivateSensorWithID(sensor.getSensorID()));
+        return true;
     }
 
     public boolean deactivateSensors(Collection<String> sensorIDs) throws SimException {
@@ -146,84 +152,20 @@ public class Remote {
         return this.activeSensors.values();
     }
 
-    public Collection<Sensor> getActiveSensorsWithModel(String sensorModel) {
-        ArrayList<Sensor> sensors = new ArrayList<>();
-        for (Sensor sensor : this.activeSensors.values()) {
-            if (sensor.getSensorModel().equals(sensorModel)) {
-                sensors.add(sensor);
-            }
-        }
-        return sensors;
-    }
-
-    public Collection<Sensor> getActiveSensorsWithType(Class<? extends SensorProto> classType) {
-        ArrayList<Sensor> sensors = new ArrayList<>();
-        for (Sensor sensor : this.activeSensors.values()) {
-            if (classType.isAssignableFrom(sensor.getProto().getClass())) {
-                sensors.add(sensor);
-            }
-        }
-        if (sensors.isEmpty()) {
-            Debugger.logger.warn(String.format("Remote %s has no active sensors with type %s", this.getRemoteID(),
-                classType.getName()));
-        }
-        return sensors;
-    }
-
-    public Sensor getActiveSensorWithID(String sensorID) throws SimException {
-        if (!this.hasActiveSensorWithID(sensorID)) {
-            throw new SimException(String.format("Remote %s has no active sensor %s", this.getRemoteID(), sensorID));
-        }
-        return this.activeSensors.get(sensorID);
-    }
-
     public double getBattery() {
         return this.battery;
     }
 
     public Collection<String> getInactiveSensorIDs() {
-        HashSet<String> sensorIDs = new HashSet<>();
-        for (String sensorID : this.allSensors.keySet()) {
-            if (!this.hasActiveSensorWithID(sensorID)) {
-                sensorIDs.add(sensorID);
-            }
-        }
-        return sensorIDs;
+        return this.getSensorIDs().stream()
+            .filter(sensorID -> this.hasInactiveSensorWithID(sensorID))
+            .collect(Collectors.toList());
     }
 
     public Collection<Sensor> getInactiveSensors() {
-        ArrayList<Sensor> sensors = new ArrayList<>();
-        for (String sensorID : this.getInactiveSensorIDs()) {
-            sensors.add(this.getSensorWithID(sensorID));
-        }
-        return sensors;
-    }
-
-    public Collection<Sensor> getInactiveSensorsWithModel(String sensorModel) {
-        ArrayList<Sensor> sensors = new ArrayList<>();
-        for (Sensor sensor : this.getInactiveSensors()) {
-            if (sensor.getSensorModel().equals(sensorModel)) {
-                sensors.add(sensor);
-            }
-        }
-        return sensors;
-    }
-
-    public Collection<Sensor> getInactiveSensorsWithType(Class<? extends SensorProto> classType) {
-        ArrayList<Sensor> sensors = new ArrayList<>();
-        for (Sensor sensor : this.getInactiveSensors()) {
-            if (classType.isAssignableFrom(sensor.getProto().getClass())) {
-                sensors.add(sensor);
-            }
-        }
-        return sensors;
-    }
-
-    public Sensor getInactiveSensorWithID(String sensorID) throws SimException {
-        if (!this.hasInactiveSensorWithID(sensorID)) {
-            throw new SimException(String.format("Remote %s has no inactive sensor %s", this.getRemoteID(), sensorID));
-        }
-        return this.allSensors.get(sensorID);
+        return this.getInactiveSensorIDs().stream()
+            .map(sensorID -> this.getSensorWithID(sensorID))
+            .collect(Collectors.toList());
     }
 
     public String getLabel() {
@@ -246,6 +188,10 @@ public class Remote {
         return this.remoteID;
     }
 
+    public RemoteState getRemoteState() {
+        return new RemoteState(this.remoteID, this.team, this.location, this.battery, this.active);
+    }
+
     public String getRemoteType() {
         return this.proto.getRemoteType();
     }
@@ -258,32 +204,24 @@ public class Remote {
         return this.allSensors.values();
     }
 
-    public Collection<SensorState> getSensorState() {
-        ArrayList<SensorState> state = new ArrayList<>();
-        for (Sensor sensor : this.activeSensors.values()) {
-            state.add(sensor.getState());
-        }
-        return state;
+    public Collection<SensorState> getSensorStates() {
+        return this.getSensors().stream()
+            .map(sensor -> sensor.getState())
+            .collect(Collectors.toList());
     }
 
     public Collection<Sensor> getSensorsWithModel(String sensorModel) {
-        ArrayList<Sensor> sensors = new ArrayList<>();
-        for (Sensor sensor : this.allSensors.values()) {
-            if (sensor.getSensorModel().equals(sensorModel)) {
-                sensors.add(sensor);
-            }
-        }
-        return sensors;
+        return this.getSensors().stream()
+            .filter(sensor -> sensor.getSensorModel().equals(sensorModel))
+            .collect(Collectors.toList());
     }
 
-    public Collection<Sensor> getSensorsWithType(Class<? extends SensorProto> classType) {
-        ArrayList<Sensor> sensors = new ArrayList<>();
-        for (Sensor sensor : this.allSensors.values()) {
-            if (classType.isAssignableFrom(sensor.getProto().getClass())) {
-                sensors.add(sensor);
-            }
-        }
-        return sensors;
+    @SuppressWarnings("unchecked")
+    public <T extends Sensor> Collection<T> getSensorsWithType(Class<? extends T> classType) {
+        return this.getSensors().stream()
+            .filter(sensor -> classType.isAssignableFrom(sensor.getClass()))
+            .map(sensor -> (T) sensor)
+            .collect(Collectors.toList());
     }
 
     public Sensor getSensorWithID(String sensorID) throws SimException {
@@ -291,10 +229,6 @@ public class Remote {
             throw new SimException(String.format("Remote %s has no sensor %s", this.getRemoteID(), sensorID));
         }
         return this.allSensors.get(sensorID);
-    }
-
-    public RemoteState getState() {
-        return new RemoteState(this.remoteID, this.team, this.location, this.battery, this.active);
     }
 
     public TeamColor getTeam() {
@@ -309,48 +243,12 @@ public class Remote {
         return this.activeSensors.containsKey(sensorID);
     }
 
-    public boolean hasActiveSensorWithModel(String sensorModel) {
-        for (Sensor sensor : this.activeSensors.values()) {
-            if (sensor.getSensorModel().equals(sensorModel)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean hasActiveSensorWithType(Class<? extends SensorProto> classType) {
-        for (Sensor sensor : this.activeSensors.values()) {
-            if (classType.isAssignableFrom(sensor.getProto().getClass())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public boolean hasInactiveSensors() {
         return this.activeSensors.size() < this.allSensors.size();
     }
 
     public boolean hasInactiveSensorWithID(String sensorID) {
         return this.hasSensorWithID(sensorID) && !this.hasActiveSensorWithID(sensorID);
-    }
-
-    public boolean hasInactiveSensorWithModel(String sensorModel) {
-        for (Sensor sensor : this.getInactiveSensors()) {
-            if (sensor.getSensorModel().equals(sensorModel)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean hasInactiveSensorWithType(Class<? extends SensorProto> classType) {
-        for (Sensor sensor : this.getInactiveSensors()) {
-            if (classType.isAssignableFrom(sensor.getProto().getClass())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean hasLocation() {
@@ -366,21 +264,11 @@ public class Remote {
     }
 
     public boolean hasSensorWithModel(String sensorModel) {
-        for (Sensor sensor : this.allSensors.values()) {
-            if (sensor.getSensorModel().equals(sensorModel)) {
-                return true;
-            }
-        }
-        return false;
+        return !this.getSensorsWithModel(sensorModel).isEmpty();
     }
 
-    public boolean hasSensorWithType(Class<? extends SensorProto> classType) {
-        for (Sensor sensor : this.allSensors.values()) {
-            if (classType.isAssignableFrom(sensor.getProto().getClass())) {
-                return true;
-            }
-        }
-        return false;
+    public boolean hasSensorWithType(Class<? extends Sensor> classType) {
+        return !this.getSensorsWithType(classType).isEmpty();
     }
 
     public boolean hasTeam() {
@@ -389,6 +277,10 @@ public class Remote {
 
     public boolean isActive() {
         return this.active && this.isEnabled();
+    }
+
+    public boolean isAerial() {
+        return this.proto.isAerial();
     }
 
     public boolean isDisabled() {
@@ -403,16 +295,20 @@ public class Remote {
         return this.getProto().isEnabled() && this.battery > 0;
     }
 
+    public boolean isGround() {
+        return this.proto.isGround();
+    }
+
     public boolean isInactive() {
         return !this.isActive();
     }
 
     public boolean isMobile() {
-        return false;
+        return this.proto.isMobile();
     }
 
     public boolean isStationary() {
-        return !this.isMobile();
+        return this.proto.isStationary();
     }
 
     public void setActive() {
@@ -432,7 +328,7 @@ public class Remote {
     }
 
     public void setInactive() {
-        this.deactivateSensors();
+        this.deactivateAllSensors();
         this.active = false;
     }
 
@@ -457,11 +353,20 @@ public class Remote {
             }
             if (intentions.hasIntentionWithType(IntentionType.ACTIVATE)) {
                 ActivateIntention intent = (ActivateIntention) intentions.getIntentionWithType(IntentionType.ACTIVATE);
-                this.activateSensors(intent.getActivations());
+                if (intent.hasActivations()) {
+                    this.activateSensors(( intent).getActivations());
+                } else {
+                    this.activateAllSensors();
+                }
             }
             if (intentions.hasIntentionWithType(IntentionType.DEACTIVATE)) {
-                Intention intent = intentions.getIntentionWithType(IntentionType.DEACTIVATE);
-                this.deactivateSensors(((DeactivateIntention) intent).getDeactivations());
+                DeactivateIntention intent =
+                    (DeactivateIntention) intentions.getIntentionWithType(IntentionType.DEACTIVATE);
+                if (intent.hasDeactivations()) {
+                    this.deactivateSensors(intent.getDeactivations());
+                } else {
+                    this.deactivateAllSensors();
+                }
             }
             if (intentions.hasIntentionWithType(IntentionType.SHUTDOWN)) {
                 this.setInactive();

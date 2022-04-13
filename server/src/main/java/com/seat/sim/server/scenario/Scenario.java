@@ -1,12 +1,11 @@
 package com.seat.sim.server.scenario;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.seat.sim.common.math.Field;
 import com.seat.sim.common.math.Grid;
@@ -17,24 +16,23 @@ import com.seat.sim.common.remote.RemoteController;
 import com.seat.sim.common.remote.RemoteProto;
 import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.remote.intent.IntentionSet;
+import com.seat.sim.common.remote.mobile.MobileRemoteConfig;
 import com.seat.sim.common.scenario.ScenarioConfig;
 import com.seat.sim.common.scenario.ScenarioStatus;
 import com.seat.sim.common.scenario.Snapshot;
 import com.seat.sim.common.util.Debugger;
 import com.seat.sim.common.util.Random;
 import com.seat.sim.server.core.SimException;
-import com.seat.sim.server.remote.DroneRemote;
 import com.seat.sim.server.remote.MobileRemote;
 import com.seat.sim.server.remote.Remote;
 import com.seat.sim.server.remote.RemoteFactory;
-import com.seat.sim.server.remote.VictimRemote;
 
 public class Scenario {
 
-    private HashMap<String, Remote> activeRemotes;
-    private HashMap<String, Remote> allRemotes;
+    private Map<String, Remote> activeRemotes;
+    private Map<String, Remote> allRemotes;
     private ScenarioConfig config;
-    private HashMap<String, Remote> dynamicRemotes;
+    private Map<String, Remote> dynamicRemotes;
     private Random rng;
     private ScenarioStatus status;
     private double time;
@@ -108,21 +106,17 @@ public class Scenario {
                     remote.setLocation(this.rng.getRandomLocation2D(this.getGridWidth(), this.getGridHeight()));
                 }
                 if (remoteConfig.isPassive() && remote.isActive() && remote.isMobile()) {
-                    if (VictimRemote.class.isAssignableFrom(remote.getClass())) {
-                        VictimRemote victim = (VictimRemote) remote;
-                        victim.setVelocity(this.rng.getRandomSpeed2D(
-                            victim.getProto().getSpeedMean(),
-                            victim.getProto().getSpeedStdDev()
+                    MobileRemoteConfig mobileRemoteConfig = (MobileRemoteConfig) remoteConfig;
+                    MobileRemote mobileRemote = (MobileRemote) remote;
+                    if (mobileRemoteConfig.hasSpeedMean() && mobileRemoteConfig.hasSpeedStdDev()) {
+                        mobileRemote.setVelocity(this.rng.getRandomSpeed2D(
+                            mobileRemoteConfig.getSpeedMean(),
+                            mobileRemoteConfig.getSpeedStdDev()
                         ));
+                    } else if (mobileRemote.hasMaxVelocity()) {
+                        mobileRemote.setVelocity(this.rng.getRandomSpeed2D(mobileRemote.getMaxVelocity()));
                     } else {
-                        MobileRemote mobileRemote = (MobileRemote) remote;
-                        if (mobileRemote.getProto().hasMaxVelocity()) {
-                            mobileRemote.setVelocity(this.rng.getRandomSpeed2D(
-                                mobileRemote.getProto().getMaxVelocity()
-                            ));
-                        } else {
-                            mobileRemote.setVelocity(Vector.scale(this.rng.getRandomDirection2D(), this.getZoneSize()));
-                        }
+                        mobileRemote.setVelocity(Vector.scale(this.rng.getRandomDirection2D(), this.getZoneSize()));
                     }
                 }
             }
@@ -146,31 +140,15 @@ public class Scenario {
     }
 
     public Collection<String> getActiveDynamicRemoteIDs() {
-        HashSet<String> activeDynamicRemoteIDs = new HashSet<>();
-        for (String remoteID : this.activeRemotes.keySet()) {
-            if (this.hasDynamicRemoteWithID(remoteID)) {
-                activeDynamicRemoteIDs.add(remoteID);
-            }
-        }
-        return activeDynamicRemoteIDs;
+        return this.getActiveRemoteIDs().stream()
+            .filter(remoteID -> this.hasDynamicRemoteWithID(remoteID))
+            .collect(Collectors.toList());
     }
 
     public Collection<Remote> getActiveDynamicRemotes() {
-        ArrayList<Remote> activeDynamicRemotes = new ArrayList<>();
-        for (String remoteID : this.activeRemotes.keySet()) {
-            if (this.hasDynamicRemoteWithID(remoteID)) {
-                activeDynamicRemotes.add(this.getDynamicRemoteWithID(remoteID));
-            }
-        }
-        return activeDynamicRemotes;
-    }
-
-    public Remote getActiveDynamicRemoteWithID(String remoteID) throws SimException {
-        if (!this.hasActiveDynamicRemoteWithID(remoteID)) {
-            throw new SimException(String.format("Scenario <%s> has no active, dynamic remote %s", this.getScenarioID(),
-                remoteID));
-        }
-        return this.activeRemotes.get(remoteID);
+        return this.getActiveDynamicRemoteIDs().stream()
+            .map(remoteID -> this.getRemoteWithID(remoteID))
+            .collect(Collectors.toList());
     }
 
     public Collection<String> getDynamicRemoteIDs() {
@@ -179,14 +157,6 @@ public class Scenario {
 
     public Collection<Remote> getDynamicRemotes() {
         return this.dynamicRemotes.values();
-    }
-
-    public Remote getDynamicRemoteWithID(String remoteID) throws SimException {
-        if (!this.hasDynamicRemoteWithID(remoteID)) {
-            throw new SimException(String.format("Scenario <%s> has no dynamic remote %s", this.getScenarioID(),
-                remoteID));
-        }
-        return this.dynamicRemotes.get(remoteID);
     }
 
     public Grid getGrid() {
@@ -206,30 +176,15 @@ public class Scenario {
     }
 
     public Collection<String> getPassiveRemoteIDs() {
-        HashSet<String> passiveRemoteIDs = new HashSet<>();
-        for (String remoteID : this.allRemotes.keySet()) {
-            if (this.hasDynamicRemoteWithID(remoteID)) {
-                continue;
-            }
-            passiveRemoteIDs.add(remoteID);
-        }
-        return passiveRemoteIDs;
+        return this.getRemoteIDs().stream()
+            .filter(remoteID -> !this.hasDynamicRemoteWithID(remoteID))
+            .collect(Collectors.toList());
     }
 
     public Collection<Remote> getPassiveRemotes() {
-        ArrayList<Remote> passiveRemotes = new ArrayList<>();
-        for (String remoteID : this.getPassiveRemoteIDs()) {
-            passiveRemotes.add(this.getPassiveRemoteWithID(remoteID));
-        }
-        return passiveRemotes;
-    }
-
-    public Remote getPassiveRemoteWithID(String remoteID) throws SimException {
-        if (!this.hasPassiveRemoteWithID(remoteID)) {
-            throw new SimException(String.format("Scenario <%s> has no passive remote %s", this.getScenarioID(),
-                remoteID));
-        }
-        return this.allRemotes.get(remoteID);
+        return this.getPassiveRemoteIDs().stream()
+            .map(remoteID -> this.getRemoteWithID(remoteID))
+            .collect(Collectors.toList());
     }
 
     public Collection<String> getRemoteIDs() {
@@ -262,7 +217,6 @@ public class Scenario {
             this.status,
             this.time,
             this.getStepSize(),
-            this.getRemoteIDs(),
             this.getActiveRemoteIDs(),
             this.getDynamicRemoteIDs(),
             this.getState()
@@ -270,11 +224,7 @@ public class Scenario {
     }
 
     public Map<String, RemoteState> getState() {
-        HashMap<String, RemoteState> state = new HashMap<>();
-        for (String remoteID : this.allRemotes.keySet()) {
-            state.put(remoteID, this.allRemotes.get(remoteID).getState());
-        }
-        return state;
+        return this.getRemotes().stream().collect(Collectors.toMap(Remote::getRemoteID, Remote::getRemoteState));
     }
 
     public ScenarioStatus getStatus() {
@@ -302,12 +252,7 @@ public class Scenario {
     }
 
     public boolean hasActiveDynamicRemotes() {
-        for (String remoteID : this.activeRemotes.keySet()) {
-            if (this.hasDynamicRemoteWithID(remoteID)) {
-                return true;
-            }
-        }
-        return false;
+        return !this.getActiveDynamicRemoteIDs().isEmpty();
     }
 
     public boolean hasActiveDynamicRemoteWithID(String remoteID) {
@@ -365,53 +310,53 @@ public class Scenario {
         this.time = time;
     }
 
+    private void applyZoneEffectsToRemote(Remote remote, double stepSize) throws SimException {
+        if (this.getGrid().isOutOfBounds(remote.getLocation())) {
+            return;
+        }
+        if (remote.isStationary()) {
+            return;
+        }
+        MobileRemote mobileRemote = (MobileRemote) remote;
+        Zone zone = this.getGrid().getZoneAtLocation(mobileRemote.getLocation());
+        Field field = (remote.isAerial()) ?
+            zone.getAerialField() :
+            zone.getGroundField();
+        if (field.isPullForce() && field.getMagnitude() > 0) {
+            mobileRemote.updateAcceleration(
+                Vector.scale(
+                    Vector.subtract(field.getPoint(), mobileRemote.getLocation()).getUnitVector(),
+                    field.getMagnitude()
+                )
+            );
+        } else if (field.isPushForce() && field.getMagnitude() > 0) {
+            mobileRemote.updateAcceleration(
+                Vector.scale(
+                    Vector.subtract(mobileRemote.getLocation(), field.getPoint()).getUnitVector(),
+                    field.getMagnitude()
+                )
+            );
+        }
+        if (field.getJerk().getMagnitude() > 0) {
+            mobileRemote.updateAcceleration(field.getJerk());
+        }
+    }
+
     private void updateRemotes(Map<String, IntentionSet> intentions, double stepSize) throws SimException {
         for (Remote remote : this.getRemotes()) {
             if (remote.isDisabled()) {
                 continue;
             }
-            Zone zone = this.getGrid().getZoneAtLocation(remote.getLocation());
-            Field field = null;
-            if (remote instanceof DroneRemote && zone.hasAerialField()) {
-                field = zone.getAerialField();
-            } else if (remote instanceof VictimRemote && zone.hasGroundField()) {
-                field = zone.getGroundField();
+            Debugger.logger.info(String.format("Updating remote %s ...", remote.getRemoteID()));
+            if (this.getGrid().isInbounds(remote.getLocation()) && remote.isMobile()) {
+                this.applyZoneEffectsToRemote(remote, stepSize);
             }
-            if (field != null) {
-                MobileRemote mobile = (MobileRemote) remote;
-                if (field.isPullForce() && field.getMagnitude() > 0) {
-                    mobile.updateAcceleration(
-                        Vector.scale(
-                            Vector.subtract(field.getPoint(), mobile.getLocation()).getUnitVector(),
-                            field.getMagnitude()
-                        ),
-                        stepSize
-                    );
-                } else if (field.isPushForce() && field.getMagnitude() > 0) {
-                    mobile.updateAcceleration(
-                        Vector.scale(
-                            Vector.subtract(mobile.getLocation(), field.getPoint()).getUnitVector(),
-                            field.getMagnitude()
-                        ),
-                        stepSize
-                    );
-                }
-                if (field.getJerk().getMagnitude() > 0) {
-                    mobile.updateAcceleration(field.getJerk(), stepSize);
-                }
-            }
-            if (this.hasDynamicRemoteWithID(remote.getRemoteID())) {
-                if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
-                    this.updateDynamicRemote(remote, intentions.get(remote.getRemoteID()), stepSize);
-                } else {
-                    this.updateDynamicRemote(remote, null, stepSize);
-                }
+            if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
+                remote.update(this, intentions.get(remote.getRemoteID()), stepSize);
+            } else if (this.hasDynamicRemoteWithID(remote.getRemoteID())) {
+                remote.update(this, stepSize);
             } else {
-                if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
-                    this.updatePassiveRemote(remote, intentions.get(remote.getRemoteID()), stepSize);
-                } else {
-                    this.updatePassiveRemote(remote, null, stepSize);
-                }
+                this.updatePassiveRemote(remote, stepSize);
             }
             if (this.getGrid().isOutOfBounds(remote.getLocation())) {
                 this.assertFail(String.format("Remote %s out of bounds at %s", remote.getLabel(),
@@ -425,31 +370,18 @@ public class Scenario {
         }
     }
 
-    private void updateDynamicRemote(Remote remote, IntentionSet intentions, double stepSize) throws SimException {
-        if (intentions != null) {
-            remote.update(this, intentions, stepSize);
-        } else {
-            remote.update(this, stepSize);
+    private void updatePassiveRemote(Remote remote, double stepSize) throws SimException {
+        RemoteController controller = new RemoteController(remote.getRemoteID());
+        if (this.justStarted() && remote.isActive() && remote.hasInactiveSensors()) {
+            controller.activateAllSensors();
         }
-    }
-
-    private void updatePassiveRemote(Remote remote, IntentionSet intentions, double stepSize) throws SimException {
-        if (intentions != null) {
-            remote.update(this, intentions, stepSize);
-        } else {
-            RemoteController controller = new RemoteController(remote.getRemoteID());
-            if (this.justStarted() && remote.isActive() && remote.hasInactiveSensors()) {
-                controller.activateAllSensors();
-            }
-            if ((remote.isInactive() || remote.isDone()) && remote.hasActiveSensors()) {
-                controller.deactivateAllSensors();
-            }
-            Vector location = remote.getLocation();
-            if (this.getGrid().isInbounds(location)) {
-                remote.update(this, controller.getIntentions(), stepSize);
-                if (remote.isMobile() && this.getGrid().isOutOfBounds(remote.getLocation())) {
-                    this.enforceBounds((MobileRemote) remote, location);
-                }
+        if ((remote.isInactive() || remote.isDone()) && remote.hasActiveSensors()) {
+            controller.deactivateAllSensors();
+        }
+        if (this.getGrid().isInbounds(remote.getLocation())) {
+            remote.update(this, controller.getIntentions(), stepSize);
+            if (remote.isMobile() && this.getGrid().isOutOfBounds(remote.getLocation())) {
+                this.enforceBounds((MobileRemote) remote, remote.getLocation());
             }
         }
     }
@@ -472,7 +404,6 @@ public class Scenario {
         }
         Debugger.logger.info("Updating remotes ...");
         this.updateRemotes(intentions, stepSize);
-        Debugger.logger.state("Updated remotes");
         if (this.justStarted()) {
             this.setStatus(ScenarioStatus.IN_PROGRESS);
         }

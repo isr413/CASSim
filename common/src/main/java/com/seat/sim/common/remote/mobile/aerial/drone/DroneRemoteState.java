@@ -6,11 +6,11 @@ import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONOption;
 import com.seat.sim.common.math.Vector;
-import com.seat.sim.common.remote.mobile.MobileRemoteState;
+import com.seat.sim.common.remote.mobile.aerial.AerialRemoteState;
 import com.seat.sim.common.sensor.SensorState;
 
 /** A serializable state of a Drone Remote. */
-public class DroneRemoteState extends MobileRemoteState {
+public class DroneRemoteState extends AerialRemoteState {
 
     public DroneRemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active,
             Vector velocity, Vector acceleration) {
