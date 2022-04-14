@@ -4,8 +4,6 @@ package com.seat.sim.common.remote.intent;
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.seat.sim.common.json.JSONArray;
-import com.seat.sim.common.json.JSONArrayBuilder;
 import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
@@ -42,10 +40,9 @@ public class DeactivateIntention extends Intention {
         super.decode(json);
         this.deactivations = new HashSet<>();
         if (json.hasKey(DeactivateIntention.DEACTIVATIONS)) {
-            JSONArray jsonSensorIDs = json.getJSONArray(DeactivateIntention.DEACTIVATIONS);
-            for (int i = 0; i < jsonSensorIDs.length(); i++) {
-                this.addDeactivation(jsonSensorIDs.getString(i));
-            }
+            this.deactivations = (json.hasKey(DeactivateIntention.DEACTIVATIONS)) ?
+                new HashSet<>(json.getJSONArray(DeactivateIntention.DEACTIVATIONS).toList(String.class)) :
+                new HashSet<>();
         }
     }
 
@@ -53,11 +50,7 @@ public class DeactivateIntention extends Intention {
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
         if (this.hasDeactivations()) {
-            JSONArrayBuilder jsonSensorIDs = JSONBuilder.Array();
-            for (String sensorID : this.deactivations) {
-                jsonSensorIDs.put(sensorID);
-            }
-            json.put(DeactivateIntention.DEACTIVATIONS, jsonSensorIDs.toJSON());
+            json.put(DeactivateIntention.DEACTIVATIONS, JSONBuilder.Array(this.deactivations));
         }
         return json;
     }

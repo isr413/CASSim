@@ -36,6 +36,24 @@ public class IntentRegistry {
         return new DoneIntention();
     }
 
+    public static Intention From(JSONOptional optional) throws JSONException {
+        if (!optional.isPresentObject()) {
+            throw new JSONException(String.format("Cannot decode intention type of %s", optional.toString()));
+        }
+        switch (IntentionType.decodeType(optional.getObject())) {
+            case ACTIVATE: return new ActivateIntention(optional);
+            case DEACTIVATE: return new DeactivateIntention(optional);
+            case DONE: return new DoneIntention();
+            case GOTO: return new GoToIntention(optional);
+            case MOVE: return new MoveIntention(optional);
+            case SHUTDOWN: return new ShutdownIntention();
+            case STARTUP: return new StartupIntention();
+            case STEER: return new SteerIntention(optional);
+            case STOP: return new StopIntention();
+            default: return new NoneIntention();
+        }
+    }
+
     public static GoToIntention GoTo() {
         return new GoToIntention();
     }
@@ -74,24 +92,6 @@ public class IntentRegistry {
 
     public static ShutdownIntention Shutdown() {
         return new ShutdownIntention();
-    }
-
-    public static Intention Some(JSONOptional optional) throws JSONException {
-        if (!optional.isPresentObject()) {
-            throw new JSONException(String.format("Cannot decode intention type of %s", optional.toString()));
-        }
-        switch (IntentionType.decodeType(optional.getObject())) {
-            case ACTIVATE: return new ActivateIntention(optional);
-            case DEACTIVATE: return new DeactivateIntention(optional);
-            case DONE: return new DoneIntention();
-            case GOTO: return new GoToIntention(optional);
-            case MOVE: return new MoveIntention(optional);
-            case SHUTDOWN: return new ShutdownIntention();
-            case STARTUP: return new StartupIntention();
-            case STEER: return new SteerIntention(optional);
-            case STOP: return new StopIntention();
-            default: return new NoneIntention();
-        }
     }
 
     public static StartupIntention Startup() {

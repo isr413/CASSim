@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.seat.sim.common.json.JSONArray;
-import com.seat.sim.common.json.JSONArrayBuilder;
 import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
@@ -40,24 +38,16 @@ public class ActivateIntention extends Intention {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.activations = new HashSet<>();
-        if (json.hasKey(ActivateIntention.ACTIVATIONS)) {
-            JSONArray jsonSensorIDs = json.getJSONArray(ActivateIntention.ACTIVATIONS);
-            for (int i = 0; i < jsonSensorIDs.length(); i++) {
-                this.addActivation(jsonSensorIDs.getString(i));
-            }
-        }
+        this.activations = (json.hasKey(ActivateIntention.ACTIVATIONS)) ?
+            new HashSet<>(json.getJSONArray(ActivateIntention.ACTIVATIONS).toList(String.class)) :
+            new HashSet<>();
     }
 
     @Override
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
         if (this.hasActivations()) {
-            JSONArrayBuilder jsonSensorIDs = JSONBuilder.Array();
-            for (String sensorID : this.activations) {
-                jsonSensorIDs.put(sensorID);
-            }
-            json.put(ActivateIntention.ACTIVATIONS, jsonSensorIDs.toJSON());
+            json.put(ActivateIntention.ACTIVATIONS, JSONBuilder.Array(this.activations));
         }
         return json;
     }

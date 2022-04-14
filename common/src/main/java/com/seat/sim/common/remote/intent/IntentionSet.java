@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONArray;
-import com.seat.sim.common.json.JSONArrayBuilder;
 import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
@@ -38,10 +37,9 @@ public class IntentionSet extends JSONAble {
         this.remoteID = json.getString(RemoteState.REMOTE_ID);
         this.intentions = new HashMap<>();
         if (json.hasKey(IntentionSet.INTENTIONS)) {
-            JSONArray jsonIntentions = json.getJSONArray(IntentionSet.INTENTIONS);
-            for (int i = 0; i < jsonIntentions.length(); i++) {
-                this.addIntention(IntentRegistry.Some(jsonIntentions.getJSONOptional(i)));
-            }
+            json.getJSONArray(IntentionSet.INTENTIONS).toList(JSONOptional.class).stream()
+                .map(optional -> IntentRegistry.From(optional))
+                .forEach(intent -> this.addIntention(intent));
         }
     }
 
@@ -117,11 +115,14 @@ public class IntentionSet extends JSONAble {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(RemoteState.REMOTE_ID, this.remoteID);
         if (this.hasIntentions()) {
-            JSONArrayBuilder jsonIntentions = JSONBuilder.Array();
-            for (Intention intent : this.intentions.values()) {
-                jsonIntentions.put(intent.toJSON());
-            }
-            json.put(IntentionSet.INTENTIONS, jsonIntentions.toJSON());
+            json.put(
+                IntentionSet.INTENTIONS,
+                JSONBuilder.Array(
+                    this.intentions.values().stream()
+                        .map(intent -> intent.toJSON())
+                        .collect(Collectors.toList())
+                ).toJSON()
+            );
         }
         return json.toJSON();
     }
