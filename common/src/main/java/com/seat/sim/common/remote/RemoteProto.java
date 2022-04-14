@@ -71,9 +71,9 @@ public class RemoteProto extends JSONAble {
         this.maxBatteryPower = json.getDouble(RemoteProto.MAX_BATTERY);
         this.sensorConfigs = new ArrayList<>();
         if (json.hasKey(RemoteProto.SENSORS)) {
-            JSONArray jsonSensors = json.getJSONArray(RemoteProto.SENSORS);
-            for (int i = 0; i < jsonSensors.length(); i++) {
-                this.sensorConfigs.add(SensorRegistry.decodeTo(jsonSensors.getJSONOptional(i), SensorConfig.class));
+            JSONArray jsonSensorConfigs = json.getJSONArray(RemoteProto.SENSORS);
+            for (int i = 0; i < jsonSensorConfigs.length(); i++) {
+                this.sensorConfigs.add(SensorRegistry.decodeTo(jsonSensorConfigs.getJSONOptional(i), SensorConfig.class));
             }
         }
         this.init();
@@ -87,11 +87,11 @@ public class RemoteProto extends JSONAble {
         }
         json.put(RemoteProto.MAX_BATTERY, this.maxBatteryPower);
         if (this.hasSensors()) {
-            JSONArrayBuilder jsonSensors = JSONBuilder.Array();
+            JSONArrayBuilder jsonSensorConfigs = JSONBuilder.Array();
             for (SensorConfig config : this.sensorConfigs) {
-                jsonSensors.put(config.toJSON());
+                jsonSensorConfigs.put(config.toJSON());
             }
-            json.put(RemoteProto.SENSORS, jsonSensors.toJSON());
+            json.put(RemoteProto.SENSORS, jsonSensorConfigs.toJSON());
         }
         return json;
     }

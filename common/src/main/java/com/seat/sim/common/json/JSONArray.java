@@ -1,9 +1,17 @@
 package com.seat.sim.common.json;
 
 import java.util.List;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 
 /** An interface for classes that support a JSON Array representation. */
 public interface JSONArray extends Iterable<Object>, JSONInterface {
+
+    /** Applies the consumer for each element in the JSONArray. */
+    void forEach(Consumer<? super Object> consumer);
+
+    /** Applies the consumer for each element in the JSONArray. */
+    <T> void forEach(Class<T> classType, Consumer<? super T> consumer);
 
     /** Returns the boolean value at index idx.
      * @throws JSONException if the value at idx cannot be converted to a boolean or is out of bounds
@@ -47,6 +55,9 @@ public interface JSONArray extends Iterable<Object>, JSONInterface {
 
     /** Returns the number of elements in the JSONArray. */
     int length();
+
+    /** Returns a spliterator for the JSONArray. */
+    Spliterator<Object> spliterator();
 
     /** Returns a List representation of the JSONArray. */
     List<Object> toList();

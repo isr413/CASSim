@@ -142,12 +142,12 @@ public class RemoteState extends JSONAble {
         return this.sensorStates.get(sensorID);
     }
 
-    public boolean hasLocation() {
-        return this.location != null;
-    }
-
     public TeamColor getTeam() {
         return this.team;
+    }
+
+    public boolean hasLocation() {
+        return this.location != null;
     }
 
     public boolean hasSensors() {

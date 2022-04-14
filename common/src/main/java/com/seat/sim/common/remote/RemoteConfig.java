@@ -6,8 +6,6 @@ import java.util.Set;
 
 import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONArray;
-import com.seat.sim.common.json.JSONArrayBuilder;
 import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
@@ -61,13 +59,9 @@ public class RemoteConfig extends JSONAble {
             TeamColor.decodeType(json) :
             TeamColor.NONE;
         this.count = json.getInt(RemoteConfig.COUNT);
-        this.remoteIDs = new HashSet<>();
-        if (json.hasKey(RemoteConfig.REMOTE_IDS)) {
-            JSONArray jsonRemotes = json.getJSONArray(RemoteConfig.REMOTE_IDS);
-            for (int i = 0; i < jsonRemotes.length(); i++) {
-                this.remoteIDs.add(jsonRemotes.getString(i));
-            }
-        }
+        this.remoteIDs = (json.hasKey(RemoteConfig.REMOTE_IDS)) ?
+            new HashSet<>(json.getJSONArray(RemoteConfig.REMOTE_IDS).toList(String.class)) :
+            new HashSet<>();
         this.active = json.getBoolean(RemoteState.ACTIVE);
         this.dynamic = json.getBoolean(RemoteConfig.DYNAMIC);
     }
@@ -81,11 +75,7 @@ public class RemoteConfig extends JSONAble {
         }
         json.put(RemoteConfig.COUNT, this.count);
         if (this.hasRemoteIDs()) {
-            JSONArrayBuilder jsonRemotes = JSONBuilder.Array();
-            for (String remoteID : this.remoteIDs) {
-                jsonRemotes.put(remoteID);
-            }
-            json.put(RemoteConfig.REMOTE_IDS, jsonRemotes.toJSON());
+            json.put(RemoteConfig.REMOTE_IDS, JSONBuilder.Array(this.remoteIDs).toJSON());
         }
         json.put(RemoteState.ACTIVE, this.active);
         json.put(RemoteConfig.DYNAMIC, this.dynamic);

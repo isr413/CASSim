@@ -130,9 +130,7 @@ public class JSONSocket {
                 if (this.in.ready()) {
                     String encoding = in.readLine();
                     JSONOptional optional = JSONOptional.ofNullable(encoding);
-                    if (!optional.isPresent()) {
-                        throw new CommonException(encoding);
-                    }
+                    if (!optional.isPresent()) throw new CommonException(encoding);
                     return optional;
                 }
             }

@@ -1,5 +1,8 @@
 package com.seat.sim.common.json;
 
+import java.util.Collection;
+import java.util.Map;
+
 /** An optional class to build JSONOptions. */
 public class JSONBuilder {
 
@@ -8,9 +11,19 @@ public class JSONBuilder {
         return new JSONBuilder.JSONArrayOptionBuilder();
     }
 
+    /** Returns a builder for the Array JSONOption. */
+    public static JSONArrayBuilder Array(Collection<? extends Object> collection) {
+        return new JSONBuilder.JSONArrayOptionBuilder(collection);
+    }
+
     /** Returns a builder for the Object JSONOption. */
     public static JSONObjectBuilder Object() {
         return new JSONBuilder.JSONObjectOptionBuilder();
+    }
+
+    /** Returns a builder for the Object JSONOption. */
+    public static JSONObjectBuilder Object(Map<String, ? extends Object> map) {
+        return new JSONBuilder.JSONObjectOptionBuilder(map);
     }
 
     /** JSONBuilder implementation of the JSONArrayBuilder interface. */
@@ -20,6 +33,11 @@ public class JSONBuilder {
 
         public JSONArrayOptionBuilder() {
             this.json = new org.json.JSONArray();
+        }
+
+        public JSONArrayOptionBuilder(Collection<? extends Object> collection) {
+            this.json = new org.json.JSONArray();
+            collection.forEach(o -> this.json.put(o));
         }
 
         /** Appends the value to the JSONArray.
@@ -160,6 +178,11 @@ public class JSONBuilder {
 
         public JSONObjectOptionBuilder() {
             this.json = new org.json.JSONObject();
+        }
+
+        public JSONObjectOptionBuilder(Map<String, ? extends Object> map) {
+            this.json = new org.json.JSONObject();
+            map.keySet().forEach(key -> this.json.put(key, map.get(key)));
         }
 
         /** Inserts the key-value pair into the JSONObject.

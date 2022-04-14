@@ -253,10 +253,12 @@ public class JSONOptional {
             }
         }
 
+        /** Applies the consumer for each element in the JSONArray. */
         public void forEach(Consumer<? super Object> consumer) {
             this.json.forEach(consumer);
         }
 
+        /** Applies the consumer for each element in the JSONArray. */
         @SuppressWarnings("unchecked")
         public <T> void forEach(Class<T> classType, Consumer<? super T> consumer) {
             this.json.forEach((o) -> consumer.accept((T) o));
@@ -373,6 +375,7 @@ public class JSONOptional {
             return this.json.length();
         }
 
+        /** Returns a spliterator for the JSONArray. */
         public Spliterator<Object> spliterator() {
             return this.json.spliterator();
         }

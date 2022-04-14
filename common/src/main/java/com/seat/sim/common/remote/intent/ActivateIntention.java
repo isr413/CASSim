@@ -2,6 +2,7 @@ package com.seat.sim.common.remote.intent;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.seat.sim.common.json.JSONArray;
 import com.seat.sim.common.json.JSONArrayBuilder;
@@ -15,7 +16,7 @@ import com.seat.sim.common.util.Debugger;
 public class ActivateIntention extends Intention {
     private static final String ACTIVATIONS = "activations";
 
-    private HashSet<String> activations;
+    private Set<String> activations;
 
     public ActivateIntention() {
         super(IntentionType.ACTIVATE);
