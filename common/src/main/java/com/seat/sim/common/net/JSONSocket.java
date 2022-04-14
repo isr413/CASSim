@@ -129,8 +129,8 @@ public class JSONSocket {
             while (true) {
                 if (this.in.ready()) {
                     String encoding = in.readLine();
-                    JSONOptional optional = JSONOptional.String(encoding);
-                    if (optional.isNone()) {
+                    JSONOptional optional = JSONOptional.ofNullable(encoding);
+                    if (!optional.isPresent()) {
                         throw new CommonException(encoding);
                     }
                     return optional;
@@ -143,7 +143,7 @@ public class JSONSocket {
 
     public Map<String, IntentionSet> getIntentionsBlocking() throws CommonException {
         try {
-            JSONArray json = this.getInputBlocking().someArray();
+            JSONArray json = this.getInputBlocking().getArray();
             HashMap<String, IntentionSet> controllers = new HashMap<>();
             for (int i = 0; i < json.length(); i++) {
                 IntentionSet controller = new IntentionSet(json.getJSONOption(i));

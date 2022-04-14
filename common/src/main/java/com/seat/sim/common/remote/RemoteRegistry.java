@@ -94,10 +94,10 @@ public class RemoteRegistry {
     }
 
     public static String decodeType(JSONOptional optional) throws CommonException {
-        if (!optional.isSomeObject()) {
+        if (!optional.isPresentObject()) {
             throw new CommonException(String.format("Cannot decode remote type of %s", optional.toString()));
         }
-        return optional.someObject().getString(RemoteRegistry.REMOTE_TYPE);
+        return optional.getObject().getString(RemoteRegistry.REMOTE_TYPE);
     }
 
     public static <T> boolean isRegistered(Class<T> classType) {

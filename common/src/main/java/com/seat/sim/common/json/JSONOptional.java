@@ -1,81 +1,66 @@
 package com.seat.sim.common.json;
 
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
 /** An optional class to wrap JSONArray and JSONObject interface types. */
 public class JSONOptional {
 
-    /** Returns true if the input string is a JSON encoding. */
-    public static boolean isJSON(String encoding) {
-        return JSONOptional.isJSON(encoding, 0, encoding.length()-1);
-    }
-
-    private static boolean isJSON(String encoding, int i, int j) {
-        return JSONOptional.isJSONArray(encoding, i, j) || JSONOptional.isJSONObject(encoding, i, j);
-    }
-
-    /** Returns true if the input string is a JSON Array encoding. */
-    public static boolean isJSONArray(String encoding) {
-        return JSONOptional.isJSONArray(encoding, 0, encoding.length()-1);
-    }
-
-    private static boolean isJSONArray(String encoding, int i, int j) {
-        return 0 <= i && i < encoding.length() && 0 <= j && j < encoding.length() && i < j &&
-            encoding.charAt(i) == '[' && encoding.charAt(j) == ']';
-    }
-
-    /** Returns true if the input string is a JSON Object encoding. */
-    public static boolean isJSONObject(String encoding) {
-        return JSONOptional.isJSONObject(encoding, 0, encoding.length()-1);
-    }
-
-    private static boolean isJSONObject(String encoding, int i, int j) {
-        return 0 <= i && i < encoding.length() && 0 <= j && j < encoding.length() && i < j &&
-            encoding.charAt(i) == '{' && encoding.charAt(j) == '}';
-    }
-
-    /** Returns true if the input string is a quoted String of a JSON encoding. */
-    public static boolean isQuotedJSON(String encoding) {
-        return JSONOptional.isQuotedJSON(encoding, 0, encoding.length()-1);
-    }
-
-    private static boolean isQuotedJSON(String encoding, int i, int j) {
-        return 0 <= i && i < encoding.length() && 0 <= j && j < encoding.length() && i < j &&
-            ((encoding.charAt(i) == '"' && encoding.charAt(j) == '"') ||
-                (encoding.charAt(i) == '\'' && encoding.charAt(j) == '\'')) &&
-            JSONOptional.isJSON(encoding, i+1, j-1);
-    }
-
-    /** Returns an optional wrapper for the JSONArray interface type. */
-    public static JSONOptional Array(JSONArray json) {
-        return new JSONOptional(json);
-    }
-
     /** Returns the None type wrapper. */
-    public static JSONOptional None() {
+    public static JSONOptional empty() {
         return new JSONOptional();
     }
 
+    /** Returns an optional wrapper for the JSONArray interface type. */
+    public static JSONOptional of(JSONArray json) throws JSONException {
+        if (json == null) throw new JSONException(new NullPointerException().toString());
+        return new JSONOptional(json);
+    }
+
     /** Returns an optional wrapper for the JSONObject interface type. */
-    public static JSONOptional Object(JSONObject json) {
+    public static JSONOptional of(JSONObject json) throws JSONException {
+        if (json == null) throw new JSONException(new NullPointerException().toString());
         return new JSONOptional(json);
     }
 
     /** Returns an optional wrapper for the JSONArray or JSONObject interace types based on the encoding. */
-    public static JSONOptional QuotedString(String encoding) {
-        if (!JSONOptional.isQuotedJSON(encoding)) {
-            return JSONOptional.None();
+    public static JSONOptional of(String encoding) throws JSONException {
+        if (encoding == null) throw new JSONException(new NullPointerException().toString());
+        JSONOptional optional = JSONOptional.ofNullable(encoding);
+        if (!optional.isPresent()) {
+            throw new JSONException(String.format("Cannot decode invalid JSON string %s", encoding));
         }
-        return JSONOptional.String(encoding.substring(0, encoding.length()-1));
+        return optional;
     }
 
-    /** Returns an optional wrapper for the JSONArray or JSONObject interace types based on the encoding. */
-    public static JSONOptional String(String encoding) {
-        if (JSONOptional.isJSONArray(encoding)) {
-            return new JSONOptional(new JSONArrayOption(encoding));
+    /** Returns an optional wrapper for the JSONArray interface type or empty if json is null. */
+    public static JSONOptional ofNullable(JSONArray json) {
+        if (json == null) return JSONOptional.empty();
+        return new JSONOptional(json);
+    }
+
+    /** Returns an optional wrapper for the JSONObject interface type or empty if json is null. */
+    public static JSONOptional ofNullable(JSONObject json) throws JSONException {
+        if (json == null) return JSONOptional.empty();
+        return new JSONOptional(json);
+    }
+
+    /** Returns an optional wrapper for the JSONArray or JSONObject interace types based on the encoding
+     * or empty if the encoding is invalid json.
+     */
+    public static JSONOptional ofNullable(String encoding) throws JSONException {
+        if (encoding == null) return JSONOptional.empty();
+        if (JSONParser.isEncodedJSONArray(encoding)) {
+            return new JSONOptional(new JSONArrayOption(JSONParser.trimEncoding(encoding)));
         }
-        if (JSONOptional.isJSONObject(encoding)) {
-            return new JSONOptional(new JSONObjectOption(encoding));
+        if (JSONParser.isEncodedJSONObject(encoding)) {
+            return new JSONOptional(new JSONObjectOption(JSONParser.trimEncoding(encoding)));
         }
-        return JSONOptional.None();
+        return JSONOptional.empty();
     }
 
     private JSONArray arrayOption;
@@ -96,65 +81,145 @@ public class JSONOptional {
         this.objectOption = json;
     }
 
-    /** Returns true if this is the None optional. */
-    public boolean isNone() {
-        return this.arrayOption == null && this.objectOption == null;
+    /** Applies the filter if the value is present. */
+    @SuppressWarnings("unchecked")
+    public <T extends JSONInterface> Optional<T> filter(Class<T> classType, Predicate<T> predicate) {
+        if (JSONArray.class.isAssignableFrom(classType) && this.isPresentArray()) {
+            return (predicate.test((T) this.arrayOption)) ?
+                Optional.of((T) this.arrayOption) :
+                Optional.empty();
+        }
+        if (JSONObject.class.isAssignableFrom(classType) && this.isPresentObject()) {
+            return (predicate.test((T) this.objectOption)) ?
+                Optional.of((T) this.objectOption) :
+                Optional.empty();
+        }
+        return Optional.empty();
     }
 
-    /** Returns true if this is the JSONArray optional. */
-    public boolean isSomeArray() {
-        return this.arrayOption != null;
-    }
-
-    /** Returns true if this is the JSONObject optional. */
-    public boolean isSomeObject() {
-        return this.objectOption != null;
+    /** Applies the mapper if the value is present. */
+    @SuppressWarnings("unchecked")
+    public <T extends JSONInterface, U> Optional<U> flatMap(Class<T> classType, Function<T, Optional<U>> mapper) {
+        if (JSONArray.class.isAssignableFrom(classType) && this.isPresentArray()) {
+            return mapper.apply((T) this.arrayOption);
+        }
+        if (JSONObject.class.isAssignableFrom(classType) && this.isPresentObject()) {
+            return mapper.apply((T) this.objectOption);
+        }
+        return Optional.empty();
     }
 
     /** Returns the JSONArray wrapped by this optional.
      * @throws JSONException if the optional being wrapped is not an Array optional
      */
-    public JSONArray someArray() throws JSONException {
-        if (!this.isSomeArray()) {
-            throw new JSONException("Cannot unwrap a null JSONArray optional.");
-        }
+    public JSONArray getArray() throws JSONException {
+        if (!this.isPresentArray()) throw new JSONException(new NoSuchElementException().toString());
         return this.arrayOption;
     }
 
     /** Returns the JSONObject wrapped by this optional.
      * @throws JSONException if the optional being wrapped is not an Object optional
      */
-    public JSONObject someObject() throws JSONException {
-        if (!this.isSomeObject()) {
-            throw new JSONException("Cannot unwrap a null JSONObject optional.");
-        }
+    public JSONObject getObject() throws JSONException {
+        if (!this.isPresentObject()) throw new JSONException(new NoSuchElementException().toString());
         return this.objectOption;
+    }
+
+    /** Invokes the consumer if the array option is present. */
+    @SuppressWarnings("unchecked")
+    public <T extends JSONInterface> void ifPresent(Class<T> classType, Consumer<T> consumer) {
+        if (JSONArray.class.isAssignableFrom(classType) && this.isPresentArray()) {
+            consumer.accept((T) this.arrayOption);
+        }
+        if (JSONObject.class.isAssignableFrom(classType) && this.isPresentObject()) {
+            consumer.accept((T) this.objectOption);
+        }
+    }
+
+    /** Returns true if there is a value present. */
+    public boolean isPresent() {
+        return this.arrayOption != null || this.objectOption != null;
+    }
+
+    /** Returns true if this is the JSONArray optional. */
+    public boolean isPresentArray() {
+        return this.arrayOption != null;
+    }
+
+    /** Returns true if this is the JSONObject optional. */
+    public boolean isPresentObject() {
+        return this.objectOption != null;
+    }
+
+    /** Applies the mapper if the value is present. */
+    @SuppressWarnings("unchecked")
+    public <T extends JSONInterface, U> Optional<U> map(Class<T> classType, Function<T, ? extends U> mapper) {
+        if (JSONArray.class.isAssignableFrom(classType) && this.isPresentArray()) {
+            return Optional.ofNullable(mapper.apply((T) this.arrayOption));
+        }
+        if (JSONObject.class.isAssignableFrom(classType) && this.isPresentObject()) {
+            return Optional.ofNullable(mapper.apply((T) this.objectOption));
+        }
+        return Optional.empty();
+    }
+
+    /** Returns the value if present or the other. */
+    @SuppressWarnings("unchecked")
+    public <T extends JSONInterface> T orElse(Class<T> classType, T other) {
+        if (JSONArray.class.isAssignableFrom(classType) && this.isPresentArray()) {
+            return (T) this.arrayOption;
+        }
+        if (JSONObject.class.isAssignableFrom(classType) && this.isPresentObject()) {
+            return (T) this.objectOption;
+        }
+        return other;
+    }
+
+    /** Returns the value if present or the other. */
+    @SuppressWarnings("unchecked")
+    public <T extends JSONInterface> T orElseGet(Class<T> classType, Supplier<T> other) {
+        if (JSONArray.class.isAssignableFrom(classType) && this.isPresentArray()) {
+            return (T) this.arrayOption;
+        }
+        if (JSONObject.class.isAssignableFrom(classType) && this.isPresentObject()) {
+            return (T) this.objectOption;
+        }
+        return other.get();
+    }
+
+    /** Returns the value if present or the other. */
+    @SuppressWarnings("unchecked")
+    public <T extends JSONInterface, X extends Throwable> T orElseThrow(Class<T> classType,
+            Supplier<X> exceptionSupplier) throws X {
+        if (JSONArray.class.isAssignableFrom(classType) && this.isPresentArray()) {
+            return (T) this.arrayOption;
+        }
+        if (JSONObject.class.isAssignableFrom(classType) && this.isPresentObject()) {
+            return (T) this.objectOption;
+        }
+        throw exceptionSupplier.get();
     }
 
     /** Returns the String representation of the optional being wrapped.
      * @throws JSONException if the JSONOption cannot be converted to a JSON string
      */
     public String toString() throws JSONException {
-        if (this.isSomeArray()) {
-            return this.arrayOption.toString();
-        }
-        if (this.isSomeObject()) {
-            return this.objectOption.toString();
-        }
-        return "None";
+        if (this.isPresentArray()) return this.arrayOption.toString();
+        if (this.isPresentObject()) return this.objectOption.toString();
+        return "";
     }
 
     /** Returns the String representation of the optional being wrapped (pretty printed).
      * @throws JSONException if the JSONOption cannot be converted to a JSON string
      */
     public String toString(int tabSize) throws JSONException {
-        if (this.isSomeArray()) {
-            return this.arrayOption.toString(tabSize);
-        }
-        if (this.isSomeObject()) {
-            return this.objectOption.toString(tabSize);
-        }
-        return "None";
+        if (this.isPresentArray()) return this.arrayOption.toString(tabSize);
+        if (this.isPresentObject()) return this.objectOption.toString(tabSize);
+        return "";
+    }
+
+    public boolean equals(JSONOptional optional) {
+        return this.arrayOption == optional.arrayOption && this.objectOption == optional.objectOption;
     }
 
     /** JSONOption implementation of the JSONArray interface. */
@@ -253,7 +318,7 @@ public class JSONOptional {
                 if (this.json.get(idx) instanceof org.json.JSONObject) {
                     return new JSONOptional(new JSONObjectOption(this.json.getJSONObject(idx)));
                 }
-                return JSONOptional.None();
+                return JSONOptional.empty();
             } catch (org.json.JSONException e) {
                 throw new JSONException(e.toString());
             }
@@ -408,7 +473,7 @@ public class JSONOptional {
                 if (this.json.get(key) instanceof org.json.JSONObject) {
                     return new JSONOptional(new JSONObjectOption(this.json.getJSONObject(key)));
                 }
-                return JSONOptional.None();
+                return JSONOptional.empty();
             } catch (org.json.JSONException e) {
                 throw new JSONException(e.toString());
             }

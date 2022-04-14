@@ -26,7 +26,7 @@ public class JSONBuilderTest {
         jsonObject.put("0", 1.2);
         jsonObject.put("1", 3);
         test = JSONBuilder.Array();
-        test.put(jsonObject.toJSON().someObject());
+        test.put(jsonObject.toJSON().getObject());
         assertEquals("[{\"0\":1.2,\"1\":3}]", test.toString());
         test = JSONBuilder.Array();
         test.put(jsonArray.toJSON());
@@ -62,7 +62,7 @@ public class JSONBuilderTest {
         jsonObject.put("0", 1.2);
         jsonObject.put("1", 3);
         test = JSONBuilder.Object();
-        test.put("0", jsonObject.toJSON().someObject());
+        test.put("0", jsonObject.toJSON().getObject());
         assertEquals("{\"0\":{\"0\":1.2,\"1\":3}}", test.toString());
         test = JSONBuilder.Object();
         test.put("0", jsonArray.toJSON());

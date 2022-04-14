@@ -1,7 +1,7 @@
 package com.seat.sim.common.json;
 
 /** An interface for classes that support a JSON Array representation. */
-public interface JSONArray {
+public interface JSONArray extends JSONInterface {
 
     /** Returns the boolean value at index idx.
      * @throws JSONException if the value at idx cannot be converted to a boolean or is out of bounds
@@ -45,15 +45,5 @@ public interface JSONArray {
 
     /** Returns the number of elements in the JSONArray. */
     int length();
-
-    /** Returns the String representation of the JSONArray.
-     * @throws JSONException if the JSONArray cannot be converted to a JSON string
-     */
-    String toString() throws JSONException;
-
-    /** Returns the String representation of the JSONArray (pretty printed).
-     * @throws JSONException if the JSONArray cannot be converted to a JSON string
-     */
-    String toString(int tabSize) throws JSONException;
 
 }

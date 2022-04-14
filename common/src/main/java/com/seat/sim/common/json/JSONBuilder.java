@@ -90,10 +90,10 @@ public class JSONBuilder {
         */
         public void put(JSONOptional value) throws JSONException {
             try {
-                if (value.isSomeArray()) {
-                    this.put(value.someArray());
-                } else if (value.isSomeObject()) {
-                    this.put(value.someObject());
+                if (value.isPresentArray()) {
+                    this.put(value.getArray());
+                } else if (value.isPresentObject()) {
+                    this.put(value.getObject());
                 } else {
                     this.put(value.toString());
                 }
@@ -126,7 +126,7 @@ public class JSONBuilder {
 
         /** Returns the JSONOption representation of the JSONArray. */
         public JSONOptional toJSON() {
-            return JSONOptional.Array(new JSONOptional.JSONArrayOption(this.json));
+            return JSONOptional.of(new JSONOptional.JSONArrayOption(this.json));
         }
 
         /** Returns the String representation of the JSONArray.
@@ -230,10 +230,10 @@ public class JSONBuilder {
         */
         public void put(String key, JSONOptional value) throws JSONException {
             try {
-                if (value.isSomeArray()) {
-                    this.put(key, value.someArray());
-                } else if (value.isSomeObject()) {
-                    this.put(key, value.someObject());
+                if (value.isPresentArray()) {
+                    this.put(key, value.getArray());
+                } else if (value.isPresentObject()) {
+                    this.put(key, value.getObject());
                 } else {
                     this.put(key, value.toString());
                 }
@@ -266,7 +266,7 @@ public class JSONBuilder {
 
         /** Returns the JSONOption representation of the JSONObject. */
         public JSONOptional toJSON() {
-            return JSONOptional.Object(new JSONOptional.JSONObjectOption(this.json));
+            return JSONOptional.of(new JSONOptional.JSONObjectOption(this.json));
         }
 
         /** Returns the String representation of the JSONObject.

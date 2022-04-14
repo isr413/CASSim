@@ -77,10 +77,10 @@ public class IntentRegistry {
     }
 
     public static Intention Some(JSONOptional optional) throws JSONException {
-        if (!optional.isSomeObject()) {
+        if (!optional.isPresentObject()) {
             throw new JSONException(String.format("Cannot decode intention type of %s", optional.toString()));
         }
-        switch (IntentionType.decodeType(optional.someObject())) {
+        switch (IntentionType.decodeType(optional.getObject())) {
             case ACTIVATE: return new ActivateIntention(optional);
             case DEACTIVATE: return new DeactivateIntention(optional);
             case DONE: return new DoneIntention();

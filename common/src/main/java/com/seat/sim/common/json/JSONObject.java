@@ -1,7 +1,7 @@
 package com.seat.sim.common.json;
 
 /** An interface for classes that support a JSON Object representation. */
-public interface JSONObject {
+public interface JSONObject extends JSONInterface {
 
     /** Returns the boolean value associated with the key.
      * @throws JSONException if the value associated with the key cannot be converted to a boolean or no such key
@@ -48,15 +48,5 @@ public interface JSONObject {
 
     /** Returns the number of key-value pairs stored in the JSONObject. */
     int size();
-
-    /** Returns the String representation of the JSONObject.
-     * @throws JSONException if the JSONObject cannot be converted to a JSON string
-     */
-    String toString() throws JSONException;
-
-    /** Returns the String representation of the JSONObject (pretty printed).
-     * @throws JSONException if the JSONObject cannot be converted to a JSON string
-     */
-    String toString(int tabSize) throws JSONException;
 
 }

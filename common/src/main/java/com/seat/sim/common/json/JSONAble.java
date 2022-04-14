@@ -31,10 +31,10 @@ public abstract class JSONAble {
      * @throws JSONException if the JSONOption does not decode to this Object
      */
     protected void decode(JSONOptional optional) throws JSONException {
-        if (optional.isSomeArray()) {
-            this.decode(optional.someArray());
-        } else if (optional.isSomeObject()) {
-            this.decode(optional.someObject());
+        if (optional.isPresentArray()) {
+            this.decode(optional.getArray());
+        } else if (optional.isPresentObject()) {
+            this.decode(optional.getObject());
         } else {
             throw new JSONException(String.format("Cannot decode %s", optional.toString()));
         }
@@ -44,13 +44,7 @@ public abstract class JSONAble {
      * @throws JSONException if the encoding does not decode to this Object
      */
     protected void decode(String encoding) throws JSONException {
-        if (JSONOptional.isJSON(encoding)) {
-            this.decode(JSONOptional.String(encoding));
-        } else if (JSONOptional.isQuotedJSON(encoding)) {
-            this.decode(JSONOptional.QuotedString(encoding));
-        } else {
-            throw new JSONException(String.format("Cannot decode %s", encoding));
-        }
+        this.decode(JSONOptional.of(encoding));
     }
 
     /** Returns the JSON serialization of this Object.
