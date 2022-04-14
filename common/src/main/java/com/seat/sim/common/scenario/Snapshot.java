@@ -74,7 +74,7 @@ public class Snapshot extends JSONAble {
             new HashMap<>();
     }
 
-    public Collection<String> getActiveRemoteIDs() {
+    public Set<String> getActiveRemoteIDs() {
         return this.activeRemoteIDs;
     }
 
@@ -84,10 +84,10 @@ public class Snapshot extends JSONAble {
             .collect(Collectors.toList());
     }
 
-    public Collection<String> getActiveDynamicRemoteIDs() {
+    public Set<String> getActiveDynamicRemoteIDs() {
         return this.getActiveRemoteIDs().stream()
             .filter(remoteID -> this.hasDynamicRemoteWithID(remoteID))
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
     }
 
     public Collection<RemoteState> getActiveDynamicRemoteStates() {
@@ -96,7 +96,7 @@ public class Snapshot extends JSONAble {
             .collect(Collectors.toList());
     }
 
-    public Collection<String> getDynamicRemoteIDs() {
+    public Set<String> getDynamicRemoteIDs() {
         return this.dynamicRemoteIDs;
     }
 
@@ -110,7 +110,7 @@ public class Snapshot extends JSONAble {
         return this.hash;
     }
 
-    public Collection<String> getRemoteIDs() {
+    public Set<String> getRemoteIDs() {
         return this.remoteStates.keySet();
     }
 

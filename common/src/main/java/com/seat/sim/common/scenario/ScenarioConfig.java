@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.CommonException;
@@ -171,7 +172,7 @@ public class ScenarioConfig extends JSONAble {
         return this.remoteConfigsByID.get(remoteID);
     }
 
-    public Collection<String> getRemoteIDs() {
+    public Set<String> getRemoteIDs() {
         return this.remoteConfigsByID.keySet();
     }
 

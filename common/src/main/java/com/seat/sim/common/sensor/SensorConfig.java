@@ -74,7 +74,7 @@ public class SensorConfig extends JSONAble {
         return this.proto;
     }
 
-    public Collection<String> getSensorIDs() {
+    public Set<String> getSensorIDs() {
         return this.sensorIDs;
     }
 

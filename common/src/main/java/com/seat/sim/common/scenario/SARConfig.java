@@ -1,6 +1,7 @@
 package com.seat.sim.common.scenario;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.CommonException;
@@ -81,11 +82,11 @@ public class SARConfig extends ScenarioConfig {
         return (BaseRemoteConfig) this.getRemoteConfigWithID(remoteID);
     }
 
-    public Collection<String> getBaseRemoteIDs() {
+    public Set<String> getBaseRemoteIDs() {
         return this.getBaseRemoteConfigs().stream()
             .map(config -> config.getRemoteIDs())
             .flatMap(remoteIDs -> remoteIDs.stream())
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
     }
 
     public double getDisasterScale() {
@@ -107,11 +108,11 @@ public class SARConfig extends ScenarioConfig {
         return (DroneRemoteConfig) this.getRemoteConfigWithID(remoteID);
     }
 
-    public Collection<String> getDroneRemoteIDs() {
+    public Set<String> getDroneRemoteIDs() {
         return this.getDroneRemoteConfigs().stream()
             .map(config -> config.getRemoteIDs())
             .flatMap(remoteIDs -> remoteIDs.stream())
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
     }
 
     public int getNumberOfBases() {
@@ -141,11 +142,11 @@ public class SARConfig extends ScenarioConfig {
         return (VictimRemoteConfig) this.getRemoteConfigWithID(remoteID);
     }
 
-    public Collection<String> getVictimRemoteIDs() {
+    public Set<String> getVictimRemoteIDs() {
         return this.getVictimRemoteConfigs().stream()
             .map(config -> config.getRemoteIDs())
             .flatMap(remoteIDs -> remoteIDs.stream())
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
     }
 
     public boolean hasBaseRemotes() {

@@ -95,7 +95,7 @@ public class RemoteConfig extends JSONAble {
         return this.proto;
     }
 
-    public Collection<String> getRemoteIDs() {
+    public Set<String> getRemoteIDs() {
         return this.remoteIDs;
     }
 

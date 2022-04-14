@@ -3,6 +3,7 @@ package com.seat.sim.common.remote.intent;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
@@ -72,7 +73,7 @@ public class DeactivateIntention extends Intention {
         return flag;
     }
 
-    public Collection<String> getDeactivations() {
+    public Set<String> getDeactivations() {
         return this.deactivations;
     }
 

@@ -3,6 +3,7 @@ package com.seat.sim.common.remote;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -111,7 +112,7 @@ public class RemoteState extends JSONAble {
         return this.getClass().getName();
     }
 
-    public Collection<String> getSensorIDs() {
+    public Set<String> getSensorIDs() {
         return this.sensorStates.keySet();
     }
 

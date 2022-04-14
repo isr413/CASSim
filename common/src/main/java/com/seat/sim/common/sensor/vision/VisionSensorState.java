@@ -47,7 +47,7 @@ public class VisionSensorState extends SensorState {
         return json;
     }
 
-    public Collection<String> getObservations() {
+    public Set<String> getObservations() {
         return this.observations;
     }
 

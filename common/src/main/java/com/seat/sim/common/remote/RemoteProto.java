@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.CommonException;
@@ -140,7 +141,7 @@ public class RemoteProto extends JSONAble {
         return this.sensorConfigByID.get(sensorID);
     }
 
-    public Collection<String> getSensorIDs() {
+    public Set<String> getSensorIDs() {
         return this.sensorConfigByID.keySet();
     }
 

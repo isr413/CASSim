@@ -1,8 +1,8 @@
 package com.seat.sim.common.util;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.seat.sim.common.core.CommonException;
 
@@ -35,7 +35,7 @@ public class ArgsParser {
         }
     }
 
-    public Collection<String> getArgs() {
+    public Set<String> getArgs() {
         return new HashSet<String>(this.parsedArgs.values());
     }
 
@@ -72,7 +72,7 @@ public class ArgsParser {
         }
     }
 
-    public Collection<String> getParams() {
+    public Set<String> getParams() {
         return new HashSet<String>(this.parsedArgs.keySet());
     }
 

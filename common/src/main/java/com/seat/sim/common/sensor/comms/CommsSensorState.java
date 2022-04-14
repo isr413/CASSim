@@ -47,7 +47,7 @@ public class CommsSensorState extends SensorState {
         return json;
     }
 
-    public Collection<String> getConnections() {
+    public Set<String> getConnections() {
         return this.connections;
     }
 

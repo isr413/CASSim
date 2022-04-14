@@ -70,7 +70,7 @@ public class ActivateIntention extends Intention {
         return flag;
     }
 
-    public Collection<String> getActivations() {
+    public Set<String> getActivations() {
         return this.activations;
     }
 
