@@ -5,42 +5,47 @@ public interface JSONArrayBuilder {
 
     /** Appends the value to the JSONArray.
      * @throws JSONException if JSON does not support the input value
-    */
+     */
     void put(boolean value) throws JSONException;
 
     /** Appends the value to the JSONArray.
      * @throws JSONException if JSON does not support the input value
-    */
+     */
     void put(double value) throws JSONException;
 
     /** Appends the value to the JSONArray.
      * @throws JSONException if JSON does not support the input value
-    */
+     */
     void put(int value) throws JSONException;
 
     /** Appends the value to the JSONArray.
      * @throws JSONException if JSON does not support the input value
-    */
+     */
     void put(JSONArray value) throws JSONException;
 
     /** Appends the value to the JSONArray.
      * @throws JSONException if JSON does not support the input value
-    */
+     */
     void put(JSONObject value) throws JSONException;
 
     /** Appends the value to the JSONArray.
      * @throws JSONException if JSON does not support the input value
-    */
+     */
     void put(JSONOptional value) throws JSONException;
 
     /** Appends the value to the JSONArray.
      * @throws JSONException if JSON does not support the input value
-    */
+     */
+    void put(Object value) throws JSONException;
+
+    /** Appends the value to the JSONArray.
+     * @throws JSONException if JSON does not support the input value
+     */
     void put(long value) throws JSONException;
 
     /** Appends the value to the JSONArray.
      * @throws JSONException if JSON does not support the input value
-    */
+     */
     void put(String value) throws JSONException;
 
     /** Returns the JSONOption representation of the JSONArray. */

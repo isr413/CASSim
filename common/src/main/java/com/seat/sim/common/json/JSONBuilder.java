@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /** An optional class to build JSONOptions. */
-public class JSONBuilder {
+public final class JSONBuilder {
 
     /** Returns a builder for the Array JSONOption. */
     public static JSONArrayBuilder Array() {
@@ -12,7 +12,7 @@ public class JSONBuilder {
     }
 
     /** Returns a builder for the Array JSONOption. */
-    public static JSONArrayBuilder Array(Collection<? extends Object> collection) {
+    public static <T> JSONArrayBuilder Array(Collection<T> collection) {
         return new JSONBuilder.JSONArrayOptionBuilder(collection);
     }
 
@@ -22,12 +22,12 @@ public class JSONBuilder {
     }
 
     /** Returns a builder for the Object JSONOption. */
-    public static JSONObjectBuilder Object(Map<String, ? extends Object> map) {
+    public static <T> JSONObjectBuilder Object(Map<String, T> map) {
         return new JSONBuilder.JSONObjectOptionBuilder(map);
     }
 
     /** JSONBuilder implementation of the JSONArrayBuilder interface. */
-    static class JSONArrayOptionBuilder implements JSONArrayBuilder {
+    static final class JSONArrayOptionBuilder implements JSONArrayBuilder {
 
         org.json.JSONArray json;
 
@@ -35,14 +35,24 @@ public class JSONBuilder {
             this.json = new org.json.JSONArray();
         }
 
-        public JSONArrayOptionBuilder(Collection<? extends Object> collection) {
+        public <T> JSONArrayOptionBuilder(Collection<T> collection) {
             this.json = new org.json.JSONArray();
-            collection.forEach(o -> this.json.put(o));
+            for (T o : collection) {
+                if (JSONArray.class.isAssignableFrom(o.getClass())) {
+                    this.put((JSONArray) o);
+                } else if (JSONObject.class.isAssignableFrom(o.getClass())) {
+                    this.put((JSONObject) o);
+                } else if (JSONOptional.class.isAssignableFrom(o.getClass())) {
+                    this.put((JSONOptional) o);
+                } else {
+                    this.put(o);
+                }
+            }
         }
 
         /** Appends the value to the JSONArray.
          * @throws JSONException if JSON does not support the input value
-        */
+         */
         public void put(boolean value) throws JSONException {
             try {
                 this.json.put(value);
@@ -53,7 +63,7 @@ public class JSONBuilder {
 
         /** Appends the value to the JSONArray.
          * @throws JSONException if JSON does not support the input value
-        */
+         */
         public void put(double value) throws JSONException {
             try {
                 this.json.put(value);
@@ -64,7 +74,7 @@ public class JSONBuilder {
 
         /** Appends the value to the JSONArray.
          * @throws JSONException if JSON does not support the input value
-        */
+         */
         public void put(int value) throws JSONException {
             try {
                 this.json.put(value);
@@ -75,7 +85,7 @@ public class JSONBuilder {
 
         /** Appends the value to the JSONArray.
          * @throws JSONException if JSON does not support the input value
-        */
+         */
         public void put(JSONArray value) throws JSONException {
             try {
                 if (value instanceof JSONOptional.JSONArrayOption) {
@@ -90,7 +100,7 @@ public class JSONBuilder {
 
         /** Appends the value to the JSONArray.
          * @throws JSONException if JSON does not support the input value
-        */
+         */
         public void put(JSONObject value) throws JSONException {
             try {
                 if (value instanceof JSONOptional.JSONObjectOption) {
@@ -105,7 +115,7 @@ public class JSONBuilder {
 
         /** Appends the value to the JSONArray.
          * @throws JSONException if JSON does not support the input value
-        */
+         */
         public void put(JSONOptional value) throws JSONException {
             try {
                 if (value.isPresentArray()) {
@@ -122,7 +132,7 @@ public class JSONBuilder {
 
         /** Appends the value to the JSONArray.
          * @throws JSONException if JSON does not support the input value
-        */
+         */
         public void put(long value) throws JSONException {
             try {
                 this.json.put(value);
@@ -133,7 +143,18 @@ public class JSONBuilder {
 
         /** Appends the value to the JSONArray.
          * @throws JSONException if JSON does not support the input value
-        */
+         */
+        public void put(Object value) throws JSONException {
+            try {
+                this.json.put(value);
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
+            }
+        }
+
+        /** Appends the value to the JSONArray.
+         * @throws JSONException if JSON does not support the input value
+         */
         public void put(String value) throws JSONException {
             try {
                 this.json.put(value);
@@ -172,7 +193,7 @@ public class JSONBuilder {
     }
 
     /** JSONBuilder implementation of the JSONObjectBuilder interface. */
-    static class JSONObjectOptionBuilder implements JSONObjectBuilder {
+    static final class JSONObjectOptionBuilder implements JSONObjectBuilder {
 
         org.json.JSONObject json;
 
@@ -180,14 +201,24 @@ public class JSONBuilder {
             this.json = new org.json.JSONObject();
         }
 
-        public JSONObjectOptionBuilder(Map<String, ? extends Object> map) {
+        public <T> JSONObjectOptionBuilder(Map<String, T> map) {
             this.json = new org.json.JSONObject();
-            map.keySet().forEach(key -> this.json.put(key, map.get(key)));
+            for (Map.Entry<String, T> entry : map.entrySet()) {
+                if (JSONArray.class.isAssignableFrom(entry.getValue().getClass())) {
+                    this.put(entry.getKey(), (JSONArray) entry.getValue());
+                } else if (JSONObject.class.isAssignableFrom(entry.getValue().getClass())) {
+                    this.put(entry.getKey(), (JSONObject) entry.getValue());
+                } else if (JSONOptional.class.isAssignableFrom(entry.getValue().getClass())) {
+                    this.put(entry.getKey(), (JSONOptional) entry.getValue());
+                } else {
+                    this.put(entry.getKey(), entry.getValue());
+                }
+            }
         }
 
         /** Inserts the key-value pair into the JSONObject.
          * @throws JSONException if JSON does not support the input value
-        */
+         */
         public void put(String key, boolean value) throws JSONException {
             try {
                 this.json.put(key, value);
@@ -198,7 +229,7 @@ public class JSONBuilder {
 
         /** Inserts the key-value pair into the JSONObject.
          * @throws JSONException if JSON does not support the input value
-        */
+         */
         public void put(String key, double value) throws JSONException {
             try {
                 this.json.put(key, value);
@@ -209,7 +240,7 @@ public class JSONBuilder {
 
         /** Inserts the key-value pair into the JSONObject.
          * @throws JSONException if JSON does not support the input value
-        */
+         */
         public void put(String key, int value) throws JSONException {
             try {
                 this.json.put(key, value);
@@ -220,7 +251,7 @@ public class JSONBuilder {
 
         /** Inserts the key-value pair into the JSONObject.
          * @throws JSONException if JSON does not support the input value
-        */
+         */
         public void put(String key, JSONArray value) throws JSONException {
             try {
                 if (value instanceof JSONOptional.JSONArrayOption) {
@@ -235,7 +266,7 @@ public class JSONBuilder {
 
         /** Inserts the key-value pair into the JSONObject.
          * @throws JSONException if JSON does not support the input value
-        */
+         */
         public void put(String key, JSONObject value) throws JSONException {
             try {
                 if (value instanceof JSONOptional.JSONObjectOption) {
@@ -250,7 +281,7 @@ public class JSONBuilder {
 
         /** Inserts the key-value pair into the JSONObject.
          * @throws JSONException if JSON does not support the input value
-        */
+         */
         public void put(String key, JSONOptional value) throws JSONException {
             try {
                 if (value.isPresentArray()) {
@@ -267,7 +298,18 @@ public class JSONBuilder {
 
         /** Inserts the key-value pair into the JSONObject.
          * @throws JSONException if JSON does not support the input value
-        */
+         */
+        public void put(String key, Object value) throws JSONException {
+            try {
+                this.json.put(key, value);
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
+            }
+        }
+
+        /** Inserts the key-value pair into the JSONObject.
+         * @throws JSONException if JSON does not support the input value
+         */
         public void put(String key, long value) throws JSONException {
             try {
                 this.json.put(key, value);
@@ -278,7 +320,7 @@ public class JSONBuilder {
 
         /** Inserts the key-value pair into the JSONObject.
          * @throws JSONException if JSON does not support the input value
-        */
+         */
         public void put(String key, String value) throws JSONException {
             try {
                 this.json.put(key, value);

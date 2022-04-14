@@ -11,7 +11,7 @@ public interface JSONArray extends Iterable<Object>, JSONInterface {
     void forEach(Consumer<? super Object> consumer);
 
     /** Applies the consumer for each element in the JSONArray. */
-    <T> void forEach(Class<T> classType, Consumer<? super T> consumer);
+    <T> void forEach(Class<T> cls, Consumer<? super T> consumer);
 
     /** Returns the Object at index idx.
      * @throws JSONException if the value at idx cannot be converted to an Object or is out of bounds
@@ -68,6 +68,6 @@ public interface JSONArray extends Iterable<Object>, JSONInterface {
     List<Object> toList();
 
     /** Returns a List<T> representation of the JSONArray. */
-    <T> List<T> toList(Class<T> classType);
+    <T> List<T> toList(Class<T> cls);
 
 }

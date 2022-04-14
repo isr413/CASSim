@@ -65,12 +65,12 @@ public interface JSONObject extends JSONInterface {
     Map<String, Object> toMap();
 
     /** Returns a Map<String, T> representation of the JSONObject. */
-    <T> Map<String, T> toMap(Class<T> classType);
+    <T> Map<String, T> toMap(Class<T> cls);
 
     /** Returns a collection of the JSONObject values. */
     Collection<Object> values();
 
     /** Returns a collection of type T of the JSONObject values. */
-    <T> Collection<T> values(Class<T> classType);
+    <T> Collection<T> values(Class<T> cls);
 
 }

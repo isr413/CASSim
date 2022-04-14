@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /** An optional class to wrap JSONArray and JSONObject interface types. */
-public class JSONOptional {
+public final class JSONOptional {
 
     /** Returns the None type wrapper. */
     public static JSONOptional empty() {
@@ -91,13 +91,13 @@ public class JSONOptional {
 
     /** Applies the filter if the value is present. */
     @SuppressWarnings("unchecked")
-    public <T extends JSONInterface> Optional<T> filter(Class<T> classType, Predicate<T> predicate) {
-        if (JSONArray.class.isAssignableFrom(classType) && this.isPresentArray()) {
+    public <T extends JSONInterface> Optional<T> filter(Class<T> cls, Predicate<T> predicate) {
+        if (JSONArray.class.isAssignableFrom(cls) && this.isPresentArray()) {
             return (predicate.test((T) this.arrayOption)) ?
                 Optional.of((T) this.arrayOption) :
                 Optional.empty();
         }
-        if (JSONObject.class.isAssignableFrom(classType) && this.isPresentObject()) {
+        if (JSONObject.class.isAssignableFrom(cls) && this.isPresentObject()) {
             return (predicate.test((T) this.objectOption)) ?
                 Optional.of((T) this.objectOption) :
                 Optional.empty();
@@ -107,11 +107,11 @@ public class JSONOptional {
 
     /** Applies the mapper if the value is present. */
     @SuppressWarnings("unchecked")
-    public <T extends JSONInterface, U> Optional<U> flatMap(Class<T> classType, Function<T, Optional<U>> mapper) {
-        if (JSONArray.class.isAssignableFrom(classType) && this.isPresentArray()) {
+    public <T extends JSONInterface, U> Optional<U> flatMap(Class<T> cls, Function<T, Optional<U>> mapper) {
+        if (JSONArray.class.isAssignableFrom(cls) && this.isPresentArray()) {
             return mapper.apply((T) this.arrayOption);
         }
-        if (JSONObject.class.isAssignableFrom(classType) && this.isPresentObject()) {
+        if (JSONObject.class.isAssignableFrom(cls) && this.isPresentObject()) {
             return mapper.apply((T) this.objectOption);
         }
         return Optional.empty();
@@ -135,11 +135,11 @@ public class JSONOptional {
 
     /** Invokes the consumer if the array option is present. */
     @SuppressWarnings("unchecked")
-    public <T extends JSONInterface> void ifPresent(Class<T> classType, Consumer<T> consumer) {
-        if (JSONArray.class.isAssignableFrom(classType) && this.isPresentArray()) {
+    public <T extends JSONInterface> void ifPresent(Class<T> cls, Consumer<T> consumer) {
+        if (JSONArray.class.isAssignableFrom(cls) && this.isPresentArray()) {
             consumer.accept((T) this.arrayOption);
         }
-        if (JSONObject.class.isAssignableFrom(classType) && this.isPresentObject()) {
+        if (JSONObject.class.isAssignableFrom(cls) && this.isPresentObject()) {
             consumer.accept((T) this.objectOption);
         }
     }
@@ -161,11 +161,11 @@ public class JSONOptional {
 
     /** Applies the mapper if the value is present. */
     @SuppressWarnings("unchecked")
-    public <T extends JSONInterface, U> Optional<U> map(Class<T> classType, Function<T, ? extends U> mapper) {
-        if (JSONArray.class.isAssignableFrom(classType) && this.isPresentArray()) {
+    public <T extends JSONInterface, U> Optional<U> map(Class<T> cls, Function<T, ? extends U> mapper) {
+        if (JSONArray.class.isAssignableFrom(cls) && this.isPresentArray()) {
             return Optional.ofNullable(mapper.apply((T) this.arrayOption));
         }
-        if (JSONObject.class.isAssignableFrom(classType) && this.isPresentObject()) {
+        if (JSONObject.class.isAssignableFrom(cls) && this.isPresentObject()) {
             return Optional.ofNullable(mapper.apply((T) this.objectOption));
         }
         return Optional.empty();
@@ -173,11 +173,11 @@ public class JSONOptional {
 
     /** Returns the value if present or the other. */
     @SuppressWarnings("unchecked")
-    public <T extends JSONInterface> T orElse(Class<T> classType, T other) {
-        if (JSONArray.class.isAssignableFrom(classType) && this.isPresentArray()) {
+    public <T extends JSONInterface> T orElse(Class<T> cls, T other) {
+        if (JSONArray.class.isAssignableFrom(cls) && this.isPresentArray()) {
             return (T) this.arrayOption;
         }
-        if (JSONObject.class.isAssignableFrom(classType) && this.isPresentObject()) {
+        if (JSONObject.class.isAssignableFrom(cls) && this.isPresentObject()) {
             return (T) this.objectOption;
         }
         return other;
@@ -185,11 +185,11 @@ public class JSONOptional {
 
     /** Returns the value if present or the other. */
     @SuppressWarnings("unchecked")
-    public <T extends JSONInterface> T orElseGet(Class<T> classType, Supplier<T> other) {
-        if (JSONArray.class.isAssignableFrom(classType) && this.isPresentArray()) {
+    public <T extends JSONInterface> T orElseGet(Class<T> cls, Supplier<T> other) {
+        if (JSONArray.class.isAssignableFrom(cls) && this.isPresentArray()) {
             return (T) this.arrayOption;
         }
-        if (JSONObject.class.isAssignableFrom(classType) && this.isPresentObject()) {
+        if (JSONObject.class.isAssignableFrom(cls) && this.isPresentObject()) {
             return (T) this.objectOption;
         }
         return other.get();
@@ -197,12 +197,12 @@ public class JSONOptional {
 
     /** Returns the value if present or the other. */
     @SuppressWarnings("unchecked")
-    public <T extends JSONInterface, X extends Throwable> T orElseThrow(Class<T> classType,
+    public <T extends JSONInterface, X extends Throwable> T orElseThrow(Class<T> cls,
             Supplier<X> exceptionSupplier) throws X {
-        if (JSONArray.class.isAssignableFrom(classType) && this.isPresentArray()) {
+        if (JSONArray.class.isAssignableFrom(cls) && this.isPresentArray()) {
             return (T) this.arrayOption;
         }
-        if (JSONObject.class.isAssignableFrom(classType) && this.isPresentObject()) {
+        if (JSONObject.class.isAssignableFrom(cls) && this.isPresentObject()) {
             return (T) this.objectOption;
         }
         throw exceptionSupplier.get();
@@ -261,13 +261,13 @@ public class JSONOptional {
 
         /** Applies the consumer for each element in the JSONArray. */
         @SuppressWarnings("unchecked")
-        public <T> void forEach(Class<T> classType, Consumer<? super T> consumer) {
+        public <T> void forEach(Class<T> cls, Consumer<? super T> consumer) {
             for (int i = 0; i < this.json.length(); i++) {
-                if (classType == JSONArray.class) {
+                if (JSONArray.class.isAssignableFrom(cls)) {
                     consumer.accept((T) this.getJSONArray(i));
-                } else if (classType == JSONObject.class) {
+                } else if (JSONObject.class.isAssignableFrom(cls)) {
                     consumer.accept((T) this.getJSONObject(i));
-                } else if (classType == JSONOptional.class) {
+                } else if (JSONOptional.class.isAssignableFrom(cls)) {
                     consumer.accept((T) this.getJSONOptional(i));
                 } else {
                     consumer.accept((T) this.get(i));
@@ -410,14 +410,14 @@ public class JSONOptional {
 
         /** Returns a list of type T of the JSONObject values. */
         @SuppressWarnings("unchecked")
-        public <T> List<T> toList(Class<T> classType) {
+        public <T> List<T> toList(Class<T> cls) {
             ArrayList<T> list = new ArrayList<>();
             for (int i = 0; i < this.json.length(); i++) {
-                if (classType == JSONArray.class) {
+                if (JSONArray.class.isAssignableFrom(cls)) {
                     list.add((T) this.getJSONArray(i));
-                } else if (classType == JSONObject.class) {
+                } else if (JSONObject.class.isAssignableFrom(cls)) {
                     list.add((T) this.getJSONObject(i));
-                } else if (classType == JSONOptional.class) {
+                } else if (JSONOptional.class.isAssignableFrom(cls)) {
                     list.add((T) this.getJSONOptional(i));
                 } else {
                     list.add((T) this.get(i));
@@ -610,14 +610,14 @@ public class JSONOptional {
 
         /** Returns a Map<String, T> representation of the JSONObject. */
         @SuppressWarnings("unchecked")
-        public <T> Map<String, T> toMap(Class<T> classType) {
+        public <T> Map<String, T> toMap(Class<T> cls) {
             Map<String, T> map = new HashMap<>();
             for (String key : this.keySet()) {
-                if (classType == JSONArray.class) {
+                if (JSONArray.class.isAssignableFrom(cls)) {
                     map.put(key, (T) this.getJSONArray(key));
-                } else if (classType == JSONObject.class) {
+                } else if (JSONObject.class.isAssignableFrom(cls)) {
                     map.put(key, (T) this.getJSONObject(key));
-                } else if (classType == JSONOptional.class) {
+                } else if (JSONOptional.class.isAssignableFrom(cls)) {
                     map.put(key, (T) this.getJSONOptional(key));
                 } else {
                     map.put(key, (T) this.get(key));
@@ -655,14 +655,14 @@ public class JSONOptional {
 
         /** Returns a collection of type T of the JSONObject values. */
         @SuppressWarnings("unchecked")
-        public <T> Collection<T> values(Class<T> classType) {
+        public <T> Collection<T> values(Class<T> cls) {
             ArrayList<T> list = new ArrayList<>();
             for (String key : this.keySet()) {
-                if (classType == JSONArray.class) {
+                if (JSONArray.class.isAssignableFrom(cls)) {
                     list.add((T) this.getJSONArray(key));
-                } else if (classType == JSONObject.class) {
+                } else if (JSONObject.class.isAssignableFrom(cls)) {
                     list.add((T) this.getJSONObject(key));
-                } else if (classType == JSONOptional.class) {
+                } else if (JSONOptional.class.isAssignableFrom(cls)) {
                     list.add((T) this.getJSONOptional(key));
                 } else {
                     list.add((T) this.get(key));
