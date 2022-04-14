@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.seat.sim.common.json.JSONArray;
-import com.seat.sim.common.json.JSONArrayBuilder;
 import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
@@ -35,24 +33,16 @@ public class CommsSensorState extends SensorState {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.connections = new HashSet<>();
-        if (json.hasKey(CommsSensorState.CONNECTIONS)) {
-            JSONArray jsonConnections = json.getJSONArray(CommsSensorState.CONNECTIONS);
-            for (int i = 0; i < jsonConnections.length(); i++) {
-                this.connections.add(jsonConnections.getString(i));
-            }
-        }
+        this.connections = (json.hasKey(CommsSensorState.CONNECTIONS)) ?
+            new HashSet<>(json.getJSONArray(CommsSensorState.CONNECTIONS).toList(String.class)) :
+            new HashSet<>();
     }
 
     @Override
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
         if (this.hasConnections()) {
-            JSONArrayBuilder jsonObservations = JSONBuilder.Array();
-            for (String remoteID : this.connections) {
-                jsonObservations.put(remoteID);
-            }
-            json.put(CommsSensorState.CONNECTIONS, jsonObservations.toJSON());
+            json.put(CommsSensorState.CONNECTIONS, JSONBuilder.Array(this.connections).toJSON());
         }
         return json;
     }

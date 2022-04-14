@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONArray;
-import com.seat.sim.common.json.JSONArrayBuilder;
 import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
@@ -48,16 +46,24 @@ public class SensorConfig extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.proto = SensorRegistry.decodeTo(json.getJSONOptional(SensorConfig.PROTO), SensorProto.class);
+        this.proto = SensorRegistry.decodeTo(SensorProto.class, json.getJSONOptional(SensorConfig.PROTO));
         this.count = json.getInt(SensorConfig.COUNT);
-        this.sensorIDs = new HashSet<>();
-        if (json.hasKey(SensorConfig.SENSOR_IDS)) {
-            JSONArray jsonSensors = json.getJSONArray(SensorConfig.SENSOR_IDS);
-            for (int i = 0; i < jsonSensors.length(); i++) {
-                this.sensorIDs.add(jsonSensors.getString(i));
-            }
-        }
+        this.sensorIDs = (json.hasKey(SensorConfig.SENSOR_IDS)) ?
+            new HashSet<>(json.getJSONArray(SensorConfig.SENSOR_IDS).toList(String.class)) :
+            new HashSet<>();
         this.active = json.getBoolean(SensorState.ACTIVE);
+    }
+
+    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
+        JSONObjectBuilder json = JSONBuilder.Object();
+        json.put(SensorRegistry.SENSOR_TYPE, this.getSensorType());
+        json.put(SensorConfig.PROTO, this.proto.toJSON());
+        json.put(SensorConfig.COUNT, this.count);
+        if (this.hasSensors()) {
+            json.put(SensorConfig.SENSOR_IDS, JSONBuilder.Array(this.sensorIDs).toJSON());
+        }
+        json.put(SensorState.ACTIVE, this.active);
+        return json;
     }
 
     public int getCount() {
@@ -101,19 +107,7 @@ public class SensorConfig extends JSONAble {
     }
 
     public JSONOptional toJSON() throws JSONException {
-        JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(SensorRegistry.SENSOR_TYPE, this.getSensorType());
-        json.put(SensorConfig.PROTO, this.proto.toJSON());
-        json.put(SensorConfig.COUNT, this.count);
-        if (this.hasSensors()) {
-            JSONArrayBuilder jsonSensors = JSONBuilder.Array();
-            for (String sensorID : this.sensorIDs) {
-                jsonSensors.put(sensorID);
-            }
-            json.put(SensorConfig.SENSOR_IDS, jsonSensors.toJSON());
-        }
-        json.put(SensorState.ACTIVE, this.active);
-        return json.toJSON();
+        return this.getJSONBuilder().toJSON();
     }
 
     public boolean equals(SensorConfig config) {

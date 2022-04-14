@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.seat.sim.common.json.JSONArray;
-import com.seat.sim.common.json.JSONArrayBuilder;
 import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
@@ -35,24 +33,16 @@ public class VisionSensorState extends SensorState {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
-        this.observations = new HashSet<>();
-        if (json.hasKey(VisionSensorState.OBSERVATIONS)) {
-            JSONArray jsonObservations = json.getJSONArray(VisionSensorState.OBSERVATIONS);
-            for (int i = 0; i < jsonObservations.length(); i++) {
-                this.observations.add(jsonObservations.getString(i));
-            }
-        }
+        this.observations = (json.hasKey(VisionSensorState.OBSERVATIONS)) ?
+            new HashSet<>(json.getJSONArray(VisionSensorState.OBSERVATIONS).toList(String.class)) :
+            new HashSet<>();
     }
 
     @Override
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = super.getJSONBuilder();
         if (this.hasObservations()) {
-            JSONArrayBuilder jsonObservations = JSONBuilder.Array();
-            for (String remoteID : this.observations) {
-                jsonObservations.put(remoteID);
-            }
-            json.put(VisionSensorState.OBSERVATIONS, jsonObservations.toJSON());
+            json.put(VisionSensorState.OBSERVATIONS, JSONBuilder.Array(this.observations).toJSON());
         }
         return json;
     }

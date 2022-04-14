@@ -74,13 +74,13 @@ public class SensorRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T decodeTo(JSONOptional optional, Class<? extends T> classType) throws CommonException, JSONException {
+    public static <T> T decodeTo(Class<T> cls, JSONOptional optional) throws CommonException, JSONException {
         String sensorType = SensorRegistry.decodeType(optional);
         if (!SensorRegistry.isRegistered(sensorType)) {
-            if (!SensorRegistry.isRegistered(classType)) {
+            if (!SensorRegistry.isRegistered(cls)) {
                 throw new CommonException(String.format("Cannot decode sensor %s", optional.toString()));
             }
-            return (T) SensorRegistry.REGISTRY.get(classType.getName()).apply(optional);
+            return (T) SensorRegistry.REGISTRY.get(cls.getName()).apply(optional);
         }
         return (T) SensorRegistry.REGISTRY.get(sensorType).apply(optional);
     }
@@ -92,8 +92,8 @@ public class SensorRegistry {
         return optional.getObject().getString(SensorRegistry.SENSOR_TYPE);
     }
 
-    public static <T> boolean isRegistered(Class<T> classType) {
-        return SensorRegistry.isRegistered(classType.getName());
+    public static <T> boolean isRegistered(Class<T> cls) {
+        return SensorRegistry.isRegistered(cls.getName());
     }
 
     public static boolean isRegistered(String className) {
