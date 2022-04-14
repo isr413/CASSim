@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONArray;
-import com.seat.sim.common.json.JSONArrayBuilder;
 import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
@@ -69,13 +67,11 @@ public class RemoteProto extends JSONAble {
             this.location = new Vector(json.getJSONOptional(RemoteProto.LOCATION)) :
             null;
         this.maxBatteryPower = json.getDouble(RemoteProto.MAX_BATTERY);
-        this.sensorConfigs = new ArrayList<>();
-        if (json.hasKey(RemoteProto.SENSORS)) {
-            JSONArray jsonSensorConfigs = json.getJSONArray(RemoteProto.SENSORS);
-            for (int i = 0; i < jsonSensorConfigs.length(); i++) {
-                this.sensorConfigs.add(SensorRegistry.decodeTo(jsonSensorConfigs.getJSONOptional(i), SensorConfig.class));
-            }
-        }
+        this.sensorConfigs = (json.hasKey(RemoteProto.SENSORS)) ?
+            this.sensorConfigs = json.getJSONArray(RemoteProto.SENSORS).toList(JSONOptional.class).stream()
+                .map(optional -> SensorRegistry.decodeTo(SensorConfig.class, optional))
+                .collect(Collectors.toList()) :
+            new ArrayList<>();
         this.init();
     }
 
@@ -87,11 +83,14 @@ public class RemoteProto extends JSONAble {
         }
         json.put(RemoteProto.MAX_BATTERY, this.maxBatteryPower);
         if (this.hasSensors()) {
-            JSONArrayBuilder jsonSensorConfigs = JSONBuilder.Array();
-            for (SensorConfig config : this.sensorConfigs) {
-                jsonSensorConfigs.put(config.toJSON());
-            }
-            json.put(RemoteProto.SENSORS, jsonSensorConfigs.toJSON());
+            json.put(
+                RemoteProto.SENSORS,
+                JSONBuilder.Array(
+                    this.sensorConfigs.stream()
+                        .map(config -> config.toJSON())
+                        .collect(Collectors.toList())
+                ).toJSON()
+            );
         }
         return json;
     }
@@ -127,9 +126,9 @@ public class RemoteProto extends JSONAble {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends SensorConfig> Collection<T> getSensorConfigsWithType(Class<? extends T> classType) {
+    public <T extends SensorConfig> Collection<T> getSensorConfigsWithType(Class<T> cls) {
         return this.sensorConfigs.stream()
-            .filter(config -> classType.isAssignableFrom(config.getClass()))
+            .filter(config -> cls.isAssignableFrom(config.getClass()))
             .map(config -> (T) config)
             .collect(Collectors.toList());
     }
@@ -153,8 +152,8 @@ public class RemoteProto extends JSONAble {
         return !this.getSensorConfigsWithModel(sensorModel).isEmpty();
     }
 
-    public boolean hasSensorConfigWithType(Class<? extends SensorConfig> classType) {
-        return !this.getSensorConfigsWithType(classType).isEmpty();
+    public boolean hasSensorConfigWithType(Class<? extends SensorConfig> cls) {
+        return !this.getSensorConfigsWithType(cls).isEmpty();
     }
 
     public boolean hasSensors() {

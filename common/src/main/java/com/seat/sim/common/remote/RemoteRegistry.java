@@ -82,13 +82,13 @@ public class RemoteRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T decodeTo(JSONOptional optional, Class<T> classType) throws CommonException, JSONException {
+    public static <T> T decodeTo(Class<T> cls, JSONOptional optional) throws CommonException, JSONException {
         String remoteType = RemoteRegistry.decodeType(optional);
         if (!RemoteRegistry.isRegistered(remoteType)) {
-            if (!RemoteRegistry.isRegistered(classType)) {
+            if (!RemoteRegistry.isRegistered(cls)) {
                 throw new CommonException(String.format("Cannot decode remote %s", optional.toString()));
             }
-            return (T) RemoteRegistry.REGISTRY.get(classType.getName()).apply(optional);
+            return (T) RemoteRegistry.REGISTRY.get(cls.getName()).apply(optional);
         }
         return (T) RemoteRegistry.REGISTRY.get(remoteType).apply(optional);
     }
@@ -100,8 +100,8 @@ public class RemoteRegistry {
         return optional.getObject().getString(RemoteRegistry.REMOTE_TYPE);
     }
 
-    public static <T> boolean isRegistered(Class<T> classType) {
-        return RemoteRegistry.isRegistered(classType.getName());
+    public static <T> boolean isRegistered(Class<T> cls) {
+        return RemoteRegistry.isRegistered(cls.getName());
     }
 
     public static boolean isRegistered(String className) {

@@ -3,6 +3,7 @@ package com.seat.sim.common.remote;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.json.JSONAble;
@@ -54,13 +55,13 @@ public class RemoteConfig extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.proto = RemoteRegistry.decodeTo(json.getJSONOptional(RemoteConfig.PROTO), RemoteProto.class);
+        this.proto = RemoteRegistry.decodeTo(RemoteProto.class, json.getJSONOptional(RemoteConfig.PROTO));
         this.team = (json.hasKey(TeamColor.TEAM)) ?
             TeamColor.decodeType(json) :
             TeamColor.NONE;
         this.count = json.getInt(RemoteConfig.COUNT);
         this.remoteIDs = (json.hasKey(RemoteConfig.REMOTE_IDS)) ?
-            new HashSet<>(json.getJSONArray(RemoteConfig.REMOTE_IDS).toList(String.class)) :
+            json.getJSONArray(RemoteConfig.REMOTE_IDS).toList(String.class).stream().collect(Collectors.toSet()) :
             new HashSet<>();
         this.active = json.getBoolean(RemoteState.ACTIVE);
         this.dynamic = json.getBoolean(RemoteConfig.DYNAMIC);

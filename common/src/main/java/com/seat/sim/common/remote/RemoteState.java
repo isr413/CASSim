@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONArray;
-import com.seat.sim.common.json.JSONArrayBuilder;
 import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
@@ -63,14 +61,11 @@ public class RemoteState extends JSONAble {
         this.location = new Vector(json.getJSONOptional(RemoteProto.LOCATION));
         this.battery = json.getDouble(RemoteState.BATTERY);
         this.active = json.getBoolean(RemoteState.ACTIVE);
-        this.sensorStates = new HashMap<>();
-        if (json.hasKey(RemoteProto.SENSORS)) {
-            JSONArray jsonSensorStates = json.getJSONArray(RemoteProto.SENSORS);
-            for (int i = 0; i < jsonSensorStates.length(); i++) {
-                SensorState sensorState = SensorRegistry.decodeTo(jsonSensorStates.getJSONOptional(i), SensorState.class);
-                this.sensorStates.put(sensorState.getSensorID(), sensorState);
-            }
-        }
+        this.sensorStates = (json.hasKey(RemoteProto.SENSORS)) ?
+            json.getJSONArray(RemoteProto.SENSORS).toList(JSONOptional.class).stream()
+                .map(optional -> SensorRegistry.decodeTo(SensorState.class, optional))
+                .collect(Collectors.toMap(SensorState::getSensorID, Function.identity())) :
+            new HashMap<>();
     }
 
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
@@ -84,11 +79,14 @@ public class RemoteState extends JSONAble {
         json.put(RemoteState.BATTERY, this.battery);
         json.put(RemoteState.ACTIVE, this.active);
         if (this.hasSensors()) {
-            JSONArrayBuilder jsonSensorStates = JSONBuilder.Array();
-            for (SensorState sensorState : this.sensorStates.values()) {
-                jsonSensorStates.put(sensorState.toJSON());
-            }
-            json.put(RemoteProto.SENSORS, jsonSensorStates.toJSON());
+            json.put(
+                RemoteProto.SENSORS,
+                JSONBuilder.Array(
+                    this.sensorStates.values().stream()
+                        .map(sensorState -> sensorState.toJSON())
+                        .collect(Collectors.toList())
+                ).toJSON()
+            );
         }
         return json;
     }
@@ -128,9 +126,9 @@ public class RemoteState extends JSONAble {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends SensorState> Collection<T> getSensorStatesWithType(Class<? extends T> classType) {
+    public <T extends SensorState> Collection<T> getSensorStatesWithType(Class<T> cls) {
         return this.getSensorStates().stream()
-            .filter(sensorState -> classType.isAssignableFrom(sensorState.getClass()))
+            .filter(sensorState -> cls.isAssignableFrom(sensorState.getClass()))
             .map(sensorState -> (T) sensorState)
             .collect(Collectors.toList());
     }
@@ -162,8 +160,8 @@ public class RemoteState extends JSONAble {
         return !this.getSensorStatesWithModel(sensorModel).isEmpty();
     }
 
-    public boolean hasSensorStateWithType(Class<? extends SensorState> classType) {
-        return !this.getSensorStatesWithType(classType).isEmpty();
+    public boolean hasSensorStateWithType(Class<? extends SensorState> cls) {
+        return !this.getSensorStatesWithType(cls).isEmpty();
     }
 
     public boolean hasTeam() {
