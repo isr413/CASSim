@@ -27,9 +27,7 @@ public class AerialRemote extends MobileRemote {
     @Override
     public void update(Scenario scenario, IntentionSet intentions, double stepSize) throws SimException {
         super.update(scenario, intentions, stepSize);
-        if (this.isDisabled() || this.isInactive() || this.isDone()) {
-            return;
-        }
+        if (this.isDisabled() || this.isInactive() || this.isDone()) return;
         double batteryUsage = this.getProto().getStaticBatteryUsage();
         batteryUsage += this.getAcceleration().getProjectionXY().getMagnitude() *
             this.getProto().getHorizontalKineticBatteryUsage();

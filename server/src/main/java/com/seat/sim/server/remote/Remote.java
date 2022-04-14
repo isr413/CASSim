@@ -1,6 +1,5 @@
 package com.seat.sim.server.remote;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,7 +17,6 @@ import com.seat.sim.common.remote.intent.IntentionType;
 import com.seat.sim.common.sensor.SensorConfig;
 import com.seat.sim.common.sensor.SensorProto;
 import com.seat.sim.common.sensor.SensorState;
-import com.seat.sim.common.util.Debugger;
 import com.seat.sim.server.core.SimException;
 import com.seat.sim.server.scenario.Scenario;
 import com.seat.sim.server.sensor.Sensor;
@@ -69,39 +67,24 @@ public class Remote {
     }
 
     public boolean activateAllSensors() {
-        this.getSensors().stream()
-            .filter(sensor -> this.hasInactiveSensorWithID(sensor.getSensorID()))
-            .forEach(sensor -> this.activateSensorWithID(sensor.getSensorID()));
+        this.allSensors.keySet().stream()
+            .filter(sensorID -> this.hasInactiveSensorWithID(sensorID))
+            .forEach(sensorID -> this.activateSensorWithID(sensorID));
         return true;
     }
 
-    public boolean activateSensors(Collection<String> sensorIDs) throws SimException {
-        ArrayList<String> sensorErrors = new ArrayList<>();
+    public boolean activateSensors(Collection<String> sensorIDs) {
+        boolean flag = true;
         for (String sensorID : sensorIDs) {
-            try {
-                if (!this.activateSensorWithID(sensorID)) {
-                    sensorErrors.add(sensorID);
-                }
-            } catch (SimException e) {
-                sensorErrors.add(sensorID);
-            }
+            if (this.hasActiveSensorWithID(sensorID)) continue;
+            flag = this.activateSensorWithID(sensorID) && flag;
         }
-        if (!sensorErrors.isEmpty()) {
-            throw new SimException(String.format("Remote %s cannot activate sensors %s", this.getRemoteID(),
-                sensorErrors.toString()));
-        }
-        return true;
+        return flag;
     }
 
-    public boolean activateSensorWithID(String sensorID) throws SimException {
-        if (!this.hasSensorWithID(sensorID)) {
-            throw new SimException(String.format("Remote %s has no sensor %s", this.getRemoteID(), sensorID));
-        }
-        if (this.hasActiveSensorWithID(sensorID)) {
-            Debugger.logger.warn(String.format("Sensor %s is already active on remote %s", sensorID,
-                this.getRemoteID()));
-            return true;
-        }
+    public boolean activateSensorWithID(String sensorID) {
+        if (!this.hasSensorWithID(sensorID)) return false;
+        if (this.hasActiveSensorWithID(sensorID)) return true;
         this.activeSensors.put(sensorID, this.allSensors.get(sensorID));
         return true;
     }
@@ -113,33 +96,18 @@ public class Remote {
         return true;
     }
 
-    public boolean deactivateSensors(Collection<String> sensorIDs) throws SimException {
-        ArrayList<String> sensorErrors = new ArrayList<>();
+    public boolean deactivateSensors(Collection<String> sensorIDs) {
+        boolean flag = true;
         for (String sensorID : sensorIDs) {
-            try {
-                if (!this.deactivateSensorWithID(sensorID)) {
-                    sensorErrors.add(sensorID);
-                }
-            } catch (SimException e) {
-                sensorErrors.add(sensorID);
-            }
+            if (this.hasInactiveSensorWithID(sensorID)) continue;
+            flag = this.deactivateSensorWithID(sensorID) && flag;
         }
-        if (!sensorErrors.isEmpty()) {
-            throw new SimException(String.format("Remote %s cannot deactivate sensors %s", this.getRemoteID(),
-                sensorErrors.toString()));
-        }
-        return true;
+        return flag;
     }
 
-    public boolean deactivateSensorWithID(String sensorID) throws SimException {
-        if (!this.hasSensorWithID(sensorID)) {
-            throw new SimException(String.format("Remote %s has no sensor %s", this.getRemoteID(), sensorID));
-        }
-        if (!this.hasActiveSensorWithID(sensorID)) {
-            Debugger.logger.warn(String.format("Sensor %s is already inactive on remote %s", sensorID,
-                this.getRemoteID()));
-            return true;
-        }
+    public boolean deactivateSensorWithID(String sensorID) {
+        if (!this.hasSensorWithID(sensorID)) return false;
+        if (this.hasInactiveSensorWithID(sensorID)) return true;
         this.activeSensors.remove(sensorID);
         return true;
     }
@@ -217,7 +185,7 @@ public class Remote {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Sensor> Collection<T> getSensorsWithType(Class<? extends T> classType) {
+    public <T extends Sensor> Collection<T> getSensorsWithType(Class<T> classType) {
         return this.getSensors().stream()
             .filter(sensor -> classType.isAssignableFrom(sensor.getClass()))
             .map(sensor -> (T) sensor)
@@ -354,7 +322,7 @@ public class Remote {
             if (intentions.hasIntentionWithType(IntentionType.ACTIVATE)) {
                 ActivateIntention intent = (ActivateIntention) intentions.getIntentionWithType(IntentionType.ACTIVATE);
                 if (intent.hasActivations()) {
-                    this.activateSensors(( intent).getActivations());
+                    this.activateSensors(intent.getActivations());
                 } else {
                     this.activateAllSensors();
                 }
@@ -375,9 +343,7 @@ public class Remote {
                 this.setDone();
             }
         }
-        if (this.isInactive() || this.isDone()) {
-            return;
-        }
+        if (this.isInactive() || this.isDone()) return;
         double batteryUsage = 0;
         for (Sensor sensor : this.activeSensors.values()) {
             sensor.update(scenario, this, stepSize);

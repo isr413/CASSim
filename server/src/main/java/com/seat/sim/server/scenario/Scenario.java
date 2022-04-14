@@ -55,9 +55,7 @@ public class Scenario {
     }
 
     private void enforceBounds(MobileRemote remote, Vector prevLocation) {
-        if (this.getGrid().isInbounds(remote.getLocation())) {
-            return;
-        }
+        if (this.getGrid().isInbounds(remote.getLocation())) return;
         Vector boundsCollision = this.getGrid().getBoundsCollisionLocation(prevLocation, remote.getLocation());
         if (boundsCollision == null) {
             Debugger.logger.err(String.format("Could not compute bounce location for %s on remote %s",
@@ -197,7 +195,8 @@ public class Scenario {
 
     public Remote getRemoteWithID(String remoteID) throws SimException {
         if (!this.hasRemoteWithID(remoteID)) {
-            throw new SimException(String.format("Scenario <%s> has no remote %s", this.getScenarioID(), remoteID));
+            throw new SimException(String.format("Scenario <%s> has no remote %s", this.getScenarioID(),
+                remoteID));
         }
         return this.allRemotes.get(remoteID);
     }
@@ -305,18 +304,14 @@ public class Scenario {
 
     public void setTime(double time) throws SimException {
         if (time < 0 || this.getMissionLength() < time) {
-            throw new SimException(String.format("Scenario %s cannot set time to %f", this.getScenarioID(), time));
+            throw new SimException(String.format("Scenario %s cannot set time to %f", this.getScenarioID(),
+                time));
         }
         this.time = time;
     }
 
     private void applyZoneEffectsToRemote(Remote remote, double stepSize) throws SimException {
-        if (this.getGrid().isOutOfBounds(remote.getLocation())) {
-            return;
-        }
-        if (remote.isStationary()) {
-            return;
-        }
+        if (this.getGrid().isOutOfBounds(remote.getLocation()) || remote.isStationary()) return;
         MobileRemote mobileRemote = (MobileRemote) remote;
         Zone zone = this.getGrid().getZoneAtLocation(mobileRemote.getLocation());
         Field field = (remote.isAerial()) ?
@@ -352,14 +347,12 @@ public class Scenario {
 
     private void updateRemotes(Map<String, IntentionSet> intentions, double stepSize) throws SimException {
         for (Remote remote : this.getRemotes()) {
-            if (remote.isDisabled()) {
-                continue;
-            }
+            if (remote.isDisabled()) continue;
             Debugger.logger.info(String.format("Updating remote %s ...", remote.getRemoteID()));
             Vector prevLocation = null;
-            if (this.getGrid().isInbounds(remote.getLocation()) && remote.isMobile()) {
+            if (this.getGrid().isInbounds(remote.getLocation())) {
                 prevLocation = remote.getLocation();
-                this.applyZoneEffectsToRemote(remote, stepSize);
+                if (remote.isMobile()) this.applyZoneEffectsToRemote(remote, stepSize);
             }
             if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
                 remote.update(this, intentions.get(remote.getRemoteID()), stepSize);
@@ -407,9 +400,7 @@ public class Scenario {
 
     public void update(Map<String, IntentionSet> intentions, double stepSize) throws SimException {
         this.time += stepSize;
-        if (this.isDone()) {
-            return;
-        }
+        if (this.isDone()) return;
         if (this.hasError()) {
             this.setStatus(ScenarioStatus.IN_PROGRESS);
         }
