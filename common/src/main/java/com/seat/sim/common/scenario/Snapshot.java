@@ -5,12 +5,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONArray;
-import com.seat.sim.common.json.JSONArrayBuilder;
 import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
@@ -62,26 +61,17 @@ public class Snapshot extends JSONAble {
         this.status = ScenarioStatus.values()[json.getInt(ScenarioStatus.STATUS)];
         this.time = json.getDouble(Snapshot.TIME);
         this.stepSize = json.getDouble(Snapshot.STEP_SIZE);
-        this.activeRemoteIDs = new HashSet<>();
-        if (json.hasKey(Snapshot.ACTIVE_REMOTES)) {
-            JSONArray jsonActiveRemoteIDs = json.getJSONArray(Snapshot.ACTIVE_REMOTES);
-            for (int i = 0; i < jsonActiveRemoteIDs.length(); i++) {
-                this.activeRemoteIDs.add(jsonActiveRemoteIDs.getString(i));
-            }
-        }
-        this.dynamicRemoteIDs = new HashSet<>();
-        if (json.hasKey(Snapshot.DYNAMIC_REMOTES)) {
-            JSONArray jsonDynamicRemoteIDs = json.getJSONArray(Snapshot.DYNAMIC_REMOTES);
-            for (int i = 0; i < jsonDynamicRemoteIDs.length(); i++) {
-                this.dynamicRemoteIDs.add(jsonDynamicRemoteIDs.getString(i));
-            }
-        }
-        this.remoteStates = new HashMap<>();
-        JSONArray jsonRemoteStates = json.getJSONArray(Snapshot.STATE);
-        for (int i = 0; i < jsonRemoteStates.length(); i++) {
-            RemoteState remoteState = RemoteRegistry.decodeTo(jsonRemoteStates.getJSONOptional(i), RemoteState.class);
-            this.remoteStates.put(remoteState.getRemoteID(), remoteState);
-        }
+        this.activeRemoteIDs = (json.hasKey(Snapshot.ACTIVE_REMOTES)) ?
+            new HashSet<>(json.getJSONArray(Snapshot.ACTIVE_REMOTES).toList(String.class)) :
+            new HashSet<>();
+        this.dynamicRemoteIDs = (json.hasKey(Snapshot.DYNAMIC_REMOTES)) ?
+            new HashSet<>(json.getJSONArray(Snapshot.DYNAMIC_REMOTES).toList(String.class)) :
+            new HashSet<>();
+        this.remoteStates = (json.hasKey(Snapshot.STATE)) ?
+            json.getJSONArray(Snapshot.STATE).toList(JSONOptional.class).stream()
+                .map(optional -> RemoteRegistry.decodeTo(RemoteState.class, optional))
+                .collect(Collectors.toMap(RemoteState::getRemoteID, Function.identity())) :
+            new HashMap<>();
     }
 
     public Collection<String> getActiveRemoteIDs() {
@@ -195,24 +185,19 @@ public class Snapshot extends JSONAble {
         json.put(Snapshot.TIME, this.time);
         json.put(Snapshot.STEP_SIZE, this.stepSize);
         if (this.hasActiveRemotes()) {
-            JSONArrayBuilder jsonActiveRemoteIDs = JSONBuilder.Array();
-            for (String remoteID : this.activeRemoteIDs) {
-                jsonActiveRemoteIDs.put(remoteID);
-            }
-            json.put(Snapshot.ACTIVE_REMOTES, jsonActiveRemoteIDs.toJSON());
+            json.put(Snapshot.ACTIVE_REMOTES, JSONBuilder.Array(this.activeRemoteIDs).toJSON());
         }
         if (this.hasDynamicRemotes()) {
-            JSONArrayBuilder jsonDynamicRemoteIDs = JSONBuilder.Array();
-            for (String remoteID : this.dynamicRemoteIDs) {
-                jsonDynamicRemoteIDs.put(remoteID);
-            }
-            json.put(Snapshot.DYNAMIC_REMOTES, jsonDynamicRemoteIDs.toJSON());
+            json.put(Snapshot.DYNAMIC_REMOTES, JSONBuilder.Array(this.dynamicRemoteIDs).toJSON());
         }
-        JSONArrayBuilder jsonRemoteStates = JSONBuilder.Array();
-        for (RemoteState remoteState : this.remoteStates.values()) {
-            jsonRemoteStates.put(remoteState.toJSON());
-        }
-        json.put(Snapshot.STATE, jsonRemoteStates.toJSON());
+        json.put(
+            Snapshot.STATE,
+            JSONBuilder.Array(
+                this.remoteStates.values().stream()
+                    .map(remoteState -> remoteState.toJSON())
+                    .collect(Collectors.toList())
+            ).toJSON()
+        );
         return json.toJSON();
     }
 

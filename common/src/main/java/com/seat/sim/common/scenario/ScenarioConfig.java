@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONArray;
-import com.seat.sim.common.json.JSONArrayBuilder;
 import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
@@ -105,13 +103,11 @@ public class ScenarioConfig extends JSONAble {
         this.grid = new Grid(json.getJSONOptional(ScenarioConfig.GRID));
         this.missionLength = json.getInt(ScenarioConfig.MISSION_LENGTH);
         this.stepSize = json.getDouble(ScenarioConfig.STEP_SIZE);
-        this.remoteConfigs = new ArrayList<>();
-        if (json.hasKey(ScenarioConfig.REMOTE_CONFIG)) {
-            JSONArray jsonRemoteConfigs = json.getJSONArray(ScenarioConfig.REMOTE_CONFIG);
-            for (int i = 0; i < jsonRemoteConfigs.length(); i++) {
-                this.remoteConfigs.add(RemoteRegistry.decodeTo(jsonRemoteConfigs.getJSONOptional(i), RemoteConfig.class));
-            }
-        }
+        this.remoteConfigs = (json.hasKey(ScenarioConfig.REMOTE_CONFIG)) ?
+            json.getJSONArray(ScenarioConfig.REMOTE_CONFIG).toList(JSONOptional.class).stream()
+                .map(optional -> RemoteRegistry.decodeTo(RemoteConfig.class, optional))
+                .collect(Collectors.toList()) :
+            new ArrayList<>();
         this.init();
     }
 
@@ -124,11 +120,14 @@ public class ScenarioConfig extends JSONAble {
         json.put(ScenarioConfig.STEP_SIZE, this.stepSize);
         json.put(ScenarioConfig.NUM_REMOTES, this.getNumberOfRemotes());
         if (this.hasRemotes()) {
-            JSONArrayBuilder jsonRemoteConfigs = JSONBuilder.Array();
-            for (RemoteConfig config : this.remoteConfigs) {
-                jsonRemoteConfigs.put(config.toJSON());
-            }
-            json.put(ScenarioConfig.REMOTE_CONFIG, jsonRemoteConfigs.toJSON());
+            json.put(
+                ScenarioConfig.REMOTE_CONFIG,
+                JSONBuilder.Array(
+                    this.remoteConfigs.stream()
+                        .map(config -> config.toJSON())
+                        .collect(Collectors.toList())
+                ).toJSON()
+            );
         }
         return json;
     }
@@ -158,9 +157,9 @@ public class ScenarioConfig extends JSONAble {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends RemoteConfig> Collection<T> getRemoteConfigsWithType(Class<? extends T> classType) {
+    public <T extends RemoteConfig> Collection<T> getRemoteConfigsWithType(Class<T> cls) {
         return this.getRemoteConfigs().stream()
-            .filter(config -> classType.isAssignableFrom(config.getClass()))
+            .filter(config -> cls.isAssignableFrom(config.getClass()))
             .map(config -> (T) config)
             .collect(Collectors.toList());
     }
@@ -192,8 +191,8 @@ public class ScenarioConfig extends JSONAble {
         return this.stepSize;
     }
 
-    public boolean hasRemoteConfigWithType(Class<? extends RemoteConfig> classType) {
-        return !this.getRemoteConfigsWithType(classType).isEmpty();
+    public boolean hasRemoteConfigWithType(Class<? extends RemoteConfig> cls) {
+        return !this.getRemoteConfigsWithType(cls).isEmpty();
     }
 
     public boolean hasRemotes() {
