@@ -1,6 +1,8 @@
 package com.seat.sim.common.json;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +14,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /** An optional class to wrap JSONArray and JSONObject interface types. */
 public class JSONOptional {
@@ -261,7 +262,29 @@ public class JSONOptional {
         /** Applies the consumer for each element in the JSONArray. */
         @SuppressWarnings("unchecked")
         public <T> void forEach(Class<T> classType, Consumer<? super T> consumer) {
-            this.json.forEach((o) -> consumer.accept((T) o));
+            for (int i = 0; i < this.json.length(); i++) {
+                if (classType == JSONArray.class) {
+                    consumer.accept((T) this.getJSONArray(i));
+                } else if (classType == JSONObject.class) {
+                    consumer.accept((T) this.getJSONObject(i));
+                } else if (classType == JSONOptional.class) {
+                    consumer.accept((T) this.getJSONOptional(i));
+                } else {
+                    consumer.accept((T) this.get(i));
+                }
+            }
+        }
+
+        /** Returns the Object at index idx.
+         * @throws JSONException if the value at idx cannot be converted to an Object or is out of bounds
+         */
+        public Object get(int idx) throws JSONException {
+            this.assertBounds(idx);
+            try {
+                return this.json.get(idx);
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
+            }
         }
 
         /** Returns the boolean value at index idx.
@@ -388,9 +411,19 @@ public class JSONOptional {
         /** Returns a list of type T of the JSONObject values. */
         @SuppressWarnings("unchecked")
         public <T> List<T> toList(Class<T> classType) {
-            return this.json.toList().stream()
-                .map(o -> (T) o)
-                .collect(Collectors.toList());
+            ArrayList<T> list = new ArrayList<>();
+            for (int i = 0; i < this.json.length(); i++) {
+                if (classType == JSONArray.class) {
+                    list.add((T) this.getJSONArray(i));
+                } else if (classType == JSONObject.class) {
+                    list.add((T) this.getJSONObject(i));
+                } else if (classType == JSONOptional.class) {
+                    list.add((T) this.getJSONOptional(i));
+                } else {
+                    list.add((T) this.get(i));
+                }
+            }
+            return list;
         }
 
         /** Returns the String representation of the JSONArray.
@@ -438,6 +471,18 @@ public class JSONOptional {
         private void assertContains(String key) throws JSONException {
             if (!this.json.has(key)) {
                 throw new JSONException(String.format("%s not found in JSONObject.", key));
+            }
+        }
+
+        /** Returns the Object associated with the key.
+         * @throws JSONException if the value associated with the key cannot be converted to an Object or no such key
+         */
+        public Object get(String key) throws JSONException {
+            this.assertContains(key);
+            try {
+                return this.json.get(key);
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
             }
         }
 
@@ -566,8 +611,19 @@ public class JSONOptional {
         /** Returns a Map<String, T> representation of the JSONObject. */
         @SuppressWarnings("unchecked")
         public <T> Map<String, T> toMap(Class<T> classType) {
-            return this.json.keySet().stream()
-                .collect(Collectors.toMap(Function.identity(), (key) -> (T) this.json.get(key)));
+            Map<String, T> map = new HashMap<>();
+            for (String key : this.keySet()) {
+                if (classType == JSONArray.class) {
+                    map.put(key, (T) this.getJSONArray(key));
+                } else if (classType == JSONObject.class) {
+                    map.put(key, (T) this.getJSONObject(key));
+                } else if (classType == JSONOptional.class) {
+                    map.put(key, (T) this.getJSONOptional(key));
+                } else {
+                    map.put(key, (T) this.get(key));
+                }
+            }
+            return map;
         }
 
         /** Returns the String representation of the JSONObject.
@@ -600,9 +656,19 @@ public class JSONOptional {
         /** Returns a collection of type T of the JSONObject values. */
         @SuppressWarnings("unchecked")
         public <T> Collection<T> values(Class<T> classType) {
-            return this.json.toMap().values().stream()
-                .map(o -> (T) o)
-                .collect(Collectors.toList());
+            ArrayList<T> list = new ArrayList<>();
+            for (String key : this.keySet()) {
+                if (classType == JSONArray.class) {
+                    list.add((T) this.getJSONArray(key));
+                } else if (classType == JSONObject.class) {
+                    list.add((T) this.getJSONObject(key));
+                } else if (classType == JSONOptional.class) {
+                    list.add((T) this.getJSONOptional(key));
+                } else {
+                    list.add((T) this.get(key));
+                }
+            }
+            return list;
         }
 
     }

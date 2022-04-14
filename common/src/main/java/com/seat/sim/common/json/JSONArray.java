@@ -13,6 +13,11 @@ public interface JSONArray extends Iterable<Object>, JSONInterface {
     /** Applies the consumer for each element in the JSONArray. */
     <T> void forEach(Class<T> classType, Consumer<? super T> consumer);
 
+    /** Returns the Object at index idx.
+     * @throws JSONException if the value at idx cannot be converted to an Object or is out of bounds
+     */
+    Object get(int idx) throws JSONException;
+
     /** Returns the boolean value at index idx.
      * @throws JSONException if the value at idx cannot be converted to a boolean or is out of bounds
      */

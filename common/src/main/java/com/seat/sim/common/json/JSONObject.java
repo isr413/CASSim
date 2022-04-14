@@ -7,6 +7,11 @@ import java.util.Set;
 /** An interface for classes that support a JSON Object representation. */
 public interface JSONObject extends JSONInterface {
 
+    /** Returns the Object associated with the key.
+     * @throws JSONException if the value associated with the key cannot be converted to an Object or no such key
+     */
+    Object get(String key) throws JSONException;
+
     /** Returns the boolean value associated with the key.
      * @throws JSONException if the value associated with the key cannot be converted to a boolean or no such key
      */
