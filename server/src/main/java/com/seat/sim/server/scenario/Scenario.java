@@ -323,22 +323,30 @@ public class Scenario {
             zone.getAerialField() :
             zone.getGroundField();
         if (field.isPullForce() && field.getMagnitude() > 0) {
-            mobileRemote.updateAcceleration(
+            mobileRemote.updateVelocity(
                 Vector.scale(
                     Vector.subtract(field.getPoint(), mobileRemote.getLocation()).getUnitVector(),
                     field.getMagnitude()
-                )
+                ),
+                stepSize
             );
         } else if (field.isPushForce() && field.getMagnitude() > 0) {
-            mobileRemote.updateAcceleration(
+            mobileRemote.updateVelocity(
                 Vector.scale(
                     Vector.subtract(mobileRemote.getLocation(), field.getPoint()).getUnitVector(),
                     field.getMagnitude()
-                )
+                ),
+                stepSize
             );
         }
-        if (field.getJerk().getMagnitude() > 0) {
-            mobileRemote.updateAcceleration(field.getJerk());
+        if (field.hasResistance()) {
+            mobileRemote.updateVelocity(
+                Vector.scale(
+                    mobileRemote.getVelocity().getUnitVector(),
+                    -field.getResistance()
+                ),
+                stepSize
+            );
         }
     }
 
@@ -348,7 +356,9 @@ public class Scenario {
                 continue;
             }
             Debugger.logger.info(String.format("Updating remote %s ...", remote.getRemoteID()));
+            Vector prevLocation = null;
             if (this.getGrid().isInbounds(remote.getLocation()) && remote.isMobile()) {
+                prevLocation = remote.getLocation();
                 this.applyZoneEffectsToRemote(remote, stepSize);
             }
             if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
@@ -359,8 +369,12 @@ public class Scenario {
                 this.updatePassiveRemote(remote, stepSize);
             }
             if (this.getGrid().isOutOfBounds(remote.getLocation())) {
-                this.assertFail(String.format("Remote %s out of bounds at %s", remote.getLabel(),
-                    remote.getLocation().toString()));
+                if (remote.isMobile() && prevLocation != null) {
+                    this.enforceBounds((MobileRemote) remote, prevLocation);
+                } else {
+                    this.assertFail(String.format("Remote %s out of bounds at %s", remote.getLabel(),
+                        remote.getLocation().toString()));
+                }
             }
             if ((remote.isInactive() || remote.isDone()) && this.hasActiveRemoteWithID(remote.getRemoteID())) {
                 this.activeRemotes.remove(remote.getRemoteID());
@@ -380,9 +394,6 @@ public class Scenario {
         }
         if (this.getGrid().isInbounds(remote.getLocation())) {
             remote.update(this, controller.getIntentions(), stepSize);
-            if (remote.isMobile() && this.getGrid().isOutOfBounds(remote.getLocation())) {
-                this.enforceBounds((MobileRemote) remote, remote.getLocation());
-            }
         }
     }
 

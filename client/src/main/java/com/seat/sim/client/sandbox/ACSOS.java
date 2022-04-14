@@ -32,7 +32,7 @@ import com.seat.sim.common.util.Random;
 public class ACSOS implements SARApplication {
 
     private static final int BASE_COUNT = 1;
-    private static final int DRONE_COUNT = 32;
+    private static final int DRONE_COUNT = 1;
     private static final int MAP_SIZE = 64;
     private static final int VICTIM_COUNT = 0;
     private static final int ZONE_SIZE = 10;
@@ -218,7 +218,7 @@ public class ACSOS implements SARApplication {
             }
             AerialRemoteController controller = new AerialRemoteController(remoteID);
             //controller.goToLocation(this.localGoals.get(remoteID).getLocation());
-            controller.goToLocation(new Vector(200, 200));
+            controller.goToLocation(new Vector(280, 280));
             intentions.add(controller.getIntentions());
         }
         return intentions;
