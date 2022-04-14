@@ -3,7 +3,7 @@ package com.seat.sim.common.remote.intent;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.math.Vector;
 
 public class SteerIntention extends Intention {
@@ -21,8 +21,8 @@ public class SteerIntention extends Intention {
         this.direction = direction;
     }
 
-    public SteerIntention(JSONOption option) throws JSONException {
-        super(option);
+    public SteerIntention(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override

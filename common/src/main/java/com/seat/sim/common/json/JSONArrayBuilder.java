@@ -31,7 +31,7 @@ public interface JSONArrayBuilder {
     /** Appends the value to the JSONArray.
      * @throws JSONException if JSON does not support the input value
     */
-    void put(JSONOption value) throws JSONException;
+    void put(JSONOptional value) throws JSONException;
 
     /** Appends the value to the JSONArray.
      * @throws JSONException if JSON does not support the input value
@@ -44,7 +44,7 @@ public interface JSONArrayBuilder {
     void put(String value) throws JSONException;
 
     /** Returns the JSONOption representation of the JSONArray. */
-    JSONOption toJSON();
+    JSONOptional toJSON();
 
     /** Returns the String representation of the JSONArray.
      * @throws JSONException if the JSONArray cannot be converted to a JSON string

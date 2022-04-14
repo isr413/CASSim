@@ -3,7 +3,7 @@ package com.seat.sim.common.remote.intent;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.math.Vector;
 
 public class GoToIntention extends Intention {
@@ -42,8 +42,8 @@ public class GoToIntention extends Intention {
         this.maxAcceleration = maxAcceleration;
     }
 
-    public GoToIntention(JSONOption option) throws JSONException {
-        super(option);
+    public GoToIntention(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override

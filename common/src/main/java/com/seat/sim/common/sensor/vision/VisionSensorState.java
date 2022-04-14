@@ -10,7 +10,7 @@ import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.sensor.SensorState;
 
 /** A serializable Vision Sensor state. */
@@ -28,8 +28,8 @@ public class VisionSensorState extends SensorState {
         this.observations = (observations != null) ? new HashSet<>(observations) : new HashSet<>();
     }
 
-    public VisionSensorState(JSONOption option) throws JSONException {
-        super(option);
+    public VisionSensorState(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override

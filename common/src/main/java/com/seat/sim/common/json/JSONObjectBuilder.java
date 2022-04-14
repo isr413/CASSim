@@ -31,7 +31,7 @@ public interface JSONObjectBuilder {
     /** Inserts the key-value pair into the JSONObject.
      * @throws JSONException if JSON does not support the input value
     */
-    void put(String key, JSONOption value) throws JSONException;
+    void put(String key, JSONOptional value) throws JSONException;
 
     /** Inserts the key-value pair into the JSONObject.
      * @throws JSONException if JSON does not support the input value
@@ -44,7 +44,7 @@ public interface JSONObjectBuilder {
     void put(String key, String value) throws JSONException;
 
     /** Returns the JSONOption representation of the JSONObject. */
-    JSONOption toJSON();
+    JSONOptional toJSON();
 
     /** Returns the String representation of the JSONObject.
      * @throws JSONException if the JSONObject cannot be converted to a JSON string

@@ -5,7 +5,7 @@ import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 
 public abstract class Intention extends JSONAble {
 
@@ -15,8 +15,8 @@ public abstract class Intention extends JSONAble {
         this.intentType = intentType;
     }
 
-    public Intention(JSONOption option) throws JSONException {
-        super(option);
+    public Intention(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override
@@ -38,7 +38,7 @@ public abstract class Intention extends JSONAble {
         return String.format("i:%s", this.intentType.getLabel());
     }
 
-    public JSONOption toJSON() throws JSONException {
+    public JSONOptional toJSON() throws JSONException {
         return this.getJSONBuilder().toJSON();
     }
 

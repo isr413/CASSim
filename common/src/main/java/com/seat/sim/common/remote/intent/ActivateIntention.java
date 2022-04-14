@@ -9,7 +9,7 @@ import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.util.Debugger;
 
 public class ActivateIntention extends Intention {
@@ -32,8 +32,8 @@ public class ActivateIntention extends Intention {
         this.addActivations(sensorIDs);
     }
 
-    public ActivateIntention(JSONOption option) throws JSONException {
-        super(option);
+    public ActivateIntention(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.seat.sim.common.remote.base;
 import java.util.Collection;
 
 import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.RemoteProto;
 import com.seat.sim.common.sensor.SensorConfig;
@@ -27,8 +27,8 @@ public class BaseRemoteProto extends RemoteProto {
         super(location, maxBatteryPower, sensors);
     }
 
-    public BaseRemoteProto(JSONOption option) throws JSONException {
-        super(option);
+    public BaseRemoteProto(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override

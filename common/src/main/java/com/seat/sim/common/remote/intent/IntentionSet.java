@@ -13,7 +13,7 @@ import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.util.Debugger;
 
@@ -29,8 +29,8 @@ public class IntentionSet extends JSONAble {
         this.intentions = new HashMap<>();
     }
 
-    public IntentionSet(JSONOption option) throws JSONException {
-        super(option);
+    public IntentionSet(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class IntentionSet extends JSONAble {
         return true;
     }
 
-    public JSONOption toJSON() throws JSONException {
+    public JSONOptional toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(RemoteState.REMOTE_ID, this.remoteID);
         if (this.hasIntentions()) {

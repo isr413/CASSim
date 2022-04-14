@@ -5,7 +5,7 @@ import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 
 /** Represents the single cubic zone within the map grid. */
 public class Zone extends JSONAble {
@@ -30,8 +30,8 @@ public class Zone extends JSONAble {
         this.aerial = (aerial != null) ? aerial : Field.None();
     }
 
-    public Zone(JSONOption option) throws JSONException {
-        super(option);
+    public Zone(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class Zone extends JSONAble {
         return !(this.ground == null || this.ground.isNone());
     }
 
-    public JSONOption toJSON() throws JSONException {
+    public JSONOptional toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(Zone.ZONE_LOCATION, this.location.toJSON());
         json.put(Zone.ZONE_SIZE, this.size);

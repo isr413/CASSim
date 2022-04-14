@@ -15,7 +15,7 @@ import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.remote.RemoteRegistry;
 import com.seat.sim.common.remote.RemoteState;
 
@@ -51,8 +51,8 @@ public class Snapshot extends JSONAble {
         this.remoteStates = new HashMap<>(remoteStates);
     }
 
-    public Snapshot(JSONOption option) throws JSONException {
-        super(option);
+    public Snapshot(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override
@@ -187,7 +187,7 @@ public class Snapshot extends JSONAble {
         return this.status.equals(ScenarioStatus.START) || this.status.equals(ScenarioStatus.IN_PROGRESS);
     }
 
-    public JSONOption toJSON() throws JSONException {
+    public JSONOptional toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(Snapshot.HASH, this.hash);
         json.put(Snapshot.SCENARIO_ID, this.scenarioID);

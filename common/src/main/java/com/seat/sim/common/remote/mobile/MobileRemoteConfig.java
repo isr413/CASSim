@@ -6,7 +6,7 @@ import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.remote.RemoteConfig;
 
 /** A serializable configuration of a Mobile Remote. */
@@ -40,8 +40,8 @@ public class MobileRemoteConfig extends RemoteConfig {
         this.speedStdDev = speedStdDev;
     }
 
-    public MobileRemoteConfig(JSONOption option) throws JSONException {
-        super(option);
+    public MobileRemoteConfig(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override

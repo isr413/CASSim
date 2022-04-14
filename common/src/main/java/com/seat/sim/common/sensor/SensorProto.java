@@ -5,7 +5,7 @@ import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 
 /** A serializable prototype of a generic Sensor. */
 public class SensorProto extends JSONAble {
@@ -26,8 +26,8 @@ public class SensorProto extends JSONAble {
         this.batteryUsage = batteryUsage;
     }
 
-    public SensorProto(JSONOption option) throws JSONException {
-        super(option);
+    public SensorProto(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class SensorProto extends JSONAble {
         return this.range == Double.POSITIVE_INFINITY;
     }
 
-    public JSONOption toJSON() throws JSONException {
+    public JSONOptional toJSON() throws JSONException {
         return this.getJSONBuilder().toJSON();
     }
 

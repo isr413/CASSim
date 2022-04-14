@@ -5,7 +5,7 @@ import com.seat.sim.common.json.JSONArray;
 import com.seat.sim.common.json.JSONArrayBuilder;
 import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 
 /**
  * The Field class represents forces that can act on Victims or Drones. Things to remember:
@@ -67,8 +67,8 @@ public class Field extends JSONAble {
         this.resistance = resistance;
     }
 
-    public Field(JSONOption option) throws JSONException {
-        super(option);
+    public Field(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override
@@ -115,7 +115,7 @@ public class Field extends JSONAble {
         return this.resistance > 0;
     }
 
-    public JSONOption toJSON() throws JSONException {
+    public JSONOptional toJSON() throws JSONException {
         JSONArrayBuilder json = JSONBuilder.Array();
         json.put(this.point.toJSON());
         json.put(this.magnitude);

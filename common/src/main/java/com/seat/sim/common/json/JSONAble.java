@@ -9,8 +9,8 @@ public abstract class JSONAble {
     /** JSONAble constructor for decoding a JSONOption.
      * @throws JSONException if the JSONOption does not decode to this Object
     */
-    protected JSONAble(JSONOption option) throws JSONException {
-        this.decode(option);
+    protected JSONAble(JSONOptional optional) throws JSONException {
+        this.decode(optional);
     }
 
     /** Should be overriden by child classes that support a JSONArray representation.
@@ -30,13 +30,13 @@ public abstract class JSONAble {
     /** Decodes the provided JSONOption to set the instance fields of this class.
      * @throws JSONException if the JSONOption does not decode to this Object
      */
-    protected void decode(JSONOption option) throws JSONException {
-        if (option.isSomeArray()) {
-            this.decode(option.someArray());
-        } else if (option.isSomeObject()) {
-            this.decode(option.someObject());
+    protected void decode(JSONOptional optional) throws JSONException {
+        if (optional.isSomeArray()) {
+            this.decode(optional.someArray());
+        } else if (optional.isSomeObject()) {
+            this.decode(optional.someObject());
         } else {
-            throw new JSONException(String.format("Cannot decode %s", option.toString()));
+            throw new JSONException(String.format("Cannot decode %s", optional.toString()));
         }
     }
 
@@ -44,10 +44,10 @@ public abstract class JSONAble {
      * @throws JSONException if the encoding does not decode to this Object
      */
     protected void decode(String encoding) throws JSONException {
-        if (JSONOption.isJSON(encoding)) {
-            this.decode(JSONOption.String(encoding));
-        } else if (JSONOption.isQuotedJSON(encoding)) {
-            this.decode(JSONOption.QuotedString(encoding));
+        if (JSONOptional.isJSON(encoding)) {
+            this.decode(JSONOptional.String(encoding));
+        } else if (JSONOptional.isQuotedJSON(encoding)) {
+            this.decode(JSONOptional.QuotedString(encoding));
         } else {
             throw new JSONException(String.format("Cannot decode %s", encoding));
         }
@@ -79,9 +79,9 @@ public abstract class JSONAble {
     }
 
     /** Returns true if the the JSONOption has the same encoding. */
-    public boolean equals(JSONOption option) throws JSONException {
-        if (option == null) return false;
-        return this.equals(option.toString());
+    public boolean equals(JSONOptional optional) throws JSONException {
+        if (optional == null) return false;
+        return this.equals(optional.toString());
     }
 
     /** Returns true if the encoding would deserialize to this Object. */
@@ -91,7 +91,7 @@ public abstract class JSONAble {
     }
 
     /** Child classes must implement JSONOption representation. */
-    public abstract JSONOption toJSON() throws JSONException;
+    public abstract JSONOptional toJSON() throws JSONException;
 
     /** Returns the String encoding representation of this Object. */
     public String toString() throws JSONException {

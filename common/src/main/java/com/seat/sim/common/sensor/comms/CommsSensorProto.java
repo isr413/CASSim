@@ -3,7 +3,7 @@ package com.seat.sim.common.sensor.comms;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.sensor.SensorProto;
 
 /** A serializable prototype for a Comms Sensor. */
@@ -33,8 +33,8 @@ public class CommsSensorProto extends SensorProto {
         this.delay = delay;
     }
 
-    public CommsSensorProto(JSONOption option) throws JSONException {
-        super(option);
+    public CommsSensorProto(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override

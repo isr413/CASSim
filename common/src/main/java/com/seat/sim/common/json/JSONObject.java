@@ -31,7 +31,7 @@ public interface JSONObject {
     /** Returns a JSONOption wrapper for the Object associated with the key.
      * @throws JSONException if the value associated with the key cannot be converted to a JSONOption or no such key
      */
-    JSONOption getJSONOption(String key) throws JSONException;
+    JSONOptional getJSONOption(String key) throws JSONException;
 
     /** Returns the long value associated with the key.
      * @throws JSONException if the value associated with the key cannot be converted to a long or no such key

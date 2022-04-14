@@ -11,7 +11,7 @@ import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 
 /** A serializable configuration of a generic Sensor. */
 public class SensorConfig extends JSONAble {
@@ -42,8 +42,8 @@ public class SensorConfig extends JSONAble {
         this.active = active;
     }
 
-    public SensorConfig(JSONOption option) throws JSONException {
-        super(option);
+    public SensorConfig(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class SensorConfig extends JSONAble {
         return !this.isActive();
     }
 
-    public JSONOption toJSON() throws JSONException {
+    public JSONOptional toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(SensorRegistry.SENSOR_TYPE, this.getSensorType());
         json.put(SensorConfig.PROTO, this.proto.toJSON());

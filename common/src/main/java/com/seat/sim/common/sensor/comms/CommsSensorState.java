@@ -10,7 +10,7 @@ import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.sensor.SensorState;
 
 /** A serializable Comms Sensor state. */
@@ -28,8 +28,8 @@ public class CommsSensorState extends SensorState {
         this.connections = (connections != null) ? new HashSet<>(connections) : new HashSet<>();
     }
 
-    public CommsSensorState(JSONOption option) throws JSONException {
-        super(option);
+    public CommsSensorState(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override

@@ -15,7 +15,7 @@ import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.remote.RemoteConfig;
 import com.seat.sim.common.remote.RemoteRegistry;
@@ -85,8 +85,8 @@ public class ScenarioConfig extends JSONAble {
         this.init();
     }
 
-    public ScenarioConfig(JSONOption option) throws JSONException {
-        super(option);
+    public ScenarioConfig(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     private void init() {
@@ -204,7 +204,7 @@ public class ScenarioConfig extends JSONAble {
         return this.remoteConfigsByID.containsKey(remoteID);
     }
 
-    public JSONOption toJSON() {
+    public JSONOptional toJSON() {
         return this.getJSONBuilder().toJSON();
     }
 

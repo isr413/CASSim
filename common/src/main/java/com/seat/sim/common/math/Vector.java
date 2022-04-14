@@ -5,7 +5,7 @@ import com.seat.sim.common.json.JSONArray;
 import com.seat.sim.common.json.JSONArrayBuilder;
 import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 
 /** A vector triple of doubles for representing points and forces in 2D and 3D space. */
 public class Vector extends JSONAble {
@@ -182,8 +182,8 @@ public class Vector extends JSONAble {
     }
 
     /** JSONAble constructor for JSONOption. */
-    public Vector(JSONOption option) throws JSONException {
-        super(option);
+    public Vector(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     /** Decodes the JSONArray. */
@@ -256,7 +256,7 @@ public class Vector extends JSONAble {
     }
 
     /** Returns a decodable JSON representation of this vector. */
-    public JSONOption toJSON() throws JSONException {
+    public JSONOptional toJSON() throws JSONException {
         JSONArrayBuilder json = JSONBuilder.Array();
         json.put(this.x);
         json.put(this.y);

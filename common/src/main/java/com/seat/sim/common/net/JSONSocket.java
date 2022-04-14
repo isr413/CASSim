@@ -16,7 +16,7 @@ import com.seat.sim.common.json.JSONArray;
 import com.seat.sim.common.json.JSONArrayBuilder;
 import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.remote.intent.IntentionSet;
 import com.seat.sim.common.scenario.ScenarioConfig;
 import com.seat.sim.common.scenario.Snapshot;
@@ -124,16 +124,16 @@ public class JSONSocket {
             this.clientSocket.getInetAddress().toString();
     }
 
-    public JSONOption getInputBlocking() throws CommonException {
+    public JSONOptional getInputBlocking() throws CommonException {
         try {
             while (true) {
                 if (this.in.ready()) {
                     String encoding = in.readLine();
-                    JSONOption option = JSONOption.String(encoding);
-                    if (option.isNone()) {
+                    JSONOptional optional = JSONOptional.String(encoding);
+                    if (optional.isNone()) {
                         throw new CommonException(encoding);
                     }
-                    return option;
+                    return optional;
                 }
             }
         } catch(IOException e) {
@@ -173,9 +173,9 @@ public class JSONSocket {
         this.out.println(encoding);
     }
 
-    public void send(JSONOption option) throws CommonException {
+    public void send(JSONOptional optional) throws CommonException {
         try {
-            this.out.println(option.toString());
+            this.out.println(optional.toString());
         } catch (JSONException e) {
             throw new CommonException(e.toString());
         }

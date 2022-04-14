@@ -12,7 +12,7 @@ import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 
 /** A serializable Remote configuration. */
 public class RemoteConfig extends JSONAble {
@@ -50,8 +50,8 @@ public class RemoteConfig extends JSONAble {
         this.dynamic = dynamic;
     }
 
-    public RemoteConfig(JSONOption option) throws JSONException {
-        super(option);
+    public RemoteConfig(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override
@@ -148,7 +148,7 @@ public class RemoteConfig extends JSONAble {
         return !this.isDynamic();
     }
 
-    public JSONOption toJSON() throws JSONException {
+    public JSONOptional toJSON() throws JSONException {
         return this.getJSONBuilder().toJSON();
     }
 

@@ -1,6 +1,6 @@
 package com.seat.sim.common.json;
 
-/** An option class to build JSONOptions. */
+/** An optional class to build JSONOptions. */
 public class JSONBuilder {
 
     /** Returns a builder for the Array JSONOption. */
@@ -60,10 +60,10 @@ public class JSONBuilder {
         */
         public void put(JSONArray value) throws JSONException {
             try {
-                if (value instanceof JSONOption.JSONArrayOption) {
-                    this.json.put(((JSONOption.JSONArrayOption) value).json);
+                if (value instanceof JSONOptional.JSONArrayOption) {
+                    this.json.put(((JSONOptional.JSONArrayOption) value).json);
                 } else {
-                    this.json.put(new JSONOption.JSONArrayOption(value.toString()).json);
+                    this.json.put(new JSONOptional.JSONArrayOption(value.toString()).json);
                 }
             } catch (org.json.JSONException e) {
                 throw new JSONException(e.toString());
@@ -75,10 +75,10 @@ public class JSONBuilder {
         */
         public void put(JSONObject value) throws JSONException {
             try {
-                if (value instanceof JSONOption.JSONObjectOption) {
-                    this.json.put(((JSONOption.JSONObjectOption) value).json);
+                if (value instanceof JSONOptional.JSONObjectOption) {
+                    this.json.put(((JSONOptional.JSONObjectOption) value).json);
                 } else {
-                    this.json.put(new JSONOption.JSONObjectOption(value.toString()).json);
+                    this.json.put(new JSONOptional.JSONObjectOption(value.toString()).json);
                 }
             } catch (org.json.JSONException e) {
                 throw new JSONException(e.toString());
@@ -88,7 +88,7 @@ public class JSONBuilder {
         /** Appends the value to the JSONArray.
          * @throws JSONException if JSON does not support the input value
         */
-        public void put(JSONOption value) throws JSONException {
+        public void put(JSONOptional value) throws JSONException {
             try {
                 if (value.isSomeArray()) {
                     this.put(value.someArray());
@@ -125,8 +125,8 @@ public class JSONBuilder {
         }
 
         /** Returns the JSONOption representation of the JSONArray. */
-        public JSONOption toJSON() {
-            return JSONOption.Array(new JSONOption.JSONArrayOption(this.json));
+        public JSONOptional toJSON() {
+            return JSONOptional.Array(new JSONOptional.JSONArrayOption(this.json));
         }
 
         /** Returns the String representation of the JSONArray.
@@ -200,10 +200,10 @@ public class JSONBuilder {
         */
         public void put(String key, JSONArray value) throws JSONException {
             try {
-                if (value instanceof JSONOption.JSONArrayOption) {
-                    this.json.put(key, ((JSONOption.JSONArrayOption) value).json);
+                if (value instanceof JSONOptional.JSONArrayOption) {
+                    this.json.put(key, ((JSONOptional.JSONArrayOption) value).json);
                 } else {
-                    this.json.put(key, new JSONOption.JSONArrayOption(value.toString()).json);
+                    this.json.put(key, new JSONOptional.JSONArrayOption(value.toString()).json);
                 }
             } catch (org.json.JSONException e) {
                 throw new JSONException(e.toString());
@@ -215,10 +215,10 @@ public class JSONBuilder {
         */
         public void put(String key, JSONObject value) throws JSONException {
             try {
-                if (value instanceof JSONOption.JSONObjectOption) {
-                    this.json.put(key, ((JSONOption.JSONObjectOption) value).json);
+                if (value instanceof JSONOptional.JSONObjectOption) {
+                    this.json.put(key, ((JSONOptional.JSONObjectOption) value).json);
                 } else {
-                    this.json.put(key, new JSONOption.JSONObjectOption(value.toString()).json);
+                    this.json.put(key, new JSONOptional.JSONObjectOption(value.toString()).json);
                 }
             } catch (org.json.JSONException e) {
                 throw new JSONException(e.toString());
@@ -228,7 +228,7 @@ public class JSONBuilder {
         /** Inserts the key-value pair into the JSONObject.
          * @throws JSONException if JSON does not support the input value
         */
-        public void put(String key, JSONOption value) throws JSONException {
+        public void put(String key, JSONOptional value) throws JSONException {
             try {
                 if (value.isSomeArray()) {
                     this.put(key, value.someArray());
@@ -265,8 +265,8 @@ public class JSONBuilder {
         }
 
         /** Returns the JSONOption representation of the JSONObject. */
-        public JSONOption toJSON() {
-            return JSONOption.Object(new JSONOption.JSONObjectOption(this.json));
+        public JSONOptional toJSON() {
+            return JSONOptional.Object(new JSONOptional.JSONObjectOption(this.json));
         }
 
         /** Returns the String representation of the JSONObject.

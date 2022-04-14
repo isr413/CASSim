@@ -7,7 +7,7 @@ import java.util.function.Function;
 
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.base.BaseRemoteConfig;
 import com.seat.sim.common.remote.base.BaseRemoteProto;
@@ -30,26 +30,26 @@ import com.seat.sim.common.sensor.SensorConfig;
 public class RemoteRegistry {
     public static final String REMOTE_TYPE = "remote_type";
 
-    private static final Map<String, Function<JSONOption, Object>> REGISTRY =
-            new HashMap<String, Function<JSONOption, Object>>(){{
-        put(RemoteConfig.class.getName(), (option) -> new RemoteConfig(option));
-        put(RemoteProto.class.getName(), (option) -> new RemoteProto(option));
-        put(RemoteState.class.getName(), (option) -> new RemoteState(option));
-        put(BaseRemoteConfig.class.getName(), (option) -> new BaseRemoteConfig(option));
-        put(BaseRemoteProto.class.getName(), (option) -> new BaseRemoteProto(option));
-        put(BaseRemoteState.class.getName(), (option) -> new BaseRemoteState(option));
-        put(MobileRemoteConfig.class.getName(), (option) -> new MobileRemoteConfig(option));
-        put(MobileRemoteProto.class.getName(), (option) -> new MobileRemoteProto(option));
-        put(MobileRemoteState.class.getName(), (option) -> new MobileRemoteState(option));
-        put(AerialRemoteConfig.class.getName(), (option) -> new AerialRemoteConfig(option));
-        put(AerialRemoteProto.class.getName(), (option) -> new AerialRemoteProto(option));
-        put(AerialRemoteState.class.getName(), (option) -> new AerialRemoteState(option));
-        put(DroneRemoteConfig.class.getName(), (option) -> new DroneRemoteConfig(option));
-        put(DroneRemoteProto.class.getName(), (option) -> new DroneRemoteProto(option));
-        put(DroneRemoteState.class.getName(), (option) -> new DroneRemoteState(option));
-        put(VictimRemoteConfig.class.getName(), (option) -> new VictimRemoteConfig(option));
-        put(VictimRemoteProto.class.getName(), (option) -> new VictimRemoteProto(option));
-        put(VictimRemoteState.class.getName(), (option) -> new VictimRemoteState(option));
+    private static final Map<String, Function<JSONOptional, Object>> REGISTRY =
+            new HashMap<String, Function<JSONOptional, Object>>(){{
+        put(RemoteConfig.class.getName(), (optional) -> new RemoteConfig(optional));
+        put(RemoteProto.class.getName(), (optional) -> new RemoteProto(optional));
+        put(RemoteState.class.getName(), (optional) -> new RemoteState(optional));
+        put(BaseRemoteConfig.class.getName(), (optional) -> new BaseRemoteConfig(optional));
+        put(BaseRemoteProto.class.getName(), (optional) -> new BaseRemoteProto(optional));
+        put(BaseRemoteState.class.getName(), (optional) -> new BaseRemoteState(optional));
+        put(MobileRemoteConfig.class.getName(), (optional) -> new MobileRemoteConfig(optional));
+        put(MobileRemoteProto.class.getName(), (optional) -> new MobileRemoteProto(optional));
+        put(MobileRemoteState.class.getName(), (optional) -> new MobileRemoteState(optional));
+        put(AerialRemoteConfig.class.getName(), (optional) -> new AerialRemoteConfig(optional));
+        put(AerialRemoteProto.class.getName(), (optional) -> new AerialRemoteProto(optional));
+        put(AerialRemoteState.class.getName(), (optional) -> new AerialRemoteState(optional));
+        put(DroneRemoteConfig.class.getName(), (optional) -> new DroneRemoteConfig(optional));
+        put(DroneRemoteProto.class.getName(), (optional) -> new DroneRemoteProto(optional));
+        put(DroneRemoteState.class.getName(), (optional) -> new DroneRemoteState(optional));
+        put(VictimRemoteConfig.class.getName(), (optional) -> new VictimRemoteConfig(optional));
+        put(VictimRemoteProto.class.getName(), (optional) -> new VictimRemoteProto(optional));
+        put(VictimRemoteState.class.getName(), (optional) -> new VictimRemoteState(optional));
     }};
 
     public static AerialRemoteProto AerialRemote(Vector location, double maxBatteryPower,
@@ -82,22 +82,22 @@ public class RemoteRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T decodeTo(JSONOption option, Class<T> classType) throws CommonException, JSONException {
-        String remoteType = RemoteRegistry.decodeType(option);
+    public static <T> T decodeTo(JSONOptional optional, Class<T> classType) throws CommonException, JSONException {
+        String remoteType = RemoteRegistry.decodeType(optional);
         if (!RemoteRegistry.isRegistered(remoteType)) {
             if (!RemoteRegistry.isRegistered(classType)) {
-                throw new CommonException(String.format("Cannot decode remote %s", option.toString()));
+                throw new CommonException(String.format("Cannot decode remote %s", optional.toString()));
             }
-            return (T) RemoteRegistry.REGISTRY.get(classType.getName()).apply(option);
+            return (T) RemoteRegistry.REGISTRY.get(classType.getName()).apply(optional);
         }
-        return (T) RemoteRegistry.REGISTRY.get(remoteType).apply(option);
+        return (T) RemoteRegistry.REGISTRY.get(remoteType).apply(optional);
     }
 
-    public static String decodeType(JSONOption option) throws CommonException {
-        if (!option.isSomeObject()) {
-            throw new CommonException(String.format("Cannot decode remote type of %s", option.toString()));
+    public static String decodeType(JSONOptional optional) throws CommonException {
+        if (!optional.isSomeObject()) {
+            throw new CommonException(String.format("Cannot decode remote type of %s", optional.toString()));
         }
-        return option.someObject().getString(RemoteRegistry.REMOTE_TYPE);
+        return optional.someObject().getString(RemoteRegistry.REMOTE_TYPE);
     }
 
     public static <T> boolean isRegistered(Class<T> classType) {

@@ -9,6 +9,7 @@ import com.seat.sim.common.remote.intent.MoveIntention;
 import com.seat.sim.common.remote.intent.SteerIntention;
 import com.seat.sim.common.remote.mobile.MobileRemoteProto;
 import com.seat.sim.common.remote.mobile.MobileRemoteState;
+import com.seat.sim.common.util.Debugger;
 import com.seat.sim.server.core.SimException;
 import com.seat.sim.server.scenario.Scenario;
 
@@ -27,6 +28,17 @@ public class MobileRemote extends Remote {
         return this.acceleration;
     }
 
+    public double getBrakeDistance() {
+        return this.getBrakeDistance(this.getVelocity().getMagnitude(), this.getMaxAcceleration());
+    }
+
+    public double getBrakeDistance(double velocity, double acceleration) {
+        if (velocity == 0 || acceleration == Double.POSITIVE_INFINITY) {
+            return 0;
+        }
+        return 0.5 * velocity * velocity / acceleration;
+    }
+
     public double getMaxAcceleration() {
         return this.getProto().getMaxAcceleration();
     }
@@ -36,19 +48,37 @@ public class MobileRemote extends Remote {
     }
 
     public Vector getNextLocation(double stepSize) {
-        return this.getNextLocation(new Vector(), stepSize);
+        return this.getNextLocation(this.velocity, this.acceleration, stepSize);
     }
 
-    public Vector getNextLocation(Vector jerk, double stepSize) {
-        Vector nextAcceleration = Vector.add(this.acceleration, jerk);
-        if (this.getMaxAcceleration() < nextAcceleration.getMagnitude()) {
-            nextAcceleration = Vector.scale(nextAcceleration.getUnitVector(), this.getMaxAcceleration());
+    public Vector getNextLocation(Vector velocity, double stepSize) {
+        return this.getNextLocation(velocity, new Vector(), stepSize);
+    }
+
+    public Vector getNextLocation(Vector velocity, Vector acceleration, double stepSize) {
+        if (this.getMaxAcceleration() < acceleration.getMagnitude()) {
+            acceleration = Vector.scale(acceleration.getUnitVector(), this.getMaxAcceleration());
         }
-        Vector nextVelocity = Vector.add(this.velocity, Vector.scale(nextAcceleration, stepSize));
+        velocity = Vector.add(velocity, Vector.scale(acceleration, stepSize));
+        if (this.getMaxVelocity() < velocity.getMagnitude()) {
+            velocity = Vector.scale(velocity.getUnitVector(), this.getMaxVelocity());
+        }
+        return Vector.add(this.getLocation(), Vector.scale(velocity, stepSize));
+    }
+
+    public Vector getNextVelocity(double stepSize) {
+        return this.getNextVelocity(this.acceleration, stepSize);
+    }
+
+    public Vector getNextVelocity(Vector acceleration, double stepSize) {
+        if (this.getMaxAcceleration() < acceleration.getMagnitude()) {
+            acceleration = Vector.scale(acceleration.getUnitVector(), this.getMaxAcceleration());
+        }
+        Vector nextVelocity = Vector.add(this.velocity, Vector.scale(acceleration, stepSize));
         if (this.getMaxVelocity() < nextVelocity.getMagnitude()) {
             nextVelocity = Vector.scale(nextVelocity.getUnitVector(), this.getMaxVelocity());
         }
-        return Vector.add(this.getLocation(), Vector.scale(nextVelocity, stepSize));
+        return nextVelocity;
     }
 
     @Override
@@ -109,25 +139,74 @@ public class MobileRemote extends Remote {
         }
     }
 
-    public void updateAccelerationTo(Vector target) {
-        Vector jerk = Vector.subtract(target, this.acceleration);
+    public void updateAccelerationTo(Vector targetAcceleration) {
+        if (this.getMaxAcceleration() < targetAcceleration.getMagnitude()) {
+            targetAcceleration = Vector.scale(targetAcceleration.getUnitVector(), this.getMaxAcceleration());
+        }
+        Vector jerk = Vector.subtract(targetAcceleration, this.acceleration);
         this.updateAcceleration(jerk);
     }
 
-    public void updateLocationTo(Vector dest, double stepSize) {
-        this.updateLocationTo(dest, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, stepSize);
+    public void updateLocationTo(Vector targetLocation, double stepSize) {
+        this.updateLocationTo(targetLocation, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, stepSize);
     }
 
-    public void updateLocationTo(Vector dest, double maxVelocity, double stepSize) {
-        this.updateLocationTo(dest, maxVelocity, Double.POSITIVE_INFINITY, stepSize);
+    public void updateLocationTo(Vector targetLocation, double maxVelocity, double stepSize) {
+        this.updateLocationTo(targetLocation, maxVelocity, Double.POSITIVE_INFINITY, stepSize);
     }
 
-    public void updateLocationTo(Vector dest, double maxVelocity, double maxAcceleration, double stepSize) {
-        Vector targetVelocity = Vector.subtract(dest, this.getLocation());
-        if (maxVelocity < targetVelocity.getMagnitude()) {
-            targetVelocity = Vector.scale(targetVelocity.getUnitVector(), maxVelocity);
+    public void updateLocationTo(Vector targetLocation, double maxVelocity, double maxAcceleration, double stepSize) {
+        maxVelocity = Math.min(maxVelocity, this.getMaxVelocity());
+        maxAcceleration = Math.min(maxAcceleration, this.getMaxAcceleration());
+        Vector deltaLocation = Vector.subtract(targetLocation, this.getLocation());
+        if (deltaLocation.getMagnitude() < 0.01 && this.velocity.getMagnitude() < maxAcceleration) {
+            this.setAcceleration(new Vector());
+            this.setVelocity(new Vector());
+            Debugger.logger.warn("here");
+            return;
         }
-        this.updateVelocityTo(targetVelocity, maxAcceleration, stepSize);
+        Vector targetVelocity = deltaLocation;
+        if (maxVelocity < targetVelocity.getMagnitude()) {
+            targetVelocity = Vector.scale(targetVelocity, maxVelocity);
+        }
+        Vector targetAcceleration = Vector.subtract(targetVelocity, this.velocity);
+        if (maxAcceleration < targetAcceleration.getMagnitude()) {
+            targetAcceleration = Vector.scale(targetAcceleration, maxAcceleration);
+        }
+        if (this.velocity.getMagnitude() > 0 && maxAcceleration != Double.POSITIVE_INFINITY) {
+            double brakeDistance = this.getBrakeDistance(this.velocity.getMagnitude(), maxAcceleration);
+            if (deltaLocation.getMagnitude() <= brakeDistance) {
+                if (this.velocity.getMagnitude() < maxAcceleration) {
+                    this.setAcceleration(Vector.scale(this.velocity.getUnitVector(), -this.velocity.getMagnitude()));
+                    this.setVelocity(new Vector());
+                } else {
+                    this.updateVelocity(Vector.scale(this.velocity.getUnitVector(), -maxAcceleration), stepSize);
+                }
+                this.updateLocation(this.velocity, stepSize);
+                return;
+            }
+        }
+        Vector nextVelocity = Vector.add(this.velocity, Vector.scale(targetAcceleration, stepSize));
+        if (maxVelocity < nextVelocity.getMagnitude()) {
+            nextVelocity = Vector.scale(nextVelocity.getUnitVector(), maxVelocity);
+        }
+        if (this.velocity.getMagnitude() > 0 && maxAcceleration != Double.POSITIVE_INFINITY) {
+            double brakeDistance = this.getBrakeDistance(nextVelocity.getMagnitude(), maxAcceleration);
+            Vector nextLocation = Vector.add(this.getLocation(), Vector.scale(nextVelocity, stepSize));
+            if (Vector.subtract(targetLocation, nextLocation).getMagnitude() < brakeDistance) {
+                double targetVelocityMagnitude = Math.sqrt(maxAcceleration) *
+                    Math.sqrt(maxAcceleration + 2 * deltaLocation.getMagnitude()) - maxAcceleration;
+                nextVelocity = Vector.scale(nextVelocity.getUnitVector(), targetVelocityMagnitude);
+                Vector nextAcceleration = Vector.subtract(nextVelocity, this.velocity);
+                if (maxAcceleration < nextAcceleration.getMagnitude()) {
+                    nextAcceleration = Vector.scale(nextAcceleration, maxAcceleration);
+                }
+                this.updateVelocity(nextAcceleration, stepSize);
+                this.updateLocation(this.velocity, stepSize);
+                return;
+            }
+        }
+        this.updateVelocity(targetAcceleration, stepSize);
         this.updateLocation(this.velocity, stepSize);
     }
 
@@ -139,14 +218,18 @@ public class MobileRemote extends Remote {
         if (this.getMaxVelocity() < this.velocity.getMagnitude()) {
             this.velocity = Vector.scale(this.velocity.getUnitVector(), this.getMaxVelocity());
         }
+        Debugger.logger.state(this.velocity.toString());
     }
 
     public void updateVelocityTo(Vector target, double stepSize) {
         this.updateVelocityTo(target, Double.POSITIVE_INFINITY, stepSize);
     }
 
-    public void updateVelocityTo(Vector target, double maxAcceleration, double stepSize) {
-        Vector targetAcceleration = Vector.subtract(target, this.velocity);
+    public void updateVelocityTo(Vector targetVelocity, double maxAcceleration, double stepSize) {
+        if (this.getMaxVelocity() < targetVelocity.getMagnitude()) {
+            targetVelocity = Vector.scale(targetVelocity.getUnitVector(), this.getMaxVelocity());
+        }
+        Vector targetAcceleration = Vector.subtract(targetVelocity, this.velocity);
         if (maxAcceleration < targetAcceleration.getMagnitude()) {
             targetAcceleration = Vector.scale(targetAcceleration.getUnitVector(), maxAcceleration);
         }
@@ -185,7 +268,9 @@ public class MobileRemote extends Remote {
             }
         } else if (intentions.hasIntentionWithType(IntentionType.MOVE)) {
             MoveIntention intent = (MoveIntention) intentions.getIntentionWithType(IntentionType.MOVE);
-            this.updateAcceleration(intent.getJerk());
+            if (intent.hasAcceleration()) {
+                this.updateAccelerationTo(intent.getAcceleration());
+            }
             this.updateVelocity(this.acceleration, stepSize);
             this.updateLocation(this.velocity, stepSize);
         } else if (intentions.hasIntentionWithType(IntentionType.STEER)) {

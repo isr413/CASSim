@@ -1,7 +1,7 @@
 package com.seat.sim.common.remote.mobile;
 
 import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.RemoteController;
 import com.seat.sim.common.remote.intent.IntentRegistry;
@@ -13,8 +13,8 @@ public class MobileRemoteController extends RemoteController {
         super(remoteID);
     }
 
-    public MobileRemoteController(JSONOption option) throws JSONException {
-        super(option);
+    public MobileRemoteController(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     public void goHome() {

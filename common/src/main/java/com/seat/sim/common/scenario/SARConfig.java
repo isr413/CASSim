@@ -7,7 +7,7 @@ import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.remote.RemoteConfig;
 import com.seat.sim.common.remote.base.BaseRemoteConfig;
@@ -44,8 +44,8 @@ public class SARConfig extends ScenarioConfig {
         this.disasterScale = disasterScale;
     }
 
-    public SARConfig(JSONOption option) throws JSONException {
-        super(option);
+    public SARConfig(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override

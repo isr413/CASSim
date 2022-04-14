@@ -3,7 +3,7 @@ package com.seat.sim.common.sensor.comms;
 import java.util.Collection;
 
 import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.sensor.SensorConfig;
 
 /** A serializable configuration for a Comms Sensor. */
@@ -17,8 +17,8 @@ public class CommsSensorConfig extends SensorConfig {
         super(proto, sensorIDs, active);
     }
 
-    public CommsSensorConfig(JSONOption option) throws JSONException {
-        super(option);
+    public CommsSensorConfig(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override

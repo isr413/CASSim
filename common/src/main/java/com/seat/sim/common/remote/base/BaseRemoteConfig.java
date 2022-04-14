@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.remote.RemoteConfig;
 
 /** A serializable configuration of a Base Remote. */
@@ -19,8 +19,8 @@ public class BaseRemoteConfig extends RemoteConfig {
         super(proto, team, remoteIDs.size(), active, dynamic);
     }
 
-    public BaseRemoteConfig(JSONOption option) throws JSONException {
-        super(option);
+    public BaseRemoteConfig(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override

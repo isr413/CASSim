@@ -5,7 +5,7 @@ import java.util.Collection;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.mobile.MobileRemoteProto;
 import com.seat.sim.common.sensor.SensorConfig;
@@ -36,8 +36,8 @@ public class AerialRemoteProto extends MobileRemoteProto {
         this.batteryUsage = batteryUsage;
     }
 
-    public AerialRemoteProto(JSONOption option) throws JSONException {
-        super(option);
+    public AerialRemoteProto(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override

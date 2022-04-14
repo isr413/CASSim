@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import com.seat.sim.common.json.JSONAble;
 import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.remote.intent.IntentRegistry;
 import com.seat.sim.common.remote.intent.Intention;
 import com.seat.sim.common.remote.intent.IntentionSet;
@@ -18,13 +18,13 @@ public class RemoteController extends JSONAble {
         this.intentions = new IntentionSet(remoteID);
     }
 
-    public RemoteController(JSONOption option) throws JSONException {
-        super(option);
+    public RemoteController(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override
-    protected void decode(JSONOption option) throws JSONException {
-        this.intentions = new IntentionSet(option);
+    protected void decode(JSONOptional optional) throws JSONException {
+        this.intentions = new IntentionSet(optional);
     }
 
     protected void addIntention(Intention intent) {
@@ -75,7 +75,7 @@ public class RemoteController extends JSONAble {
         this.addIntention(IntentRegistry.Startup());
     }
 
-    public JSONOption toJSON() throws JSONException {
+    public JSONOptional toJSON() throws JSONException {
         return this.intentions.toJSON();
     }
 

@@ -31,7 +31,7 @@ public interface JSONArray {
     /** Returns a JSONOption wrapper for the Object at index idx.
      * @throws JSONException if the value at idx cannot be converted to a JSONOption or is out of bounds
      */
-    JSONOption getJSONOption(int idx) throws JSONException;
+    JSONOptional getJSONOption(int idx) throws JSONException;
 
     /** Returns the long value at index idx.
      * @throws JSONException if the value at idx cannot be converted to a long or is out of bounds

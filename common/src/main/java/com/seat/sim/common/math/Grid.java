@@ -8,7 +8,7 @@ import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 
 /** Represents the map grid. */
 public class Grid extends JSONAble {
@@ -48,8 +48,8 @@ public class Grid extends JSONAble {
         }
     }
 
-    public Grid(JSONOption option) throws JSONException {
-        super(option);
+    public Grid(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override
@@ -192,7 +192,7 @@ public class Grid extends JSONAble {
         return !this.isInbounds(location);
     }
 
-    public JSONOption toJSON() throws JSONException {
+    public JSONOptional toJSON() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(Grid.GRID_WIDTH, this.width);
         json.put(Grid.GRID_HEIGHT, this.height);

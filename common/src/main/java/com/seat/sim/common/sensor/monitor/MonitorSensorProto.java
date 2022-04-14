@@ -1,7 +1,7 @@
 package com.seat.sim.common.sensor.monitor;
 
 import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.sensor.SensorProto;
 
 /** A serializable prototype of a Monitor Sensor. */
@@ -17,8 +17,8 @@ public class MonitorSensorProto extends SensorProto {
         super(sensorModel, range, accuracy, batteryUsage);
     }
 
-    public MonitorSensorProto(JSONOption option) throws JSONException {
-        super(option);
+    public MonitorSensorProto(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
 }

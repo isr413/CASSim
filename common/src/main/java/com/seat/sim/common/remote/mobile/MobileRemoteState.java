@@ -6,7 +6,7 @@ import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.sensor.SensorState;
@@ -31,8 +31,8 @@ public class MobileRemoteState extends RemoteState {
         this.acceleration = acceleration;
     }
 
-    public MobileRemoteState(JSONOption option) throws JSONException {
-        super(option);
+    public MobileRemoteState(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override

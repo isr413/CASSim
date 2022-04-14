@@ -15,7 +15,7 @@ import com.seat.sim.common.json.JSONBuilder;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.sensor.SensorConfig;
 import com.seat.sim.common.sensor.SensorRegistry;
@@ -50,8 +50,8 @@ public class RemoteProto extends JSONAble {
         this.init();
     }
 
-    public RemoteProto(JSONOption option) throws JSONException {
-        super(option);
+    public RemoteProto(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     private void init() {
@@ -189,7 +189,7 @@ public class RemoteProto extends JSONAble {
         return !this.isMobile();
     }
 
-    public JSONOption toJSON() throws JSONException {
+    public JSONOptional toJSON() throws JSONException {
         return this.getJSONBuilder().toJSON();
     }
 

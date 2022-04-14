@@ -3,7 +3,7 @@ package com.seat.sim.common.remote.intent;
 import java.util.Collection;
 
 import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.math.Vector;
 
 public class IntentRegistry {
@@ -76,19 +76,19 @@ public class IntentRegistry {
         return new ShutdownIntention();
     }
 
-    public static Intention Some(JSONOption option) throws JSONException {
-        if (!option.isSomeObject()) {
-            throw new JSONException(String.format("Cannot decode intention type of %s", option.toString()));
+    public static Intention Some(JSONOptional optional) throws JSONException {
+        if (!optional.isSomeObject()) {
+            throw new JSONException(String.format("Cannot decode intention type of %s", optional.toString()));
         }
-        switch (IntentionType.decodeType(option.someObject())) {
-            case ACTIVATE: return new ActivateIntention(option);
-            case DEACTIVATE: return new DeactivateIntention(option);
+        switch (IntentionType.decodeType(optional.someObject())) {
+            case ACTIVATE: return new ActivateIntention(optional);
+            case DEACTIVATE: return new DeactivateIntention(optional);
             case DONE: return new DoneIntention();
-            case GOTO: return new GoToIntention(option);
-            case MOVE: return new MoveIntention(option);
+            case GOTO: return new GoToIntention(optional);
+            case MOVE: return new MoveIntention(optional);
             case SHUTDOWN: return new ShutdownIntention();
             case STARTUP: return new StartupIntention();
-            case STEER: return new SteerIntention(option);
+            case STEER: return new SteerIntention(optional);
             case STOP: return new StopIntention();
             default: return new NoneIntention();
         }

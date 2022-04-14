@@ -1,20 +1,20 @@
 package com.seat.sim.common.json;
 
-/** An option class to wrap JSONArray and JSONObject interface types. */
-public class JSONOption {
+/** An optional class to wrap JSONArray and JSONObject interface types. */
+public class JSONOptional {
 
     /** Returns true if the input string is a JSON encoding. */
     public static boolean isJSON(String encoding) {
-        return JSONOption.isJSON(encoding, 0, encoding.length()-1);
+        return JSONOptional.isJSON(encoding, 0, encoding.length()-1);
     }
 
     private static boolean isJSON(String encoding, int i, int j) {
-        return JSONOption.isJSONArray(encoding, i, j) || JSONOption.isJSONObject(encoding, i, j);
+        return JSONOptional.isJSONArray(encoding, i, j) || JSONOptional.isJSONObject(encoding, i, j);
     }
 
     /** Returns true if the input string is a JSON Array encoding. */
     public static boolean isJSONArray(String encoding) {
-        return JSONOption.isJSONArray(encoding, 0, encoding.length()-1);
+        return JSONOptional.isJSONArray(encoding, 0, encoding.length()-1);
     }
 
     private static boolean isJSONArray(String encoding, int i, int j) {
@@ -24,7 +24,7 @@ public class JSONOption {
 
     /** Returns true if the input string is a JSON Object encoding. */
     public static boolean isJSONObject(String encoding) {
-        return JSONOption.isJSONObject(encoding, 0, encoding.length()-1);
+        return JSONOptional.isJSONObject(encoding, 0, encoding.length()-1);
     }
 
     private static boolean isJSONObject(String encoding, int i, int j) {
@@ -34,104 +34,104 @@ public class JSONOption {
 
     /** Returns true if the input string is a quoted String of a JSON encoding. */
     public static boolean isQuotedJSON(String encoding) {
-        return JSONOption.isQuotedJSON(encoding, 0, encoding.length()-1);
+        return JSONOptional.isQuotedJSON(encoding, 0, encoding.length()-1);
     }
 
     private static boolean isQuotedJSON(String encoding, int i, int j) {
         return 0 <= i && i < encoding.length() && 0 <= j && j < encoding.length() && i < j &&
             ((encoding.charAt(i) == '"' && encoding.charAt(j) == '"') ||
                 (encoding.charAt(i) == '\'' && encoding.charAt(j) == '\'')) &&
-            JSONOption.isJSON(encoding, i+1, j-1);
+            JSONOptional.isJSON(encoding, i+1, j-1);
     }
 
-    /** Returns an option wrapper for the JSONArray interface type. */
-    public static JSONOption Array(JSONArray json) {
-        return new JSONOption(json);
+    /** Returns an optional wrapper for the JSONArray interface type. */
+    public static JSONOptional Array(JSONArray json) {
+        return new JSONOptional(json);
     }
 
     /** Returns the None type wrapper. */
-    public static JSONOption None() {
-        return new JSONOption();
+    public static JSONOptional None() {
+        return new JSONOptional();
     }
 
-    /** Returns an option wrapper for the JSONObject interface type. */
-    public static JSONOption Object(JSONObject json) {
-        return new JSONOption(json);
+    /** Returns an optional wrapper for the JSONObject interface type. */
+    public static JSONOptional Object(JSONObject json) {
+        return new JSONOptional(json);
     }
 
-    /** Returns an option wrapper for the JSONArray or JSONObject interace types based on the encoding. */
-    public static JSONOption QuotedString(String encoding) {
-        if (!JSONOption.isQuotedJSON(encoding)) {
-            return JSONOption.None();
+    /** Returns an optional wrapper for the JSONArray or JSONObject interace types based on the encoding. */
+    public static JSONOptional QuotedString(String encoding) {
+        if (!JSONOptional.isQuotedJSON(encoding)) {
+            return JSONOptional.None();
         }
-        return JSONOption.String(encoding.substring(0, encoding.length()-1));
+        return JSONOptional.String(encoding.substring(0, encoding.length()-1));
     }
 
-    /** Returns an option wrapper for the JSONArray or JSONObject interace types based on the encoding. */
-    public static JSONOption String(String encoding) {
-        if (JSONOption.isJSONArray(encoding)) {
-            return new JSONOption(new JSONArrayOption(encoding));
+    /** Returns an optional wrapper for the JSONArray or JSONObject interace types based on the encoding. */
+    public static JSONOptional String(String encoding) {
+        if (JSONOptional.isJSONArray(encoding)) {
+            return new JSONOptional(new JSONArrayOption(encoding));
         }
-        if (JSONOption.isJSONObject(encoding)) {
-            return new JSONOption(new JSONObjectOption(encoding));
+        if (JSONOptional.isJSONObject(encoding)) {
+            return new JSONOptional(new JSONObjectOption(encoding));
         }
-        return JSONOption.None();
+        return JSONOptional.None();
     }
 
     private JSONArray arrayOption;
     private JSONObject objectOption;
 
-    private JSONOption() {
+    private JSONOptional() {
         this.arrayOption = null;
         this.objectOption = null;
     }
 
-    private JSONOption(JSONArray json) {
+    private JSONOptional(JSONArray json) {
         this.arrayOption = json;
         this.objectOption = null;
     }
 
-    private JSONOption(JSONObject json) {
+    private JSONOptional(JSONObject json) {
         this.arrayOption = null;
         this.objectOption = json;
     }
 
-    /** Returns true if this is the None option. */
+    /** Returns true if this is the None optional. */
     public boolean isNone() {
         return this.arrayOption == null && this.objectOption == null;
     }
 
-    /** Returns true if this is the JSONArray option. */
+    /** Returns true if this is the JSONArray optional. */
     public boolean isSomeArray() {
         return this.arrayOption != null;
     }
 
-    /** Returns true if this is the JSONObject option. */
+    /** Returns true if this is the JSONObject optional. */
     public boolean isSomeObject() {
         return this.objectOption != null;
     }
 
-    /** Returns the JSONArray wrapped by this option.
-     * @throws JSONException if the option being wrapped is not an Array option
+    /** Returns the JSONArray wrapped by this optional.
+     * @throws JSONException if the optional being wrapped is not an Array optional
      */
     public JSONArray someArray() throws JSONException {
         if (!this.isSomeArray()) {
-            throw new JSONException("Cannot unwrap a null JSONArray option.");
+            throw new JSONException("Cannot unwrap a null JSONArray optional.");
         }
         return this.arrayOption;
     }
 
-    /** Returns the JSONObject wrapped by this option.
-     * @throws JSONException if the option being wrapped is not an Object option
+    /** Returns the JSONObject wrapped by this optional.
+     * @throws JSONException if the optional being wrapped is not an Object optional
      */
     public JSONObject someObject() throws JSONException {
         if (!this.isSomeObject()) {
-            throw new JSONException("Cannot unwrap a null JSONObject option.");
+            throw new JSONException("Cannot unwrap a null JSONObject optional.");
         }
         return this.objectOption;
     }
 
-    /** Returns the String representation of the option being wrapped.
+    /** Returns the String representation of the optional being wrapped.
      * @throws JSONException if the JSONOption cannot be converted to a JSON string
      */
     public String toString() throws JSONException {
@@ -144,7 +144,7 @@ public class JSONOption {
         return "None";
     }
 
-    /** Returns the String representation of the option being wrapped (pretty printed).
+    /** Returns the String representation of the optional being wrapped (pretty printed).
      * @throws JSONException if the JSONOption cannot be converted to a JSON string
      */
     public String toString(int tabSize) throws JSONException {
@@ -244,16 +244,16 @@ public class JSONOption {
         /** Returns a JSONOption wrapper for the Object at index idx.
          * @throws JSONException if the value at idx cannot be converted to a JSONOption or is out of bounds
          */
-        public JSONOption getJSONOption(int idx) throws JSONException {
+        public JSONOptional getJSONOption(int idx) throws JSONException {
             this.assertBounds(idx);
             try {
                 if (this.json.get(idx) instanceof org.json.JSONArray) {
-                    return new JSONOption(new JSONArrayOption(this.json.getJSONArray(idx)));
+                    return new JSONOptional(new JSONArrayOption(this.json.getJSONArray(idx)));
                 }
                 if (this.json.get(idx) instanceof org.json.JSONObject) {
-                    return new JSONOption(new JSONObjectOption(this.json.getJSONObject(idx)));
+                    return new JSONOptional(new JSONObjectOption(this.json.getJSONObject(idx)));
                 }
-                return JSONOption.None();
+                return JSONOptional.None();
             } catch (org.json.JSONException e) {
                 throw new JSONException(e.toString());
             }
@@ -399,16 +399,16 @@ public class JSONOption {
         /** Returns a JSONOption wrapper for the Object associated with the key.
          * @throws JSONException if the value associated with the key cannot be converted to a JSONOption or no such key
          */
-        public JSONOption getJSONOption(String key) throws JSONException {
+        public JSONOptional getJSONOption(String key) throws JSONException {
             this.assertContains(key);
             try {
                 if (this.json.get(key) instanceof org.json.JSONArray) {
-                    return new JSONOption(new JSONArrayOption(this.json.getJSONArray(key)));
+                    return new JSONOptional(new JSONArrayOption(this.json.getJSONArray(key)));
                 }
                 if (this.json.get(key) instanceof org.json.JSONObject) {
-                    return new JSONOption(new JSONObjectOption(this.json.getJSONObject(key)));
+                    return new JSONOptional(new JSONObjectOption(this.json.getJSONObject(key)));
                 }
-                return JSONOption.None();
+                return JSONOptional.None();
             } catch (org.json.JSONException e) {
                 throw new JSONException(e.toString());
             }

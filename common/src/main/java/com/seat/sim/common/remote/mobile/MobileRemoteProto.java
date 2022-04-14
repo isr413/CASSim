@@ -5,7 +5,7 @@ import java.util.Collection;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.RemoteProto;
 import com.seat.sim.common.sensor.SensorConfig;
@@ -38,8 +38,8 @@ public class MobileRemoteProto extends RemoteProto {
         this.maxAcceleration = maxAcceleration;
     }
 
-    public MobileRemoteProto(JSONOption option) throws JSONException {
-        super(option);
+    public MobileRemoteProto(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override

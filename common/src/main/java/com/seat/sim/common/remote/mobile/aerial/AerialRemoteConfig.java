@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOption;
+import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.remote.mobile.MobileRemoteConfig;
 
 /** A serializable configuration of an Aerial Remote. */
@@ -29,8 +29,8 @@ public class AerialRemoteConfig extends MobileRemoteConfig {
         super(proto, team, remoteIDs, dynamic, active, speedMean, speedStdDev);
     }
 
-    public AerialRemoteConfig(JSONOption option) throws JSONException {
-        super(option);
+    public AerialRemoteConfig(JSONOptional optional) throws JSONException {
+        super(optional);
     }
 
     @Override
