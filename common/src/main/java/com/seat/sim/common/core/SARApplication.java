@@ -1,6 +1,7 @@
 package com.seat.sim.common.core;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.seat.sim.common.remote.base.BaseRemoteConfig;
@@ -17,6 +18,13 @@ public interface SARApplication extends Application {
             .collect(Collectors.toList());
     }
 
+    default Set<String> getBaseRemoteIDs() {
+        return this.getBaseRemoteConfigs().stream()
+            .map(config -> config.getRemoteIDs())
+            .flatMap(remoteIDs -> remoteIDs.stream())
+            .collect(Collectors.toSet());
+    }
+
     double getDisasterScale();
 
     default Collection<DroneRemoteConfig> getDroneRemoteConfigs() {
@@ -24,6 +32,13 @@ public interface SARApplication extends Application {
             .filter(config -> DroneRemoteConfig.class.isAssignableFrom(config.getClass()))
             .map(config -> (DroneRemoteConfig) config)
             .collect(Collectors.toList());
+    }
+
+    default Set<String> getDroneRemoteIDs() {
+        return this.getDroneRemoteConfigs().stream()
+            .map(config -> config.getRemoteIDs())
+            .flatMap(remoteIDs -> remoteIDs.stream())
+            .collect(Collectors.toSet());
     }
 
     default SARConfig getScenarioConfig() {
@@ -43,6 +58,13 @@ public interface SARApplication extends Application {
             .filter(config -> VictimRemoteConfig.class.isAssignableFrom(config.getClass()))
             .map(config -> (VictimRemoteConfig) config)
             .collect(Collectors.toList());
+    }
+
+    default Set<String> getVictimRemoteIDs() {
+        return this.getVictimRemoteConfigs().stream()
+            .map(config -> config.getRemoteIDs())
+            .flatMap(remoteIDs -> remoteIDs.stream())
+            .collect(Collectors.toSet());
     }
 
 }
