@@ -1,7 +1,9 @@
 package com.seat.sim.common.json;
 
+import java.util.List;
+
 /** An interface for classes that support a JSON Array representation. */
-public interface JSONArray extends JSONInterface {
+public interface JSONArray extends Iterable<Object>, JSONInterface {
 
     /** Returns the boolean value at index idx.
      * @throws JSONException if the value at idx cannot be converted to a boolean or is out of bounds
@@ -28,10 +30,10 @@ public interface JSONArray extends JSONInterface {
      */
     JSONObject getJSONObject(int idx) throws JSONException;
 
-    /** Returns a JSONOption wrapper for the Object at index idx.
-     * @throws JSONException if the value at idx cannot be converted to a JSONOption or is out of bounds
+    /** Returns a JSONOptional wrapper for the Object at index idx.
+     * @throws JSONException if the value at idx cannot be converted to a JSONOptional or is out of bounds
      */
-    JSONOptional getJSONOption(int idx) throws JSONException;
+    JSONOptional getJSONOptional(int idx) throws JSONException;
 
     /** Returns the long value at index idx.
      * @throws JSONException if the value at idx cannot be converted to a long or is out of bounds
@@ -45,5 +47,11 @@ public interface JSONArray extends JSONInterface {
 
     /** Returns the number of elements in the JSONArray. */
     int length();
+
+    /** Returns a List representation of the JSONArray. */
+    List<Object> toList();
+
+    /** Returns a List<T> representation of the JSONArray. */
+    <T> List<T> toList(Class<T> classType);
 
 }

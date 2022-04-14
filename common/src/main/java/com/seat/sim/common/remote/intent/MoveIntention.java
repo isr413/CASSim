@@ -28,7 +28,7 @@ public class MoveIntention extends Intention {
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.acceleration = (json.hasKey(MoveIntention.ACCELERATION)) ?
-            new Vector(json.getJSONOption(MoveIntention.ACCELERATION)) :
+            new Vector(json.getJSONOptional(MoveIntention.ACCELERATION)) :
             new Vector();
     }
 

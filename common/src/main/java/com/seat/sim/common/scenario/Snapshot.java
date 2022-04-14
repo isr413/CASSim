@@ -79,7 +79,7 @@ public class Snapshot extends JSONAble {
         this.remoteStates = new HashMap<>();
         JSONArray jsonRemoteStates = json.getJSONArray(Snapshot.STATE);
         for (int i = 0; i < jsonRemoteStates.length(); i++) {
-            RemoteState remoteState = RemoteRegistry.decodeTo(jsonRemoteStates.getJSONOption(i), RemoteState.class);
+            RemoteState remoteState = RemoteRegistry.decodeTo(jsonRemoteStates.getJSONOptional(i), RemoteState.class);
             this.remoteStates.put(remoteState.getRemoteID(), remoteState);
         }
     }

@@ -60,14 +60,14 @@ public class RemoteState extends JSONAble {
         this.team = (json.hasKey(TeamColor.TEAM)) ?
             TeamColor.decodeType(json) :
             TeamColor.NONE;
-        this.location = new Vector(json.getJSONOption(RemoteProto.LOCATION));
+        this.location = new Vector(json.getJSONOptional(RemoteProto.LOCATION));
         this.battery = json.getDouble(RemoteState.BATTERY);
         this.active = json.getBoolean(RemoteState.ACTIVE);
         this.sensorStates = new HashMap<>();
         if (json.hasKey(RemoteProto.SENSORS)) {
             JSONArray jsonSensorStates = json.getJSONArray(RemoteProto.SENSORS);
             for (int i = 0; i < jsonSensorStates.length(); i++) {
-                SensorState sensorState = SensorRegistry.decodeTo(jsonSensorStates.getJSONOption(i), SensorState.class);
+                SensorState sensorState = SensorRegistry.decodeTo(jsonSensorStates.getJSONOptional(i), SensorState.class);
                 this.sensorStates.put(sensorState.getSensorID(), sensorState);
             }
         }

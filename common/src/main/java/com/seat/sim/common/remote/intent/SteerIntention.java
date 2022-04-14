@@ -29,7 +29,7 @@ public class SteerIntention extends Intention {
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.direction = (json.hasKey(SteerIntention.DIRECTION)) ?
-            new Vector(json.getJSONOption(SteerIntention.DIRECTION)) :
+            new Vector(json.getJSONOptional(SteerIntention.DIRECTION)) :
             null;
     }
 

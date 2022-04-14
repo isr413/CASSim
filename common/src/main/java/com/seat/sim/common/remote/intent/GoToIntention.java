@@ -50,7 +50,7 @@ public class GoToIntention extends Intention {
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.location = (json.hasKey(GoToIntention.LOCATION)) ?
-            new Vector(json.getJSONOption(GoToIntention.LOCATION)) :
+            new Vector(json.getJSONOptional(GoToIntention.LOCATION)) :
             null;
         this.maxVelocity = (json.hasKey(GoToIntention.MAX_VELOCITY)) ?
             this.maxVelocity = json.getDouble(GoToIntention.MAX_VELOCITY) :

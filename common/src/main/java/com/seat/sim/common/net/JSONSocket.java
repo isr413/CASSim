@@ -146,7 +146,7 @@ public class JSONSocket {
             JSONArray json = this.getInputBlocking().getArray();
             HashMap<String, IntentionSet> controllers = new HashMap<>();
             for (int i = 0; i < json.length(); i++) {
-                IntentionSet controller = new IntentionSet(json.getJSONOption(i));
+                IntentionSet controller = new IntentionSet(json.getJSONOptional(i));
                 if (controller.hasIntentions()) {
                     controllers.put(controller.getRemoteID(), controller);
                 }

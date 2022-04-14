@@ -102,14 +102,14 @@ public class ScenarioConfig extends JSONAble {
     protected void decode(JSONObject json) throws JSONException {
         this.scenarioID = json.getString(ScenarioConfig.SCENARIO_ID);
         this.seed = json.getLong(ScenarioConfig.SEED);
-        this.grid = new Grid(json.getJSONOption(ScenarioConfig.GRID));
+        this.grid = new Grid(json.getJSONOptional(ScenarioConfig.GRID));
         this.missionLength = json.getInt(ScenarioConfig.MISSION_LENGTH);
         this.stepSize = json.getDouble(ScenarioConfig.STEP_SIZE);
         this.remoteConfigs = new ArrayList<>();
         if (json.hasKey(ScenarioConfig.REMOTE_CONFIG)) {
             JSONArray jsonRemoteConfigs = json.getJSONArray(ScenarioConfig.REMOTE_CONFIG);
             for (int i = 0; i < jsonRemoteConfigs.length(); i++) {
-                this.remoteConfigs.add(RemoteRegistry.decodeTo(jsonRemoteConfigs.getJSONOption(i), RemoteConfig.class));
+                this.remoteConfigs.add(RemoteRegistry.decodeTo(jsonRemoteConfigs.getJSONOptional(i), RemoteConfig.class));
             }
         }
         this.init();

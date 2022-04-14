@@ -64,7 +64,7 @@ public class Grid extends JSONAble {
             for (int y = 0; y < this.height; y++) {
                 JSONArray jsonRow = jsonZones.getJSONArray(y);
                 for (int x = 0; x < this.width; x++) {
-                    this.zones[y][x] = new Zone(jsonRow.getJSONOption(x));
+                    this.zones[y][x] = new Zone(jsonRow.getJSONOptional(x));
                 }
             }
         } else {

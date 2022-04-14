@@ -44,7 +44,7 @@ public class AerialRemoteProto extends MobileRemoteProto {
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.batteryUsage = (json.hasKey(AerialRemoteProto.BATTERY_USAGE)) ?
-            new Vector(json.getJSONOption(AerialRemoteProto.BATTERY_USAGE)) :
+            new Vector(json.getJSONOptional(AerialRemoteProto.BATTERY_USAGE)) :
             new Vector();
     }
 

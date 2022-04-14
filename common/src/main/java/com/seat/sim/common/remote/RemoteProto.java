@@ -66,14 +66,14 @@ public class RemoteProto extends JSONAble {
     @Override
     protected void decode(JSONObject json) throws JSONException {
         this.location = (json.hasKey(RemoteProto.LOCATION)) ?
-            this.location = new Vector(json.getJSONOption(RemoteProto.LOCATION)) :
+            this.location = new Vector(json.getJSONOptional(RemoteProto.LOCATION)) :
             null;
         this.maxBatteryPower = json.getDouble(RemoteProto.MAX_BATTERY);
         this.sensorConfigs = new ArrayList<>();
         if (json.hasKey(RemoteProto.SENSORS)) {
             JSONArray jsonSensors = json.getJSONArray(RemoteProto.SENSORS);
             for (int i = 0; i < jsonSensors.length(); i++) {
-                this.sensorConfigs.add(SensorRegistry.decodeTo(jsonSensors.getJSONOption(i), SensorConfig.class));
+                this.sensorConfigs.add(SensorRegistry.decodeTo(jsonSensors.getJSONOptional(i), SensorConfig.class));
             }
         }
         this.init();

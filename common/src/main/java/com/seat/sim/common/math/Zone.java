@@ -36,13 +36,13 @@ public class Zone extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.location = new Vector(json.getJSONOption(Zone.ZONE_LOCATION));
+        this.location = new Vector(json.getJSONOptional(Zone.ZONE_LOCATION));
         this.size = json.getInt(Zone.ZONE_SIZE);
         this.ground = (json.hasKey(Zone.ZONE_GROUND)) ?
-            this.ground = new Field(json.getJSONOption(Zone.ZONE_GROUND)) :
+            this.ground = new Field(json.getJSONOptional(Zone.ZONE_GROUND)) :
             Field.None();
         this.aerial = (json.hasKey(Zone.ZONE_AERIAL)) ?
-            this.aerial = new Field(json.getJSONOption(Zone.ZONE_AERIAL)) :
+            this.aerial = new Field(json.getJSONOptional(Zone.ZONE_AERIAL)) :
             Field.None();
     }
 

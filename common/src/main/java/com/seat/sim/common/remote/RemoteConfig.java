@@ -56,7 +56,7 @@ public class RemoteConfig extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.proto = RemoteRegistry.decodeTo(json.getJSONOption(RemoteConfig.PROTO), RemoteProto.class);
+        this.proto = RemoteRegistry.decodeTo(json.getJSONOptional(RemoteConfig.PROTO), RemoteProto.class);
         this.team = (json.hasKey(TeamColor.TEAM)) ?
             TeamColor.decodeType(json) :
             TeamColor.NONE;

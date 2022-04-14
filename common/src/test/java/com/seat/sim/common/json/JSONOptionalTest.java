@@ -36,8 +36,8 @@ public class JSONOptionalTest {
         JSONOptional test = JSONOptional.of(json);
         assertEquals(jsonArray, test.getArray().getJSONArray(0).toString());
         assertEquals(jsonObject, test.getArray().getJSONObject(1).toString());
-        assertEquals(jsonArray, test.getArray().getJSONOption(0).toString());
-        assertEquals(jsonObject, test.getArray().getJSONOption(1).toString());
+        assertEquals(jsonArray, test.getArray().getJSONOptional(0).toString());
+        assertEquals(jsonObject, test.getArray().getJSONOptional(1).toString());
     }
 
     @Test
@@ -91,8 +91,8 @@ public class JSONOptionalTest {
         JSONOptional test = JSONOptional.of(json);
         assertEquals(jsonArray, test.getObject().getJSONArray("0").toString());
         assertEquals(jsonObject, test.getObject().getJSONObject("1").toString());
-        assertEquals(jsonArray, test.getObject().getJSONOption("0").toString());
-        assertEquals(jsonObject, test.getObject().getJSONOption("1").toString());
+        assertEquals(jsonArray, test.getObject().getJSONOptional("0").toString());
+        assertEquals(jsonObject, test.getObject().getJSONOptional("1").toString());
     }
 
     @Test

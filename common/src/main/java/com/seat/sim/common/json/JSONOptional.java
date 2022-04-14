@@ -1,11 +1,18 @@
 package com.seat.sim.common.json;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
+import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /** An optional class to wrap JSONArray and JSONObject interface types. */
 public class JSONOptional {
@@ -246,6 +253,15 @@ public class JSONOptional {
             }
         }
 
+        public void forEach(Consumer<? super Object> consumer) {
+            this.json.forEach(consumer);
+        }
+
+        @SuppressWarnings("unchecked")
+        public <T> void forEach(Class<T> classType, Consumer<? super T> consumer) {
+            this.json.forEach((o) -> consumer.accept((T) o));
+        }
+
         /** Returns the boolean value at index idx.
          * @throws JSONException if the value at idx cannot be converted to a boolean or is out of bounds
          */
@@ -306,10 +322,10 @@ public class JSONOptional {
             }
         }
 
-        /** Returns a JSONOption wrapper for the Object at index idx.
-         * @throws JSONException if the value at idx cannot be converted to a JSONOption or is out of bounds
+        /** Returns a JSONOptional wrapper for the Object at index idx.
+         * @throws JSONException if the value at idx cannot be converted to a JSONOptional or is out of bounds
          */
-        public JSONOptional getJSONOption(int idx) throws JSONException {
+        public JSONOptional getJSONOptional(int idx) throws JSONException {
             this.assertBounds(idx);
             try {
                 if (this.json.get(idx) instanceof org.json.JSONArray) {
@@ -348,9 +364,30 @@ public class JSONOptional {
             }
         }
 
+        public Iterator<Object> iterator() {
+            return this.json.iterator();
+        }
+
         /** Returns the number of elements in the JSONArray. */
         public int length() {
             return this.json.length();
+        }
+
+        public Spliterator<Object> spliterator() {
+            return this.json.spliterator();
+        }
+
+        /** Returns a list of the JSONObject values. */
+        public List<Object> toList() {
+            return this.json.toList();
+        }
+
+        /** Returns a list of type T of the JSONObject values. */
+        @SuppressWarnings("unchecked")
+        public <T> List<T> toList(Class<T> classType) {
+            return this.json.toList().stream()
+                .map(o -> (T) o)
+                .collect(Collectors.toList());
         }
 
         /** Returns the String representation of the JSONArray.
@@ -461,10 +498,10 @@ public class JSONOptional {
             }
         }
 
-        /** Returns a JSONOption wrapper for the Object associated with the key.
-         * @throws JSONException if the value associated with the key cannot be converted to a JSONOption or no such key
+        /** Returns a JSONOptional wrapper for the Object associated with the key.
+         * @throws JSONException if the value associated with the key cannot be converted to a JSONOptional or no such key
          */
-        public JSONOptional getJSONOption(String key) throws JSONException {
+        public JSONOptional getJSONOptional(String key) throws JSONException {
             this.assertContains(key);
             try {
                 if (this.json.get(key) instanceof org.json.JSONArray) {
@@ -508,9 +545,26 @@ public class JSONOptional {
             return this.json.has(key);
         }
 
+        /** Returns a collection of the JSONObject keys. */
+        public Set<String> keySet() {
+            return this.json.keySet();
+        }
+
         /** Returns the number of key-value pairs stored in the JSONObject. */
         public int size() {
             return this.json.length();
+        }
+
+        /** Returns a Map representation of the JSONObject. */
+        public Map<String, Object> toMap() {
+            return this.json.toMap();
+        }
+
+        /** Returns a Map<String, T> representation of the JSONObject. */
+        @SuppressWarnings("unchecked")
+        public <T> Map<String, T> toMap(Class<T> classType) {
+            return this.json.keySet().stream()
+                .collect(Collectors.toMap(Function.identity(), (key) -> (T) this.json.get(key)));
         }
 
         /** Returns the String representation of the JSONObject.
@@ -533,6 +587,19 @@ public class JSONOptional {
             } catch (org.json.JSONException e) {
                 throw new JSONException(e.toString());
             }
+        }
+
+        /** Returns a collection of the JSONObject values. */
+        public Collection<Object> values() {
+            return this.json.toMap().values();
+        }
+
+        /** Returns a collection of type T of the JSONObject values. */
+        @SuppressWarnings("unchecked")
+        public <T> Collection<T> values(Class<T> classType) {
+            return this.json.toMap().values().stream()
+                .map(o -> (T) o)
+                .collect(Collectors.toList());
         }
 
     }

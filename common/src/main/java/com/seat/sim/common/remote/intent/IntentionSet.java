@@ -40,7 +40,7 @@ public class IntentionSet extends JSONAble {
         if (json.hasKey(IntentionSet.INTENTIONS)) {
             JSONArray jsonIntentions = json.getJSONArray(IntentionSet.INTENTIONS);
             for (int i = 0; i < jsonIntentions.length(); i++) {
-                this.addIntention(IntentRegistry.Some(jsonIntentions.getJSONOption(i)));
+                this.addIntention(IntentRegistry.Some(jsonIntentions.getJSONOptional(i)));
             }
         }
     }

@@ -73,7 +73,7 @@ public class Field extends JSONAble {
 
     @Override
     protected void decode(JSONArray json) throws JSONException {
-        this.point = new Vector(json.getJSONOption(0));
+        this.point = new Vector(json.getJSONOptional(0));
         this.magnitude = json.getDouble(1);
         this.isPullForce = json.getBoolean(2);
         this.resistance = json.getDouble(3);

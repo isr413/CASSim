@@ -39,10 +39,10 @@ public class MobileRemoteState extends RemoteState {
     protected void decode(JSONObject json) throws JSONException {
         super.decode(json);
         this.velocity = (json.hasKey(MobileRemoteState.VELOCITY)) ?
-            new Vector(json.getJSONOption(MobileRemoteState.VELOCITY)) :
+            new Vector(json.getJSONOptional(MobileRemoteState.VELOCITY)) :
             new Vector();
         this.acceleration = (json.hasKey(MobileRemoteState.ACCELERATION)) ?
-            new Vector(json.getJSONOption(MobileRemoteState.ACCELERATION)) :
+            new Vector(json.getJSONOptional(MobileRemoteState.ACCELERATION)) :
             new Vector();
     }
 

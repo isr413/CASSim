@@ -1,5 +1,9 @@
 package com.seat.sim.common.json;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
 /** An interface for classes that support a JSON Object representation. */
 public interface JSONObject extends JSONInterface {
 
@@ -28,10 +32,10 @@ public interface JSONObject extends JSONInterface {
      */
     JSONObject getJSONObject(String key) throws JSONException;
 
-    /** Returns a JSONOption wrapper for the Object associated with the key.
-     * @throws JSONException if the value associated with the key cannot be converted to a JSONOption or no such key
+    /** Returns a JSONOptional wrapper for the Object associated with the key.
+     * @throws JSONException if the value associated with the key cannot be converted to a JSONOptional or no such key
      */
-    JSONOptional getJSONOption(String key) throws JSONException;
+    JSONOptional getJSONOptional(String key) throws JSONException;
 
     /** Returns the long value associated with the key.
      * @throws JSONException if the value associated with the key cannot be converted to a long or no such key
@@ -46,7 +50,22 @@ public interface JSONObject extends JSONInterface {
     /** Returns true if the JSONObject contains the specified key. */
     boolean hasKey(String key);
 
+    /** Returns a collection of the JSONObject keys. */
+    Set<String> keySet();
+
     /** Returns the number of key-value pairs stored in the JSONObject. */
     int size();
+
+    /** Returns a Map representation of the JSONObject. */
+    Map<String, Object> toMap();
+
+    /** Returns a Map<String, T> representation of the JSONObject. */
+    <T> Map<String, T> toMap(Class<T> classType);
+
+    /** Returns a collection of the JSONObject values. */
+    Collection<Object> values();
+
+    /** Returns a collection of type T of the JSONObject values. */
+    <T> Collection<T> values(Class<T> classType);
 
 }
