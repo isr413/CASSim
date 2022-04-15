@@ -9,8 +9,16 @@ public class Debugger {
 
     public static final Debugger logger = new Debugger();
 
+    public void err(Object o) {
+        this.err(o.toString());
+    }
+
     public void err(String msg) {
         System.err.println(Debugger.ANSI_RED + "ERR: " + msg + Debugger.ANSI_RESET);
+    }
+
+    public void fatal(Object o) {
+        this.fatal(o.toString(), 1);
     }
 
     public void fatal(String msg) {
@@ -22,12 +30,24 @@ public class Debugger {
         System.exit(errorCode);
     }
 
+    public void info(Object o) {
+        this.info(o.toString());
+    }
+
     public void info(String msg) {
         System.out.println(Debugger.ANSI_GREEN + "INFO: " + msg + Debugger.ANSI_RESET);
     }
 
+    public void state(Object o) {
+        this.state(o.toString());
+    }
+
     public void state(String msg) {
         System.out.println(Debugger.ANSI_BLUE + "STATE: " + msg + Debugger.ANSI_RESET);
+    }
+
+    public void warn(Object o) {
+        this.warn(o.toString());
     }
 
     public void warn(String msg) {
