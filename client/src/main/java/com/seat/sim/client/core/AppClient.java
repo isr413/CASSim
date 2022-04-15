@@ -2,9 +2,9 @@ package com.seat.sim.client.core;
 
 import java.util.Collection;
 
-import com.seat.sim.client.gui.GUIGridFrame;
 import com.seat.sim.common.core.Application;
 import com.seat.sim.common.core.CommonException;
+import com.seat.sim.common.gui.GUIGridFrame;
 import com.seat.sim.common.net.JSONSocket;
 import com.seat.sim.common.remote.intent.IntentionSet;
 import com.seat.sim.common.scenario.Snapshot;
