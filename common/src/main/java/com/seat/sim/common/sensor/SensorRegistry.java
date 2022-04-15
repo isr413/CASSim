@@ -23,6 +23,7 @@ public class SensorRegistry {
     public static final String GENERIC = "generic";
     public static final String HRVM = "hrvm";
     public static final String LTE_RADIO_COMMS = "lte_radio";
+    public static final String NATURAL_VISION = "natural_vision";
     public static final String SENSOR_TYPE = "sensor_type";
 
     private static final Map<String, Function<JSONOptional, Object>> REGISTRY =
@@ -63,6 +64,10 @@ public class SensorRegistry {
 
     public static MonitorSensorProto MonitorSensor(double range, double accuracy, double batteryUsage) {
         return new MonitorSensorProto(range, accuracy, batteryUsage);
+    }
+
+    public static VisionSensorProto NaturalVisionSensor(double range, double accuracy, double batteryUsage) {
+        return new VisionSensorProto(SensorRegistry.NATURAL_VISION, range, accuracy, batteryUsage);
     }
 
     public static SensorProto Sensor(double range, double accuracy, double batteryUsage) {

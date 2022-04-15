@@ -119,6 +119,10 @@ public class ACSOS implements SARApplication {
         return SensorRegistry.HRVMSensor(0, 1, 0);
     }
 
+    private static VisionSensorProto getVictimNaturalVision() {
+        return SensorRegistry.NaturalVisionSensor(10, 1, 0);
+    }
+
     private static VictimRemoteConfig getVictimRemoteConfiguration() {
         return new VictimRemoteConfig(
             new VictimRemoteProto(
@@ -126,6 +130,11 @@ public class ACSOS implements SARApplication {
                 1,
                 new ArrayList<SensorConfig>(
                     Arrays.asList(
+                        new SensorConfig(
+                            ACSOS.getVictimNaturalVision(),
+                            1,
+                            true
+                        ),
                         new SensorConfig(
                             ACSOS.getBluetoothComms(),
                             1,
