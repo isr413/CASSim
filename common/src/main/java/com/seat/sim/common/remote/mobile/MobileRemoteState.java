@@ -75,9 +75,17 @@ public class MobileRemoteState extends RemoteState {
         return this.velocity.getMagnitude() > 0;
     }
 
+    public boolean isInMotion() {
+        return this.hasVelocity() || this.hasAcceleration();
+    }
+
     @Override
     public boolean isMobile() {
-        return this.hasVelocity() || this.hasAcceleration();
+        return true;
+    }
+
+    public boolean isStagnant() {
+        return !this.isInMotion();
     }
 
     public boolean equals(MobileRemoteState state) {

@@ -28,7 +28,7 @@ public interface SARApplication extends Application {
     double getDisasterScale();
 
     default Collection<DroneRemoteConfig> getDroneRemoteConfigs() {
-        return this.getAerialRemoteConfigs().stream()
+        return this.getRemoteConfigs().stream()
             .filter(config -> DroneRemoteConfig.class.isAssignableFrom(config.getClass()))
             .map(config -> (DroneRemoteConfig) config)
             .collect(Collectors.toList());

@@ -115,6 +115,10 @@ public class MobileRemote extends Remote {
         return this.hasVelocity() || this.hasAcceleration();
     }
 
+    public boolean isStagnant() {
+        return !this.isInMotion();
+    }
+
     public void setAcceleration(Vector acceleration) throws SimException {
         if (this.getMaxAcceleration() + MobileRemote.DOUBLE_PRECISION < acceleration.getMagnitude()) {
             throw new SimException(String.format("Remote %s cannot set acceleration to %s", this.getRemoteID(),
