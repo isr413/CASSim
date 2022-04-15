@@ -12,10 +12,11 @@ import com.seat.sim.common.util.Debugger;
 
 public class AppClient {
 
-    protected final static double DEFAULT_DELAY = 0.0;
+    protected final static double DEFAULT_DELAY = 0.033;
     protected final static boolean DEFAULT_DISPLAY = false;
 
     private Application app;
+    private long frameTime;
     private JSONSocket socket;
 
     public AppClient(Application app) throws CommonException {
@@ -66,6 +67,7 @@ public class AppClient {
             frame = new GUIGridFrame(app.getScenarioID(), this.app.getGrid());
             frame.setVisible(true);
             Debugger.logger.state("Frame set to visible");
+            this.frameTime = System.currentTimeMillis();
         }
 
         while (true) {
@@ -95,12 +97,14 @@ public class AppClient {
             this.socket.sendIntentions(intentions);
             Debugger.logger.state("Intention(s) sent");
 
-            if (delay == 0) {
-                continue;
-            }
+            if (!visualDisplay || frame == null || delay == 0) continue;
 
             try {
-                Thread.sleep((long) (delay * 1000));
+                long prevFrameTime = this.frameTime;
+                this.frameTime = System.currentTimeMillis();
+                long waitTime = (long) (delay * 1000) - (frameTime - prevFrameTime);
+                if (waitTime < 0) continue;
+                Thread.sleep(waitTime);
             } catch (InterruptedException e) {
                 Debugger.logger.err(e.toString());
             }
