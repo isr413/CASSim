@@ -71,7 +71,8 @@ public class AppClient {
         while (true) {
             Debugger.logger.info("Waiting for snap ...");
             Snapshot snap = this.socket.getSnapshotBlocking();
-            Debugger.logger.state(String.format("Received snap <%s> for time=%.2f", snap.getHash(), snap.getTime()));
+            Debugger.logger.state(String.format("Received snap <%s> for time=%.2f", snap.getHash(),
+                snap.getTime()));
 
             if (snap.hasError()) {
                 Debugger.logger.err(String.format("Snap <%s> contains error(s)", snap.getHash()));

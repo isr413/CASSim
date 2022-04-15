@@ -3,19 +3,20 @@ package com.seat.sim.client.sandbox;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-
+import com.seat.sim.client.core.Analyzer;
+import com.seat.sim.client.core.Executor;
+import com.seat.sim.client.core.Knowledge;
+import com.seat.sim.client.core.Monitor;
+import com.seat.sim.client.core.Planner;
 import com.seat.sim.common.core.SARApplication;
 import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Vector;
-import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteConfig;
 import com.seat.sim.common.remote.base.BaseRemoteConfig;
 import com.seat.sim.common.remote.base.BaseRemoteProto;
 import com.seat.sim.common.remote.intent.IntentionSet;
-import com.seat.sim.common.remote.mobile.aerial.AerialRemoteController;
 import com.seat.sim.common.remote.mobile.aerial.drone.DroneRemoteConfig;
 import com.seat.sim.common.remote.mobile.aerial.drone.DroneRemoteProto;
 import com.seat.sim.common.remote.mobile.victim.VictimRemoteConfig;
@@ -26,13 +27,11 @@ import com.seat.sim.common.sensor.SensorRegistry;
 import com.seat.sim.common.sensor.comms.CommsSensorProto;
 import com.seat.sim.common.sensor.monitor.MonitorSensorProto;
 import com.seat.sim.common.sensor.vision.VisionSensorProto;
-import com.seat.sim.common.util.Debugger;
-import com.seat.sim.common.util.Random;
 
 public class ACSOS implements SARApplication {
 
     private static final int BASE_COUNT = 1;
-    private static final int DRONE_COUNT = 1;
+    private static final int DRONE_COUNT = 32;
     private static final int MAP_SIZE = 64;
     private static final int VICTIM_COUNT = 0;
     private static final int ZONE_SIZE = 10;
@@ -150,18 +149,18 @@ public class ACSOS implements SARApplication {
         );
     }
 
-    private Grid grid;
-    private HashMap<String, Zone> localGoals;
+    private Analyzer analyzer;
+    private Executor executor;
+    private Knowledge knowledge;
+    private Monitor monitor;
+    private Planner planner;
     private List<RemoteConfig> remoteConfigs;
-    private Random rng;
 
     public ACSOS() {
         this(null);
     }
 
     public ACSOS(String[] args) {
-        this.rng = new Random();
-        this.grid = ACSOS.getACSOSGrid();
         this.remoteConfigs = new ArrayList<>(
             Arrays.asList(
                 ACSOS.getBaseRemoteConfiguration(),
@@ -169,7 +168,17 @@ public class ACSOS implements SARApplication {
                 ACSOS.getVictimRemoteConfiguration()
             )
         );
-        this.localGoals = null;
+        this.knowledge = new Knowledge(ACSOS.getACSOSGrid());
+        this.monitor = new Monitor(this.knowledge);
+        this.analyzer = new Analyzer(this.knowledge);
+        this.planner = new Planner(this.knowledge);
+        this.executor = new Executor(this.knowledge);
+        this.init();
+    }
+
+    private void init() {
+        this.knowledge.setHomeLocation(ACSOS.BASE_LOCATION);
+        this.knowledge.addDroneIDs(this.getDroneRemoteIDs());
     }
 
     public double getDisasterScale() {
@@ -177,7 +186,7 @@ public class ACSOS implements SARApplication {
     }
 
     public Grid getGrid() {
-        return this.grid;
+        return this.knowledge.getGrid();
     }
 
     public int getMissionLength() {
@@ -198,30 +207,10 @@ public class ACSOS implements SARApplication {
     }
 
     public Collection<IntentionSet> update(Snapshot snap) {
-        if (this.localGoals == null) {
-            this.localGoals = new HashMap<>();
-            for (String remoteID : this.getScenarioConfig().getDroneRemoteIDs()) {
-                this.localGoals.put(
-                    remoteID,
-                    this.grid.getZone(
-                        this.rng.getRandomNumber(this.grid.getWidthInZones()),
-                        this.rng.getRandomNumber(this.grid.getHeightInZones())
-                    )
-                );
-            }
-        }
-        ArrayList<IntentionSet> intentions = new ArrayList<>();
-        for (String remoteID : this.localGoals.keySet()) {
-            if (this.localGoals.get(remoteID) == null) {
-                Debugger.logger.warn("Null goal");
-                continue;
-            }
-            AerialRemoteController controller = new AerialRemoteController(remoteID);
-            //controller.goToLocation(this.localGoals.get(remoteID).getLocation());
-            controller.goToLocation(new Vector(280, 280));
-            intentions.add(controller.getIntentions());
-        }
-        return intentions;
+        this.monitor.update(snap);
+        this.analyzer.update(snap);
+        this.planner.update(snap);
+        return this.executor.update(snap);
     }
 
 }
