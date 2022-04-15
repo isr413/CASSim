@@ -148,24 +148,24 @@ public class Grid extends JSONAble {
         return this.width;
     }
 
-    /** Returns the Zone located at row y, column x, or with coordinates (x, y).
+    /** Returns the Zone located at row, col.
      * @throws CommonException if the either y or x are out of bounds
      */
-    public Zone getZone(int x, int y) throws CommonException {
-        if (y < 0 || this.height <= y) {
-            throw new CommonException(new IndexOutOfBoundsException(y).toString());
+    public Zone getZone(int row, int col) throws CommonException {
+        if (row < 0 || this.height <= row) {
+            throw new CommonException(new IndexOutOfBoundsException(row).toString());
         }
-        if (x < 0 || this.width <= x) {
-            throw new CommonException(new IndexOutOfBoundsException(x).toString());
+        if (col < 0 || this.width <= col) {
+            throw new CommonException(new IndexOutOfBoundsException(col).toString());
         }
-        return this.zones[y][x];
+        return this.zones[row][col];
     }
 
     /** Returns the Zone that contains the location with the specified x and y coordinates.
      * @throws CommonException if the either y or x are out of bounds
      */
     public Zone getZoneAtLocation(double x, double y) throws CommonException {
-        return this.getZone((int) (x / this.zoneSize), (int) (y / this.zoneSize));
+        return this.getZone((int) (y / this.zoneSize), (int) (x / this.zoneSize));
     }
 
     /** Returns the Zone that contains the location with the specified coordinates.
@@ -199,10 +199,10 @@ public class Grid extends JSONAble {
         json.put(Grid.ZONE_SIZE, this.zoneSize);
         if (this.isCustomGrid) {
             JSONArrayBuilder jsonZones = JSONBuilder.Array();
-            for (int y = 0; y < this.height; y++) {
+            for (int row = 0; row < this.height; row++) {
                 JSONArrayBuilder jsonRow = JSONBuilder.Array();
-                for (int x = 0; x < this.width; x++) {
-                    jsonRow.put(this.getZone(x, y).toJSON());
+                for (int col = 0; col < this.width; col++) {
+                    jsonRow.put(this.getZone(row, col).toJSON());
                 }
                 jsonZones.put(jsonRow.toJSON());
             }
