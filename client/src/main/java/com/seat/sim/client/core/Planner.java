@@ -22,9 +22,9 @@ public class Planner {
 
     private void init() {
         this.zones = new ArrayList<>();
-        for (int y = 0; y < this.knowledge.getGrid().getHeightInZones(); y++) {
-            for (int x = 0; x < this.knowledge.getGrid().getWidthInZones(); x++) {
-                Zone zone = this.knowledge.getGrid().getZone(x, y);
+        for (int row = 0; row < this.knowledge.getGrid().getHeightInZones(); row++) {
+            for (int col = 0; col < this.knowledge.getGrid().getWidthInZones(); col++) {
+                Zone zone = this.knowledge.getGrid().getZone(row, col);
                 if (this.knowledge.hasHomeLocation()) {
                     double distanceToHome = Vector.subtract(zone.getLocation(),
                         this.knowledge.getHomeLocation()).getMagnitude();
@@ -63,6 +63,26 @@ public class Planner {
         }
     }
 
+    private void assignAdjacentZoneAtRandom(String remoteID, Vector remoteLocation) {
+        List<Zone> adjacentZones = new ArrayList<>();
+        int zoneSize = this.knowledge.getGrid().getZoneSize();
+        double x = remoteLocation.getX();
+        double y = remoteLocation.getY();
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i == 0 && j == 0) continue;
+                if (x + j * zoneSize < 0) continue;
+                if (this.knowledge.getGrid().getWidth() <= x + j * zoneSize) continue;
+                if (y + i * zoneSize < 0) continue;
+                if (this.knowledge.getGrid().getHeight() <= y + i * zoneSize) continue;
+                adjacentZones.add(this.knowledge.getGrid().getZoneAtLocation(x + j * zoneSize, y + i * zoneSize));
+            }
+        }
+        if (adjacentZones.isEmpty()) return;
+        int randomIdx = this.knowledge.getRandom().getRandomNumber(adjacentZones.size());
+        this.knowledge.addAssignment(remoteID, adjacentZones.get(randomIdx));
+    }
+
     private void orderZonesByDistanceFromHome() {
         Vector homeLocation = this.knowledge.getHomeLocation();
         Collections.sort(this.zones, new Comparator<Zone>(){
@@ -83,6 +103,19 @@ public class Planner {
             if (!this.knowledge.hasAssignment(remoteID)) {
                 if (this.zones.isEmpty()) continue;
                 this.assignNextClosestZoneToRemote(remoteID, remoteState.getLocation());
+            }
+        }
+        for (String remoteID : this.knowledge.getVictimIDs()) {
+            if (!snap.hasActiveRemoteWithID(remoteID)) continue;
+            RemoteState remoteState = snap.getRemoteStateWithID(remoteID);
+            if (remoteState.isDisabled() || !remoteState.hasLocation() || !remoteState.isMobile()) continue;
+            if (!this.knowledge.hasAssignment(remoteID)) {
+                if (this.knowledge.hasVictimStopProbability()) {
+                    if (this.knowledge.getRandom().getRandomProbability() < this.knowledge.getVictimStopProbability()) {
+                        continue;
+                    }
+                }
+                this.assignAdjacentZoneAtRandom(remoteID, remoteState.getLocation());
             }
         }
     }

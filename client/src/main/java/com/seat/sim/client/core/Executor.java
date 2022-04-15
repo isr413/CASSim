@@ -21,11 +21,10 @@ public class Executor {
 
     public Collection<IntentionSet> update(Snapshot snap) {
         List<IntentionSet> intentions = new ArrayList<>();
-        for (String remoteID : this.knowledge.getDroneIDs()) {
+        for (String remoteID : this.knowledge.getAssignments().keySet()) {
             if (!snap.hasActiveRemoteWithID(remoteID)) continue;
             RemoteState remoteState = snap.getRemoteStateWithID(remoteID);
             if (remoteState.isDisabled() || !remoteState.hasLocation() || !remoteState.isMobile()) continue;
-            if (!this.knowledge.hasAssignment(remoteID)) continue;
             MobileRemoteController controller = new MobileRemoteController(remoteID);
             Zone goalZone = this.knowledge.getAssignment(remoteID);
             double distanceToGoal = Vector.subtract(goalZone.getLocation(), remoteState.getLocation()).getMagnitude();

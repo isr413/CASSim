@@ -48,6 +48,10 @@ public class Random {
         return this.rng.nextDouble() * x;
     }
 
+    public double getRandomProbability() {
+        return this.rng.nextDouble();
+    }
+
     public Vector getRandomSpeed2D(double maxSpeed) {
         if (!Double.isFinite(maxSpeed)) {
             return this.getRandomDirection2D();

@@ -1,5 +1,6 @@
 package com.seat.sim.client.core;
 
+import java.util.HashSet;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteState;
@@ -14,11 +15,10 @@ public class Analyzer {
     }
 
     public void update(Snapshot snap) {
-        for (String remoteID : this.knowledge.getDroneIDs()) {
+        for (String remoteID : new HashSet<>(this.knowledge.getAssignments().keySet())) {
             if (!snap.hasActiveRemoteWithID(remoteID)) continue;
             RemoteState remoteState = snap.getRemoteStateWithID(remoteID);
             if (remoteState.isDisabled() || !remoteState.hasLocation() || !remoteState.isMobile()) continue;
-            if (!this.knowledge.hasAssignment(remoteID)) continue;
             Zone goalZone = this.knowledge.getAssignment(remoteID);
             double distanceToGoal = Vector.subtract(goalZone.getLocation(), remoteState.getLocation()).getMagnitude();
             if (distanceToGoal <= Knowledge.DOUBLE_PRECISION) {

@@ -33,7 +33,8 @@ public class ACSOS implements SARApplication {
     private static final int BASE_COUNT = 1;
     private static final int DRONE_COUNT = 32;
     private static final int MAP_SIZE = 64;
-    private static final int VICTIM_COUNT = 0;
+    private static final int VICTIM_COUNT = 32;
+    private static final double VICTIM_STOP_PROBABILITY = 0.5;
     private static final int ZONE_SIZE = 10;
 
     private static final Vector BASE_LOCATION = new Vector(
@@ -138,12 +139,12 @@ public class ACSOS implements SARApplication {
                     )
                 ),
                 9,
-                3
+                9
             ),
             TeamColor.RED,
             ACSOS.VICTIM_COUNT,
             true,
-            false,
+            true,
             1.78,
             1
         );
@@ -179,6 +180,8 @@ public class ACSOS implements SARApplication {
     private void init() {
         this.knowledge.setHomeLocation(ACSOS.BASE_LOCATION);
         this.knowledge.addDroneIDs(this.getDroneRemoteIDs());
+        this.knowledge.addVictimIDs(this.getVictimRemoteIDs());
+        this.knowledge.setVictimStopProbability(ACSOS.VICTIM_STOP_PROBABILITY);
     }
 
     public double getDisasterScale() {
