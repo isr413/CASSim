@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
 import com.seat.sim.client.core.Analyzer;
 import com.seat.sim.client.core.Executor;
 import com.seat.sim.client.core.Knowledge;
@@ -33,7 +34,7 @@ public class ACSOS implements SARApplication {
     private static final int BASE_COUNT = 1;
     private static final int DRONE_COUNT = 32;
     private static final int MAP_SIZE = 64;
-    private static final int VICTIM_COUNT = 32;
+    private static final int VICTIM_COUNT = 100;
     private static final double VICTIM_STOP_PROBABILITY = 0.5;
     private static final int ZONE_SIZE = 10;
 

@@ -1,5 +1,6 @@
 package com.seat.sim.client.core;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,9 +18,11 @@ public class Knowledge {
     private Map<String, Zone> assignments;
     private Set<String> baseIDs;
     private Map<String, Set<String>> connections;
+    private Map<String, Zone> connectionZones;
     private Set<String> droneIDs;
     private Grid grid;
     private Vector homeLocation;
+    private Set<String> remoteIDs;
     private Random rng;
     private Set<String> victimIDs;
     private double victimStopProbability;
@@ -29,8 +32,10 @@ public class Knowledge {
         this.assignments = new HashMap<>();
         this.baseIDs = new HashSet<>();
         this.connections = new HashMap<>();
+        this.connectionZones = new HashMap<>();
         this.droneIDs = new HashSet<>();
         this.homeLocation = null;
+        this.remoteIDs = new HashSet<>();
         this.rng = new Random();
         this.victimIDs = new HashSet<>();
         this.victimStopProbability = 0;
@@ -45,11 +50,13 @@ public class Knowledge {
     public boolean addBaseID(String remoteID) {
         if (this.hasBaseID(remoteID)) return true;
         this.baseIDs.add(remoteID);
+        this.remoteIDs.add(remoteID);
         return true;
     }
 
     public boolean addBaseIDs(Collection<String> remoteIDs) {
         this.baseIDs.addAll(remoteIDs);
+        this.remoteIDs.addAll(remoteIDs);
         return true;
     }
 
@@ -69,22 +76,41 @@ public class Knowledge {
     public boolean addDroneID(String remoteID) {
         if (this.hasDroneID(remoteID)) return true;
         this.droneIDs.add(remoteID);
+        this.remoteIDs.add(remoteID);
         return true;
     }
 
     public boolean addDroneIDs(Collection<String> remoteIDs) {
         this.droneIDs.addAll(remoteIDs);
+        this.remoteIDs.addAll(remoteIDs);
         return true;
+    }
+
+    public boolean addReservedConnection(String remoteID, String other, boolean remoteCanHaveMultipleConnections) {
+        if (this.hasConnection(other, remoteID)) return true;
+        if (this.hasConnections(other)) return false;
+        if (!remoteCanHaveMultipleConnections) {
+            this.setConnection(remoteID, other);
+            this.setConnection(other, remoteID);
+            return true;
+        }
+        if (this.addConnection(remoteID, other)) {
+            this.setConnection(other, remoteID);
+            return true;
+        }
+        return false;
     }
 
     public boolean addVictimID(String remoteID) {
         if (this.hasVictimID(remoteID)) return true;
         this.victimIDs.add(remoteID);
+        this.remoteIDs.add(remoteID);
         return true;
     }
 
     public boolean addVictimIDs(Collection<String> remoteIDs) {
         this.victimIDs.addAll(remoteIDs);
+        this.remoteIDs.addAll(remoteIDs);
         return true;
     }
 
@@ -110,6 +136,15 @@ public class Knowledge {
         return this.connections.get(remoteID);
     }
 
+    public Zone getConnectionZone(String remoteID) {
+        if (!this.hasConnectionZone(remoteID)) return null;
+        return this.connectionZones.get(remoteID);
+    }
+
+    public Map<String, Zone> getConnectionZones() {
+        return this.connectionZones;
+    }
+
     public Set<String> getDroneIDs() {
         return this.droneIDs;
     }
@@ -124,6 +159,10 @@ public class Knowledge {
 
     public Random getRandom() {
         return this.rng;
+    }
+
+    public Set<String> getRemoteIDs() {
+        return this.remoteIDs;
     }
 
     public Set<String> getVictimIDs() {
@@ -163,6 +202,14 @@ public class Knowledge {
         return this.connections.containsKey(remoteID) && !this.connections.get(remoteID).isEmpty();
     }
 
+    public boolean hasConnectionZone(String remoteID) {
+        return this.connectionZones.containsKey(remoteID);
+    }
+
+    public boolean hasConnectionZones() {
+        return !this.connectionZones.isEmpty();
+    }
+
     public boolean hasDroneID(String remoteID) {
         return this.droneIDs.contains(remoteID);
     }
@@ -173,6 +220,14 @@ public class Knowledge {
 
     public boolean hasHomeLocation() {
         return this.homeLocation != null;
+    }
+
+    public boolean hasRemoteID(String remoteID) {
+        return this.remoteIDs.contains(remoteID);
+    }
+
+    public boolean hasRemoteIDs() {
+        return !this.remoteIDs.isEmpty();
     }
 
     public boolean hasVictimID(String remoteID) {
@@ -200,11 +255,13 @@ public class Knowledge {
 
     public boolean removeBaseID(String remoteID) {
         if (!this.hasBaseID(remoteID)) return true;
+        this.remoteIDs.remove(remoteID);
         this.baseIDs.remove(remoteID);
         return true;
     }
 
     public boolean removeBaseIDs() {
+        this.remoteIDs.removeAll(this.baseIDs);
         this.baseIDs = new HashSet<>();
         return true;
     }
@@ -229,24 +286,39 @@ public class Knowledge {
         return true;
     }
 
+    public boolean removeConnectionZone(String remoteID) {
+        if (!this.hasConnectionZone(remoteID)) return true;
+        this.connectionZones.remove(remoteID);
+        return true;
+    }
+
+    public boolean removeConnectionZones() {
+        this.connectionZones = new HashMap<>();
+        return true;
+    }
+
     public boolean removeDroneID(String remoteID) {
         if (!this.hasDroneID(remoteID)) return true;
+        this.remoteIDs.remove(remoteID);
         this.droneIDs.remove(remoteID);
         return true;
     }
 
     public boolean removeDroneIDs() {
+        this.remoteIDs.removeAll(this.droneIDs);
         this.droneIDs = new HashSet<>();
         return true;
     }
 
     public boolean removeVictimID(String remoteID) {
         if (!this.hasVictimID(remoteID)) return true;
+        this.remoteIDs.remove(remoteID);
         this.victimIDs.remove(remoteID);
         return true;
     }
 
     public boolean removeVictimIDs() {
+        this.remoteIDs.removeAll(this.victimIDs);
         this.victimIDs = new HashSet<>();
         return true;
     }
@@ -255,8 +327,16 @@ public class Knowledge {
         this.assignments.put(remoteID, zone);
     }
 
+    public void setConnection(String remoteID, String other) {
+        this.connections.put(remoteID, new HashSet<>(Arrays.asList(other)));
+    }
+
     public void setConnections(String remoteID, Collection<String> others) {
         this.connections.put(remoteID, new HashSet<>(others));
+    }
+
+    public void setConnectionZone(String remoteID, Zone zone) {
+        this.connectionZones.put(remoteID, zone);
     }
 
     public void setHomeLocation(Vector homeLocation) {

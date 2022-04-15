@@ -103,7 +103,17 @@ public class Planner {
             if (remoteState.isDisabled() || !remoteState.hasLocation() || !remoteState.isMobile()) continue;
             if (!this.knowledge.hasAssignment(remoteID)) {
                 if (this.knowledge.hasConnections(remoteID)) {
-                    Debugger.logger.warn(this.knowledge.getConnections(remoteID));
+                    for (String other : this.knowledge.getConnections(remoteID)) {
+                        if (this.knowledge.hasConnection(other, remoteID)) continue;
+                        if (this.knowledge.addReservedConnection(remoteID, other, true)) {
+                            Zone connectionZone = this.knowledge.getGrid().getZoneAtLocation(remoteState.getLocation());
+                            this.knowledge.setConnectionZone(remoteID, connectionZone);
+                            this.knowledge.setConnectionZone(other, connectionZone);
+                            Debugger.logger.warn(String.format("Connected %s %s at %s", remoteID, other,
+                                connectionZone.toString()));
+                        }
+                    }
+                    continue;
                 }
                 if (this.zones.isEmpty()) continue;
                 this.assignNextClosestZoneToRemote(remoteID, remoteState.getLocation());
@@ -114,6 +124,7 @@ public class Planner {
             RemoteState remoteState = snap.getRemoteStateWithID(remoteID);
             if (remoteState.isDisabled() || !remoteState.hasLocation() || !remoteState.isMobile()) continue;
             if (!this.knowledge.hasAssignment(remoteID)) {
+                if (this.knowledge.hasConnections(remoteID)) continue;
                 if (this.knowledge.hasVictimStopProbability()) {
                     if (this.knowledge.getRandom().getRandomProbability() < this.knowledge.getVictimStopProbability()) {
                         continue;
