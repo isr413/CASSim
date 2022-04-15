@@ -188,6 +188,7 @@ public class ACSOS implements SARApplication {
 
     private void init() {
         this.knowledge.setHomeLocation(ACSOS.BASE_LOCATION);
+        this.knowledge.addBaseIDs(this.getBaseRemoteIDs());
         this.knowledge.addDroneIDs(this.getDroneRemoteIDs());
         this.knowledge.addVictimIDs(this.getVictimRemoteIDs());
         this.knowledge.setVictimStopProbability(ACSOS.VICTIM_STOP_PROBABILITY);

@@ -9,6 +9,7 @@ import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.scenario.Snapshot;
+import com.seat.sim.common.util.Debugger;
 
 public class Planner {
 
@@ -101,6 +102,9 @@ public class Planner {
             RemoteState remoteState = snap.getRemoteStateWithID(remoteID);
             if (remoteState.isDisabled() || !remoteState.hasLocation() || !remoteState.isMobile()) continue;
             if (!this.knowledge.hasAssignment(remoteID)) {
+                if (this.knowledge.hasConnections(remoteID)) {
+                    Debugger.logger.warn(this.knowledge.getConnections(remoteID));
+                }
                 if (this.zones.isEmpty()) continue;
                 this.assignNextClosestZoneToRemote(remoteID, remoteState.getLocation());
             }
