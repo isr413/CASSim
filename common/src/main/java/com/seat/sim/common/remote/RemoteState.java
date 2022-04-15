@@ -33,10 +33,6 @@ public class RemoteState extends JSONAble {
     private Map<String, SensorState> sensorStates;
     private TeamColor team;
 
-    public RemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active) {
-        this(remoteID, team, location, battery, active, null);
-    }
-
     public RemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active,
             Collection<SensorState> sensorStates) {
         this.remoteID = remoteID;

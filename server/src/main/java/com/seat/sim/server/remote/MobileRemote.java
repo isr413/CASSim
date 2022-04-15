@@ -88,7 +88,7 @@ public class MobileRemote extends Remote {
     @Override
     public MobileRemoteState getRemoteState() {
         return new MobileRemoteState(this.getRemoteID(), this.getTeam(), this.getLocation(), this.getBattery(),
-            this.isActive(), this.velocity, this.acceleration);
+            this.isActive(), this.getSensorStates(), this.velocity, this.acceleration);
     }
 
     public Vector getVelocity() {

@@ -157,7 +157,8 @@ public class Remote {
     }
 
     public RemoteState getRemoteState() {
-        return new RemoteState(this.remoteID, this.team, this.location, this.battery, this.active);
+        return new RemoteState(this.remoteID, this.team, this.location, this.battery, this.active,
+            this.getSensorStates());
     }
 
     public String getRemoteType() {

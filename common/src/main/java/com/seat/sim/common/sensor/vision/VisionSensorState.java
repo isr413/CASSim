@@ -17,10 +17,6 @@ public class VisionSensorState extends SensorState {
 
     private Set<String> observations;
 
-    public VisionSensorState(String sensorModel, String sensorID, boolean active) {
-        this(sensorModel, sensorID, active, null);
-    }
-
     public VisionSensorState(String sensorModel, String sensorID, boolean active, Collection<String> observations) {
         super(sensorModel, sensorID, active);
         this.observations = (observations != null) ? new HashSet<>(observations) : new HashSet<>();

@@ -12,10 +12,6 @@ public class MonitorSensorState extends SensorState {
 
     private String monitorID;
 
-    public MonitorSensorState(String sensorModel, String sensorID, boolean active) {
-        this(sensorModel, sensorID, active, null);
-    }
-
     public MonitorSensorState(String sensorModel, String sensorID, boolean active, String monitorID) {
         super(sensorModel, sensorID, active);
         this.monitorID = monitorID;

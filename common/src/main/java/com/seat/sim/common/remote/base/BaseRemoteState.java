@@ -12,10 +12,6 @@ import com.seat.sim.common.sensor.SensorState;
 /** A serializable state of a Base Remote. */
 public class BaseRemoteState extends RemoteState {
 
-    public BaseRemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active) {
-        super(remoteID, team, location, battery, active);
-    }
-
     public BaseRemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active,
             Collection<SensorState> sensors) {
         super(remoteID, team, location, battery, active, sensors);

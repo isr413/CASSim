@@ -17,10 +17,6 @@ public class CommsSensorState extends SensorState {
 
     private Set<String> connections;
 
-    public CommsSensorState(String sensorModel, String sensorID, boolean active) {
-        this(sensorModel, sensorID, active, null);
-    }
-
     public CommsSensorState(String sensorModel, String sensorID, boolean active, Collection<String> connections) {
         super(sensorModel, sensorID, active);
         this.connections = (connections != null) ? new HashSet<>(connections) : new HashSet<>();

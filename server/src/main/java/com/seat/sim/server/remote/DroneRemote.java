@@ -18,7 +18,7 @@ public class DroneRemote extends AerialRemote {
     @Override
     public DroneRemoteState getRemoteState() {
         return new DroneRemoteState(this.getRemoteID(), this.getTeam(), this.getLocation(), this.getBattery(),
-            this.isActive(), this.getVelocity(), this.getAcceleration());
+            this.isActive(), this.getSensorStates(), this.getVelocity(), this.getAcceleration());
     }
 
 }

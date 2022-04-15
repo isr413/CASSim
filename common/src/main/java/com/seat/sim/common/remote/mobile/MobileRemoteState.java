@@ -20,11 +20,6 @@ public class MobileRemoteState extends RemoteState {
     private Vector velocity;
 
     public MobileRemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active,
-            Vector velocity, Vector acceleration) {
-        this(remoteID, team, location, battery, active, null, velocity, acceleration);
-    }
-
-    public MobileRemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active,
             Collection<SensorState> sensors, Vector velocity, Vector acceleration) {
         super(remoteID, team, location, battery, active, sensors);
         this.velocity = velocity;
