@@ -19,11 +19,14 @@ public class Knowledge {
     private Set<String> baseIDs;
     private Map<String, Set<String>> connections;
     private Map<String, Zone> connectionZones;
+    private double droneBluetoothDiscoveryProbability;
     private Set<String> droneIDs;
+    private double droneVisionDiscoveryProbability;
     private Grid grid;
     private Vector homeLocation;
     private Set<String> remoteIDs;
     private Random rng;
+    private double utility;
     private Set<String> victimIDs;
     private double victimStopProbability;
 
@@ -33,10 +36,13 @@ public class Knowledge {
         this.baseIDs = new HashSet<>();
         this.connections = new HashMap<>();
         this.connectionZones = new HashMap<>();
+        this.droneBluetoothDiscoveryProbability = 1;
         this.droneIDs = new HashSet<>();
+        this.droneVisionDiscoveryProbability = 1;
         this.homeLocation = null;
         this.remoteIDs = new HashSet<>();
         this.rng = new Random();
+        this.utility = 0.0;
         this.victimIDs = new HashSet<>();
         this.victimStopProbability = 0;
     }
@@ -145,8 +151,16 @@ public class Knowledge {
         return this.connectionZones;
     }
 
+    public double getDroneBluetoothDiscoveryProbability() {
+        return this.droneBluetoothDiscoveryProbability;
+    }
+
     public Set<String> getDroneIDs() {
         return this.droneIDs;
+    }
+
+    public double getDroneVisionDiscoveryProbability() {
+        return this.droneVisionDiscoveryProbability;
     }
 
     public Grid getGrid() {
@@ -163,6 +177,10 @@ public class Knowledge {
 
     public Set<String> getRemoteIDs() {
         return this.remoteIDs;
+    }
+
+    public double getUtility() {
+        return this.utility;
     }
 
     public Set<String> getVictimIDs() {
@@ -214,8 +232,16 @@ public class Knowledge {
         return this.droneIDs.contains(remoteID);
     }
 
+    public boolean hasDroneBluetoothDiscoveryProbability() {
+        return this.droneBluetoothDiscoveryProbability > 0;
+    }
+
     public boolean hasDroneIDs() {
         return !this.droneIDs.isEmpty();
+    }
+
+    public boolean hasDroneVisionDiscoveryProbability() {
+        return this.droneVisionDiscoveryProbability > 0;
     }
 
     public boolean hasHomeLocation() {
@@ -339,12 +365,24 @@ public class Knowledge {
         this.connectionZones.put(remoteID, zone);
     }
 
+    public void setDroneBluetoothDiscoveryProbability(double p) {
+        this.droneBluetoothDiscoveryProbability = p;
+    }
+
+    public void setDroneVisionDiscoveryProbability(double p) {
+        this.droneVisionDiscoveryProbability = p;
+    }
+
     public void setHomeLocation(Vector homeLocation) {
         this.homeLocation = homeLocation;
     }
 
     public void setRandomSeed(long seed) {
         this.rng = new Random(seed);
+    }
+
+    public void setUtility(double utility) {
+        this.utility = utility;
     }
 
     public void setVictimStopProbability(double p) {

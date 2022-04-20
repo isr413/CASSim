@@ -31,14 +31,22 @@ import com.seat.sim.common.sensor.vision.VisionSensorProto;
 
 public class ACSOS implements SARApplication {
 
-    private static final int BASE_COUNT = 1;
-    private static final int DRONE_COUNT = 32;
-    private static final int MAP_SIZE = 64;
-    private static final int VICTIM_COUNT = 100;
-    private static final double VICTIM_STOP_PROBABILITY = 0.5;
-    private static final int ZONE_SIZE = 10;
+    private static final int BASE_COUNT = 1; // paper: "... have constructed a triage tent"
+    private static final int DRONE_COUNT = 32; // paper: "... have been equipped with 32 commercial drones"
+    private static final int MAP_SIZE = 64; // paper: "... uses a 64x64 grid"
+    private static final int MISSION_LENGTH = 20 * 81; // paper: "81 turns", each turn is 20 seconds
+    private static final String SCENARIO_ID = "ACSOS";
+    private static final double STEP_SIZE = 0.5;
+    private static final int VICTIM_COUNT = 1024; // paper: "1024 victims"
+    private static final int ZONE_SIZE = 14; // paper: "Each cell has an area of 200 m^2"
 
-    private static final Vector BASE_LOCATION = new Vector(
+    private static final double VICTIM_STOP_PROBABILITY_ALPHA = 0.5;
+    private static final double DRONE_DISCOVERY_PROBABILITY_BETA = 0.5;
+    private static final double DRONE_DISCOVERY_PROBABILITY_GAMMA = 0.5;
+    private static final double DISASTER_SCALE = 0;
+
+    // paper: "... have constructed a triage tent at the center"
+    private static final Vector TRIAGE_TENT = new Vector(
         (ACSOS.MAP_SIZE * ACSOS.ZONE_SIZE)/2.0,
         (ACSOS.MAP_SIZE * ACSOS.ZONE_SIZE)/2.0
     );
@@ -50,7 +58,7 @@ public class ACSOS implements SARApplication {
     private static BaseRemoteConfig getBaseRemoteConfiguration() {
         return new BaseRemoteConfig(
             new BaseRemoteProto(
-                ACSOS.BASE_LOCATION,
+                ACSOS.TRIAGE_TENT,
                 1,
                 new ArrayList<SensorConfig>(
                     Arrays.asList(
@@ -69,10 +77,12 @@ public class ACSOS implements SARApplication {
         );
     }
 
+    // paper: "Bluetooth enabled (10 m)"
     private static CommsSensorProto getBluetoothComms() {
         return SensorRegistry.BluetoothSensor(10, 1, 0, 0);
     }
 
+    // limiting drone visual detection to be the same as Bluetooth detection
     private static VisionSensorProto getDroneCamera() {
         return SensorRegistry.CMOSCameraSensor(10, 1, 0);
     }
@@ -80,7 +90,7 @@ public class ACSOS implements SARApplication {
     private static DroneRemoteConfig getDroneRemoteConfiguration() {
         return new DroneRemoteConfig(
             new DroneRemoteProto(
-                ACSOS.BASE_LOCATION,
+                ACSOS.TRIAGE_TENT,
                 1,
                 new ArrayList<SensorConfig>(
                     Arrays.asList(
@@ -188,15 +198,17 @@ public class ACSOS implements SARApplication {
     }
 
     private void init() {
-        this.knowledge.setHomeLocation(ACSOS.BASE_LOCATION);
+        this.knowledge.setHomeLocation(ACSOS.TRIAGE_TENT);
         this.knowledge.addBaseIDs(this.getBaseRemoteIDs());
         this.knowledge.addDroneIDs(this.getDroneRemoteIDs());
         this.knowledge.addVictimIDs(this.getVictimRemoteIDs());
-        this.knowledge.setVictimStopProbability(ACSOS.VICTIM_STOP_PROBABILITY);
+        this.knowledge.setVictimStopProbability(ACSOS.VICTIM_STOP_PROBABILITY_ALPHA);
+        this.knowledge.setDroneVisionDiscoveryProbability(ACSOS.DRONE_DISCOVERY_PROBABILITY_BETA);
+        this.knowledge.setDroneBluetoothDiscoveryProbability(ACSOS.DRONE_DISCOVERY_PROBABILITY_GAMMA);
     }
 
     public double getDisasterScale() {
-        return 0;
+        return ACSOS.DISASTER_SCALE;
     }
 
     public Grid getGrid() {
@@ -204,8 +216,7 @@ public class ACSOS implements SARApplication {
     }
 
     public int getMissionLength() {
-        // 27 minutes
-        return 27 * 60;
+        return ACSOS.MISSION_LENGTH;
     }
 
     public Collection<RemoteConfig> getRemoteConfigs() {
@@ -213,15 +224,17 @@ public class ACSOS implements SARApplication {
     }
 
     public String getScenarioID() {
-        return "ACSOS";
+        return ACSOS.SCENARIO_ID;
     }
 
     public double getStepSize() {
-        return 0.5;
+        return ACSOS.STEP_SIZE;
     }
 
     public Collection<IntentionSet> update(Snapshot snap) {
-        this.monitor.update(snap);
+        double utility = this.monitor.update(snap);
+        this.knowledge.setUtility(utility);
+        System.out.println(this.knowledge.getUtility());
         this.analyzer.update(snap);
         this.planner.update(snap);
         return this.executor.update(snap);
