@@ -5,11 +5,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.seat.sim.client.core.util.Drone;
+import com.seat.sim.client.core.util.Remote;
+import com.seat.sim.client.core.util.Victim;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
-import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.scenario.Snapshot;
-import com.seat.sim.common.util.Debugger;
 
 public class Planner {
 
@@ -41,34 +42,34 @@ public class Planner {
         }
         for (String remoteID : this.knowledge.getDroneIDs()) {
             if (this.zones.isEmpty()) break;
-            if (this.knowledge.addAssignment(remoteID, this.zones.get(this.zones.size()-1))) {
+            if (this.knowledge.getDroneWithID(remoteID).addAssignment(this.zones.get(this.zones.size()-1))) {
                 this.zones.remove(this.zones.size()-1);
             }
         }
     }
 
-    private void assignNextClosestZoneToRemote(String remoteID, Vector remoteLocation) {
+    private void assignNextClosestZoneTo(Remote remote) {
         double minZoneDist = Double.POSITIVE_INFINITY;
         int closestZoneIdx = -1;
         for (int i = 0; i < this.zones.size(); i++) {
             Zone zone = this.zones.get(i);
-            double zoneDist = Vector.subtract(zone.getLocation(), remoteLocation).getMagnitude();
+            double zoneDist = Vector.subtract(zone.getLocation(), remote.getLocation()).getMagnitude();
             if (closestZoneIdx < 0 || zoneDist < minZoneDist) {
                 closestZoneIdx = i;
                 minZoneDist = zoneDist;
             }
         }
         if (closestZoneIdx < 0) return;
-        if (this.knowledge.addAssignment(remoteID, this.zones.get(closestZoneIdx))) {
+        if (remote.addAssignment(this.zones.get(closestZoneIdx))) {
             this.zones.remove(closestZoneIdx);
         }
     }
 
-    private void assignAdjacentZoneAtRandom(String remoteID, Vector remoteLocation) {
+    private void assignAdjacentZoneAtRandomTo(Remote remote) {
         List<Zone> adjacentZones = new ArrayList<>();
         int zoneSize = this.knowledge.getGrid().getZoneSize();
-        double x = remoteLocation.getX();
-        double y = remoteLocation.getY();
+        double x = remote.getLocation().getX();
+        double y = remote.getLocation().getY();
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if (i == 0 && j == 0) continue;
@@ -81,7 +82,7 @@ public class Planner {
         }
         if (adjacentZones.isEmpty()) return;
         int randomIdx = this.knowledge.getRandom().getRandomNumber(adjacentZones.size());
-        this.knowledge.addAssignment(remoteID, adjacentZones.get(randomIdx));
+        remote.addAssignment(adjacentZones.get(randomIdx));
     }
 
     private void orderZonesByDistanceFromHome() {
@@ -97,40 +98,24 @@ public class Planner {
     }
 
     public void update(Snapshot snap) {
-        for (String remoteID : this.knowledge.getDroneIDs()) {
-            if (!snap.hasActiveRemoteWithID(remoteID)) continue;
-            RemoteState remoteState = snap.getRemoteStateWithID(remoteID);
-            if (remoteState.isDisabled() || !remoteState.hasLocation() || !remoteState.isMobile()) continue;
-            if (!this.knowledge.hasAssignment(remoteID)) {
-                if (this.knowledge.hasConnections(remoteID)) {
-                    for (String other : this.knowledge.getConnections(remoteID)) {
-                        if (this.knowledge.hasConnection(other, remoteID)) continue;
-                        if (this.knowledge.addReservedConnection(remoteID, other, true)) {
-                            Zone connectionZone = this.knowledge.getGrid().getZoneAtLocation(remoteState.getLocation());
-                            this.knowledge.setConnectionZone(remoteID, connectionZone);
-                            this.knowledge.setConnectionZone(other, connectionZone);
-                            Debugger.logger.warn(String.format("Connected %s %s at %s", remoteID, other,
-                                connectionZone.toString()));
-                        }
-                    }
-                    continue;
-                }
+        for (Drone drone : this.knowledge.getDrones()) {
+            if (!drone.isActiveAndOperational()) continue;
+            if (!drone.hasAssignment()) {
+                if (drone.hasConnections()) continue;
                 if (this.zones.isEmpty()) continue;
-                this.assignNextClosestZoneToRemote(remoteID, remoteState.getLocation());
+                this.assignNextClosestZoneTo(drone);
             }
         }
-        for (String remoteID : this.knowledge.getVictimIDs()) {
-            if (!snap.hasActiveRemoteWithID(remoteID)) continue;
-            RemoteState remoteState = snap.getRemoteStateWithID(remoteID);
-            if (remoteState.isDisabled() || !remoteState.hasLocation() || !remoteState.isMobile()) continue;
-            if (!this.knowledge.hasAssignment(remoteID)) {
-                if (this.knowledge.hasConnections(remoteID)) continue;
+        for (Victim victim : this.knowledge.getVictims()) {
+            if (!victim.isActiveAndOperational()) continue;
+            if (!victim.hasAssignment()) {
+                if (victim.hasConnections()) continue;
                 if (this.knowledge.hasVictimStopProbability()) {
                     if (this.knowledge.getRandom().getRandomProbability() < this.knowledge.getVictimStopProbability()) {
                         continue;
                     }
                 }
-                this.assignAdjacentZoneAtRandom(remoteID, remoteState.getLocation());
+                this.assignAdjacentZoneAtRandomTo(victim);
             }
         }
     }

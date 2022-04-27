@@ -5,10 +5,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteState;
 
-public class Remote {
+public abstract class Remote {
 
     private List<Zone> assignments;
     private Set<String> connections;
@@ -41,6 +43,11 @@ public class Remote {
         return true;
     }
 
+    public Zone getAssignment() {
+        if (!this.hasAssignment()) return null;
+        return this.assignments.get(0);
+    }
+
     public List<Zone> getAssignments() {
         return this.assignments;
     }
@@ -53,9 +60,13 @@ public class Remote {
         return this.connectionZone;
     }
 
+    public Vector getLocation() {
+        return (this.hasLocation()) ? this.remoteState.getLocation() : null;
+    }
+
     public Zone getNextAssignment() {
-        if (!this.hasAssignment()) return null;
-        return this.assignments.get(0);
+        if (!this.hasNextAssignment()) return null;
+        return this.assignments.get(1);
     }
 
     public String getRemoteID() {
@@ -87,7 +98,11 @@ public class Remote {
     }
 
     public boolean hasLocation() {
-        return this.remoteState.hasLocation();
+        return this.hasRemoteState() && this.remoteState.hasLocation();
+    }
+
+    public boolean hasNextAssignment() {
+        return this.assignments.size() >= 2;
     }
 
     public boolean hasRemoteState() {
@@ -95,7 +110,7 @@ public class Remote {
     }
 
     public boolean isActive() {
-        return this.remoteState.isActive();
+        return this.hasRemoteState() && this.remoteState.isActive();
     }
 
     public boolean isActiveAndOperational() {
@@ -103,19 +118,19 @@ public class Remote {
     }
 
     public boolean isDisabled() {
-        return this.remoteState.isDisabled();
+        return !this.hasRemoteState() || this.remoteState.isDisabled();
     }
 
     public boolean isEnabled() {
-        return this.remoteState.isEnabled();
+        return this.hasRemoteState() && this.remoteState.isEnabled();
     }
 
     public boolean isInactive() {
-        return this.remoteState.isInactive();
+        return !this.hasRemoteState() || this.remoteState.isInactive();
     }
 
     public boolean isMobile() {
-        return this.remoteState.isMobile();
+        return this.hasRemoteState() && this.remoteState.isMobile();
     }
 
     public boolean isOperational() {
@@ -123,7 +138,7 @@ public class Remote {
     }
 
     public boolean isStationary() {
-        return this.remoteState.isStationary();
+        return !this.hasRemoteState() || this.remoteState.isStationary();
     }
 
     public Zone removeAssignment() {
@@ -136,16 +151,23 @@ public class Remote {
         return true;
     }
 
-    public boolean removeConnection(String other) {
+    public boolean removeConnections() {
+        this.connections = new HashSet<>();
+        this.connectionZone = null;
+        return true;
+    }
+
+    public boolean removeConnectionTo(String other) {
         if (!this.hasConnectionTo(other)) return true;
         this.connections.remove(other);
         if (!this.hasConnections()) this.connectionZone = null;
         return true;
     }
 
-    public boolean removeConnections() {
-        this.connections = new HashSet<>();
-        this.connectionZone = null;
+    public boolean removeConnectionsTo(Collection<String> others) {
+        for (String other : others) {
+            this.removeConnectionTo(other);
+        }
         return true;
     }
 

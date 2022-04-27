@@ -5,10 +5,11 @@ import java.util.Collection;
 import java.util.List;
 
 import java.util.stream.Collectors;
+
+import com.seat.sim.client.core.util.Remote;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteController;
-import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.remote.intent.IntentionSet;
 import com.seat.sim.common.remote.mobile.MobileRemoteController;
 import com.seat.sim.common.scenario.Snapshot;
@@ -23,22 +24,30 @@ public class Executor {
 
     public Collection<IntentionSet> update(Snapshot snap) {
         List<RemoteController> controllers = new ArrayList<>();
-        for (String remoteID : this.knowledge.getRemoteIDs()) {
-            if (!snap.hasActiveRemoteWithID(remoteID)) continue;
-            RemoteState remoteState = snap.getRemoteStateWithID(remoteID);
-            if (remoteState.isDisabled() || !remoteState.hasLocation() || !remoteState.isMobile()) continue;
-            MobileRemoteController controller = new MobileRemoteController(remoteID);
-            controllers.add(controller);
-            if (this.knowledge.hasConnections(remoteID) && this.knowledge.hasConnectionZone(remoteID)) {
-                controller.goToLocation(this.knowledge.getConnectionZone(remoteID).getLocation());
+        for (Remote remote : this.knowledge.getRemotes()) {
+            if (!remote.isActiveAndOperational()) continue;
+            if (!remote.isMobile()) {
+                RemoteController controller = new RemoteController(remote.getRemoteID());
+                controllers.add(controller);
+                controller.none();
                 continue;
             }
-            if (!this.knowledge.hasAssignment(remoteID)) {
+            MobileRemoteController controller = new MobileRemoteController(remote.getRemoteID());
+            controllers.add(controller);
+            if (remote.hasConnectionZone()) {
+                controller.goToLocation(remote.getConnectionZone().getLocation());
+                continue;
+            }
+            if (!remote.hasAssignment()) {
+                if (this.knowledge.hasDroneWithID(remote.getRemoteID()) && this.knowledge.hasHomeLocation()) {
+                    controller.goToLocation(this.knowledge.getHomeLocation());
+                    continue;
+                }
                 controller.stop();
                 continue;
             }
-            Zone goalZone = this.knowledge.getAssignment(remoteID);
-            double distanceToGoal = Vector.subtract(goalZone.getLocation(), remoteState.getLocation()).getMagnitude();
+            Zone goalZone = remote.getAssignment();
+            double distanceToGoal = Vector.subtract(goalZone.getLocation(), remote.getLocation()).getMagnitude();
             if (distanceToGoal <= Knowledge.DOUBLE_PRECISION) {
                 controller.stop();
                 continue;

@@ -1,5 +1,6 @@
 package com.seat.sim.client.core.mape;
 
+import com.seat.sim.client.core.util.Remote;
 import com.seat.sim.common.scenario.Snapshot;
 
 public class Monitor {
@@ -10,8 +11,14 @@ public class Monitor {
         this.knowledge = knowledge;
     }
 
-    public double update(Snapshot snap) {
-        return 0.0;
+    public void update(Snapshot snap) {
+        for (Remote remote : this.knowledge.getRemotes()) {
+            if (!snap.hasRemoteWithID(remote.getRemoteID())) {
+                remote.update(null);
+                continue;
+            }
+            remote.update(snap.getRemoteStateWithID(remote.getRemoteID()));
+        }
     }
 
 }

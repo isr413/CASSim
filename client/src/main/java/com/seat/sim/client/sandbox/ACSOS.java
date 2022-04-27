@@ -5,11 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import com.seat.sim.client.core.Analyzer;
-import com.seat.sim.client.core.Executor;
-import com.seat.sim.client.core.Knowledge;
-import com.seat.sim.client.core.Monitor;
-import com.seat.sim.client.core.Planner;
+import com.seat.sim.client.core.mape.Analyzer;
+import com.seat.sim.client.core.mape.Executor;
+import com.seat.sim.client.core.mape.Knowledge;
+import com.seat.sim.client.core.mape.Monitor;
+import com.seat.sim.client.core.mape.Planner;
 import com.seat.sim.common.core.SARApplication;
 import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.math.Grid;
@@ -199,9 +199,9 @@ public class ACSOS implements SARApplication {
 
     private void init() {
         this.knowledge.setHomeLocation(ACSOS.TRIAGE_TENT);
-        this.knowledge.addBaseIDs(this.getBaseRemoteIDs());
-        this.knowledge.addDroneIDs(this.getDroneRemoteIDs());
-        this.knowledge.addVictimIDs(this.getVictimRemoteIDs());
+        this.knowledge.addBases(this.getBaseRemoteIDs());
+        this.knowledge.addDrones(this.getDroneRemoteIDs());
+        this.knowledge.addVictims(this.getVictimRemoteIDs());
         this.knowledge.setVictimStopProbability(ACSOS.VICTIM_STOP_PROBABILITY_ALPHA);
         this.knowledge.setDroneVisionDiscoveryProbability(ACSOS.DRONE_DISCOVERY_PROBABILITY_BETA);
         this.knowledge.setDroneBluetoothDiscoveryProbability(ACSOS.DRONE_DISCOVERY_PROBABILITY_GAMMA);
@@ -232,9 +232,7 @@ public class ACSOS implements SARApplication {
     }
 
     public Collection<IntentionSet> update(Snapshot snap) {
-        double utility = this.monitor.update(snap);
-        this.knowledge.setUtility(utility);
-        System.out.println(this.knowledge.getUtility());
+        this.monitor.update(snap);
         this.analyzer.update(snap);
         this.planner.update(snap);
         return this.executor.update(snap);
