@@ -1,4 +1,4 @@
-package com.seat.sim.client.core;
+package com.seat.sim.client.core.mape;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,9 +21,8 @@ public class Analyzer {
         for (String remoteID : this.knowledge.getRemoteIDs()) {
             if (!snap.hasActiveRemoteWithID(remoteID)) continue;
             RemoteState remoteState = snap.getRemoteStateWithID(remoteID);
-            if (remoteState.isDisabled() || !remoteState.hasLocation()) continue;
-
-            if (remoteState.isMobile() && this.knowledge.hasAssignment(remoteID)) {
+            if (remoteState.isDisabled() || !remoteState.hasLocation() || !remoteState.isMobile()) continue;
+            if (this.knowledge.hasAssignment(remoteID)) {
                 Zone goalZone = this.knowledge.getAssignment(remoteID);
                 double distanceToGoal = Vector.subtract(
                         goalZone.getLocation(),
@@ -33,38 +32,20 @@ public class Analyzer {
                     this.knowledge.removeAssignment(remoteID);
                 }
             }
-
-            if (this.knowledge.hasDroneID(remoteID) && !this.knowledge.hasAssignment(remoteID)) {
+            if (!this.knowledge.hasAssignment(remoteID) && this.knowledge.hasDroneID(remoteID)) {
                 Set<String> remoteConnections = remoteState.getSensorStatesWithType(CommsSensorState.class).stream()
                     .filter(sensorState -> sensorState.hasConnections())
                     .map(sensorState -> sensorState.getConnections())
                     .flatMap(connections -> connections.stream())
-                    .filter(other -> !this.knowledge.hasBaseID(other))
-                    .filter(other -> !this.knowledge.hasDroneID(other))
                     .collect(Collectors.toSet());
-                if (remoteConnections.isEmpty()) {
+                remoteConnections.removeAll(this.knowledge.getBaseIDs());
+                remoteConnections.removeAll(this.knowledge.getDroneIDs());
+                if (!remoteConnections.isEmpty()) {
+                    this.knowledge.setConnections(remoteID, remoteConnections);
+                } else {
                     this.knowledge.removeConnections(remoteID);
-                    continue;
-                }
-                for (String other : remoteConnections) {
-                    if (this.knowledge.hasConnection(remoteID, other) &&
-                            this.knowledge.hasConnection(other, remoteID)) continue;
-                    if (this.knowledge.hasConnection(remoteID, other)) {
-                        this.knowledge.removeConnection(remoteID, other);
-                    }
-                    if (this.knowledge.hasConnection(other, remoteID)) {
-                        this.knowledge.addConnection(remoteID, other);
-                    } else {
-                        this.knowledge.addReservedConnection(remoteID, other, true);
-                    }
-                    if (this.knowledge.hasConnection(other, remoteID)) {
-                        Zone connectionZone = this.knowledge.getGrid().getZoneAtLocation(remoteState.getLocation());
-                        this.knowledge.setConnectionZone(remoteID, connectionZone);
-                        this.knowledge.setConnectionZone(other, connectionZone);
-                    }
                 }
             }
-
         }
     }
 

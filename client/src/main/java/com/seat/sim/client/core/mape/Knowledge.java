@@ -1,4 +1,4 @@
-package com.seat.sim.client.core;
+package com.seat.sim.client.core.mape;
 
 import java.util.Arrays;
 import java.util.Collection;

@@ -169,11 +169,11 @@ public class MobileRemote extends Remote {
         }
         Vector targetVelocity = deltaLocation;
         if (maxVelocity < targetVelocity.getMagnitude()) {
-            targetVelocity = Vector.scale(targetVelocity, maxVelocity);
+            targetVelocity = Vector.scale(targetVelocity.getUnitVector(), maxVelocity);
         }
         Vector targetAcceleration = Vector.subtract(targetVelocity, this.velocity);
         if (maxAcceleration < targetAcceleration.getMagnitude()) {
-            targetAcceleration = Vector.scale(targetAcceleration, maxAcceleration);
+            targetAcceleration = Vector.scale(targetAcceleration.getUnitVector(), maxAcceleration);
         }
         if (this.velocity.getMagnitude() > 0 && Double.isFinite(maxAcceleration)) {
             double brakeDistance = this.getBrakeDistance(this.velocity.getMagnitude(), maxAcceleration);
@@ -202,7 +202,7 @@ public class MobileRemote extends Remote {
                 nextVelocity = Vector.scale(nextVelocity.getUnitVector(), targetVelocityMagnitude);
                 Vector nextAcceleration = Vector.subtract(nextVelocity, this.velocity);
                 if (maxAcceleration < nextAcceleration.getMagnitude()) {
-                    nextAcceleration = Vector.scale(nextAcceleration, maxAcceleration);
+                    nextAcceleration = Vector.scale(nextAcceleration.getUnitVector(), maxAcceleration);
                 }
                 this.updateAccelerationTo(nextAcceleration);
                 this.updateVelocity(this.acceleration, stepSize);
