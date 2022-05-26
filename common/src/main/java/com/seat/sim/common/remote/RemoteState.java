@@ -22,23 +22,26 @@ import com.seat.sim.common.sensor.SensorState;
 /** A serializable snapshot of a Remote. */
 public class RemoteState extends JSONAble {
     public static final String ACTIVE = "active";
-    public static final String BATTERY = "battery";
+    public static final String FUEL = "fuel";
     public static final String LOCATION = "location";
+    public static final String VELOCITY = "velocity";
     public static final String REMOTE_ID = "remote_id";
 
     private boolean active;
-    private double battery;
+    private double fuel;
     private Vector location;
     private String remoteID;
     private Map<String, SensorState> sensorStates;
     private TeamColor team;
+    private Vector velocity;
 
-    public RemoteState(String remoteID, TeamColor team, Vector location, double battery, boolean active,
+    public RemoteState(String remoteID, TeamColor team, Vector location, Vector velocity, double fuel, boolean active,
             Collection<SensorState> sensorStates) {
         this.remoteID = remoteID;
         this.team = team;
         this.location = location;
-        this.battery = battery;
+        this.velocity = (velocity != null) ? velocity : new Vector();
+        this.fuel = fuel;
         this.active = active;
         this.sensorStates = (sensorStates != null) ?
             sensorStates.stream().collect(Collectors.toMap(SensorState::getSensorID, Function.identity())) :
@@ -55,8 +58,15 @@ public class RemoteState extends JSONAble {
         this.team = (json.hasKey(TeamColor.TEAM)) ?
             TeamColor.decodeType(json) :
             TeamColor.NONE;
-        this.location = new Vector(json.getJSONOptional(RemoteProto.LOCATION));
-        this.battery = json.getDouble(RemoteState.BATTERY);
+        this.location = (json.hasKey(RemoteState.LOCATION)) ?
+            new Vector(json.getJSONOptional(RemoteState.LOCATION)) :
+            null;
+        this.velocity = (json.hasKey(RemoteState.VELOCITY)) ?
+            new Vector(json.getJSONOptional(RemoteState.VELOCITY)) :
+            new Vector();
+        this.fuel = (json.hasKey(RemoteState.FUEL)) ?
+            json.getDouble(RemoteState.FUEL) :
+            Double.POSITIVE_INFINITY;
         this.active = json.getBoolean(RemoteState.ACTIVE);
         this.sensorStates = (json.hasKey(RemoteProto.SENSORS)) ?
             json.getJSONArray(RemoteProto.SENSORS).toList(JSONOptional.class).stream()
@@ -72,8 +82,15 @@ public class RemoteState extends JSONAble {
         if (this.hasTeam()) {
             json.put(TeamColor.TEAM, this.team.getType());
         }
-        json.put(RemoteProto.LOCATION, this.location.toJSON());
-        json.put(RemoteState.BATTERY, this.battery);
+        if (this.hasLocation()) {
+            json.put(RemoteState.LOCATION, this.location.toJSON());
+        }
+        if (this.hasVelocity()) {
+            json.put(RemoteState.VELOCITY, this.velocity.toJSON());
+        }
+        if (this.hasFiniteFuel()) {
+            json.put(RemoteState.FUEL, this.fuel);
+        }
         json.put(RemoteState.ACTIVE, this.active);
         if (this.hasSensors()) {
             json.put(
@@ -88,8 +105,8 @@ public class RemoteState extends JSONAble {
         return json;
     }
 
-    public double getBattery() {
-        return this.battery;
+    public double getFuel() {
+        return this.fuel;
     }
 
     public String getLabel() {
@@ -141,6 +158,14 @@ public class RemoteState extends JSONAble {
         return this.team;
     }
 
+    public Vector getVelocity() {
+        return this.velocity;
+    }
+
+    public boolean hasFiniteFuel() {
+        return this.fuel != Double.POSITIVE_INFINITY;
+    }
+
     public boolean hasLocation() {
         return this.location != null;
     }
@@ -165,36 +190,20 @@ public class RemoteState extends JSONAble {
         return !(this.team == null || this.team.equals(TeamColor.NONE));
     }
 
+    public boolean hasVelocity() {
+        return this.velocity.getMagnitude() > 0;
+    }
+
     public boolean isActive() {
         return this.active && this.isEnabled();
     }
 
-    public boolean isAerial() {
-        return false;
-    }
-
-    public boolean isDisabled() {
-        return !this.isEnabled();
-    }
-
     public boolean isEnabled() {
-        return this.battery > 0;
-    }
-
-    public boolean isGround() {
-        return !this.isAerial();
-    }
-
-    public boolean isInactive() {
-        return !this.isActive();
+        return this.fuel > 0;
     }
 
     public boolean isMobile() {
-        return false;
-    }
-
-    public boolean isStationary() {
-        return !this.isMobile();
+        return this.isActive() && this.hasVelocity();
     }
 
     public JSONOptional toJSON() throws JSONException {
@@ -204,7 +213,8 @@ public class RemoteState extends JSONAble {
     public boolean equals(RemoteState state) {
         if (state == null) return false;
         return this.getRemoteType().equals(state.getRemoteType()) && this.remoteID.equals(state.remoteID) &&
-            this.team.equals(state.team) && this.location.equals(state.location) && this.battery == state.battery &&
+            this.team.equals(state.team) && this.location.equals(state.location) &&
+            this.velocity.equals(state.velocity) && this.fuel == state.fuel &&
             this.active == state.active && this.sensorStates.equals(state.sensorStates);
     }
 

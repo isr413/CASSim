@@ -16,35 +16,29 @@ import com.seat.sim.common.json.JSONObject;
 import com.seat.sim.common.json.JSONObjectBuilder;
 import com.seat.sim.common.json.JSONOptional;
 import com.seat.sim.common.math.Vector;
+import com.seat.sim.common.remote.kinematics.Kinematics;
 import com.seat.sim.common.sensor.SensorConfig;
 import com.seat.sim.common.sensor.SensorRegistry;
 
 /** A serializable prototype of a Remote. */
 public class RemoteProto extends JSONAble {
-    public static final String LOCATION = "location";
-    public static final String MAX_BATTERY = "max_battery";
+    public static final String KINEMATICS = "kinematics";
     public static final String SENSORS = "sensors";
 
-    private Vector location;
-    private double maxBatteryPower;
+    private Kinematics kinematics;
     private Map<String, SensorConfig> sensorConfigByID;
     private List<SensorConfig> sensorConfigs;
 
-    public RemoteProto(double maxBatteryPower) {
-        this(null, maxBatteryPower, null);
+    public RemoteProto() {
+        this(null, null);
     }
 
-    public RemoteProto(Vector location, double maxBatteryPower) {
-        this(location, maxBatteryPower, null);
+    public RemoteProto(Kinematics kinematics) {
+        this(kinematics, null);
     }
 
-    public RemoteProto(double maxBatteryPower, Collection<SensorConfig> sensorConfigs) {
-        this(null, maxBatteryPower, sensorConfigs);
-    }
-
-    public RemoteProto(Vector location, double maxBatteryPower, Collection<SensorConfig> sensorConfigs) {
-        this.location = location; // a remote with a null location should be randomly assigned a location
-        this.maxBatteryPower = maxBatteryPower;
+    public RemoteProto(Kinematics kinematics, Collection<SensorConfig> sensorConfigs) {
+        this.kinematics = (kinematics != null) ? kinematics : new Kinematics();
         this.sensorConfigs = (sensorConfigs != null) ? new ArrayList<>(sensorConfigs) : new ArrayList<>();
         this.init();
     }
@@ -64,10 +58,9 @@ public class RemoteProto extends JSONAble {
 
     @Override
     protected void decode(JSONObject json) throws JSONException {
-        this.location = (json.hasKey(RemoteProto.LOCATION)) ?
-            this.location = new Vector(json.getJSONOptional(RemoteProto.LOCATION)) :
-            null;
-        this.maxBatteryPower = json.getDouble(RemoteProto.MAX_BATTERY);
+        this.kinematics = (json.hasKey(RemoteProto.KINEMATICS)) ?
+            new Kinematics(json.getJSONOptional(RemoteProto.KINEMATICS)) :
+            new Kinematics();
         this.sensorConfigs = (json.hasKey(RemoteProto.SENSORS)) ?
             this.sensorConfigs = json.getJSONArray(RemoteProto.SENSORS).toList(JSONOptional.class).stream()
                 .map(optional -> SensorRegistry.decodeTo(SensorConfig.class, optional))
@@ -79,10 +72,7 @@ public class RemoteProto extends JSONAble {
     protected JSONObjectBuilder getJSONBuilder() throws JSONException {
         JSONObjectBuilder json = JSONBuilder.Object();
         json.put(RemoteRegistry.REMOTE_TYPE, this.getRemoteType());
-        if (this.hasLocation()) {
-            json.put(RemoteProto.LOCATION, this.location.toJSON());
-        }
-        json.put(RemoteProto.MAX_BATTERY, this.maxBatteryPower);
+        json.put(RemoteProto.KINEMATICS, this.kinematics.toJSON());
         if (this.hasSensors()) {
             json.put(
                 RemoteProto.SENSORS,
@@ -96,16 +86,16 @@ public class RemoteProto extends JSONAble {
         return json;
     }
 
+    public Kinematics getKinematics() {
+        return this.kinematics;
+    }
+
     public String getLabel() {
         return "r:<remote>";
     }
 
     public Vector getLocation() {
-        return this.location;
-    }
-
-    public double getMaxBatteryPower() {
-        return this.maxBatteryPower;
+        return this.kinematics.getLocation();
     }
 
     public int getNumberOfSensors() {
@@ -146,7 +136,7 @@ public class RemoteProto extends JSONAble {
     }
 
     public boolean hasLocation() {
-        return this.location != null;
+        return this.kinematics.hasLocation();
     }
 
     public boolean hasSensorConfigWithModel(String sensorModel) {
@@ -165,28 +155,12 @@ public class RemoteProto extends JSONAble {
         return this.sensorConfigByID.containsKey(sensorID);
     }
 
-    public boolean isAerial() {
-        return false;
-    }
-
-    public boolean isDisabled() {
-        return !this.isEnabled();
-    }
-
     public boolean isEnabled() {
-        return this.maxBatteryPower > 0;
-    }
-
-    public boolean isGround() {
-        return !this.isAerial();
+        return this.kinematics.isEnabled();
     }
 
     public boolean isMobile() {
-        return false;
-    }
-
-    public boolean isStationary() {
-        return !this.isMobile();
+        return this.kinematics.hasMotion();
     }
 
     public JSONOptional toJSON() throws JSONException {
@@ -195,9 +169,8 @@ public class RemoteProto extends JSONAble {
 
     public boolean equals(RemoteProto proto) {
         if (proto == null) return false;
-        return this.getRemoteType().equals(proto.getRemoteType()) &&
-            ((this.hasLocation() && this.location.equals(proto.location)) || this.location == proto.location) &&
-            this.maxBatteryPower == proto.maxBatteryPower && this.sensorConfigs.equals(proto.sensorConfigs);
+        return this.getRemoteType().equals(proto.getRemoteType()) && this.kinematics.equals(proto.kinematics) &&
+            this.sensorConfigs.equals(proto.sensorConfigs);
     }
 
 }

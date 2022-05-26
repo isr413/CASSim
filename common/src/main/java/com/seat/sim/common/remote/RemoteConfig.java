@@ -131,14 +131,6 @@ public class RemoteConfig extends JSONAble {
         return this.dynamic;
     }
 
-    public boolean isInactive() {
-        return !this.isActive();
-    }
-
-    public boolean isPassive() {
-        return !this.isDynamic();
-    }
-
     public JSONOptional toJSON() throws JSONException {
         return this.getJSONBuilder().toJSON();
     }

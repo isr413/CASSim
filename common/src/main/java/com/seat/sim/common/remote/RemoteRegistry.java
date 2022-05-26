@@ -8,22 +8,7 @@ import java.util.function.Function;
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONOptional;
-import com.seat.sim.common.math.Vector;
-import com.seat.sim.common.remote.base.BaseRemoteConfig;
-import com.seat.sim.common.remote.base.BaseRemoteProto;
-import com.seat.sim.common.remote.base.BaseRemoteState;
-import com.seat.sim.common.remote.mobile.MobileRemoteConfig;
-import com.seat.sim.common.remote.mobile.MobileRemoteProto;
-import com.seat.sim.common.remote.mobile.MobileRemoteState;
-import com.seat.sim.common.remote.mobile.aerial.AerialRemoteConfig;
-import com.seat.sim.common.remote.mobile.aerial.AerialRemoteProto;
-import com.seat.sim.common.remote.mobile.aerial.AerialRemoteState;
-import com.seat.sim.common.remote.mobile.aerial.drone.DroneRemoteConfig;
-import com.seat.sim.common.remote.mobile.aerial.drone.DroneRemoteProto;
-import com.seat.sim.common.remote.mobile.aerial.drone.DroneRemoteState;
-import com.seat.sim.common.remote.mobile.victim.VictimRemoteConfig;
-import com.seat.sim.common.remote.mobile.victim.VictimRemoteProto;
-import com.seat.sim.common.remote.mobile.victim.VictimRemoteState;
+import com.seat.sim.common.remote.kinematics.Kinematics;
 import com.seat.sim.common.sensor.SensorConfig;
 
 /** A registry of Remote prototypes and supporting serializable types. */
@@ -35,50 +20,10 @@ public class RemoteRegistry {
         put(RemoteConfig.class.getName(), (optional) -> new RemoteConfig(optional));
         put(RemoteProto.class.getName(), (optional) -> new RemoteProto(optional));
         put(RemoteState.class.getName(), (optional) -> new RemoteState(optional));
-        put(BaseRemoteConfig.class.getName(), (optional) -> new BaseRemoteConfig(optional));
-        put(BaseRemoteProto.class.getName(), (optional) -> new BaseRemoteProto(optional));
-        put(BaseRemoteState.class.getName(), (optional) -> new BaseRemoteState(optional));
-        put(MobileRemoteConfig.class.getName(), (optional) -> new MobileRemoteConfig(optional));
-        put(MobileRemoteProto.class.getName(), (optional) -> new MobileRemoteProto(optional));
-        put(MobileRemoteState.class.getName(), (optional) -> new MobileRemoteState(optional));
-        put(AerialRemoteConfig.class.getName(), (optional) -> new AerialRemoteConfig(optional));
-        put(AerialRemoteProto.class.getName(), (optional) -> new AerialRemoteProto(optional));
-        put(AerialRemoteState.class.getName(), (optional) -> new AerialRemoteState(optional));
-        put(DroneRemoteConfig.class.getName(), (optional) -> new DroneRemoteConfig(optional));
-        put(DroneRemoteProto.class.getName(), (optional) -> new DroneRemoteProto(optional));
-        put(DroneRemoteState.class.getName(), (optional) -> new DroneRemoteState(optional));
-        put(VictimRemoteConfig.class.getName(), (optional) -> new VictimRemoteConfig(optional));
-        put(VictimRemoteProto.class.getName(), (optional) -> new VictimRemoteProto(optional));
-        put(VictimRemoteState.class.getName(), (optional) -> new VictimRemoteState(optional));
     }};
 
-    public static AerialRemoteProto AerialRemote(Vector location, double maxBatteryPower,
-            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, Vector batteryUsage) {
-        return new AerialRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, batteryUsage);
-    }
-
-    public static BaseRemoteProto BaseRemote(Vector location, double maxBatteryPower,
-            Collection<SensorConfig> sensors) {
-        return new BaseRemoteProto(location, maxBatteryPower, sensors);
-    }
-
-    public static DroneRemoteProto DroneRemote(Vector location, double maxBatteryPower,
-            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration, Vector batteryUsage) {
-        return new DroneRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration, batteryUsage);
-    }
-
-    public static MobileRemoteProto MobileRemote(Vector location, double maxBatteryPower,
-            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration) {
-        return new MobileRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration);
-    }
-
-    public static RemoteProto Remote(Vector location, double maxBatteryPower, Collection<SensorConfig> sensors) {
-        return new RemoteProto(location, maxBatteryPower, sensors);
-    }
-
-    public static VictimRemoteProto VictimRemote(Vector location, double maxBatteryPower,
-            Collection<SensorConfig> sensors, double maxVelocity, double maxAcceleration) {
-        return new VictimRemoteProto(location, maxBatteryPower, sensors, maxVelocity, maxAcceleration);
+    public static RemoteProto Remote(Kinematics kinematics, Collection<SensorConfig> sensors) {
+        return new RemoteProto(kinematics, sensors);
     }
 
     @SuppressWarnings("unchecked")
