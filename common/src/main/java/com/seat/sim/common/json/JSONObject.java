@@ -22,6 +22,11 @@ public interface JSONObject extends JSONInterface {
      */
     double getDouble(String key) throws JSONException;
 
+    /** Returns the float value associated with the key.
+     * @throws JSONException if the value associated with the key cannot be converted to a float or no such key
+     */
+    float getFloat(String key) throws JSONException;
+
     /** Returns the int value associated with the key.
      * @throws JSONException if the value associated with the key cannot be converted to an int or no such key
      */

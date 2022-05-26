@@ -3,7 +3,7 @@ package com.seat.sim.common.json;
 /** An interface to support serializable enums. */
 public interface SerializableEnum {
 
-    /** Returns the String encoding of the enum. */
+    /** Returns the String serialization of the enum. */
     default String encode() {
         return String.valueOf(this.getType());
     }
@@ -14,7 +14,7 @@ public interface SerializableEnum {
         return this.encode().equals(encoding);
     }
 
-    /** Returns the String representation of the enum. */
+    /** Returns the String label of the enum for debugging purposes. */
     default String getLabel() {
         return String.format("<%d>", this.getType());
     }

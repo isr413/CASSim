@@ -16,6 +16,11 @@ public interface JSONObjectBuilder {
     /** Inserts the key-value pair into the JSONObject.
      * @throws JSONException if JSON does not support the input value
      */
+    void put(String key, float value) throws JSONException;
+
+    /** Inserts the key-value pair into the JSONObject.
+     * @throws JSONException if JSON does not support the input value
+     */
     void put(String key, int value) throws JSONException;
 
     /** Inserts the key-value pair into the JSONObject.
@@ -48,16 +53,16 @@ public interface JSONObjectBuilder {
      */
     void put(String key, String value) throws JSONException;
 
-    /** Returns the JSONOption representation of the JSONObject. */
+    /** Returns the JSONOptional representation of the JSONObject. */
     JSONOptional toJSON();
 
-    /** Returns the String representation of the JSONObject.
-     * @throws JSONException if the JSONObject cannot be converted to a JSON string
+    /** Returns the String serialization of the JSONObject.
+     * @throws JSONException if the JSONObject cannot be serialized
      */
     String toString() throws JSONException;
 
-    /** Returns the String representation of the JSONObject (pretty printed).
-     * @throws JSONException if the JSONObject cannot be converted to a JSON string
+    /** Returns the String serialization of the JSONObject (pretty printed).
+     * @throws JSONException if the JSONObject cannot be serialized
      */
     String toString(int tabSize) throws JSONException;
 

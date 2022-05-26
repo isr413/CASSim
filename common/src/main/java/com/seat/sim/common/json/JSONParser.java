@@ -1,5 +1,6 @@
 package com.seat.sim.common.json;
 
+/** A helper class to support parsing JSON serializations. */
 public class JSONParser {
 
     private static boolean isQuoted(String encoding) {

@@ -3,25 +3,25 @@ package com.seat.sim.common.json;
 import java.util.Collection;
 import java.util.Map;
 
-/** An optional class to build JSONOptions. */
+/** A builder class for JSONOptionals. */
 public final class JSONBuilder {
 
-    /** Returns a builder for the Array JSONOption. */
+    /** Returns a builder for the JSONArray option. */
     public static JSONArrayBuilder Array() {
         return new JSONBuilder.JSONArrayOptionBuilder();
     }
 
-    /** Returns a builder for the Array JSONOption. */
+    /** Returns a builder for the JSONArray option. */
     public static <T> JSONArrayBuilder Array(Collection<T> collection) {
         return new JSONBuilder.JSONArrayOptionBuilder(collection);
     }
 
-    /** Returns a builder for the Object JSONOption. */
+    /** Returns a builder for the JSONObject option. */
     public static JSONObjectBuilder Object() {
         return new JSONBuilder.JSONObjectOptionBuilder();
     }
 
-    /** Returns a builder for the Object JSONOption. */
+    /** Returns a builder for the JSONObject option. */
     public static <T> JSONObjectBuilder Object(Map<String, T> map) {
         return new JSONBuilder.JSONObjectOptionBuilder(map);
     }
@@ -65,6 +65,17 @@ public final class JSONBuilder {
          * @throws JSONException if JSON does not support the input value
          */
         public void put(double value) throws JSONException {
+            try {
+                this.json.put(value);
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
+            }
+        }
+
+        /** Appends the value to the JSONArray.
+         * @throws JSONException if JSON does not support the input value
+         */
+        public void put(float value) throws JSONException {
             try {
                 this.json.put(value);
             } catch (org.json.JSONException e) {
@@ -163,13 +174,13 @@ public final class JSONBuilder {
             }
         }
 
-        /** Returns the JSONOption representation of the JSONArray. */
+        /** Returns the JSONOptional representation of the JSONArray. */
         public JSONOptional toJSON() {
             return JSONOptional.of(new JSONOptional.JSONArrayOption(this.json));
         }
 
-        /** Returns the String representation of the JSONArray.
-         * @throws JSONException if the JSONArray cannot be converted to a JSON string
+        /** Returns the String serialization of the JSONArray.
+         * @throws JSONException if the JSONArray cannot be serialized
          */
         public String toString() throws JSONException {
             try {
@@ -179,8 +190,8 @@ public final class JSONBuilder {
             }
         }
 
-        /** Returns the String representation of the JSONArray (pretty printed).
-         * @throws JSONException if the JSONArray cannot be converted to a JSON string
+        /** Returns the String serialization of the JSONArray (pretty printed).
+         * @throws JSONException if the JSONArray cannot be serialized
          */
         public String toString(int tabSize) throws JSONException {
             try {
@@ -231,6 +242,17 @@ public final class JSONBuilder {
          * @throws JSONException if JSON does not support the input value
          */
         public void put(String key, double value) throws JSONException {
+            try {
+                this.json.put(key, value);
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
+            }
+        }
+
+        /** Inserts the key-value pair into the JSONObject.
+         * @throws JSONException if JSON does not support the input value
+         */
+        public void put(String key, float value) throws JSONException {
             try {
                 this.json.put(key, value);
             } catch (org.json.JSONException e) {
@@ -329,13 +351,13 @@ public final class JSONBuilder {
             }
         }
 
-        /** Returns the JSONOption representation of the JSONObject. */
+        /** Returns the JSONOptional representation of the JSONObject. */
         public JSONOptional toJSON() {
             return JSONOptional.of(new JSONOptional.JSONObjectOption(this.json));
         }
 
-        /** Returns the String representation of the JSONObject.
-         * @throws JSONException if the JSONObject cannot be converted to a JSON string
+        /** Returns the String serialization of the JSONObject.
+         * @throws JSONException if the JSONObject cannot be serialized
          */
         public String toString() throws JSONException {
             try {
@@ -345,8 +367,8 @@ public final class JSONBuilder {
             }
         }
 
-        /** Returns the String representation of the JSONObject (pretty printed).
-         * @throws JSONException if the JSONObject cannot be converted to a JSON string
+        /** Returns the String serialization of the JSONObject (pretty printed).
+         * @throws JSONException if the JSONObject cannot be serialized
          */
         public String toString(int tabSize) throws JSONException {
             try {

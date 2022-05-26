@@ -15,7 +15,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-/** An optional class to wrap JSONArray and JSONObject interface types. */
+/** An optional class to wrap JSONInterface types. */
 public final class JSONOptional {
 
     /** Returns the None type wrapper. */
@@ -23,19 +23,25 @@ public final class JSONOptional {
         return new JSONOptional();
     }
 
-    /** Returns an optional wrapper for the JSONArray interface type. */
+    /** Returns an optional wrapper for the JSONArray interface type.
+     * @throws JSONException if the JSONArray is null
+    */
     public static JSONOptional of(JSONArray json) throws JSONException {
         if (json == null) throw new JSONException(new NullPointerException().toString());
         return new JSONOptional(json);
     }
 
-    /** Returns an optional wrapper for the JSONObject interface type. */
+    /** Returns an optional wrapper for the JSONObject interface type.
+     * @throws JSONException if the JSONObject is null
+    */
     public static JSONOptional of(JSONObject json) throws JSONException {
         if (json == null) throw new JSONException(new NullPointerException().toString());
         return new JSONOptional(json);
     }
 
-    /** Returns an optional wrapper for the JSONArray or JSONObject interace types based on the encoding. */
+    /** Returns an optional wrapper for the JSONArray or JSONObject interace type based on the encoding.
+     * @throws JSONException if the encoding is null or does not decode
+    */
     public static JSONOptional of(String encoding) throws JSONException {
         if (encoding == null) throw new JSONException(new NullPointerException().toString());
         JSONOptional optional = JSONOptional.ofNullable(encoding);
@@ -57,8 +63,8 @@ public final class JSONOptional {
         return new JSONOptional(json);
     }
 
-    /** Returns an optional wrapper for the JSONArray or JSONObject interace types based on the encoding
-     * or empty if the encoding is invalid json.
+    /** Returns an optional wrapper for the JSONArray or JSONObject interace type based on the encoding
+     * or empty if the encoding is null or does not decode.
      */
     public static JSONOptional ofNullable(String encoding) throws JSONException {
         if (encoding == null) return JSONOptional.empty();
@@ -117,23 +123,23 @@ public final class JSONOptional {
         return Optional.empty();
     }
 
-    /** Returns the JSONArray wrapped by this optional.
-     * @throws JSONException if the optional being wrapped is not an Array optional
+    /** Returns the wrapped JSONArray.
+     * @throws JSONException if the option being wrapped is not a JSONArray
      */
     public JSONArray getArray() throws JSONException {
         if (!this.isPresentArray()) throw new JSONException(new NoSuchElementException().toString());
         return this.arrayOption;
     }
 
-    /** Returns the JSONObject wrapped by this optional.
-     * @throws JSONException if the optional being wrapped is not an Object optional
+    /** Returns the wrapped JSONObject.
+     * @throws JSONException if the option being wrapped is not a JSONObject
      */
     public JSONObject getObject() throws JSONException {
         if (!this.isPresentObject()) throw new JSONException(new NoSuchElementException().toString());
         return this.objectOption;
     }
 
-    /** Invokes the consumer if the array option is present. */
+    /** Invokes the consumer if the option is present. */
     @SuppressWarnings("unchecked")
     public <T extends JSONInterface> void ifPresent(Class<T> cls, Consumer<T> consumer) {
         if (JSONArray.class.isAssignableFrom(cls) && this.isPresentArray()) {
@@ -146,15 +152,15 @@ public final class JSONOptional {
 
     /** Returns true if there is a value present. */
     public boolean isPresent() {
-        return this.arrayOption != null || this.objectOption != null;
+        return this.isPresentArray() || this.isPresentObject();
     }
 
-    /** Returns true if this is the JSONArray optional. */
+    /** Returns true if the JSONArray option is present. */
     public boolean isPresentArray() {
         return this.arrayOption != null;
     }
 
-    /** Returns true if this is the JSONObject optional. */
+    /** Returns true if the JSONObject option is present. */
     public boolean isPresentObject() {
         return this.objectOption != null;
     }
@@ -208,8 +214,8 @@ public final class JSONOptional {
         throw exceptionSupplier.get();
     }
 
-    /** Returns the String representation of the optional being wrapped.
-     * @throws JSONException if the JSONOption cannot be converted to a JSON string
+    /** Returns the String serialization of the value if present or an empty string.
+     * @throws JSONException if the JSONOptional cannot be serialized
      */
     public String toString() throws JSONException {
         if (this.isPresentArray()) return this.arrayOption.toString();
@@ -217,8 +223,8 @@ public final class JSONOptional {
         return "";
     }
 
-    /** Returns the String representation of the optional being wrapped (pretty printed).
-     * @throws JSONException if the JSONOption cannot be converted to a JSON string
+    /** Returns the String serialization (pretty printed) of the value if present or an empty string.
+     * @throws JSONException if the JSONOptional cannot be serialized
      */
     public String toString(int tabSize) throws JSONException {
         if (this.isPresentArray()) return this.arrayOption.toString(tabSize);
@@ -226,11 +232,12 @@ public final class JSONOptional {
         return "";
     }
 
+    /** Returns true if the optional is a shallow copy. */
     public boolean equals(JSONOptional optional) {
         return this.arrayOption == optional.arrayOption && this.objectOption == optional.objectOption;
     }
 
-    /** JSONOption implementation of the JSONArray interface. */
+    /** JSONOptional implementation of the JSONArray interface. */
     static class JSONArrayOption implements JSONArray {
 
         org.json.JSONArray json;
@@ -306,6 +313,18 @@ public final class JSONOptional {
             this.assertBounds(idx);
             try {
                 return this.json.getDouble(idx);
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
+            }
+        }
+
+        /** Returns the float value at index idx.
+         * @throws JSONException if the value at idx cannot be converted to a float or is out of bounds
+         */
+        public float getFloat(int idx) throws JSONException {
+            this.assertBounds(idx);
+            try {
+                return this.json.getFloat(idx);
             } catch (org.json.JSONException e) {
                 throw new JSONException(e.toString());
             }
@@ -389,6 +408,7 @@ public final class JSONOptional {
             }
         }
 
+        /** Returns an Iterator for the JSONArray. */
         public Iterator<Object> iterator() {
             return this.json.iterator();
         }
@@ -398,7 +418,7 @@ public final class JSONOptional {
             return this.json.length();
         }
 
-        /** Returns a spliterator for the JSONArray. */
+        /** Returns a Spliterator for the JSONArray. */
         public Spliterator<Object> spliterator() {
             return this.json.spliterator();
         }
@@ -426,8 +446,8 @@ public final class JSONOptional {
             return list;
         }
 
-        /** Returns the String representation of the JSONArray.
-         * @throws JSONException if the JSONArray cannot be converted to a JSON string
+        /** Returns the String serialization of the JSONArray.
+         * @throws JSONException if the JSONArray cannot be serialized
          */
         public String toString() throws JSONException {
             try {
@@ -437,8 +457,8 @@ public final class JSONOptional {
             }
         }
 
-        /** Returns the String representation of the JSONArray (pretty printed).
-         * @throws JSONException if the JSONArray cannot be converted to a JSON string
+        /** Returns the String serialization of the JSONArray (pretty printed).
+         * @throws JSONException if the JSONArray cannot be serialized
          */
         public String toString(int tabSize) throws JSONException {
             try {
@@ -505,6 +525,18 @@ public final class JSONOptional {
             this.assertContains(key);
             try {
                 return this.json.getDouble(key);
+            } catch (org.json.JSONException e) {
+                throw new JSONException(e.toString());
+            }
+        }
+
+        /** Returns the float value associated with the key.
+         * @throws JSONException if the value associated with the key cannot be converted to a float or no such key
+         */
+        public float getFloat(String key) throws JSONException {
+            this.assertContains(key);
+            try {
+                return this.json.getFloat(key);
             } catch (org.json.JSONException e) {
                 throw new JSONException(e.toString());
             }
@@ -626,8 +658,8 @@ public final class JSONOptional {
             return map;
         }
 
-        /** Returns the String representation of the JSONObject.
-         * @throws JSONException if the JSONObject cannot be converted to a JSON string
+        /** Returns the String serialization of the JSONObject.
+         * @throws JSONException if the JSONObject cannot be serialized
          */
         public String toString() throws JSONException {
             try {
@@ -637,8 +669,8 @@ public final class JSONOptional {
             }
         }
 
-        /** Returns the String representation of the JSONObject (pretty printed).
-         * @throws JSONException if the JSONObject cannot be converted to a JSON string
+        /** Returns the String serialization of the JSONObject (pretty printed).
+         * @throws JSONException if the JSONObject cannot be serialized
          */
         public String toString(int tabSize) throws JSONException {
             try {

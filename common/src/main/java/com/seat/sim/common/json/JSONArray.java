@@ -1,5 +1,6 @@
 package com.seat.sim.common.json;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
@@ -27,6 +28,11 @@ public interface JSONArray extends Iterable<Object>, JSONInterface {
      * @throws JSONException if the value at idx cannot be converted to a double or is out of bounds
      */
     double getDouble(int idx) throws JSONException;
+
+    /** Returns the float value at index idx.
+     * @throws JSONException if the value at idx cannot be converted to a float or is out of bounds
+     */
+    float getFloat(int idx) throws JSONException;
 
     /** Returns the int value at index idx.
      * @throws JSONException if the value at idx cannot be converted to an int or is out of bounds
@@ -58,10 +64,13 @@ public interface JSONArray extends Iterable<Object>, JSONInterface {
      */
     String getString(int idx) throws JSONException;
 
+    /** Returns an Iterator for the JSONArray. */
+    Iterator<Object> iterator();
+
     /** Returns the number of elements in the JSONArray. */
     int length();
 
-    /** Returns a spliterator for the JSONArray. */
+    /** Returns a Spliterator for the JSONArray. */
     Spliterator<Object> spliterator();
 
     /** Returns a List representation of the JSONArray. */
