@@ -24,8 +24,8 @@ public class RemoteState extends JSONAble {
     public static final String ACTIVE = "active";
     public static final String FUEL = "fuel";
     public static final String LOCATION = "location";
-    public static final String VELOCITY = "velocity";
     public static final String REMOTE_ID = "remote_id";
+    public static final String VELOCITY = "velocity";
 
     private boolean active;
     private double fuel;
@@ -38,7 +38,7 @@ public class RemoteState extends JSONAble {
     public RemoteState(String remoteID, TeamColor team, Vector location, Vector velocity, double fuel, boolean active,
             Collection<SensorState> sensorStates) {
         this.remoteID = remoteID;
-        this.team = team;
+        this.team = (team != null) ? team : TeamColor.NONE;
         this.location = location;
         this.velocity = (velocity != null) ? velocity : new Vector();
         this.fuel = fuel;
@@ -187,7 +187,7 @@ public class RemoteState extends JSONAble {
     }
 
     public boolean hasTeam() {
-        return !(this.team == null || this.team.equals(TeamColor.NONE));
+        return !this.team.equals(TeamColor.NONE);
     }
 
     public boolean hasVelocity() {

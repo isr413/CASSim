@@ -17,7 +17,7 @@ import com.seat.sim.common.json.JSONOptional;
 public class RemoteConfig extends JSONAble {
     public static final String COUNT = "count";
     public static final String DYNAMIC = "dynamic";
-    public static final String PROTO = "__proto__";
+    public static final String PROTO = "proto";
     public static final String REMOTE_IDS = "remote_ids";
 
     private boolean active;
@@ -41,10 +41,10 @@ public class RemoteConfig extends JSONAble {
 
     private RemoteConfig(RemoteProto proto, TeamColor team, int count, HashSet<String> remoteIDs, boolean active,
             boolean dynamic) {
-        this.proto = proto;
-        this.team = team;
+        this.proto = (proto != null) ? proto : new RemoteProto();
+        this.team = (team != null) ? team : TeamColor.NONE;
         this.count = count;
-        this.remoteIDs = remoteIDs;
+        this.remoteIDs = (remoteIDs != null) ? remoteIDs : new HashSet<>();
         this.active = active;
         this.dynamic = dynamic;
     }
@@ -120,7 +120,7 @@ public class RemoteConfig extends JSONAble {
     }
 
     public boolean hasTeam() {
-        return !(this.team == null || this.team.equals(TeamColor.NONE));
+        return !this.team.equals(TeamColor.NONE);
     }
 
     public boolean isActive() {

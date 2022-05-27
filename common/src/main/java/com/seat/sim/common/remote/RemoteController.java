@@ -5,6 +5,7 @@ import java.util.Collection;
 import com.seat.sim.common.json.JSONAble;
 import com.seat.sim.common.json.JSONException;
 import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.intent.IntentRegistry;
 import com.seat.sim.common.remote.intent.Intention;
 import com.seat.sim.common.remote.intent.IntentionSet;
@@ -63,6 +64,38 @@ public class RemoteController extends JSONAble {
         return this.intentions;
     }
 
+    public void goHome() {
+        this.addIntention(IntentRegistry.GoTo());
+    }
+
+    public void goHome(double maxVelocity) {
+        this.addIntention(IntentRegistry.GoTo(maxVelocity));
+    }
+
+    public void goHome(double maxVelocity, double maxAcceleration) {
+        this.addIntention(IntentRegistry.GoTo(maxVelocity, maxAcceleration));
+    }
+
+    public void goToLocation(Vector location) {
+        this.addIntention(IntentRegistry.GoTo(location));
+    }
+
+    public void goToLocation(Vector location, double maxVelocity) {
+        this.addIntention(IntentRegistry.GoTo(location, maxVelocity));
+    }
+
+    public void goToLocation(Vector location, double maxVelocity, double maxAcceleration) {
+        this.addIntention(IntentRegistry.GoTo(location, maxVelocity, maxAcceleration));
+    }
+
+    public void move(Vector acceleration) {
+        this.addIntention(IntentRegistry.Move(acceleration));
+    }
+
+    public void moveForward() {
+        this.addIntention(IntentRegistry.Move());
+    }
+
     public void none() {
         this.addIntention(IntentRegistry.None());
     }
@@ -73,6 +106,18 @@ public class RemoteController extends JSONAble {
 
     public void startup() {
         this.addIntention(IntentRegistry.Startup());
+    }
+
+    public void steer(Vector direction) {
+        this.addIntention(IntentRegistry.Steer(direction));
+    }
+
+    public void steerHome() {
+        this.addIntention(IntentRegistry.Steer());
+    }
+
+    public void stop() {
+        this.addIntention(IntentRegistry.Stop());
     }
 
     public JSONOptional toJSON() throws JSONException {

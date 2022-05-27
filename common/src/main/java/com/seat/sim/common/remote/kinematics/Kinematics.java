@@ -59,7 +59,7 @@ public class Kinematics extends JSONAble {
         if (this.hasMotion()) {
             json.put(Kinematics.MOTION, this.motion.toJSON());
         }
-        if (this.hasFuel()) {
+        if (this.hasFiniteFuel()) {
             json.put(Kinematics.FUEL, this.fuel.toJSON());
         }
         if (this.hasFuelUsage()) {
@@ -116,8 +116,8 @@ public class Kinematics extends JSONAble {
             this.fuelUsage.getZ() * acceleration.getZ();
     }
 
-    public boolean hasFuel() {
-        return this.fuel != null && this.fuel.hasInitialFuel();
+    public boolean hasFiniteFuel() {
+        return this.fuel.hasInitialFuel();
     }
 
     public boolean hasFuelUsage() {
