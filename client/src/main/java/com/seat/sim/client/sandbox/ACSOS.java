@@ -10,18 +10,16 @@ import com.seat.sim.client.core.mape.Executor;
 import com.seat.sim.client.core.mape.Knowledge;
 import com.seat.sim.client.core.mape.Monitor;
 import com.seat.sim.client.core.mape.Planner;
-import com.seat.sim.common.core.SARApplication;
+import com.seat.sim.common.core.Application;
 import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.RemoteConfig;
-import com.seat.sim.common.remote.base.BaseRemoteConfig;
-import com.seat.sim.common.remote.base.BaseRemoteProto;
+import com.seat.sim.common.remote.RemoteProto;
 import com.seat.sim.common.remote.intent.IntentionSet;
-import com.seat.sim.common.remote.mobile.aerial.drone.DroneRemoteConfig;
-import com.seat.sim.common.remote.mobile.aerial.drone.DroneRemoteProto;
-import com.seat.sim.common.remote.mobile.victim.VictimRemoteConfig;
-import com.seat.sim.common.remote.mobile.victim.VictimRemoteProto;
+import com.seat.sim.common.remote.kinematics.Fuel;
+import com.seat.sim.common.remote.kinematics.Kinematics;
+import com.seat.sim.common.remote.kinematics.Motion;
 import com.seat.sim.common.scenario.Snapshot;
 import com.seat.sim.common.sensor.SensorConfig;
 import com.seat.sim.common.sensor.SensorRegistry;
@@ -29,7 +27,7 @@ import com.seat.sim.common.sensor.comms.CommsSensorProto;
 import com.seat.sim.common.sensor.monitor.MonitorSensorProto;
 import com.seat.sim.common.sensor.vision.VisionSensorProto;
 
-public class ACSOS implements SARApplication {
+public class ACSOS implements Application {
 
     private static final int BASE_COUNT = 1; // paper: "... have constructed a triage tent"
     private static final int DRONE_COUNT = 32; // paper: "... have been equipped with 32 commercial drones"
@@ -55,11 +53,10 @@ public class ACSOS implements SARApplication {
         return new Grid(ACSOS.MAP_SIZE, ACSOS.MAP_SIZE, ACSOS.ZONE_SIZE);
     }
 
-    private static BaseRemoteConfig getBaseRemoteConfiguration() {
-        return new BaseRemoteConfig(
-            new BaseRemoteProto(
-                ACSOS.TRIAGE_TENT,
-                1,
+    private static RemoteConfig getBaseRemoteConfiguration() {
+        return new RemoteConfig(
+            new RemoteProto(
+                new Kinematics(ACSOS.TRIAGE_TENT, new Motion(), new Fuel(1), new Vector()),
                 new ArrayList<SensorConfig>(
                     Arrays.asList(
                         new SensorConfig(
@@ -87,11 +84,10 @@ public class ACSOS implements SARApplication {
         return SensorRegistry.CMOSCameraSensor(10, 1, 0);
     }
 
-    private static DroneRemoteConfig getDroneRemoteConfiguration() {
-        return new DroneRemoteConfig(
-            new DroneRemoteProto(
-                ACSOS.TRIAGE_TENT,
-                1,
+    private static RemoteConfig getDroneRemoteConfiguration() {
+        return new RemoteConfig(
+            new RemoteProto(
+                new Kinematics(ACSOS.TRIAGE_TENT, new Motion(30, 10), new Fuel(1), new Vector()),
                 new ArrayList<SensorConfig>(
                     Arrays.asList(
                         new SensorConfig(
@@ -110,10 +106,7 @@ public class ACSOS implements SARApplication {
                             true
                         )
                     )
-                ),
-                30,
-                10,
-                new Vector()
+                )
             ),
             TeamColor.BLUE,
             ACSOS.DRONE_COUNT,
@@ -134,11 +127,10 @@ public class ACSOS implements SARApplication {
         return SensorRegistry.NaturalVisionSensor(10, 1, 0);
     }
 
-    private static VictimRemoteConfig getVictimRemoteConfiguration() {
-        return new VictimRemoteConfig(
-            new VictimRemoteProto(
-                null,
-                1,
+    private static RemoteConfig getVictimRemoteConfiguration() {
+        return new RemoteConfig(
+            new RemoteProto(
+                new Kinematics(null, new Motion(9, 9), new Fuel(1), new Vector()),
                 new ArrayList<SensorConfig>(
                     Arrays.asList(
                         new SensorConfig(
@@ -157,16 +149,12 @@ public class ACSOS implements SARApplication {
                             true
                         )
                     )
-                ),
-                9,
-                9
+                )
             ),
             TeamColor.RED,
             ACSOS.VICTIM_COUNT,
             true,
-            true,
-            1.78,
-            1
+            true // 1.78 mean and 1 std dev
         );
     }
 
@@ -195,6 +183,18 @@ public class ACSOS implements SARApplication {
         this.planner = new Planner(this.knowledge);
         this.executor = new Executor(this.knowledge);
         this.init();
+    }
+
+    private Collection<String> getBaseRemoteIDs() {
+        return ACSOS.getBaseRemoteConfiguration().getRemoteIDs();
+    }
+
+    private Collection<String> getDroneRemoteIDs() {
+        return ACSOS.getDroneRemoteConfiguration().getRemoteIDs();
+    }
+
+    private Collection<String> getVictimRemoteIDs() {
+        return ACSOS.getVictimRemoteConfiguration().getRemoteIDs();
     }
 
     private void init() {

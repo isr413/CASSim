@@ -5,9 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.seat.sim.client.core.util.Drone;
 import com.seat.sim.client.core.util.Remote;
-import com.seat.sim.client.core.util.Victim;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.scenario.Snapshot;
@@ -98,7 +96,7 @@ public class Planner {
     }
 
     public void update(Snapshot snap) {
-        for (Drone drone : this.knowledge.getDrones()) {
+        for (Remote drone : this.knowledge.getDrones()) {
             if (!drone.isActiveAndOperational()) continue;
             if (!drone.hasAssignment()) {
                 if (drone.hasConnections()) continue;
@@ -106,7 +104,7 @@ public class Planner {
                 this.assignNextClosestZoneTo(drone);
             }
         }
-        for (Victim victim : this.knowledge.getVictims()) {
+        for (Remote victim : this.knowledge.getVictims()) {
             if (!victim.isActiveAndOperational()) continue;
             if (!victim.hasAssignment()) {
                 if (victim.hasConnections()) continue;

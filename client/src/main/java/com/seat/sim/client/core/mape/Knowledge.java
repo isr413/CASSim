@@ -7,10 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.seat.sim.client.core.util.Base;
-import com.seat.sim.client.core.util.Drone;
 import com.seat.sim.client.core.util.Remote;
-import com.seat.sim.client.core.util.Victim;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.util.Random;
@@ -18,15 +15,15 @@ import com.seat.sim.common.util.Random;
 public class Knowledge {
     public static final double DOUBLE_PRECISION = 0.01;
 
-    private Map<String, Base> bases;
+    private Map<String, Remote> bases;
     private double droneBluetoothDiscoveryProbability;
-    private Map<String, Drone> drones;
+    private Map<String, Remote> drones;
     private double droneVisionDiscoveryProbability;
     private Grid grid;
     private Vector homeLocation;
     private Random rng;
     private double utility;
-    private Map<String, Victim> victims;
+    private Map<String, Remote> victims;
     private double victimStopProbability;
 
     public Knowledge(Grid grid) {
@@ -44,7 +41,7 @@ public class Knowledge {
 
     public boolean addBase(String remoteID) {
         if (this.hasBaseWithID(remoteID)) return true;
-        this.bases.put(remoteID, new Base(remoteID));
+        this.bases.put(remoteID, new Remote(remoteID));
         return true;
     }
 
@@ -64,7 +61,7 @@ public class Knowledge {
 
     public boolean addDrone(String remoteID) {
         if (this.hasDroneWithID(remoteID)) return true;
-        this.drones.put(remoteID, new Drone(remoteID));
+        this.drones.put(remoteID, new Remote(remoteID));
         return true;
     }
 
@@ -77,7 +74,7 @@ public class Knowledge {
 
     public boolean addVictim(String remoteID) {
         if (this.hasVictimWithID(remoteID)) return true;
-        this.victims.put(remoteID, new Victim(remoteID));
+        this.victims.put(remoteID, new Remote(remoteID));
         return true;
     }
 
@@ -92,11 +89,11 @@ public class Knowledge {
         return this.bases.keySet();
     }
 
-    public Collection<Base> getBases() {
+    public Collection<Remote> getBases() {
         return this.bases.values();
     }
 
-    public Base getBaseWithID(String remoteID) {
+    public Remote getBaseWithID(String remoteID) {
         if (!this.hasBaseWithID(remoteID)) return null;
         return this.bases.get(remoteID);
     }
@@ -109,11 +106,11 @@ public class Knowledge {
         return this.drones.keySet();
     }
 
-    public Collection<Drone> getDrones() {
+    public Collection<Remote> getDrones() {
         return this.drones.values();
     }
 
-    public Drone getDroneWithID(String remoteID) {
+    public Remote getDroneWithID(String remoteID) {
         if (!this.hasDroneWithID(remoteID)) return null;
         return this.drones.get(remoteID);
     }
@@ -167,11 +164,11 @@ public class Knowledge {
         return this.victims.keySet();
     }
 
-    public Collection<Victim> getVictims() {
+    public Collection<Remote> getVictims() {
         return this.victims.values();
     }
 
-    public Victim getVictimWithID(String remoteID) {
+    public Remote getVictimWithID(String remoteID) {
         if (!this.hasVictimWithID(remoteID)) return null;
         return this.victims.get(remoteID);
     }

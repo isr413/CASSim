@@ -11,7 +11,6 @@ import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteController;
 import com.seat.sim.common.remote.intent.IntentionSet;
-import com.seat.sim.common.remote.mobile.MobileRemoteController;
 import com.seat.sim.common.scenario.Snapshot;
 
 public class Executor {
@@ -32,7 +31,7 @@ public class Executor {
                 controller.none();
                 continue;
             }
-            MobileRemoteController controller = new MobileRemoteController(remote.getRemoteID());
+            RemoteController controller = new RemoteController(remote.getRemoteID());
             controllers.add(controller);
             if (remote.hasConnectionZone()) {
                 controller.goToLocation(remote.getConnectionZone().getLocation());

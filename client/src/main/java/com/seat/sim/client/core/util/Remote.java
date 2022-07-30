@@ -10,7 +10,7 @@ import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteState;
 
-public abstract class Remote {
+public class Remote {
 
     private List<Zone> assignments;
     private Set<String> connections;
@@ -117,16 +117,8 @@ public abstract class Remote {
         return this.isActive() && this.isOperational();
     }
 
-    public boolean isDisabled() {
-        return !this.hasRemoteState() || this.remoteState.isDisabled();
-    }
-
     public boolean isEnabled() {
         return this.hasRemoteState() && this.remoteState.isEnabled();
-    }
-
-    public boolean isInactive() {
-        return !this.hasRemoteState() || this.remoteState.isInactive();
     }
 
     public boolean isMobile() {
@@ -135,10 +127,6 @@ public abstract class Remote {
 
     public boolean isOperational() {
         return this.isEnabled() && this.hasLocation();
-    }
-
-    public boolean isStationary() {
-        return !this.hasRemoteState() || this.remoteState.isStationary();
     }
 
     public Zone removeAssignment() {
