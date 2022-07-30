@@ -129,8 +129,7 @@ public class Kinematics extends JSONAble {
     }
 
     public boolean hasMotion() {
-        return this.motion.getInitialVelocity() > 0 ||
-            (this.motion.getMaxVelocity() > 0 && this.motion.getMaxAcceleration() > 0);
+        return this.motion.getMaxVelocity() > 0 && this.motion.getMaxAcceleration() > 0;
     }
 
     public boolean isEnabled() {
