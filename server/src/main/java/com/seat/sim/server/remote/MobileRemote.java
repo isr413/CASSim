@@ -2,13 +2,13 @@ package com.seat.sim.server.remote;
 
 import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.math.Vector;
+import com.seat.sim.common.remote.RemoteProto;
+import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.remote.intent.GoToIntention;
 import com.seat.sim.common.remote.intent.IntentionSet;
 import com.seat.sim.common.remote.intent.IntentionType;
 import com.seat.sim.common.remote.intent.MoveIntention;
 import com.seat.sim.common.remote.intent.SteerIntention;
-import com.seat.sim.common.remote.mobile.MobileRemoteProto;
-import com.seat.sim.common.remote.mobile.MobileRemoteState;
 import com.seat.sim.server.core.SimException;
 import com.seat.sim.server.scenario.Scenario;
 
@@ -18,7 +18,7 @@ public class MobileRemote extends Remote {
     private Vector acceleration;
     private Vector velocity;
 
-    public MobileRemote(MobileRemoteProto proto, String remoteID, TeamColor team, boolean active) {
+    public MobileRemote(RemoteProto proto, String remoteID, TeamColor team, boolean active) {
         super(proto, remoteID, team, active);
         this.velocity = new Vector();
         this.acceleration = new Vector();
@@ -39,11 +39,11 @@ public class MobileRemote extends Remote {
     }
 
     public double getMaxAcceleration() {
-        return this.getProto().getMaxAcceleration();
+        return super.getProto().getKinematics().getMaxAcceleration();
     }
 
     public double getMaxVelocity() {
-        return this.getProto().getMaxVelocity();
+        return super.getProto().getKinematics().getMaxVelocity();
     }
 
     public Vector getNextLocation(double stepSize) {
@@ -81,14 +81,9 @@ public class MobileRemote extends Remote {
     }
 
     @Override
-    public MobileRemoteProto getProto() {
-        return (MobileRemoteProto) super.getProto();
-    }
-
-    @Override
-    public MobileRemoteState getRemoteState() {
-        return new MobileRemoteState(this.getRemoteID(), this.getTeam(), this.getLocation(), this.getBattery(),
-            this.isActive(), this.getSensorStates(), this.velocity, this.acceleration);
+    public RemoteState getRemoteState() {
+        return new RemoteState(super.getRemoteID(), super.getTeam(), super.getLocation(), this.getVelocity(),
+            super.getFuel(), super.isActive(), super.getSensorStates());
     }
 
     public Vector getVelocity() {
@@ -100,11 +95,11 @@ public class MobileRemote extends Remote {
     }
 
     public boolean hasMaxAcceleration() {
-        return this.getProto().hasMaxAcceleration();
+        return super.getProto().getKinematics().getMotion().hasMaxAcceleration();
     }
 
     public boolean hasMaxVelocity() {
-        return this.getProto().hasMaxVelocity();
+        return super.getProto().getKinematics().getMotion().hasMaxVelocity();
     }
 
     public boolean hasVelocity() {
@@ -115,13 +110,9 @@ public class MobileRemote extends Remote {
         return this.hasVelocity() || this.hasAcceleration();
     }
 
-    public boolean isStagnant() {
-        return !this.isInMotion();
-    }
-
     public void setAcceleration(Vector acceleration) throws SimException {
         if (this.getMaxAcceleration() + MobileRemote.DOUBLE_PRECISION < acceleration.getMagnitude()) {
-            throw new SimException(String.format("Remote %s cannot set acceleration to %s", this.getRemoteID(),
+            throw new SimException(String.format("Remote %s cannot set acceleration to %s", super.getRemoteID(),
                 acceleration.toString()));
         }
         this.acceleration = acceleration;
@@ -129,7 +120,7 @@ public class MobileRemote extends Remote {
 
     public void setVelocity(Vector velocity) throws SimException {
         if (this.getMaxVelocity() + MobileRemote.DOUBLE_PRECISION < velocity.getMagnitude()) {
-            throw new SimException(String.format("Remote %s cannot set velocity to %s", this.getRemoteID(),
+            throw new SimException(String.format("Remote %s cannot set velocity to %s", super.getRemoteID(),
                 velocity.toString()));
         }
         this.velocity = velocity;
@@ -244,19 +235,15 @@ public class MobileRemote extends Remote {
     @Override
     public void update(Scenario scenario, IntentionSet intentions, double stepSize) throws SimException {
         super.update(scenario, intentions, stepSize);
-        if (this.isDisabled() || this.isInactive() || this.isDone()) {
+        if (!this.isEnabled() || !this.isActive() || this.isDone()) {
             if (this.isInMotion()) {
                 this.updateVelocityTo(new Vector(), stepSize);
                 this.updateLocation(this.velocity, stepSize);
             }
-            return;
-        }
-        if (intentions == null) {
+        } else if (intentions == null) {
             this.updateVelocity(this.acceleration, stepSize);
             this.updateLocation(this.velocity, stepSize);
-            return;
-        }
-        if (intentions.hasIntentionWithType(IntentionType.DONE) ||
+        } else if (intentions.hasIntentionWithType(IntentionType.DONE) ||
                 intentions.hasIntentionWithType(IntentionType.SHUTDOWN) ||
                 intentions.hasIntentionWithType(IntentionType.STOP)) {
             this.updateVelocityTo(new Vector(), stepSize);
@@ -301,6 +288,9 @@ public class MobileRemote extends Remote {
             this.updateVelocity(this.acceleration, stepSize);
             this.updateLocation(this.velocity, stepSize);
         }
+        if (!this.isEnabled() || !this.isActive() || this.isDone()) return;
+        double fuelUsage = super.getProto().getKinematics().getRemoteFuelUsage(this.acceleration);
+        this.updateFuel(fuelUsage, stepSize);
     }
 
 }

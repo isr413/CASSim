@@ -27,8 +27,8 @@ public class Remote {
     private boolean active;
     private Map<String, Sensor> activeSensors;
     private Map<String, Sensor> allSensors;
-    private double battery;
     private boolean done;
+    private double fuel;
     private Vector location;
     private RemoteProto proto;
     private String remoteID;
@@ -39,7 +39,7 @@ public class Remote {
         this.remoteID = remoteID;
         this.team = team;
         this.location = proto.getLocation();
-        this.battery = proto.getMaxBatteryPower();
+        this.fuel = proto.getKinematics().getMaxFuel();
         this.active = active;
         this.done = false;
         this.init();
@@ -120,8 +120,8 @@ public class Remote {
         return this.activeSensors.values();
     }
 
-    public double getBattery() {
-        return this.battery;
+    public double getFuel() {
+        return this.fuel;
     }
 
     public Collection<String> getInactiveSensorIDs() {
@@ -144,8 +144,8 @@ public class Remote {
         return this.location;
     }
 
-    public double getMaxBatteryPower() {
-        return this.proto.getMaxBatteryPower();
+    public double getMaxFuel() {
+        return this.proto.getKinematics().getMaxFuel();
     }
 
     public RemoteProto getProto() {
@@ -157,7 +157,7 @@ public class Remote {
     }
 
     public RemoteState getRemoteState() {
-        return new RemoteState(this.remoteID, this.team, this.location, this.battery, this.active,
+        return new RemoteState(this.remoteID, this.team, this.location, new Vector(), this.fuel, this.active,
             this.getSensorStates());
     }
 
@@ -248,52 +248,32 @@ public class Remote {
         return this.active && this.isEnabled();
     }
 
-    public boolean isAerial() {
-        return this.proto.isAerial();
-    }
-
-    public boolean isDisabled() {
-        return !this.isEnabled();
-    }
-
     public boolean isDone() {
         return this.done;
     }
 
     public boolean isEnabled() {
-        return this.getProto().isEnabled() && this.battery > 0;
-    }
-
-    public boolean isGround() {
-        return this.proto.isGround();
-    }
-
-    public boolean isInactive() {
-        return !this.isActive();
+        return this.getProto().isEnabled() && this.fuel > 0;
     }
 
     public boolean isMobile() {
         return this.proto.isMobile();
     }
 
-    public boolean isStationary() {
-        return this.proto.isStationary();
-    }
-
     public void setActive() {
         this.active = true;
-    }
-
-    public void setBattery(double battery) throws SimException{
-        if (battery < 0 || this.getMaxBatteryPower() < battery) {
-            throw new SimException(String.format("Remote %s cannot set battery to %f", this.getRemoteID(), battery));
-        }
-        this.battery = battery;
     }
 
     public void setDone() {
         this.setInactive();
         this.done = true;
+    }
+
+    public void setFuel(double fuel) throws SimException{
+        if (fuel < 0 || this.getMaxFuel() < fuel) {
+            throw new SimException(String.format("Remote %s cannot set fuel to %f", this.getRemoteID(), fuel));
+        }
+        this.fuel = fuel;
     }
 
     public void setInactive() {
@@ -310,7 +290,7 @@ public class Remote {
     }
 
     public void update(Scenario scenario, IntentionSet intentions, double stepSize) throws SimException {
-        if (this.isDisabled() || this.isDone()) {
+        if (!this.isEnabled() || this.isDone()) {
             if (this.isActive()) {
                 this.setInactive();
             }
@@ -344,24 +324,24 @@ public class Remote {
                 this.setDone();
             }
         }
-        if (this.isInactive() || this.isDone()) return;
-        double batteryUsage = 0;
+        if (!this.isActive() || this.isDone()) return;
+        double fuelUsage = 0;
         for (Sensor sensor : this.activeSensors.values()) {
             sensor.update(scenario, this, stepSize);
-            batteryUsage += sensor.getBatteryUsage();
+            fuelUsage += sensor.getBatteryUsage();
         }
-        this.updateBattery(batteryUsage, stepSize);
+        this.updateFuel(fuelUsage, stepSize);
     }
 
-    protected void updateBattery(double usage, double stepSize) {
-        this.battery -= (usage * stepSize);
-        if (this.battery < 0) {
-            this.battery = 0;
+    protected void updateFuel(double usage, double stepSize) {
+        this.fuel -= (usage * stepSize);
+        if (this.fuel < 0) {
+            this.fuel = 0;
         }
-        if (this.getMaxBatteryPower() < this.battery) {
-            this.battery = this.getMaxBatteryPower();
+        if (this.getMaxFuel() < this.fuel) {
+            this.fuel = this.getMaxFuel();
         }
-        if (this.isDisabled()) {
+        if (!this.isEnabled()) {
             this.setInactive();
         }
     }
