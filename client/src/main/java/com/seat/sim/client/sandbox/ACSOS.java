@@ -26,6 +26,7 @@ import com.seat.sim.common.sensor.SensorRegistry;
 import com.seat.sim.common.sensor.comms.CommsSensorProto;
 import com.seat.sim.common.sensor.monitor.MonitorSensorProto;
 import com.seat.sim.common.sensor.vision.VisionSensorProto;
+import com.seat.sim.common.util.Debugger;
 
 public class ACSOS implements Application {
 
@@ -232,6 +233,8 @@ public class ACSOS implements Application {
     }
 
     public Collection<IntentionSet> update(Snapshot snap) {
+        Debugger.logger.info(String.format("Located %d of %d victims", this.knowledge.reportVictimsLocated(),
+            ACSOS.VICTIM_COUNT));
         this.monitor.update(snap);
         this.analyzer.update(snap);
         this.planner.update(snap);

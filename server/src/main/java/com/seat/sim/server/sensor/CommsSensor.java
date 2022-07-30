@@ -98,7 +98,8 @@ public class CommsSensor extends Sensor {
             return;
         }
         for (String remoteID : scenario.getRemoteIDs()) {
-            if (remoteID.equals(remote.getRemoteID())) {
+            Remote other = scenario.getRemoteWithID(remoteID);
+            if (remoteID.equals(remote.getRemoteID()) || !other.isActive() || !other.isEnabled() || other.isDone()) {
                 continue;
             }
             Vector location = scenario.getRemoteWithID(remoteID).getLocation();

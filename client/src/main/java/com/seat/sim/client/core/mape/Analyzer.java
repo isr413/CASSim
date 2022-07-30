@@ -37,6 +37,7 @@ public class Analyzer {
                     .map(sensorState -> sensorState.getConnections())
                     .flatMap(connections -> connections.stream())
                     .filter(other -> this.knowledge.hasVictimWithID(other))
+                    .filter(other -> this.knowledge.getVictimWithID(other).isActiveAndOperational())
                     .collect(Collectors.toSet());
                 if (remoteConnections.isEmpty()) {
                     remote.removeConnections();

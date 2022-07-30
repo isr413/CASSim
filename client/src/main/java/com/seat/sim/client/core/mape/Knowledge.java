@@ -24,6 +24,7 @@ public class Knowledge {
     private Random rng;
     private double utility;
     private Map<String, Remote> victims;
+    private Set<String> victimsLocated;
     private double victimStopProbability;
 
     public Knowledge(Grid grid) {
@@ -36,6 +37,7 @@ public class Knowledge {
         this.rng = new Random();
         this.utility = 0.0;
         this.victims = new HashMap<>();
+        this.victimsLocated = new HashSet<>();
         this.victimStopProbability = 0;
     }
 
@@ -168,6 +170,10 @@ public class Knowledge {
         return this.victims.values();
     }
 
+    public Collection<String> getVictimsLocated() {
+        return this.victimsLocated;
+    }
+
     public Remote getVictimWithID(String remoteID) {
         if (!this.hasVictimWithID(remoteID)) return null;
         return this.victims.get(remoteID);
@@ -286,6 +292,10 @@ public class Knowledge {
         return true;
     }
 
+    public int reportVictimsLocated() {
+        return this.victimsLocated.size();
+    }
+
     public boolean reserveConnectionBetween(String remoteID, String other, boolean remoteCanHaveMultipleConnections) {
         if (!(this.hasRemoteWithID(remoteID) && this.hasRemoteWithID(other))) return false;
         Remote remote = this.getRemoteWithID(remoteID);
@@ -325,6 +335,10 @@ public class Knowledge {
 
     public void setUtility(double utility) {
         this.utility = utility;
+    }
+
+    public void setVictimAsLocated(String remoteID) {
+        this.victimsLocated.add(remoteID);
     }
 
     public void setVictimStopProbability(double p) {

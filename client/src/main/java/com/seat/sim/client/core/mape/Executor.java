@@ -34,7 +34,18 @@ public class Executor {
             RemoteController controller = new RemoteController(remote.getRemoteID());
             controllers.add(controller);
             if (remote.hasConnectionZone()) {
-                controller.goToLocation(remote.getConnectionZone().getLocation());
+                Zone goalZone = remote.getConnectionZone();
+                double distanceToGoal = Vector.subtract(goalZone.getLocation(), remote.getLocation()).getMagnitude();
+                if (distanceToGoal <= Knowledge.DOUBLE_PRECISION) {
+                    if (this.knowledge.hasVictimWithID(remote.getRemoteID())) {
+                        this.knowledge.setVictimAsLocated(remote.getRemoteID());
+                        controller.done();
+                    } else {
+                        controller.stop();
+                    }
+                } else {
+                    controller.goToLocation(remote.getConnectionZone().getLocation());
+                }
                 continue;
             }
             if (!remote.hasAssignment()) {
