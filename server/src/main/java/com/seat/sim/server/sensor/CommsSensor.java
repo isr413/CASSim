@@ -91,7 +91,7 @@ public class CommsSensor extends Sensor {
     @Override
     public void update(Scenario scenario, Remote remote, double stepSize) throws SimException {
         super.update(scenario, remote, stepSize);
-        if (this.isInactive() || remote.isInactive() || !this.hasRange()) {
+        if (!this.isActive() || !remote.isActive() || !this.hasRange()) {
             if (this.hasConnections()) {
                 this.clearConnections();
             }

@@ -44,7 +44,7 @@ public class MonitorSensor extends Sensor {
     @Override
     public void update(Scenario scenario, Remote remote, double stepSize) throws SimException {
         super.update(scenario, remote, stepSize);
-        if (this.isInactive() || remote.isInactive()) {
+        if (!this.isActive() || !remote.isActive()) {
             this.clearMonitor();
             return;
         }

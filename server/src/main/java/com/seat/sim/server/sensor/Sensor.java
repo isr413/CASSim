@@ -82,10 +82,6 @@ public class Sensor {
         return this.active;
     }
 
-    public boolean isInactive() {
-        return !this.isActive();
-    }
-
     public void setActive() {
         this.active = true;
     }
@@ -99,7 +95,7 @@ public class Sensor {
     }
 
     public void update(Scenario scenario, Remote remote, double stepSize) throws SimException {
-        if (this.isActive() && remote.isInactive()) {
+        if (this.isActive() && !remote.isActive()) {
             this.setInactive();
         }
     }

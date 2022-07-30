@@ -83,7 +83,7 @@ public class VisionSensor extends Sensor {
     @Override
     public void update(Scenario scenario, Remote remote, double stepSize) throws SimException {
         super.update(scenario, remote, stepSize);
-        if (this.isInactive() || remote.isInactive() || !this.hasRange()) {
+        if (!this.isActive() || !remote.isActive() || !this.hasRange()) {
             if (this.hasObservations()) {
                 this.clearObservations();
             }
