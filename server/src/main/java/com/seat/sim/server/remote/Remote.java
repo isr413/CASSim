@@ -157,7 +157,7 @@ public class Remote {
     }
 
     public RemoteState getRemoteState() {
-        return new RemoteState(this.remoteID, this.team, this.location, new Vector(), this.fuel, this.active,
+        return new RemoteState(this.remoteID, this.team, this.location, null, this.fuel, this.active,
             this.getSensorStates());
     }
 

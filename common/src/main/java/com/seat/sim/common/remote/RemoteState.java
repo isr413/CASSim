@@ -40,7 +40,7 @@ public class RemoteState extends JSONAble {
         this.remoteID = remoteID;
         this.team = (team != null) ? team : TeamColor.NONE;
         this.location = location;
-        this.velocity = (velocity != null) ? velocity : new Vector();
+        this.velocity = velocity;
         this.fuel = fuel;
         this.active = active;
         this.sensorStates = (sensorStates != null) ?
@@ -63,7 +63,7 @@ public class RemoteState extends JSONAble {
             null;
         this.velocity = (json.hasKey(RemoteState.VELOCITY)) ?
             new Vector(json.getJSONOptional(RemoteState.VELOCITY)) :
-            new Vector();
+            null;
         this.fuel = (json.hasKey(RemoteState.FUEL)) ?
             json.getDouble(RemoteState.FUEL) :
             Double.POSITIVE_INFINITY;
@@ -191,7 +191,7 @@ public class RemoteState extends JSONAble {
     }
 
     public boolean hasVelocity() {
-        return this.velocity.getMagnitude() > 0;
+        return this.velocity != null;
     }
 
     public boolean isActive() {
@@ -200,6 +200,10 @@ public class RemoteState extends JSONAble {
 
     public boolean isEnabled() {
         return this.fuel > 0;
+    }
+
+    public boolean isInMotion() {
+        return this.isActive() && this.isMobile() && this.getVelocity().getMagnitude() > 0;
     }
 
     public boolean isMobile() {
