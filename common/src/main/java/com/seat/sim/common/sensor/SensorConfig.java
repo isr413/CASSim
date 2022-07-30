@@ -102,10 +102,6 @@ public class SensorConfig extends JSONAble {
         return this.active;
     }
 
-    public boolean isInactive() {
-        return !this.isActive();
-    }
-
     public JSONOptional toJSON() throws JSONException {
         return this.getJSONBuilder().toJSON();
     }
