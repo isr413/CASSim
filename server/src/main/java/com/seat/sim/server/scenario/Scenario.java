@@ -7,16 +7,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.seat.sim.common.math.Field;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Vector;
-import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteConfig;
 import com.seat.sim.common.remote.RemoteController;
 import com.seat.sim.common.remote.RemoteProto;
 import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.remote.intent.IntentionSet;
-import com.seat.sim.common.remote.mobile.MobileRemoteConfig;
 import com.seat.sim.common.scenario.ScenarioConfig;
 import com.seat.sim.common.scenario.ScenarioStatus;
 import com.seat.sim.common.scenario.Snapshot;
@@ -25,7 +22,6 @@ import com.seat.sim.common.util.Random;
 import com.seat.sim.server.core.SimException;
 import com.seat.sim.server.remote.MobileRemote;
 import com.seat.sim.server.remote.Remote;
-import com.seat.sim.server.remote.RemoteFactory;
 
 public class Scenario {
 
@@ -86,12 +82,12 @@ public class Scenario {
                 String remoteID = (i < remoteConfig.getRemoteIDs().size()) ?
                     remoteIDs.next() :
                     String.format("%s:(%d)", remoteProto.getLabel(), remoteCount);
-                Remote remote = RemoteFactory.getRemote(
-                    remoteProto,
-                    remoteID,
-                    remoteConfig.getTeam(),
-                    remoteConfig.isActive()
-                );
+                Remote remote;
+                if (remoteProto.isMobile()) {
+                    remote = new MobileRemote(remoteProto, remoteID, remoteConfig.getTeam(), remoteConfig.isActive());
+                } else {
+                    remote = new Remote(remoteProto, remoteID, remoteConfig.getTeam(), remoteConfig.isActive());
+                }
                 remoteCount++;
                 this.allRemotes.put(remoteID, remote);
                 if (remoteConfig.isActive()) {
@@ -103,15 +99,9 @@ public class Scenario {
                 if (!remote.hasLocation()) {
                     remote.setLocation(this.rng.getRandomLocation2D(this.getGridWidth(), this.getGridHeight()));
                 }
-                if (remoteConfig.isPassive() && remote.isActive() && remote.isMobile()) {
-                    MobileRemoteConfig mobileRemoteConfig = (MobileRemoteConfig) remoteConfig;
+                if (!remoteConfig.isDynamic() && remote.isActive() && remote.isMobile()) {
                     MobileRemote mobileRemote = (MobileRemote) remote;
-                    if (mobileRemoteConfig.hasSpeedMean() && mobileRemoteConfig.hasSpeedStdDev()) {
-                        mobileRemote.setVelocity(this.rng.getRandomSpeed2D(
-                            mobileRemoteConfig.getSpeedMean(),
-                            mobileRemoteConfig.getSpeedStdDev()
-                        ));
-                    } else if (mobileRemote.hasMaxVelocity()) {
+                    if (mobileRemote.hasMaxVelocity()) {
                         mobileRemote.setVelocity(this.rng.getRandomSpeed2D(mobileRemote.getMaxVelocity()));
                     } else {
                         mobileRemote.setVelocity(Vector.scale(this.rng.getRandomDirection2D(), this.getZoneSize()));
@@ -310,49 +300,13 @@ public class Scenario {
         this.time = time;
     }
 
-    private void applyZoneEffectsToRemote(Remote remote, double stepSize) throws SimException {
-        if (this.getGrid().isOutOfBounds(remote.getLocation()) || remote.isStationary()) return;
-        MobileRemote mobileRemote = (MobileRemote) remote;
-        Zone zone = this.getGrid().getZoneAtLocation(mobileRemote.getLocation());
-        Field field = (remote.isAerial()) ?
-            zone.getAerialField() :
-            zone.getGroundField();
-        if (field.isPullForce() && field.getMagnitude() > 0) {
-            mobileRemote.updateVelocity(
-                Vector.scale(
-                    Vector.subtract(field.getPoint(), mobileRemote.getLocation()).getUnitVector(),
-                    field.getMagnitude()
-                ),
-                stepSize
-            );
-        } else if (field.isPushForce() && field.getMagnitude() > 0) {
-            mobileRemote.updateVelocity(
-                Vector.scale(
-                    Vector.subtract(mobileRemote.getLocation(), field.getPoint()).getUnitVector(),
-                    field.getMagnitude()
-                ),
-                stepSize
-            );
-        }
-        if (field.hasResistance()) {
-            mobileRemote.updateVelocity(
-                Vector.scale(
-                    mobileRemote.getVelocity().getUnitVector(),
-                    -field.getResistance()
-                ),
-                stepSize
-            );
-        }
-    }
-
     private void updateRemotes(Map<String, IntentionSet> intentions, double stepSize) throws SimException {
         for (Remote remote : this.getRemotes()) {
-            if (remote.isDisabled()) continue;
+            if (!remote.isEnabled()) continue;
             Debugger.logger.info(String.format("Updating remote %s ...", remote.getRemoteID()));
             Vector prevLocation = null;
             if (this.getGrid().isInbounds(remote.getLocation())) {
                 prevLocation = remote.getLocation();
-                if (remote.isMobile()) this.applyZoneEffectsToRemote(remote, stepSize);
             }
             if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
                 remote.update(this, intentions.get(remote.getRemoteID()), stepSize);
@@ -369,7 +323,7 @@ public class Scenario {
                         remote.getLocation().toString()));
                 }
             }
-            if ((remote.isInactive() || remote.isDone()) && this.hasActiveRemoteWithID(remote.getRemoteID())) {
+            if ((!remote.isActive() || remote.isDone()) && this.hasActiveRemoteWithID(remote.getRemoteID())) {
                 this.activeRemotes.remove(remote.getRemoteID());
             } else if (remote.isActive() && !this.hasActiveRemoteWithID(remote.getRemoteID())) {
                 this.activeRemotes.put(remote.getRemoteID(), remote);
@@ -382,7 +336,7 @@ public class Scenario {
         if (this.justStarted() && remote.isActive() && remote.hasInactiveSensors()) {
             controller.activateAllSensors();
         }
-        if ((remote.isInactive() || remote.isDone()) && remote.hasActiveSensors()) {
+        if ((!remote.isActive() || remote.isDone()) && remote.hasActiveSensors()) {
             controller.deactivateAllSensors();
         }
         if (this.getGrid().isInbounds(remote.getLocation())) {
