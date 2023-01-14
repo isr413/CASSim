@@ -1,100 +1,126 @@
 package com.seat.sim.common.json;
 
-/** An inherited API to support the JSON serialization and deserialization of Objects. */
-public abstract class JSONAble {
+/** 
+ * An inherited API to support the JSON serialization and deserialization of 
+ * Objects.
+ */
+public abstract class JsonAble {
 
     /** Required default constructor. */
-    protected JSONAble() {}
+    protected JsonAble() {}
 
-    /** JSONAble constructor for decoding a JSONOptional.
-     * @throws JSONException if the JSONOptional does not decode
-    */
-    protected JSONAble(JSONOptional optional) throws JSONException {
-        this.decode(optional);
+    /** 
+     * JsonAble constructor for decoding JSON.
+     *
+     * @throws JsonException if the JSON does not decode
+     */
+    protected JsonAble(Json json) throws JsonException {
+        this.decode(json);
     }
 
-    /** Should be overriden by child classes that support a JSONArray representation.
-     * @throws JSONException if the JSONArray does not decode
+    /** 
+     * Should be overriden by child classes that support a JsonArray 
+     * representation.
+     *
+     * @throws JsonException if the JsonArray does not decode
      */
-    protected void decode(JSONArray json) throws JSONException {
-        throw new JSONException(String.format("Cannot decode %s", json.toString()));
+    protected void decode(JsonArray json) throws JsonException {
+        throw new JsonException(String.format("Cannot decode %s", json.toString()));
     }
 
-    /** Should be overriden by child classes that support a JSONObject representation.
-     * @throws JSONException if the JSONObject does not decode
+    /**
+     * Should be overriden by child classes that support a JsonObject 
+     * representation.
+     *
+     * @throws JsonException if the JsonObject does not decode
      */
-    protected void decode(JSONObject json) throws JSONException {
-        throw new JSONException(String.format("Cannot decode %s", json.toString()));
+    protected void decode(JsonObject json) throws JsonException {
+        throw new JsonException(String.format("Cannot decode %s", json.toString()));
     }
 
-    /** Delegates to the JSONArray or JSONObject decode method.
-     * @throws JSONException if the JSONOptional does not decode
+    /** 
+     * Delegates to the JsonArray or JsonObject decode method.
+     *
+     * @throws JsonException if the Json does not decode
      */
-    protected void decode(JSONOptional optional) throws JSONException {
-        if (optional.isPresentArray()) {
-            this.decode(optional.getArray());
-        } else if (optional.isPresentObject()) {
-            this.decode(optional.getObject());
+    protected void decode(Json json) throws JsonException {
+        if (json.isJsonArray()) {
+            this.decode(json.getJsonArray());
+        } else if (json.isJsonObject()) {
+            this.decode(json.getJsonObject());
         } else {
-            throw new JSONException(String.format("Cannot decode %s", optional.toString()));
+            throw new JsonException(String.format("Cannot decode %s", json.toString()));
         }
     }
 
-    /** Returns the JSON serialization of this Object.
-     * @throws JSONException if the Object cannot be serialized
-    */
-    public String encode() throws JSONException {
-        return this.toJSON().toString();
+    /** 
+     * Returns the JSON serialization of this Object.
+     *
+     * @throws JsonException if the Object cannot be serialized
+     */
+    public String encode() throws JsonException {
+        return this.toJson().toString();
     }
 
-    /** Returns true if the the JSONAble has the same encoding.
-     * @throws JSONException if the JSONAble cannot be serialized
-    */
-    public boolean equals(JSONAble json) throws JSONException {
+    /** 
+     * Returns {@code true} if the the JsonAble has the same encoding.
+     *
+     * @throws JsonException if the JsonAble cannot be serialized
+     */
+    public boolean equals(JsonAble json) throws JsonException {
         if (json == null) return false;
         return this.equals(json.encode());
     }
 
-    /** Returns true if the the JSONArray has the same encoding.
-     * @throws JSONException if the JSONArray cannot be serialized
-    */
-    public boolean equals(JSONArray json) throws JSONException {
+    /** 
+     * Returns {@code true} if the the JsonArray has the same encoding.
+     *
+     * @throws JsonException if the JsonArray cannot be serialized
+     */
+    public boolean equals(JsonArray json) throws JsonException {
         if (json == null) return false;
         return this.equals(json.toString());
     }
 
-    /** Returns true if the the JSONObject has the same encoding.
-     * @throws JSONException if the JSONObject cannot be serialized
-    */
-    public boolean equals(JSONObject json) throws JSONException {
+    /** 
+     * Returns {@code true} if the the JsonObject has the same encoding.
+     *
+     * @throws JsonException if the JsonObject cannot be serialized
+     */
+    public boolean equals(JsonObject json) throws JsonException {
         if (json == null) return false;
         return this.equals(json.toString());
     }
 
-    /** Returns true if the the JSONOptional has the same encoding.
-     * @throws JSONException if the JSONOptional cannot be serialized
-    */
-    public boolean equals(JSONOptional optional) throws JSONException {
-        if (optional == null) return false;
-        return this.equals(optional.toString());
+    /** 
+     * Returns {@code true} if the the Json has the same encoding.
+     *
+     * @throws JsonException if the Json cannot be serialized
+     */
+    public boolean equals(Json json) throws JsonException {
+        if (json == null) return false;
+        return this.equals(json.toString());
     }
 
-    /** Returns true if this Object has a matching encoding.
-     * @throws JSONException if this Object cannot be serialized
-    */
-    public boolean equals(String encoding) throws JSONException {
+    /** 
+     * Returns {@code true} if this Object has a matching encoding.
+     *
+     * @throws JsonException if this Object cannot be serialized
+     */
+    public boolean equals(String encoding) throws JsonException {
         if (encoding == null) return false;
         return this.encode().equals(encoding);
     }
 
-    /** Child classes must implement a JSONOptional representation. */
-    public abstract JSONOptional toJSON() throws JSONException;
+    /** Child classes must implement a Json representation. */
+    public abstract Json toJson() throws JsonException;
 
-    /** Returns a String representation (encoding by default) of this Object for debugging purposes.
-     * @throws JSONException if this Object cannot be converted to a String
-    */
-    public String toString() throws JSONException {
+    /** 
+     * Returns a String representation (encoding by default) of this Object for debugging purposes.
+     *
+     * @throws JsonException if this Object cannot be converted to a String
+     */
+    public String toString() throws JsonException {
         return this.encode();
     }
-
 }

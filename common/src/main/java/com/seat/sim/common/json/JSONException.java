@@ -1,16 +1,15 @@
 package com.seat.sim.common.json;
 
 /** An Exception class to represent JSON decoding errors. */
-public class JSONException extends RuntimeException {
+public class JsonException extends RuntimeException {
 
     /** Accepts the explanation for the error. */
-    public JSONException(String msg) {
+    public JsonException(String msg) {
         super(msg);
     }
 
     /** Accepts the explanation and the cause of the error. */
-    public JSONException(String msg, Throwable cause) {
+    public JsonException(String msg, Throwable cause) {
         super(msg, cause);
     }
-
 }

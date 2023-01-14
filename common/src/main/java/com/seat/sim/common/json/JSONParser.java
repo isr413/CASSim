@@ -1,7 +1,7 @@
 package com.seat.sim.common.json;
 
-/** A helper class to support parsing JSON serializations. */
-public class JSONParser {
+/** A helper class to support parsing encoded JSON. */
+public class JsonParser {
 
     private static boolean isQuoted(String encoding) {
         if (encoding == null || encoding.length() < 2) return false;
@@ -11,27 +11,27 @@ public class JSONParser {
 
     private static String trimQuotesFromEncoding(String encoding) {
         if (encoding == null || encoding.isEmpty() || encoding.isBlank()) return encoding;
-        if (JSONParser.isQuoted(encoding)) {
-            return JSONParser.trimQuotesFromEncoding(encoding.substring(1, encoding.length()-1));
+        if (JsonParser.isQuoted(encoding)) {
+            return JsonParser.trimQuotesFromEncoding(encoding.substring(1, encoding.length()-1));
         }
         return encoding;
     }
 
-    /** Returns true if the input string is a JSON encoding. */
+    /** Returns {@code true} if the input string is a JSON encoding. */
     public static boolean isEncodedJSON(String encoding) {
-        return JSONParser.isEncodedJSONArray(encoding) || JSONParser.isEncodedJSONObject(encoding);
+        return JsonParser.isEncodedJsonArray(encoding) || JsonParser.isEncodedJsonObject(encoding);
     }
 
-    /** Returns true if the input string is a JSON Array encoding. */
-    public static boolean isEncodedJSONArray(String encoding) {
-        encoding = JSONParser.trimEncoding(encoding);
+    /** Returns {@code true} if the input string is a JSON Array encoding. */
+    public static boolean isEncodedJsonArray(String encoding) {
+        encoding = JsonParser.trimEncoding(encoding);
         if (encoding == null || encoding.length() < 2) return false;
         return encoding.charAt(0) == '[' && encoding.charAt(encoding.length()-1) == ']';
     }
 
-    /** Returns true if the input string is a JSON Object encoding. */
-    public static boolean isEncodedJSONObject(String encoding) {
-        encoding = JSONParser.trimEncoding(encoding);
+    /** Returns {@code true} if the input string is a JSON Object encoding. */
+    public static boolean isEncodedJsonObject(String encoding) {
+        encoding = JsonParser.trimEncoding(encoding);
         if (encoding == null || encoding.length() < 2) return false;
         return encoding.charAt(0) == '{' && encoding.charAt(encoding.length()-1) == '}';
     }
@@ -39,7 +39,6 @@ public class JSONParser {
     /** Removes leading and trailing whitespace and quotes. */
     public static String trimEncoding(String encoding) {
         if (encoding == null || encoding.isEmpty() || encoding.isBlank()) return encoding;
-        return JSONParser.trimQuotesFromEncoding(encoding.trim());
+        return JsonParser.trimQuotesFromEncoding(encoding.trim());
     }
-
 }

@@ -6,77 +6,107 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 /** An interface for classes that support a JSON Array representation. */
-public interface JSONArray extends Iterable<Object>, JSONInterface {
+public interface JsonArray extends Iterable<Object>, JsonSerializable {
 
-    /** Applies the consumer for each element in the JSONArray. */
+    /** Applies the consumer for each element in the JsonArray. */
     void forEach(Consumer<? super Object> consumer);
 
-    /** Applies the consumer for each element in the JSONArray. */
+    /** Applies the consumer for each element in the JsonArray. */
     <T> void forEach(Class<T> cls, Consumer<? super T> consumer);
 
-    /** Returns the Object at index idx.
-     * @throws JSONException if the value at idx cannot be converted to an Object or is out of bounds
+    /** 
+     * Returns the Object at index idx.
+     *
+     * @throws JsonException if the value at idx cannot be converted to an 
+     * Object or is out of bounds
+     * @return the Object at idx
      */
-    Object get(int idx) throws JSONException;
+    Object get(int idx) throws JsonException;
 
-    /** Returns the boolean value at index idx.
-     * @throws JSONException if the value at idx cannot be converted to a boolean or is out of bounds
+    /** 
+     * Returns the boolean value at index idx.
+     *
+     * @throws JsonException if the value at idx cannot be converted to a 
+     * boolean or is out of bounds
+     * @return the boolean at idx
      */
-    boolean getBoolean(int idx) throws JSONException;
+    boolean getBoolean(int idx) throws JsonException;
 
-    /** Returns the double value at index idx.
-     * @throws JSONException if the value at idx cannot be converted to a double or is out of bounds
+    /** 
+     * Returns the double value at index idx.
+     *
+     * @throws JsonException if the value at idx cannot be converted to a 
+     * double or is out of bounds
+     * @return the double at idx
      */
-    double getDouble(int idx) throws JSONException;
+    double getDouble(int idx) throws JsonException;
 
-    /** Returns the float value at index idx.
-     * @throws JSONException if the value at idx cannot be converted to a float or is out of bounds
+    /** 
+     * Returns the float value at index idx.
+     *
+     * @throws JsonException if the value at idx cannot be converted to a 
+     * float or is out of bounds
+     * @return the float at idx
      */
-    float getFloat(int idx) throws JSONException;
+    float getFloat(int idx) throws JsonException;
 
-    /** Returns the int value at index idx.
-     * @throws JSONException if the value at idx cannot be converted to an int or is out of bounds
+    /** 
+     * Returns the int value at index idx.
+     *
+     * @throws JsonException if the value at idx cannot be converted to an int 
+     * or is out of bounds
+     * @return the int at idx
      */
-    int getInt(int idx) throws JSONException;
+    int getInt(int idx) throws JsonException;
 
-    /** Returns an Object at index idx that implements the JSONArray interface.
-     * @throws JSONException if the value at idx cannot be converted to a JSONArray or is out of bounds
+    /** 
+     * Returns the {@link JsonArray} at index idx.
+     *
+     * @throws JsonException if the value at idx cannot be converted to a 
+     * JsonArray or is out of bounds
+     * @return the JsonArray at idx
      */
-    JSONArray getJSONArray(int idx) throws JSONException;
+    JsonArray getJsonArray(int idx) throws JsonException;
 
-    /** Returns an Object at index idx that implements the JSONObject interface.
-     * @throws JSONException if the value at idx cannot be converted to a JSONObject or is out of bounds
+    /** 
+     * Returns an {@link JsonObject} at index idx.
+     *
+     * @throws JsonException if the value at idx cannot be converted to a 
+     * JsonObject or is out of bounds
+     * @return the JsonObject at idx
      */
-    JSONObject getJSONObject(int idx) throws JSONException;
+    JsonObject getJsonObject(int idx) throws JsonException;
 
-    /** Returns a JSONOptional wrapper for the Object at index idx.
-     * @throws JSONException if the value at idx cannot be converted to a JSONOptional or is out of bounds
+    /** 
+     * Returns the long value at index idx.
+     *
+     * @throws JsonException if the value at idx cannot be converted to a long 
+     * or is out of bounds
+     * @return the long at idx
      */
-    JSONOptional getJSONOptional(int idx) throws JSONException;
+    long getLong(int idx) throws JsonException;
 
-    /** Returns the long value at index idx.
-     * @throws JSONException if the value at idx cannot be converted to a long or is out of bounds
+    /** 
+     * Returns the String value at index idx.
+     *
+     * @throws JsonException if the value at idx cannot be converted to a 
+     * String or idx is out of bounds
+     * @return the String at idx
      */
-    long getLong(int idx) throws JSONException;
+    String getString(int idx) throws JsonException;
 
-    /** Returns the String representation of the value at index idx.
-     * @throws JSONException if the idx is out of bounds
-     */
-    String getString(int idx) throws JSONException;
-
-    /** Returns an Iterator for the JSONArray. */
+    /** Returns an Iterator. */
     Iterator<Object> iterator();
 
-    /** Returns the number of elements in the JSONArray. */
+    /** Returns the number of elements. */
     int length();
 
-    /** Returns a Spliterator for the JSONArray. */
+    /** Returns a Spliterator. */
     Spliterator<Object> spliterator();
 
-    /** Returns a List representation of the JSONArray. */
+    /** Returns a List representation. */
     List<Object> toList();
 
-    /** Returns a List<T> representation of the JSONArray. */
+    /** Returns a List<T> representation. */
     <T> List<T> toList(Class<T> cls);
-
 }
