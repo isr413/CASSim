@@ -1,14 +1,9 @@
 package com.seat.sim.common.math;
 
-import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONArray;
-import com.seat.sim.common.json.JSONArrayBuilder;
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 
 /** A vector triple of doubles for representing points and forces in 2D and 3D space. */
-public class Vector extends JSONAble {
+public class Vector extends Jsonable {
     public static final double PRECISION = 1_000_000.0;
 
     /** A basis vectors for vectors in 3D space. */
@@ -181,14 +176,14 @@ public class Vector extends JSONAble {
         this.z = vect.z;
     }
 
-    /** JSONAble constructor for JSONOption. */
-    public Vector(JSONOptional optional) throws JSONException {
-        super(optional);
+    /** Jsonable constructor for JsonOption. */
+    public Vector(Json json) throws JsonException {
+        super(json);
     }
 
-    /** Decodes the JSONArray. */
+    /** Decodes the JsonArray. */
     @Override
-    protected void decode(JSONArray json) throws JSONException {
+    protected void decode(JsonArray json) throws JsonException {
         this.x = json.getDouble(0);
         this.y = json.getDouble(1);
         this.z = json.getDouble(2);
@@ -255,13 +250,13 @@ public class Vector extends JSONAble {
         return new Vector(this.x / magnitude, this.y / magnitude, this.z / magnitude);
     }
 
-    /** Returns a decodable JSON representation of this vector. */
-    public JSONOptional toJSON() throws JSONException {
-        JSONArrayBuilder json = JSONBuilder.Array();
+    /** Returns a decodable Json representation of this vector. */
+    public Json toJson() throws JsonException {
+        JsonArrayBuilder json = JsonBuilder.Array();
         json.put(this.x);
         json.put(this.y);
         json.put(this.z);
-        return json.toJSON();
+        return Json.of(json.toJson());
     }
 
     /** Returns true if both vectors have equal components. */
@@ -274,5 +269,4 @@ public class Vector extends JSONAble {
     public String toString() {
         return String.format("[%f, %f, %f]", this.x, this.y, this.z);
     }
-
 }

@@ -1,14 +1,9 @@
 package com.seat.sim.common.math;
 
-import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 
 /** Represents the single cubic zone within the map grid. */
-public class Zone extends JSONAble {
+public class Zone extends Jsonable {
     public static final String ZONE_LOCATION = "location";
     public static final String ZONE_SIZE = "size";
 
@@ -20,13 +15,13 @@ public class Zone extends JSONAble {
         this.size = size;
     }
 
-    public Zone(JSONOptional optional) throws JSONException {
-        super(optional);
+    public Zone(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
-        this.location = new Vector(json.getJSONOptional(Zone.ZONE_LOCATION));
+    protected void decode(JsonObject json) throws JsonException {
+        this.location = new Vector(json.getJson(Zone.ZONE_LOCATION));
         this.size = json.getInt(Zone.ZONE_SIZE);
     }
 
@@ -42,16 +37,15 @@ public class Zone extends JSONAble {
         return this.size;
     }
 
-    public JSONOptional toJSON() throws JSONException {
-        JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(Zone.ZONE_LOCATION, this.location.toJSON());
+    public Json toJson() throws JsonException {
+        JsonObjectBuilder json = JsonBuilder.Object();
+        json.put(Zone.ZONE_LOCATION, this.location.toJson());
         json.put(Zone.ZONE_SIZE, this.size);
-        return json.toJSON();
+        return Json.of(json.toJson());
     }
 
     public boolean equals(Zone zone) {
         if (zone == null) return false;
         return this.location.equals(zone.location);
     }
-
 }

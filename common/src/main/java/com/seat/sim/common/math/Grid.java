@@ -1,21 +1,19 @@
 package com.seat.sim.common.math;
 
 import com.seat.sim.common.core.CommonException;
-import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONArray;
-import com.seat.sim.common.json.JSONArrayBuilder;
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 
 /** Represents the map grid. */
-public class Grid extends JSONAble {
+public class Grid extends Jsonable {
     public static final String GRID_HEIGHT = "grid_height";
     public static final String GRID_WIDTH = "grid_width";
     public static final String ZONES = "zones";
     public static final String ZONE_SIZE = "zone_size";
+
+    public static Grid fromBitmap() {
+        // TODO: implement
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 
     private int height;     // number of zones in each column of the grid
     private boolean isCustomGrid;
@@ -48,23 +46,23 @@ public class Grid extends JSONAble {
         }
     }
 
-    public Grid(JSONOptional optional) throws JSONException {
-        super(optional);
+    public Grid(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
+    protected void decode(JsonObject json) throws JsonException {
         this.width = json.getInt(Grid.GRID_WIDTH);
         this.height = json.getInt(Grid.GRID_HEIGHT);
         this.zoneSize = json.getInt(Grid.ZONE_SIZE);
         this.zones = new Zone[this.height][this.width];
         if (json.hasKey(Grid.ZONES)) {
             this.isCustomGrid = true;
-            JSONArray jsonZones = json.getJSONArray(Grid.ZONES);
+            JsonArray jsonZones = json.getJsonArray(Grid.ZONES);
             for (int y = 0; y < this.height; y++) {
-                JSONArray jsonRow = jsonZones.getJSONArray(y);
+                JsonArray jsonRow = jsonZones.getJsonArray(y);
                 for (int x = 0; x < this.width; x++) {
-                    this.zones[y][x] = new Zone(jsonRow.getJSONOptional(x));
+                    this.zones[y][x] = new Zone(jsonRow.getJson(x));
                 }
             }
         } else {
@@ -192,23 +190,23 @@ public class Grid extends JSONAble {
         return !this.isInbounds(location);
     }
 
-    public JSONOptional toJSON() throws JSONException {
-        JSONObjectBuilder json = JSONBuilder.Object();
+    public Json toJson() throws JsonException {
+        JsonObjectBuilder json = JsonBuilder.Object();
         json.put(Grid.GRID_WIDTH, this.width);
         json.put(Grid.GRID_HEIGHT, this.height);
         json.put(Grid.ZONE_SIZE, this.zoneSize);
         if (this.isCustomGrid) {
-            JSONArrayBuilder jsonZones = JSONBuilder.Array();
+            JsonArrayBuilder jsonZones = JsonBuilder.Array();
             for (int row = 0; row < this.height; row++) {
-                JSONArrayBuilder jsonRow = JSONBuilder.Array();
+                JsonArrayBuilder jsonRow = JsonBuilder.Array();
                 for (int col = 0; col < this.width; col++) {
-                    jsonRow.put(this.getZone(row, col).toJSON());
+                    jsonRow.put(this.getZone(row, col).toJson());
                 }
-                jsonZones.put(jsonRow.toJSON());
+                jsonZones.put(jsonRow.toJson());
             }
-            json.put(Grid.ZONES, jsonZones.toJSON());
+            json.put(Grid.ZONES, jsonZones.toJson());
         }
-        return json.toJSON();
+        return Json.of(json.toJson());
     }
 
     public boolean equals(Grid grid) {
@@ -223,5 +221,4 @@ public class Grid extends JSONAble {
         }
         return true;
     }
-
 }
