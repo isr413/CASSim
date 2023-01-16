@@ -151,18 +151,12 @@ public final class Json {
         @SuppressWarnings("unchecked")
         public <T> void forEach(Class<T> cls, Consumer<? super T> consumer) {
             for (int i = 0; i < this.json.length(); i++) {
-                if (JsonArray.class.isAssignableFrom(cls)) {
+                if (Json.class.isAssignableFrom(cls)) {
+                    consumer.accept((T) this.getJson(i));
+                } else if (JsonArray.class.isAssignableFrom(cls)) {
                     consumer.accept((T) this.getJsonArray(i));
                 } else if (JsonObject.class.isAssignableFrom(cls)) {
                     consumer.accept((T) this.getJsonObject(i));
-                } else if (Json.class.isAssignableFrom(cls)) {
-                    if (this.json.get(i) instanceof org.json.JSONArray) {
-                        consumer.accept((T) this.getJsonArray(i));
-                    } else if (this.json.get(i) instanceof org.json.JSONObject) {
-                        consumer.accept((T) this.getJsonObject(i));
-                    } else {
-                        consumer.accept((T) this.get(i));
-                    }
                 } else {
                     consumer.accept((T) this.get(i));
                 }
@@ -209,6 +203,21 @@ public final class Json {
             this.assertBounds(idx);
             try {
                 return this.json.getInt(idx);
+            } catch (org.json.JSONException e) {
+                throw new JsonException(e.toString());
+            }
+        }
+
+        public Json getJson(int idx) throws JsonException {
+            this.assertBounds(idx);
+            try {
+                if (this.json.get(idx) instanceof org.json.JSONArray) {
+                    return new Json(this.getJsonArray(idx));
+                } else if (this.json.get(idx) instanceof org.json.JSONObject) {
+                    return new Json(this.getJsonObject(idx));
+                } else {
+                    return (Json) this.json.get(idx);
+                }
             } catch (org.json.JSONException e) {
                 throw new JsonException(e.toString());
             }
@@ -270,18 +279,12 @@ public final class Json {
         public <T> List<T> toList(Class<T> cls) {
             ArrayList<T> list = new ArrayList<>();
             for (int i = 0; i < this.json.length(); i++) {
-                if (JsonArray.class.isAssignableFrom(cls)) {
+                if (Json.class.isAssignableFrom(cls)) {
+                    list.add((T) this.getJson(i));
+                } else if (JsonArray.class.isAssignableFrom(cls)) {
                     list.add((T) this.getJsonArray(i));
                 } else if (JsonObject.class.isAssignableFrom(cls)) {
                     list.add((T) this.getJsonObject(i));
-                } else if (Json.class.isAssignableFrom(cls)) {
-                    if (this.json.get(i) instanceof org.json.JSONArray) {
-                        list.add((T) this.getJsonArray(i));
-                    } else if (this.json.get(i) instanceof org.json.JSONObject) {
-                        list.add((T) this.getJsonObject(i));
-                    } else {
-                        list.add((T) this.get(i));
-                    }
                 } else {
                     list.add((T) this.get(i));
                 }
@@ -374,6 +377,21 @@ public final class Json {
             }
         }
 
+        public Json getJson(String key) throws JsonException {
+            this.assertContains(key);
+            try {
+                if (this.json.get(key) instanceof org.json.JSONArray) {
+                    return new Json(this.getJsonArray(key));
+                } else if (this.json.get(key) instanceof org.json.JSONObject) {
+                    return new Json(this.getJsonObject(key));
+                } else {
+                    return (Json) this.get(key);
+                }
+            } catch (org.json.JSONException e) {
+                throw new JsonException(e.toString());
+            }
+        }
+
         public JsonArray getJsonArray(String key) throws JsonException {
             this.assertContains(key);
             try {
@@ -430,18 +448,12 @@ public final class Json {
         public <T> Map<String, T> toMap(Class<T> cls) {
             Map<String, T> map = new HashMap<>();
             for (String key : this.keySet()) {
-                if (JsonArray.class.isAssignableFrom(cls)) {
+                if (Json.class.isAssignableFrom(cls)) {
+                    map.put(key, (T) this.getJson(key));
+                } else if (JsonArray.class.isAssignableFrom(cls)) {
                     map.put(key, (T) this.getJsonArray(key));
                 } else if (JsonObject.class.isAssignableFrom(cls)) {
                     map.put(key, (T) this.getJsonObject(key));
-                } else if (Json.class.isAssignableFrom(cls)) {
-                    if (this.json.get(key) instanceof org.json.JSONArray) {
-                        map.put(key, (T) this.getJsonArray(key));
-                    } else if (this.json.get(key) instanceof org.json.JSONObject) {
-                        map.put(key, (T) this.getJsonObject(key));
-                    } else {
-                        map.put(key, (T) this.get(key));
-                    }
                 } else {
                     map.put(key, (T) this.get(key));
                 }
@@ -473,18 +485,12 @@ public final class Json {
         public <T> Collection<T> values(Class<T> cls) {
             ArrayList<T> list = new ArrayList<>();
             for (String key : this.keySet()) {
-                if (JsonArray.class.isAssignableFrom(cls)) {
+                if (Json.class.isAssignableFrom(cls)) {
+                    list.add((T) this.getJson(key));
+                } else if (JsonArray.class.isAssignableFrom(cls)) {
                     list.add((T) this.getJsonArray(key));
                 } else if (JsonObject.class.isAssignableFrom(cls)) {
                     list.add((T) this.getJsonObject(key));
-                } else if (Json.class.isAssignableFrom(cls)) {
-                    if (this.json.get(key) instanceof org.json.JSONArray) {
-                        list.add((T) this.getJsonArray(key));
-                    } else if (this.json.get(key) instanceof org.json.JSONObject) {
-                        list.add((T) this.getJsonObject(key));
-                    } else {
-                        list.add((T) this.get(key));
-                    }
                 } else {
                     list.add((T) this.get(key));
                 }

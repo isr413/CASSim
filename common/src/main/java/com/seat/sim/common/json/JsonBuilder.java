@@ -144,7 +144,7 @@ public final class JsonBuilder {
             }
         }
 
-        public JsonArray toJSON() {
+        public JsonArray toJson() {
             return new Json.JsonArrayOption(this.json);
         }
 
@@ -283,7 +283,7 @@ public final class JsonBuilder {
             }
         }
 
-        public JsonObject toJSON() {
+        public JsonObject toJson() {
             return new Json.JsonObjectOption(this.json);
         }
 

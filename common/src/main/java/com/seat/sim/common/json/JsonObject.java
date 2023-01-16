@@ -53,6 +53,15 @@ public interface JsonObject extends JsonSerializable {
     int getInt(String key) throws JsonException;
 
     /** 
+     * Returns {@link Json} associated with the key.
+     *
+     * @throws JsonException if the value associated with the key cannot be 
+     * converted to Json or no such key exists
+     * @return the Json mapped by key
+     */
+    Json getJson(String key) throws JsonException;
+
+    /** 
      * Returns {@link JsonArray} associated with the key.
      *
      * @throws JsonException if the value associated with the key cannot be 

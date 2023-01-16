@@ -4,17 +4,17 @@ package com.seat.sim.common.json;
  * An inherited API to support the JSON serialization and deserialization of 
  * Objects.
  */
-public abstract class JsonAble {
+public abstract class Jsonable {
 
     /** Required default constructor. */
-    protected JsonAble() {}
+    protected Jsonable() {}
 
     /** 
-     * JsonAble constructor for decoding JSON.
+     * Jsonable constructor for decoding JSON.
      *
      * @throws JsonException if the JSON does not decode
      */
-    protected JsonAble(Json json) throws JsonException {
+    protected Jsonable(Json json) throws JsonException {
         this.decode(json);
     }
 
@@ -63,11 +63,11 @@ public abstract class JsonAble {
     }
 
     /** 
-     * Returns {@code true} if the the JsonAble has the same encoding.
+     * Returns {@code true} if the the Jsonable has the same encoding.
      *
-     * @throws JsonException if the JsonAble cannot be serialized
+     * @throws JsonException if the Jsonable cannot be serialized
      */
-    public boolean equals(JsonAble json) throws JsonException {
+    public boolean equals(Jsonable json) throws JsonException {
         if (json == null) return false;
         return this.equals(json.encode());
     }

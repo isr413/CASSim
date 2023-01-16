@@ -74,7 +74,7 @@ public interface JsonObjectBuilder {
     void put(String key, String value) throws JsonException;
 
     /** Returns the JsonObject. */
-    JsonObject toJSON();
+    JsonObject toJson();
 
     /** 
      * Returns the String serialization of the JsonObject.

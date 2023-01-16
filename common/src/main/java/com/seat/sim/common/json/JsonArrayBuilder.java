@@ -73,7 +73,7 @@ public interface JsonArrayBuilder {
     void put(String value) throws JsonException;
 
     /** Returns the JsonArray. */
-    JsonArray toJSON();
+    JsonArray toJson();
 
     /** 
      * Returns the String serialization of the JsonArray.

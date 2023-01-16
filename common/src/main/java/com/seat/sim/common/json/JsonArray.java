@@ -60,6 +60,15 @@ public interface JsonArray extends Iterable<Object>, JsonSerializable {
     int getInt(int idx) throws JsonException;
 
     /** 
+     * Returns the {@link Json} at index idx.
+     *
+     * @throws JsonException if the value at idx cannot be converted to
+     * Json or is out of bounds
+     * @return the Json at idx
+     */
+    Json getJson(int idx) throws JsonException;
+
+    /** 
      * Returns the {@link JsonArray} at index idx.
      *
      * @throws JsonException if the value at idx cannot be converted to a 
