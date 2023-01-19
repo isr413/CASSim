@@ -72,8 +72,11 @@ public interface JsonArrayBuilder {
      */
     void put(String value) throws JsonException;
 
+    /** Returns the Json wrapper. */
+    Json toJson();
+
     /** Returns the JsonArray. */
-    JsonArray toJson();
+    JsonArray toJsonArray();
 
     /** 
      * Returns the String serialization of the JsonArray.

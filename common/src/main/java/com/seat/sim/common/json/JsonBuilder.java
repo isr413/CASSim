@@ -11,19 +11,19 @@ public final class JsonBuilder {
         return new JsonBuilder.JsonArrayOptionBuilder();
     }
 
-    /** Returns a builder for a {@link JsonArray}. */
-    public static <T> JsonArrayBuilder Array(Collection<T> collection) {
-        return new JsonBuilder.JsonArrayOptionBuilder(collection);
-    }
-
     /** Returns a builder for a {@link JsonObject}. */
     public static JsonObjectBuilder Object() {
         return new JsonBuilder.JsonObjectOptionBuilder();
     }
 
+    /** Returns a builder for a {@link JsonArray}. */
+    public static <T> JsonArray toJsonArray(Collection<T> collection) {
+        return new JsonBuilder.JsonArrayOptionBuilder(collection).toJsonArray();
+    }
+
     /** Returns a builder for a {@link JsonObject}. */
-    public static <T> JsonObjectBuilder Object(Map<String, T> map) {
-        return new JsonBuilder.JsonObjectOptionBuilder(map);
+    public static <T> JsonObject toJsonObject(Map<String, T> map) {
+        return new JsonBuilder.JsonObjectOptionBuilder(map).toJsonObject();
     }
 
     /** org.json implementation of the JsonArrayBuilder interface. */
@@ -144,7 +144,11 @@ public final class JsonBuilder {
             }
         }
 
-        public JsonArray toJson() {
+        public Json toJson() {
+            return Json.of(this.toJsonArray());
+        }
+
+        public JsonArray toJsonArray() {
             return new Json.JsonArrayOption(this.json);
         }
 
@@ -283,7 +287,11 @@ public final class JsonBuilder {
             }
         }
 
-        public JsonObject toJson() {
+        public Json toJson() {
+            return Json.of(this.toJsonObject());
+        }
+
+        public JsonObject toJsonObject() {
             return new Json.JsonObjectOption(this.json);
         }
 

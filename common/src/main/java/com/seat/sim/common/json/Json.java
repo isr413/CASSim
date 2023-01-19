@@ -64,6 +64,11 @@ public final class Json {
         this.objectOption = json;
     }
 
+    /** Returns {@code true} if the json is a shallow copy. */
+    public boolean equals(Json json) {
+        return this.arrayOption == json.arrayOption && this.objectOption == json.objectOption;
+    }
+
     /** 
      * Returns the wrapped JsonArray.
      *
@@ -114,11 +119,6 @@ public final class Json {
     public String toString(int tabSize) throws JsonException {
         if (this.isJsonArray()) return this.arrayOption.toString(tabSize);
         return this.objectOption.toString(tabSize);
-    }
-
-    /** Returns {@code true} if the json is a shallow copy. */
-    public boolean equals(Json json) {
-        return this.arrayOption == json.arrayOption && this.objectOption == json.objectOption;
     }
 
     /** org.json implementation of the JsonArray interface. */
