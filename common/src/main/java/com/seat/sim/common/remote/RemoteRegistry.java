@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 import com.seat.sim.common.core.CommonException;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.JsonException;
+import com.seat.sim.common.json.Json;
 import com.seat.sim.common.remote.kinematics.Kinematics;
 import com.seat.sim.common.sensor.SensorConfig;
 
@@ -15,11 +15,11 @@ import com.seat.sim.common.sensor.SensorConfig;
 public class RemoteRegistry {
     public static final String REMOTE_TYPE = "remote_type";
 
-    private static final Map<String, Function<JSONOptional, Object>> REGISTRY =
-            new HashMap<String, Function<JSONOptional, Object>>(){{
-        put(RemoteConfig.class.getName(), (optional) -> new RemoteConfig(optional));
-        put(RemoteProto.class.getName(), (optional) -> new RemoteProto(optional));
-        put(RemoteState.class.getName(), (optional) -> new RemoteState(optional));
+    private static final Map<String, Function<Json, Object>> REGISTRY =
+            new HashMap<String, Function<Json, Object>>(){{
+        put(RemoteConfig.class.getName(), (json) -> new RemoteConfig(json));
+        put(RemoteProto.class.getName(), (json) -> new RemoteProto(json));
+        put(RemoteState.class.getName(), (json) -> new RemoteState(json));
     }};
 
     public static RemoteProto Remote(Kinematics kinematics, Collection<SensorConfig> sensors) {
@@ -27,22 +27,22 @@ public class RemoteRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T decodeTo(Class<T> cls, JSONOptional optional) throws CommonException, JSONException {
-        String remoteType = RemoteRegistry.decodeType(optional);
+    public static <T> T decodeTo(Class<T> cls, Json json) throws CommonException, JsonException {
+        String remoteType = RemoteRegistry.decodeType(json);
         if (!RemoteRegistry.isRegistered(remoteType)) {
             if (!RemoteRegistry.isRegistered(cls)) {
-                throw new CommonException(String.format("Cannot decode remote %s", optional.toString()));
+                throw new CommonException(String.format("Cannot decode remote %s", json.toString()));
             }
-            return (T) RemoteRegistry.REGISTRY.get(cls.getName()).apply(optional);
+            return (T) RemoteRegistry.REGISTRY.get(cls.getName()).apply(json);
         }
-        return (T) RemoteRegistry.REGISTRY.get(remoteType).apply(optional);
+        return (T) RemoteRegistry.REGISTRY.get(remoteType).apply(json);
     }
 
-    public static String decodeType(JSONOptional optional) throws CommonException {
-        if (!optional.isPresentObject()) {
-            throw new CommonException(String.format("Cannot decode remote type of %s", optional.toString()));
+    public static String decodeType(Json json) throws CommonException {
+        if (!json.isJsonObject()) {
+            throw new CommonException(String.format("Cannot decode remote type of %s", json.toString()));
         }
-        return optional.getObject().getString(RemoteRegistry.REMOTE_TYPE);
+        return json.getJsonObject().getString(RemoteRegistry.REMOTE_TYPE);
     }
 
     public static <T> boolean isRegistered(Class<T> cls) {
@@ -52,5 +52,4 @@ public class RemoteRegistry {
     public static boolean isRegistered(String className) {
         return RemoteRegistry.REGISTRY.containsKey(className);
     }
-
 }

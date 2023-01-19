@@ -1,9 +1,6 @@
 package com.seat.sim.common.remote.intent;
 
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 import com.seat.sim.common.math.Vector;
 
 public class GoToIntention extends Intention {
@@ -42,15 +39,15 @@ public class GoToIntention extends Intention {
         this.maxAcceleration = maxAcceleration;
     }
 
-    public GoToIntention(JSONOptional optional) throws JSONException {
-        super(optional);
+    public GoToIntention(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
+    protected void decode(JsonObject json) throws JsonException {
         super.decode(json);
         this.location = (json.hasKey(GoToIntention.LOCATION)) ?
-            new Vector(json.getJSONOptional(GoToIntention.LOCATION)) :
+            new Vector(json.getJson(GoToIntention.LOCATION)) :
             null;
         this.maxVelocity = (json.hasKey(GoToIntention.MAX_VELOCITY)) ?
             this.maxVelocity = json.getDouble(GoToIntention.MAX_VELOCITY) :
@@ -61,10 +58,10 @@ public class GoToIntention extends Intention {
     }
 
     @Override
-    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
-        JSONObjectBuilder json = super.getJSONBuilder();
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = super.getJsonBuilder();
         if (this.hasLocation()) {
-            json.put(GoToIntention.LOCATION, this.location.toJSON());
+            json.put(GoToIntention.LOCATION, this.location.toJson());
         }
         if (this.hasMaxVelocity()) {
             json.put(GoToIntention.MAX_VELOCITY, this.maxVelocity);
@@ -73,6 +70,13 @@ public class GoToIntention extends Intention {
             json.put(GoToIntention.MAX_ACCELERATION, this.maxAcceleration);
         }
         return json;
+    }
+
+    public boolean equals(GoToIntention intent) {
+        if (intent == null) return false;
+        return super.equals(intent) &&
+            ((this.hasLocation() && this.location.equals(intent.location)) || this.location == intent.location) &&
+            this.maxVelocity == intent.maxVelocity && this.maxAcceleration == intent.maxAcceleration;
     }
 
     @Override
@@ -103,12 +107,4 @@ public class GoToIntention extends Intention {
     public boolean hasMaxVelocity() {
         return this.maxVelocity != Double.POSITIVE_INFINITY;
     }
-
-    public boolean equals(GoToIntention intent) {
-        if (intent == null) return false;
-        return super.equals(intent) &&
-            ((this.hasLocation() && this.location.equals(intent.location)) || this.location == intent.location) &&
-            this.maxVelocity == intent.maxVelocity && this.maxAcceleration == intent.maxAcceleration;
-    }
-
 }

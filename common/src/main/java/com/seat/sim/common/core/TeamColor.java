@@ -1,6 +1,6 @@
 package com.seat.sim.common.core;
 
-import com.seat.sim.common.json.JSONObject;
+import com.seat.sim.common.json.JsonObject;
 import com.seat.sim.common.json.SerializableEnum;
 
 public enum TeamColor implements SerializableEnum {
@@ -17,7 +17,7 @@ public enum TeamColor implements SerializableEnum {
 
     public static final String TEAM = "team";
 
-    public static TeamColor decodeType(JSONObject json) {
+    public static TeamColor decodeType(JsonObject json) {
         return (json.hasKey(TeamColor.TEAM)) ?
             TeamColor.Value(json.getInt(TeamColor.TEAM)) :
             TeamColor.NONE;
@@ -45,5 +45,4 @@ public enum TeamColor implements SerializableEnum {
     public String toString() {
         return this.getLabel();
     }
-
 }

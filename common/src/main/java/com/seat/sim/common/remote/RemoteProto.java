@@ -9,19 +9,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.CommonException;
-import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.kinematics.Kinematics;
 import com.seat.sim.common.sensor.SensorConfig;
 import com.seat.sim.common.sensor.SensorRegistry;
 
 /** A serializable prototype of a Remote. */
-public class RemoteProto extends JSONAble {
+public class RemoteProto extends Jsonable {
     public static final String KINEMATICS = "kinematics";
     public static final String SENSORS = "sensors";
 
@@ -43,8 +38,8 @@ public class RemoteProto extends JSONAble {
         this.init();
     }
 
-    public RemoteProto(JSONOptional optional) throws JSONException {
-        super(optional);
+    public RemoteProto(Json json) throws JsonException {
+        super(json);
     }
 
     private void init() {
@@ -57,33 +52,41 @@ public class RemoteProto extends JSONAble {
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
+    protected void decode(JsonObject json) throws JsonException {
         this.kinematics = (json.hasKey(RemoteProto.KINEMATICS)) ?
-            new Kinematics(json.getJSONOptional(RemoteProto.KINEMATICS)) :
+            new Kinematics(json.getJson(RemoteProto.KINEMATICS)) :
             new Kinematics();
         this.sensorConfigs = (json.hasKey(RemoteProto.SENSORS)) ?
-            this.sensorConfigs = json.getJSONArray(RemoteProto.SENSORS).toList(JSONOptional.class).stream()
-                .map(optional -> SensorRegistry.decodeTo(SensorConfig.class, optional))
+            this.sensorConfigs = json.getJsonArray(RemoteProto.SENSORS).toList(Json.class).stream()
+                .map(config -> SensorRegistry.decodeTo(SensorConfig.class, config))
                 .collect(Collectors.toList()) :
             new ArrayList<>();
         this.init();
     }
 
-    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
-        JSONObjectBuilder json = JSONBuilder.Object();
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = JsonBuilder.Object();
         json.put(RemoteRegistry.REMOTE_TYPE, this.getRemoteType());
-        json.put(RemoteProto.KINEMATICS, this.kinematics.toJSON());
+        if (this.hasKinematics()) {
+            json.put(RemoteProto.KINEMATICS, this.kinematics.toJson());
+        }
         if (this.hasSensors()) {
             json.put(
                 RemoteProto.SENSORS,
-                JSONBuilder.Array(
+                JsonBuilder.toJsonArray(
                     this.sensorConfigs.stream()
-                        .map(config -> config.toJSON())
+                        .map(config -> config.toJson())
                         .collect(Collectors.toList())
-                ).toJSON()
+                )
             );
         }
         return json;
+    }
+
+    public boolean equals(RemoteProto proto) {
+        if (proto == null) return false;
+        return this.getRemoteType().equals(proto.getRemoteType()) && this.kinematics.equals(proto.kinematics) &&
+            this.sensorConfigs.equals(proto.sensorConfigs);
     }
 
     public Kinematics getKinematics() {
@@ -116,11 +119,9 @@ public class RemoteProto extends JSONAble {
             .collect(Collectors.toList());
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends SensorConfig> Collection<T> getSensorConfigsWithType(Class<T> cls) {
+    public Collection<SensorConfig> getSensorConfigsWithTag(String groupTag) {
         return this.sensorConfigs.stream()
-            .filter(config -> cls.isAssignableFrom(config.getClass()))
-            .map(config -> (T) config)
+            .filter(config -> config.hasSensorWithTag(groupTag))
             .collect(Collectors.toList());
     }
 
@@ -135,6 +136,10 @@ public class RemoteProto extends JSONAble {
         return this.sensorConfigByID.keySet();
     }
 
+    public boolean hasKinematics() {
+        return this.kinematics != null;
+    }
+
     public boolean hasLocation() {
         return this.kinematics.hasLocation();
     }
@@ -143,8 +148,8 @@ public class RemoteProto extends JSONAble {
         return !this.getSensorConfigsWithModel(sensorModel).isEmpty();
     }
 
-    public boolean hasSensorConfigWithType(Class<? extends SensorConfig> cls) {
-        return !this.getSensorConfigsWithType(cls).isEmpty();
+    public boolean hasSensorConfigWithTag(String groupTag) {
+        return !this.getSensorConfigsWithTag(groupTag).isEmpty();
     }
 
     public boolean hasSensors() {
@@ -163,14 +168,7 @@ public class RemoteProto extends JSONAble {
         return this.kinematics.hasMotion();
     }
 
-    public JSONOptional toJSON() throws JSONException {
-        return this.getJSONBuilder().toJSON();
+    public Json toJson() throws JsonException {
+        return this.getJsonBuilder().toJson();
     }
-
-    public boolean equals(RemoteProto proto) {
-        if (proto == null) return false;
-        return this.getRemoteType().equals(proto.getRemoteType()) && this.kinematics.equals(proto.kinematics) &&
-            this.sensorConfigs.equals(proto.sensorConfigs);
-    }
-
 }

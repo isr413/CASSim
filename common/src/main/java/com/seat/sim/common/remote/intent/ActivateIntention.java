@@ -4,11 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 import com.seat.sim.common.util.Debugger;
 
 public class ActivateIntention extends Intention {
@@ -31,23 +27,23 @@ public class ActivateIntention extends Intention {
         this.addActivations(sensorIDs);
     }
 
-    public ActivateIntention(JSONOptional optional) throws JSONException {
-        super(optional);
+    public ActivateIntention(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
+    protected void decode(JsonObject json) throws JsonException {
         super.decode(json);
         this.activations = (json.hasKey(ActivateIntention.ACTIVATIONS)) ?
-            new HashSet<>(json.getJSONArray(ActivateIntention.ACTIVATIONS).toList(String.class)) :
+            new HashSet<>(json.getJsonArray(ActivateIntention.ACTIVATIONS).toList(String.class)) :
             new HashSet<>();
     }
 
     @Override
-    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
-        JSONObjectBuilder json = super.getJSONBuilder();
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = super.getJsonBuilder();
         if (this.hasActivations()) {
-            json.put(ActivateIntention.ACTIVATIONS, JSONBuilder.Array(this.activations));
+            json.put(ActivateIntention.ACTIVATIONS, JsonBuilder.toJsonArray(this.activations));
         }
         return json;
     }
@@ -68,6 +64,11 @@ public class ActivateIntention extends Intention {
             flag = this.addActivation(sensorID) && flag;
         }
         return flag;
+    }
+
+    public boolean equals(ActivateIntention intent) {
+        if (intent == null) return false;
+        return super.equals(intent) && this.activations.equals(intent.activations);
     }
 
     public Set<String> getActivations() {
@@ -103,10 +104,4 @@ public class ActivateIntention extends Intention {
         }
         return flag;
     }
-
-    public boolean equals(ActivateIntention intent) {
-        if (intent == null) return false;
-        return super.equals(intent) && this.activations.equals(intent.activations);
-    }
-
 }

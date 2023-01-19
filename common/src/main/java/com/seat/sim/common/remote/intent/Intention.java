@@ -1,13 +1,8 @@
 package com.seat.sim.common.remote.intent;
 
-import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 
-public abstract class Intention extends JSONAble {
+public abstract class Intention extends Jsonable {
 
     private IntentionType intentType;
 
@@ -15,19 +10,24 @@ public abstract class Intention extends JSONAble {
         this.intentType = intentType;
     }
 
-    public Intention(JSONOptional optional) throws JSONException {
-        super(optional);
+    public Intention(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
+    protected void decode(JsonObject json) throws JsonException {
         this.intentType = IntentionType.decodeType(json);
     }
 
-    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
-        JSONObjectBuilder json = JSONBuilder.Object();
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = JsonBuilder.Object();
         json.put(IntentionType.INTENTION_TYPE, this.intentType.getType());
         return json;
+    }
+
+    public boolean equals(Intention intent) {
+        if (intent == null) return false;
+        return this.intentType.equals(intent.intentType);
     }
 
     public IntentionType getIntentionType() {
@@ -38,13 +38,7 @@ public abstract class Intention extends JSONAble {
         return String.format("i:%s", this.intentType.getLabel());
     }
 
-    public JSONOptional toJSON() throws JSONException {
-        return this.getJSONBuilder().toJSON();
+    public Json toJson() throws JsonException {
+        return this.getJsonBuilder().toJson();
     }
-
-    public boolean equals(Intention intent) {
-        if (intent == null) return false;
-        return this.intentType.equals(intent.intentType);
-    }
-
 }

@@ -5,11 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 import com.seat.sim.common.util.Debugger;
 
 public class DeactivateIntention extends Intention {
@@ -32,26 +28,26 @@ public class DeactivateIntention extends Intention {
         this.addDeactivations(sensorIDs);
     }
 
-    public DeactivateIntention(JSONOptional optional) throws JSONException {
-        super(optional);
+    public DeactivateIntention(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
+    protected void decode(JsonObject json) throws JsonException {
         super.decode(json);
         this.deactivations = new HashSet<>();
         if (json.hasKey(DeactivateIntention.DEACTIVATIONS)) {
             this.deactivations = (json.hasKey(DeactivateIntention.DEACTIVATIONS)) ?
-                new HashSet<>(json.getJSONArray(DeactivateIntention.DEACTIVATIONS).toList(String.class)) :
+                new HashSet<>(json.getJsonArray(DeactivateIntention.DEACTIVATIONS).toList(String.class)) :
                 new HashSet<>();
         }
     }
 
     @Override
-    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
-        JSONObjectBuilder json = super.getJSONBuilder();
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = super.getJsonBuilder();
         if (this.hasDeactivations()) {
-            json.put(DeactivateIntention.DEACTIVATIONS, JSONBuilder.Array(this.deactivations));
+            json.put(DeactivateIntention.DEACTIVATIONS, JsonBuilder.toJsonArray(this.deactivations));
         }
         return json;
     }
@@ -71,6 +67,11 @@ public class DeactivateIntention extends Intention {
             flag = this.addDeactivation(sensorID) && flag;
         }
         return flag;
+    }
+
+    public boolean equals(DeactivateIntention intent) {
+        if (intent == null) return false;
+        return super.equals(intent) && this.deactivations.equals(intent.deactivations);
     }
 
     public Set<String> getDeactivations() {
@@ -106,10 +107,4 @@ public class DeactivateIntention extends Intention {
         }
         return flag;
     }
-
-    public boolean equals(DeactivateIntention intent) {
-        if (intent == null) return false;
-        return super.equals(intent) && this.deactivations.equals(intent.deactivations);
-    }
-
 }

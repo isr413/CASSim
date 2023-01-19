@@ -2,8 +2,8 @@ package com.seat.sim.common.remote.intent;
 
 import java.util.Collection;
 
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.Json;
+import com.seat.sim.common.json.JsonException;
 import com.seat.sim.common.math.Vector;
 
 public class IntentRegistry {
@@ -36,19 +36,19 @@ public class IntentRegistry {
         return new DoneIntention();
     }
 
-    public static Intention From(JSONOptional optional) throws JSONException {
-        if (!optional.isPresentObject()) {
-            throw new JSONException(String.format("Cannot decode intention type of %s", optional.toString()));
+    public static Intention From(Json json) throws JsonException {
+        if (!json.isJsonObject()) {
+            throw new JsonException(String.format("Cannot decode intention type of %s", json.toString()));
         }
-        switch (IntentionType.decodeType(optional.getObject())) {
-            case ACTIVATE: return new ActivateIntention(optional);
-            case DEACTIVATE: return new DeactivateIntention(optional);
+        switch (IntentionType.decodeType(json.getJsonObject())) {
+            case ACTIVATE: return new ActivateIntention(json);
+            case DEACTIVATE: return new DeactivateIntention(json);
             case DONE: return new DoneIntention();
-            case GOTO: return new GoToIntention(optional);
-            case MOVE: return new MoveIntention(optional);
+            case GOTO: return new GoToIntention(json);
+            case MOVE: return new MoveIntention(json);
             case SHUTDOWN: return new ShutdownIntention();
             case STARTUP: return new StartupIntention();
-            case STEER: return new SteerIntention(optional);
+            case STEER: return new SteerIntention(json);
             case STOP: return new StopIntention();
             default: return new NoneIntention();
         }
@@ -109,5 +109,4 @@ public class IntentRegistry {
     public static StopIntention Stop() {
         return new StopIntention();
     }
-
 }

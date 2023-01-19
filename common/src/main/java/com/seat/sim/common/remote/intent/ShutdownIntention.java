@@ -10,5 +10,4 @@ public class ShutdownIntention extends Intention {
     public String getLabel() {
         return "<SHUTDOWN>";
     }
-
 }

@@ -1,15 +1,10 @@
 package com.seat.sim.common.remote.kinematics;
 
-import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 import com.seat.sim.common.math.Vector;
 
 /** A class to model a Remote's fuel, fuel usage, location, and motion. */
-public class Kinematics extends JSONAble {
+public class Kinematics extends Jsonable {
     public static final String FUEL = "fuel";
     public static final String FUEL_USAGE = "fuel_usage";
     public static final String LOCATION = "location";
@@ -31,41 +26,49 @@ public class Kinematics extends JSONAble {
         this.fuelUsage = (fuelUsage != null) ? fuelUsage : new Vector();
     }
 
-    public Kinematics(JSONOptional optional) throws JSONException {
-        super(optional);
+    public Kinematics(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
+    protected void decode(JsonObject json) throws JsonException {
         this.location = (json.hasKey(Kinematics.LOCATION)) ?
-            new Vector(json.getJSONOptional(Kinematics.LOCATION)) :
+            new Vector(json.getJson(Kinematics.LOCATION)) :
             null;
         this.motion = (json.hasKey(Kinematics.MOTION)) ?
-            new Motion(json.getJSONOptional(Kinematics.MOTION)) :
+            new Motion(json.getJson(Kinematics.MOTION)) :
             new Motion();
         this.fuel = (json.hasKey(Kinematics.FUEL)) ?
-            new Fuel(json.getJSONOptional(Kinematics.FUEL)) :
+            new Fuel(json.getJson(Kinematics.FUEL)) :
             new Fuel();
         this.fuelUsage = (json.hasKey(Kinematics.FUEL_USAGE)) ?
-            new Vector(json.getJSONOptional(Kinematics.FUEL_USAGE)) :
+            new Vector(json.getJson(Kinematics.FUEL_USAGE)) :
             new Vector();
     }
 
-    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
-        JSONObjectBuilder json = JSONBuilder.Object();
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = JsonBuilder.Object();
         if (this.hasLocation()) {
-            json.put(Kinematics.LOCATION, this.location.toJSON());
+            json.put(Kinematics.LOCATION, this.location.toJson());
         }
         if (this.hasMotion()) {
-            json.put(Kinematics.MOTION, this.motion.toJSON());
+            json.put(Kinematics.MOTION, this.motion.toJson());
         }
         if (this.hasFiniteFuel()) {
-            json.put(Kinematics.FUEL, this.fuel.toJSON());
+            json.put(Kinematics.FUEL, this.fuel.toJson());
         }
         if (this.hasFuelUsage()) {
-            json.put(Kinematics.FUEL_USAGE, this.fuelUsage.toJSON());
+            json.put(Kinematics.FUEL_USAGE, this.fuelUsage.toJson());
         }
         return json;
+    }
+
+    public boolean equals(Kinematics kinematics) {
+        if (kinematics == null) return false;
+        return ((this.hasLocation() && this.location.equals(kinematics.location))
+                || this.location == kinematics.location) &&
+            this.motion.equals(kinematics.motion) && this.fuel.equals(kinematics.fuel) &&
+            this.fuelUsage.equals(kinematics.fuelUsage);
     }
 
     public double getInitialFuel() {
@@ -136,16 +139,7 @@ public class Kinematics extends JSONAble {
         return this.fuel.getInitialFuel() > 0;
     }
 
-    public JSONOptional toJSON() throws JSONException {
-        return this.getJSONBuilder().toJSON();
+    public Json toJson() throws JsonException {
+        return this.getJsonBuilder().toJson();
     }
-
-    public boolean equals(Kinematics kinematics) {
-        if (kinematics == null) return false;
-        return ((this.hasLocation() && this.location.equals(kinematics.location))
-                || this.location == kinematics.location) &&
-            this.motion.equals(kinematics.motion) && this.fuel.equals(kinematics.fuel) &&
-            this.fuelUsage.equals(kinematics.fuelUsage);
-    }
-
 }

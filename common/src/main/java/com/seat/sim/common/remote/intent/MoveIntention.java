@@ -1,9 +1,6 @@
 package com.seat.sim.common.remote.intent;
 
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 import com.seat.sim.common.math.Vector;
 
 public class MoveIntention extends Intention {
@@ -20,23 +17,28 @@ public class MoveIntention extends Intention {
         this.acceleration = acceleration;
     }
 
-    public MoveIntention(JSONOptional optional) throws JSONException {
-        super(optional);
+    public MoveIntention(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
+    protected void decode(JsonObject json) throws JsonException {
         super.decode(json);
         this.acceleration = (json.hasKey(MoveIntention.ACCELERATION)) ?
-            new Vector(json.getJSONOptional(MoveIntention.ACCELERATION)) :
+            new Vector(json.getJson(MoveIntention.ACCELERATION)) :
             new Vector();
     }
 
     @Override
-    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
-        JSONObjectBuilder json = super.getJSONBuilder();
-        json.put(MoveIntention.ACCELERATION, this.acceleration.toJSON());
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = super.getJsonBuilder();
+        json.put(MoveIntention.ACCELERATION, this.acceleration.toJson());
         return json;
+    }
+
+    public boolean equals(MoveIntention intent) {
+        if (intent == null) return false;
+        return super.equals(intent) && this.acceleration.equals(intent.acceleration);
     }
 
     public Vector getAcceleration() {
@@ -51,10 +53,4 @@ public class MoveIntention extends Intention {
     public boolean hasAcceleration() {
         return this.acceleration.getMagnitude() > 0;
     }
-
-    public boolean equals(MoveIntention intent) {
-        if (intent == null) return false;
-        return super.equals(intent) && this.acceleration.equals(intent.acceleration);
-    }
-
 }

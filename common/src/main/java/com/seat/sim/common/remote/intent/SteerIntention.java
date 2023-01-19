@@ -1,9 +1,6 @@
 package com.seat.sim.common.remote.intent;
 
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 import com.seat.sim.common.math.Vector;
 
 public class SteerIntention extends Intention {
@@ -21,25 +18,31 @@ public class SteerIntention extends Intention {
         this.direction = direction;
     }
 
-    public SteerIntention(JSONOptional optional) throws JSONException {
-        super(optional);
+    public SteerIntention(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
+    protected void decode(JsonObject json) throws JsonException {
         super.decode(json);
         this.direction = (json.hasKey(SteerIntention.DIRECTION)) ?
-            new Vector(json.getJSONOptional(SteerIntention.DIRECTION)) :
+            new Vector(json.getJson(SteerIntention.DIRECTION)) :
             null;
     }
 
     @Override
-    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
-        JSONObjectBuilder json = super.getJSONBuilder();
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = super.getJsonBuilder();
         if (this.hasDirection()) {
-            json.put(SteerIntention.DIRECTION, this.direction.toJSON());
+            json.put(SteerIntention.DIRECTION, this.direction.toJson());
         }
         return json;
+    }
+
+    public boolean equals(SteerIntention intent) {
+        if (intent == null) return false;
+        return super.equals(intent) &&
+            ((this.hasDirection() && this.direction.equals(intent.direction)) || this.direction == intent.direction);
     }
 
     public Vector getDirection() {
@@ -54,11 +57,4 @@ public class SteerIntention extends Intention {
     public boolean hasDirection() {
         return this.direction != null;
     }
-
-    public boolean equals(SteerIntention intent) {
-        if (intent == null) return false;
-        return super.equals(intent) &&
-            ((this.hasDirection() && this.direction.equals(intent.direction)) || this.direction == intent.direction);
-    }
-
 }

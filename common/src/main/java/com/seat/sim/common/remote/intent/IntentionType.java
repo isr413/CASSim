@@ -1,6 +1,6 @@
 package com.seat.sim.common.remote.intent;
 
-import com.seat.sim.common.json.JSONObject;
+import com.seat.sim.common.json.JsonObject;
 import com.seat.sim.common.json.SerializableEnum;
 
 /** A serializable enumeration to denote types of intents. */
@@ -18,7 +18,7 @@ public enum IntentionType implements SerializableEnum {
 
     public static final String INTENTION_TYPE = "intention_type";
 
-    public static IntentionType decodeType(JSONObject json) {
+    public static IntentionType decodeType(JsonObject json) {
         return (json.hasKey(IntentionType.INTENTION_TYPE)) ?
             IntentionType.Value(json.getInt(IntentionType.INTENTION_TYPE)) :
             IntentionType.NONE;
@@ -46,5 +46,4 @@ public enum IntentionType implements SerializableEnum {
     public String toString() {
         return this.getLabel();
     }
-
 }

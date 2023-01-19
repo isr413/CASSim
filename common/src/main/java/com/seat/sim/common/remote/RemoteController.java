@@ -2,16 +2,14 @@ package com.seat.sim.common.remote;
 
 import java.util.Collection;
 
-import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.intent.IntentRegistry;
 import com.seat.sim.common.remote.intent.Intention;
 import com.seat.sim.common.remote.intent.IntentionSet;
 
 /** A controller to signal intents to a Remote. */
-public class RemoteController extends JSONAble {
+public class RemoteController extends Jsonable {
 
     private IntentionSet intentions;
 
@@ -19,13 +17,13 @@ public class RemoteController extends JSONAble {
         this.intentions = new IntentionSet(remoteID);
     }
 
-    public RemoteController(JSONOptional optional) throws JSONException {
-        super(optional);
+    public RemoteController(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONOptional optional) throws JSONException {
-        this.intentions = new IntentionSet(optional);
+    protected void decode(Json json) throws JsonException {
+        this.intentions = new IntentionSet(json);
     }
 
     protected void addIntention(Intention intent) {
@@ -58,6 +56,11 @@ public class RemoteController extends JSONAble {
 
     public void done() {
         this.addIntention(IntentRegistry.Done());
+    }
+
+    public boolean equals(RemoteController controller) {
+        if (controller == null) return false;
+        return this.intentions.equals(controller.intentions);
     }
 
     public IntentionSet getIntentions() {
@@ -120,13 +123,7 @@ public class RemoteController extends JSONAble {
         this.addIntention(IntentRegistry.Stop());
     }
 
-    public JSONOptional toJSON() throws JSONException {
-        return this.intentions.toJSON();
+    public Json toJson() throws JsonException {
+        return this.intentions.toJson();
     }
-
-    public boolean equals(RemoteController controller) {
-        if (controller == null) return false;
-        return this.intentions.equals(controller.intentions);
-    }
-
 }

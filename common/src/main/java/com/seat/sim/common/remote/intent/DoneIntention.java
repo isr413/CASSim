@@ -10,5 +10,4 @@ public class DoneIntention extends Intention {
     public String getLabel() {
         return "<DONE>";
     }
-
 }

@@ -10,5 +10,4 @@ public class NoneIntention extends Intention {
     public String getLabel() {
         return "<NONE>";
     }
-
 }

@@ -7,17 +7,12 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.CommonException;
-import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.util.Debugger;
 
 /** A serializable class to assign intentions to a Remote. */
-public class IntentionSet extends JSONAble {
+public class IntentionSet extends Jsonable {
     public static final String INTENTIONS = "intentions";
 
     private HashMap<IntentionType, Intention> intentions;
@@ -28,17 +23,17 @@ public class IntentionSet extends JSONAble {
         this.intentions = new HashMap<>();
     }
 
-    public IntentionSet(JSONOptional optional) throws JSONException {
-        super(optional);
+    public IntentionSet(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
+    protected void decode(JsonObject json) throws JsonException {
         this.remoteID = json.getString(RemoteState.REMOTE_ID);
         this.intentions = new HashMap<>();
         if (json.hasKey(IntentionSet.INTENTIONS)) {
-            json.getJSONArray(IntentionSet.INTENTIONS).toList(JSONOptional.class).stream()
-                .map(optional -> IntentRegistry.From(optional))
+            json.getJsonArray(IntentionSet.INTENTIONS).toList(Json.class).stream()
+                .map(intent -> IntentRegistry.From(intent))
                 .forEach(intent -> this.addIntention(intent));
         }
     }
@@ -53,6 +48,11 @@ public class IntentionSet extends JSONAble {
         }
         this.intentions.put(intent.getIntentionType(), intent);
         return true;
+    }
+
+    public boolean equals(IntentionSet remote) {
+        if (remote == null) return false;
+        return this.remoteID.equals(remote.remoteID);
     }
 
     public Collection<Intention> getIntentions() {
@@ -111,25 +111,19 @@ public class IntentionSet extends JSONAble {
         return true;
     }
 
-    public JSONOptional toJSON() throws JSONException {
-        JSONObjectBuilder json = JSONBuilder.Object();
+    public Json toJson() throws JsonException {
+        JsonObjectBuilder json = JsonBuilder.Object();
         json.put(RemoteState.REMOTE_ID, this.remoteID);
         if (this.hasIntentions()) {
             json.put(
                 IntentionSet.INTENTIONS,
-                JSONBuilder.Array(
+                JsonBuilder.toJsonArray(
                     this.intentions.values().stream()
-                        .map(intent -> intent.toJSON())
+                        .map(intent -> intent.toJson())
                         .collect(Collectors.toList())
-                ).toJSON()
+                )
             );
         }
-        return json.toJSON();
+        return json.toJson();
     }
-
-    public boolean equals(IntentionSet remote) {
-        if (remote == null) return false;
-        return this.remoteID.equals(remote.remoteID);
-    }
-
 }

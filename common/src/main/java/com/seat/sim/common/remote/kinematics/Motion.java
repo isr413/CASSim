@@ -1,14 +1,9 @@
 package com.seat.sim.common.remote.kinematics;
 
-import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 
 /** A struct class to store motion data for a Remote asset. */
-public class Motion extends JSONAble {
+public class Motion extends Jsonable {
     public static final String INITIAL_VELOCITY = "initial_velocity";
     public static final String MAX_ACCELERATION = "max_acceleration";
     public static final String MAX_VELOCITY = "max_velocity";
@@ -31,12 +26,12 @@ public class Motion extends JSONAble {
         this.maxAcceleration = maxAcceleration;
     }
 
-    public Motion(JSONOptional optional) throws JSONException {
-        super(optional);
+    public Motion(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
+    protected void decode(JsonObject json) throws JsonException {
         this.initialVelocity = (json.hasKey(Motion.INITIAL_VELOCITY)) ?
             json.getDouble(Motion.INITIAL_VELOCITY) :
             Double.POSITIVE_INFINITY;
@@ -48,8 +43,8 @@ public class Motion extends JSONAble {
             Double.POSITIVE_INFINITY;
     }
 
-    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
-        JSONObjectBuilder json = JSONBuilder.Object();
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = JsonBuilder.Object();
         if (this.hasInitialVelocity()) {
             json.put(Motion.INITIAL_VELOCITY, this.initialVelocity);
         }
@@ -60,6 +55,12 @@ public class Motion extends JSONAble {
             json.put(Motion.MAX_ACCELERATION, this.maxAcceleration);
         }
         return json;
+    }
+
+    public boolean equals(Motion motion) {
+        if (motion == null) return false;
+        return this.initialVelocity == motion.initialVelocity && this.maxVelocity == motion.maxVelocity &&
+            this.maxAcceleration == motion.maxAcceleration;
     }
 
     public double getInitialVelocity() {
@@ -86,14 +87,7 @@ public class Motion extends JSONAble {
         return this.maxVelocity != Double.POSITIVE_INFINITY;
     }
 
-    public JSONOptional toJSON() throws JSONException {
-        return this.getJSONBuilder().toJSON();
+    public Json toJson() throws JsonException {
+        return this.getJsonBuilder().toJson();
     }
-
-    public boolean equals(Motion motion) {
-        if (motion == null) return false;
-        return this.initialVelocity == motion.initialVelocity && this.maxVelocity == motion.maxVelocity &&
-            this.maxAcceleration == motion.maxAcceleration;
-    }
-
 }

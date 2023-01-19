@@ -1,14 +1,9 @@
 package com.seat.sim.common.remote.kinematics;
 
-import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 
 /** A struct class to store Fuel information for a Remote asset. */
-public class Fuel extends JSONAble {
+public class Fuel extends Jsonable {
     public static final String INITIAL_FUEL = "initial_fuel";
     public static final String MAX_FUEL = "max_fuel";
 
@@ -28,12 +23,12 @@ public class Fuel extends JSONAble {
         this.maxFuel = maxFuel;
     }
 
-    public Fuel(JSONOptional optional) throws JSONException {
-        super(optional);
+    public Fuel(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
+    protected void decode(JsonObject json) throws JsonException {
         this.initialFuel = (json.hasKey(Fuel.INITIAL_FUEL)) ?
             json.getDouble(Fuel.INITIAL_FUEL) :
             Double.POSITIVE_INFINITY;
@@ -42,8 +37,8 @@ public class Fuel extends JSONAble {
             Double.POSITIVE_INFINITY;
     }
 
-    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
-        JSONObjectBuilder json = JSONBuilder.Object();
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = JsonBuilder.Object();
         if (this.hasInitialFuel()) {
             json.put(Fuel.INITIAL_FUEL, this.initialFuel);
         }
@@ -51,6 +46,11 @@ public class Fuel extends JSONAble {
             json.put(Fuel.MAX_FUEL, this.maxFuel);
         }
         return json;
+    }
+
+    public boolean equals(Fuel fuel) {
+        if (fuel == null) return false;
+        return this.initialFuel == fuel.initialFuel && this.maxFuel == fuel.maxFuel;
     }
 
     public double getInitialFuel() {
@@ -69,13 +69,7 @@ public class Fuel extends JSONAble {
         return this.maxFuel != Double.POSITIVE_INFINITY;
     }
 
-    public JSONOptional toJSON() throws JSONException {
-        return this.getJSONBuilder().toJSON();
+    public Json toJson() throws JsonException {
+        return this.getJsonBuilder().toJson();
     }
-
-    public boolean equals(Fuel fuel) {
-        if (fuel == null) return false;
-        return this.initialFuel == fuel.initialFuel && this.maxFuel == fuel.maxFuel;
-    }
-
 }

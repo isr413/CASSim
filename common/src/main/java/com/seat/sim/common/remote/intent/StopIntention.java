@@ -10,5 +10,4 @@ public class StopIntention extends Intention {
     public String getLabel() {
         return "<STOP>";
     }
-
 }

@@ -10,5 +10,4 @@ public class StartupIntention extends Intention {
     public String getLabel() {
         return "<STARTUP>";
     }
-
 }

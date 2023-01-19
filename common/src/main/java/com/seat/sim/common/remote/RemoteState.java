@@ -9,18 +9,13 @@ import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.core.TeamColor;
-import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.sensor.SensorRegistry;
 import com.seat.sim.common.sensor.SensorState;
 
 /** A serializable snapshot of a Remote. */
-public class RemoteState extends JSONAble {
+public class RemoteState extends Jsonable {
     public static final String ACTIVE = "active";
     public static final String FUEL = "fuel";
     public static final String LOCATION = "location";
@@ -48,45 +43,45 @@ public class RemoteState extends JSONAble {
             new HashMap<>();
     }
 
-    public RemoteState(JSONOptional optional) throws JSONException {
-        super(optional);
+    public RemoteState(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
+    protected void decode(JsonObject json) throws JsonException {
         this.remoteID = json.getString(RemoteState.REMOTE_ID);
         this.team = (json.hasKey(TeamColor.TEAM)) ?
             TeamColor.decodeType(json) :
             TeamColor.NONE;
         this.location = (json.hasKey(RemoteState.LOCATION)) ?
-            new Vector(json.getJSONOptional(RemoteState.LOCATION)) :
+            new Vector(json.getJson(RemoteState.LOCATION)) :
             null;
         this.velocity = (json.hasKey(RemoteState.VELOCITY)) ?
-            new Vector(json.getJSONOptional(RemoteState.VELOCITY)) :
+            new Vector(json.getJson(RemoteState.VELOCITY)) :
             null;
         this.fuel = (json.hasKey(RemoteState.FUEL)) ?
             json.getDouble(RemoteState.FUEL) :
             Double.POSITIVE_INFINITY;
         this.active = json.getBoolean(RemoteState.ACTIVE);
         this.sensorStates = (json.hasKey(RemoteProto.SENSORS)) ?
-            json.getJSONArray(RemoteProto.SENSORS).toList(JSONOptional.class).stream()
-                .map(optional -> SensorRegistry.decodeTo(SensorState.class, optional))
+            json.getJsonArray(RemoteProto.SENSORS).toList(Json.class).stream()
+                .map(state -> SensorRegistry.decodeTo(SensorState.class, state))
                 .collect(Collectors.toMap(SensorState::getSensorID, Function.identity())) :
             new HashMap<>();
     }
 
-    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
-        JSONObjectBuilder json = JSONBuilder.Object();
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = JsonBuilder.Object();
         json.put(RemoteRegistry.REMOTE_TYPE, this.getRemoteType());
         json.put(RemoteState.REMOTE_ID, this.remoteID);
         if (this.hasTeam()) {
             json.put(TeamColor.TEAM, this.team.getType());
         }
         if (this.hasLocation()) {
-            json.put(RemoteState.LOCATION, this.location.toJSON());
+            json.put(RemoteState.LOCATION, this.location.toJson());
         }
         if (this.hasVelocity()) {
-            json.put(RemoteState.VELOCITY, this.velocity.toJSON());
+            json.put(RemoteState.VELOCITY, this.velocity.toJson());
         }
         if (this.hasFiniteFuel()) {
             json.put(RemoteState.FUEL, this.fuel);
@@ -95,14 +90,22 @@ public class RemoteState extends JSONAble {
         if (this.hasSensors()) {
             json.put(
                 RemoteProto.SENSORS,
-                JSONBuilder.Array(
+                JsonBuilder.toJsonArray(
                     this.sensorStates.values().stream()
-                        .map(sensorState -> sensorState.toJSON())
+                        .map(sensorState -> sensorState.toJson())
                         .collect(Collectors.toList())
-                ).toJSON()
+                )
             );
         }
         return json;
+    }
+
+    public boolean equals(RemoteState state) {
+        if (state == null) return false;
+        return this.getRemoteType().equals(state.getRemoteType()) && this.remoteID.equals(state.remoteID) &&
+            this.team.equals(state.team) && this.location.equals(state.location) &&
+            this.velocity.equals(state.velocity) && this.fuel == state.fuel &&
+            this.active == state.active && this.sensorStates.equals(state.sensorStates);
     }
 
     public double getFuel() {
@@ -139,11 +142,9 @@ public class RemoteState extends JSONAble {
             .collect(Collectors.toList());
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends SensorState> Collection<T> getSensorStatesWithType(Class<T> cls) {
+    public Collection<SensorState> getSensorStatesWithTag(String groupTag) {
         return this.getSensorStates().stream()
-            .filter(sensorState -> cls.isAssignableFrom(sensorState.getClass()))
-            .map(sensorState -> (T) sensorState)
+            .filter(sensorState -> sensorState.hasSensorGroupWithTag(groupTag))
             .collect(Collectors.toList());
     }
 
@@ -182,8 +183,8 @@ public class RemoteState extends JSONAble {
         return !this.getSensorStatesWithModel(sensorModel).isEmpty();
     }
 
-    public boolean hasSensorStateWithType(Class<? extends SensorState> cls) {
-        return !this.getSensorStatesWithType(cls).isEmpty();
+    public boolean hasSensorStateWithTag(String groupTag) {
+        return !this.getSensorStatesWithTag(groupTag).isEmpty();
     }
 
     public boolean hasTeam() {
@@ -210,16 +211,7 @@ public class RemoteState extends JSONAble {
         return this.isActive() && this.hasVelocity();
     }
 
-    public JSONOptional toJSON() throws JSONException {
-        return this.getJSONBuilder().toJSON();
+    public Json toJson() throws JsonException {
+        return this.getJsonBuilder().toJson();
     }
-
-    public boolean equals(RemoteState state) {
-        if (state == null) return false;
-        return this.getRemoteType().equals(state.getRemoteType()) && this.remoteID.equals(state.remoteID) &&
-            this.team.equals(state.team) && this.location.equals(state.location) &&
-            this.velocity.equals(state.velocity) && this.fuel == state.fuel &&
-            this.active == state.active && this.sensorStates.equals(state.sensorStates);
-    }
-
 }
