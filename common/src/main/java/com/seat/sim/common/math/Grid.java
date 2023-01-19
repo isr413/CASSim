@@ -81,6 +81,38 @@ public class Grid extends Jsonable {
         }
     }
 
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = JsonBuilder.Object();
+        json.put(Grid.GRID_WIDTH, this.width);
+        json.put(Grid.GRID_HEIGHT, this.height);
+        json.put(Grid.ZONE_SIZE, this.zoneSize);
+        if (this.isCustomGrid) {
+            JsonArrayBuilder jsonZones = JsonBuilder.Array();
+            for (int row = 0; row < this.height; row++) {
+                JsonArrayBuilder jsonRow = JsonBuilder.Array();
+                for (int col = 0; col < this.width; col++) {
+                    jsonRow.put(this.getZone(row, col).toJson());
+                }
+                jsonZones.put(jsonRow.toJson());
+            }
+            json.put(Grid.ZONES, jsonZones.toJson());
+        }
+        return json;
+    }
+
+    public boolean equals(Grid grid) {
+        if (grid == null) return false;
+        if (!(this.width == grid.width && this.height == grid.height && this.zoneSize == grid.zoneSize)) return false;
+        for (int y = 0; y < this.height; y++) {
+            for (int x = 0; x < this.width; x++) {
+                if (!this.zones[y][x].equals(grid.zones[y][x])) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public Vector getBoundsCollisionLocation(Vector location, Vector nextLocation) {
         if (this.isInbounds(nextLocation)) {
             return null;
@@ -191,34 +223,6 @@ public class Grid extends Jsonable {
     }
 
     public Json toJson() throws JsonException {
-        JsonObjectBuilder json = JsonBuilder.Object();
-        json.put(Grid.GRID_WIDTH, this.width);
-        json.put(Grid.GRID_HEIGHT, this.height);
-        json.put(Grid.ZONE_SIZE, this.zoneSize);
-        if (this.isCustomGrid) {
-            JsonArrayBuilder jsonZones = JsonBuilder.Array();
-            for (int row = 0; row < this.height; row++) {
-                JsonArrayBuilder jsonRow = JsonBuilder.Array();
-                for (int col = 0; col < this.width; col++) {
-                    jsonRow.put(this.getZone(row, col).toJson());
-                }
-                jsonZones.put(jsonRow.toJson());
-            }
-            json.put(Grid.ZONES, jsonZones.toJson());
-        }
-        return Json.of(json.toJson());
-    }
-
-    public boolean equals(Grid grid) {
-        if (grid == null) return false;
-        if (!(this.width == grid.width && this.height == grid.height && this.zoneSize == grid.zoneSize)) return false;
-        for (int y = 0; y < this.height; y++) {
-            for (int x = 0; x < this.width; x++) {
-                if (!this.zones[y][x].equals(grid.zones[y][x])) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return this.getJsonBuilder().toJson();
     }
 }

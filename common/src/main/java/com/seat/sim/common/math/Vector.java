@@ -189,6 +189,20 @@ public class Vector extends Jsonable {
         this.z = json.getDouble(2);
     }
 
+    protected JsonArrayBuilder getJsonBuilder() throws JsonException {
+        JsonArrayBuilder json = JsonBuilder.Array();
+        json.put(this.x);
+        json.put(this.y);
+        json.put(this.z);
+        return json;
+    }
+
+    /** Returns true if both vectors have equal components. */
+    public boolean equals(Vector vec) {
+        if (vec == null) return false;
+        return this.x == vec.x && this.y == vec.y && this.z == vec.z;
+    }
+
     /** Returns the angle between the Z-basis and this vector. */
     public double getAngleBetweenZ() {
         return Vector.angleBetween(Vector.Z_BASIS, this);
@@ -252,17 +266,7 @@ public class Vector extends Jsonable {
 
     /** Returns a decodable Json representation of this vector. */
     public Json toJson() throws JsonException {
-        JsonArrayBuilder json = JsonBuilder.Array();
-        json.put(this.x);
-        json.put(this.y);
-        json.put(this.z);
-        return Json.of(json.toJson());
-    }
-
-    /** Returns true if both vectors have equal components. */
-    public boolean equals(Vector vec) {
-        if (vec == null) return false;
-        return this.x == vec.x && this.y == vec.y && this.z == vec.z;
+        return this.getJsonBuilder().toJson();
     }
 
     @Override

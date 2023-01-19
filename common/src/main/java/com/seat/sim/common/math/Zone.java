@@ -25,6 +25,17 @@ public class Zone extends Jsonable {
         this.size = json.getInt(Zone.ZONE_SIZE);
     }
 
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = JsonBuilder.Object();
+        json.put(Zone.ZONE_LOCATION, this.location.toJson());
+        json.put(Zone.ZONE_SIZE, this.size);
+        return json;
+    }
+
+    public boolean equals(Zone zone) {
+        if (zone == null) return false;
+        return this.location.equals(zone.location);
+    }
     public String getLabel() {
         return String.format("<z: %s>", this.location.toString());
     }
@@ -38,14 +49,6 @@ public class Zone extends Jsonable {
     }
 
     public Json toJson() throws JsonException {
-        JsonObjectBuilder json = JsonBuilder.Object();
-        json.put(Zone.ZONE_LOCATION, this.location.toJson());
-        json.put(Zone.ZONE_SIZE, this.size);
-        return Json.of(json.toJson());
-    }
-
-    public boolean equals(Zone zone) {
-        if (zone == null) return false;
-        return this.location.equals(zone.location);
+        return this.getJsonBuilder().toJson();
     }
 }
