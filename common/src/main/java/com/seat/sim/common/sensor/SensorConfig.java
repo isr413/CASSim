@@ -4,15 +4,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 
 /** A serializable configuration of a generic Sensor. */
-public class SensorConfig extends JSONAble {
+public class SensorConfig extends Jsonable {
     public static final String COUNT = "count";
     public static final String PROTO = "__proto__";
     public static final String SENSOR_IDS = "sensor_ids";
@@ -40,30 +35,36 @@ public class SensorConfig extends JSONAble {
         this.active = active;
     }
 
-    public SensorConfig(JSONOptional optional) throws JSONException {
-        super(optional);
+    public SensorConfig(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
-        this.proto = SensorRegistry.decodeTo(SensorProto.class, json.getJSONOptional(SensorConfig.PROTO));
+    protected void decode(JsonObject json) throws JsonException {
+        this.proto = SensorRegistry.decodeTo(SensorProto.class, json.getJson(SensorConfig.PROTO));
         this.count = json.getInt(SensorConfig.COUNT);
         this.sensorIDs = (json.hasKey(SensorConfig.SENSOR_IDS)) ?
-            new HashSet<>(json.getJSONArray(SensorConfig.SENSOR_IDS).toList(String.class)) :
+            new HashSet<>(json.getJsonArray(SensorConfig.SENSOR_IDS).toList(String.class)) :
             new HashSet<>();
         this.active = json.getBoolean(SensorState.ACTIVE);
     }
 
-    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
-        JSONObjectBuilder json = JSONBuilder.Object();
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = JsonBuilder.Object();
         json.put(SensorRegistry.SENSOR_TYPE, this.getSensorType());
-        json.put(SensorConfig.PROTO, this.proto.toJSON());
+        json.put(SensorConfig.PROTO, this.proto.toJson());
         json.put(SensorConfig.COUNT, this.count);
         if (this.hasSensors()) {
-            json.put(SensorConfig.SENSOR_IDS, JSONBuilder.Array(this.sensorIDs).toJSON());
+            json.put(SensorConfig.SENSOR_IDS, JsonBuilder.toJsonArray(this.sensorIDs));
         }
         json.put(SensorState.ACTIVE, this.active);
         return json;
+    }
+
+    public boolean equals(SensorConfig config) {
+        if (config == null) return false;
+        return this.getSensorType().equals(config.getSensorType()) && this.proto.equals(config.proto) &&
+            this.count == config.count && this.sensorIDs.equals(config.sensorIDs) && this.active == config.active;
     }
 
     public int getCount() {
@@ -90,26 +91,23 @@ public class SensorConfig extends JSONAble {
         return this.proto != null;
     }
 
+    public boolean hasSensors() {
+        return this.count > 0;
+    }
+
     public boolean hasSensorWithID(String sensorID) {
         return this.sensorIDs.contains(sensorID);
     }
 
-    public boolean hasSensors() {
-        return this.count > 0;
+    public boolean hasSensorWithTag(String groupTag) {
+        return this.proto.hasSensorGroupWithTag(groupTag);
     }
 
     public boolean isActive() {
         return this.active;
     }
 
-    public JSONOptional toJSON() throws JSONException {
-        return this.getJSONBuilder().toJSON();
+    public Json toJson() throws JsonException {
+        return this.getJsonBuilder().toJson();
     }
-
-    public boolean equals(SensorConfig config) {
-        if (config == null) return false;
-        return this.getSensorType().equals(config.getSensorType()) && this.proto.equals(config.proto) &&
-            this.count == config.count && this.sensorIDs.equals(config.sensorIDs) && this.active == config.active;
-    }
-
 }

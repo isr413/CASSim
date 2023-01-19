@@ -5,17 +5,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 import com.seat.sim.common.core.CommonException;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOptional;
-import com.seat.sim.common.sensor.comms.CommsSensorConfig;
-import com.seat.sim.common.sensor.comms.CommsSensorProto;
-import com.seat.sim.common.sensor.comms.CommsSensorState;
-import com.seat.sim.common.sensor.monitor.MonitorSensorConfig;
-import com.seat.sim.common.sensor.monitor.MonitorSensorProto;
-import com.seat.sim.common.sensor.monitor.MonitorSensorState;
-import com.seat.sim.common.sensor.vision.VisionSensorConfig;
-import com.seat.sim.common.sensor.vision.VisionSensorProto;
-import com.seat.sim.common.sensor.vision.VisionSensorState;
+import com.seat.sim.common.json.Json;
+import com.seat.sim.common.json.JsonException;
 
 public class SensorRegistry {
     public static final String BLUETOOTH_COMMS = "bluetooth";
@@ -26,75 +17,34 @@ public class SensorRegistry {
     public static final String NATURAL_VISION = "natural_vision";
     public static final String SENSOR_TYPE = "sensor_type";
 
-    private static final Map<String, Function<JSONOptional, Object>> REGISTRY =
-            new HashMap<String, Function<JSONOptional, Object>>(){{
-        put(SensorConfig.class.getName(), (optional) -> new SensorConfig(optional));
-        put(SensorProto.class.getName(), (optional) -> new SensorProto(optional));
-        put(SensorState.class.getName(), (optional) -> new SensorState(optional));
-        put(CommsSensorConfig.class.getName(), (optional) -> new CommsSensorConfig(optional));
-        put(CommsSensorProto.class.getName(), (optional) -> new CommsSensorProto(optional));
-        put(CommsSensorState.class.getName(), (optional) -> new CommsSensorState(optional));
-        put(MonitorSensorConfig.class.getName(), (optional) -> new MonitorSensorConfig(optional));
-        put(MonitorSensorProto.class.getName(), (optional) -> new MonitorSensorProto(optional));
-        put(MonitorSensorState.class.getName(), (optional) -> new MonitorSensorState(optional));
-        put(VisionSensorConfig.class.getName(), (optional) -> new VisionSensorConfig(optional));
-        put(VisionSensorProto.class.getName(), (optional) -> new VisionSensorProto(optional));
-        put(VisionSensorState.class.getName(), (optional) -> new VisionSensorState(optional));
+    private static final Map<String, Function<Json, Object>> REGISTRY =
+            new HashMap<String, Function<Json, Object>>(){{
+        put(SensorConfig.class.getName(), (json) -> new SensorConfig(json));
+        put(SensorProto.class.getName(), (json) -> new SensorProto(json));
+        put(SensorState.class.getName(), (json) -> new SensorState(json));
     }};
 
-    public static CommsSensorProto BluetoothSensor(double range, double accuracy, double batteryUsage, double delay) {
-        return new CommsSensorProto(SensorRegistry.BLUETOOTH_COMMS, range, accuracy, batteryUsage, delay);
-    }
-
-    public static VisionSensorProto CMOSCameraSensor(double range, double accuracy, double batteryUsage) {
-        return new VisionSensorProto(SensorRegistry.CMOS_CAMERA, range, accuracy, batteryUsage);
-    }
-
-    public static CommsSensorProto CommsSensor(double range, double accuracy, double batteryUsage, double delay) {
-        return new CommsSensorProto(range, accuracy, batteryUsage, delay);
-    }
-
-    public static MonitorSensorProto HRVMSensor(double range, double accuracy, double batteryUsage) {
-        return new MonitorSensorProto(SensorRegistry.HRVM, range, accuracy, batteryUsage);
-    }
-
-    public static CommsSensorProto LTERadioSensor(double range, double accuracy, double batteryUsage, double delay) {
-        return new CommsSensorProto(SensorRegistry.LTE_RADIO_COMMS, range, accuracy, batteryUsage, delay);
-    }
-
-    public static MonitorSensorProto MonitorSensor(double range, double accuracy, double batteryUsage) {
-        return new MonitorSensorProto(range, accuracy, batteryUsage);
-    }
-
-    public static VisionSensorProto NaturalVisionSensor(double range, double accuracy, double batteryUsage) {
-        return new VisionSensorProto(SensorRegistry.NATURAL_VISION, range, accuracy, batteryUsage);
-    }
-
-    public static SensorProto Sensor(double range, double accuracy, double batteryUsage) {
-        return new SensorProto(SensorRegistry.GENERIC, range, accuracy, batteryUsage);
-    }
-
-    public static VisionSensorProto VisionSensor(double range, double accuracy, double batteryUsage) {
-        return new VisionSensorProto(range, accuracy, batteryUsage);
+    public static SensorProto Sensor(double range, double accuracy, double delay, double batteryUsage) {
+        return new SensorProto(SensorRegistry.GENERIC, range, accuracy, delay, batteryUsage);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T decodeTo(Class<T> cls, JSONOptional optional) throws CommonException, JSONException {
-        String sensorType = SensorRegistry.decodeType(optional);
+    public static <T> T decodeTo(Class<T> cls, Json json) throws CommonException, JsonException {
+        String sensorType = SensorRegistry.decodeType(json);
         if (!SensorRegistry.isRegistered(sensorType)) {
             if (!SensorRegistry.isRegistered(cls)) {
-                throw new CommonException(String.format("Cannot decode sensor %s", optional.toString()));
+                throw new CommonException(String.format("Cannot decode sensor %s", json.toString()));
             }
-            return (T) SensorRegistry.REGISTRY.get(cls.getName()).apply(optional);
+            return (T) SensorRegistry.REGISTRY.get(cls.getName()).apply(json);
         }
-        return (T) SensorRegistry.REGISTRY.get(sensorType).apply(optional);
+        return (T) SensorRegistry.REGISTRY.get(sensorType).apply(json);
     }
 
-    public static String decodeType(JSONOptional optional) throws CommonException {
-        if (!optional.isPresentObject()) {
-            throw new CommonException(String.format("Cannot decode sensor type of %s", optional.toString()));
+    public static String decodeType(Json json) throws CommonException {
+        if (!json.isJsonObject()) {
+            throw new CommonException(String.format("Cannot decode sensor type of %s", json.toString()));
         }
-        return optional.getObject().getString(SensorRegistry.SENSOR_TYPE);
+        return json.getJsonObject().getString(SensorRegistry.SENSOR_TYPE);
     }
 
     public static <T> boolean isRegistered(Class<T> cls) {
@@ -104,5 +54,4 @@ public class SensorRegistry {
     public static boolean isRegistered(String className) {
         return SensorRegistry.REGISTRY.containsKey(className);
     }
-
 }

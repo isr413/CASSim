@@ -1,49 +1,84 @@
 package com.seat.sim.common.sensor;
 
-import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.seat.sim.common.json.*;
 
 /** A serializable generic Sensor state. */
-public class SensorState extends JSONAble {
+public class SensorState extends Jsonable {
     public static final String ACTIVE = "active";
+    public static final String SENSOR_GROUPS = "sensor_groups";
     public static final String SENSOR_ID = "sensor_id";
+    public static final String SENSOR_MODEL = "sensor_model";
+    public static final String SUBJECTS = "subjects";
 
     private boolean active;
+    private Set<String> sensorGroups;
     private String sensorID;
     private String sensorModel;
+    private Set<String> subjects;
 
-    public SensorState(String sensorModel, String sensorID, boolean active) {
-        this.sensorModel = sensorModel;
+    public SensorState(String sensorID, String sensorModel, boolean active) {
+        this(sensorID, sensorModel, null, null, active);
+    }
+
+    public SensorState(String sensorID, String sensorModel, Set<String> sensorGroups, boolean active) {
+        this(sensorID, sensorModel, sensorGroups, null, active);
+    }
+
+    public SensorState(String sensorID, String sensorModel, Set<String> sensorGroups, Set<String> subjects,
+            boolean active) {
         this.sensorID = sensorID;
+        this.sensorModel = sensorModel;
+        this.sensorGroups = (sensorGroups != null) ? new HashSet<>(sensorGroups) : new HashSet<>();
+        this.subjects = (subjects != null) ? new HashSet<>(subjects) : new HashSet<>();
         this.active = active;
     }
 
-    public SensorState(JSONOptional optional) throws JSONException {
-        super(optional);
+    public SensorState(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
-        this.sensorModel = json.getString(SensorProto.SENSOR_MODEL);
+    protected void decode(JsonObject json) throws JsonException {
         this.sensorID = json.getString(SensorState.SENSOR_ID);
+        this.sensorModel = json.getString(SensorProto.SENSOR_MODEL);
+        this.sensorGroups = (json.hasKey(SensorState.SENSOR_GROUPS)) ?
+            new HashSet<>(json.getJsonArray(SensorState.SENSOR_GROUPS).toList(String.class)) :
+            new HashSet<>();
+        this.subjects = (json.hasKey(SensorState.SUBJECTS)) ?
+            new HashSet<>(json.getJsonArray(SensorState.SUBJECTS).toList(String.class)) :
+            new HashSet<>();
         this.active = json.getBoolean(SensorState.ACTIVE);
     }
 
-    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
-        JSONObjectBuilder json = JSONBuilder.Object();
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = JsonBuilder.Object();
         json.put(SensorRegistry.SENSOR_TYPE, this.getSensorType());
-        json.put(SensorProto.SENSOR_MODEL, this.sensorModel);
         json.put(SensorState.SENSOR_ID, this.sensorID);
+        json.put(SensorProto.SENSOR_MODEL, this.sensorModel);
+        if (this.hasSensorGroups()) {
+            json.put(SensorState.SENSOR_GROUPS, JsonBuilder.toJsonArray(this.sensorGroups));
+        }
+        if (this.hasSubjects()) {
+            json.put(SensorState.SUBJECTS, JsonBuilder.toJsonArray(this.subjects));
+        }
         json.put(SensorState.ACTIVE, this.active);
         return json;
     }
 
+    public boolean equals(SensorState state) {
+        if (state == null) return false;
+        return this.sensorID.equals(state.sensorID) && this.sensorModel.equals(state.sensorModel);
+    }
+
     public String getLabel() {
         return String.format("%s:<%s>", this.sensorID, this.sensorModel);
+    }
+
+    public Set<String> getSensorGroups() {
+        return this.sensorGroups;
     }
 
     public String getSensorID() {
@@ -58,18 +93,31 @@ public class SensorState extends JSONAble {
         return this.getClass().getName();
     }
 
+    public Set<String> getSubjects() {
+        return this.subjects;
+    }
+
+    public boolean hasSensorGroups() {
+        return !this.sensorGroups.isEmpty();
+    }
+
+    public boolean hasSensorGroupWithTag(String groupTag) {
+        return this.sensorGroups.contains(groupTag);
+    }
+
+    public boolean hasSubjects() {
+        return !this.subjects.isEmpty();
+    }
+
+    public boolean hasSubjectWithID(String subjectID) {
+        return this.subjects.contains(subjectID);
+    }
+
     public boolean isActive() {
         return this.active;
     }
 
-    public JSONOptional toJSON() throws JSONException {
-        return this.getJSONBuilder().toJSON();
+    public Json toJson() throws JsonException {
+        return this.getJsonBuilder().toJson();
     }
-
-    public boolean equals(SensorState state) {
-        if (state == null) return false;
-        return this.getSensorType().equals(state.getSensorType()) && this.sensorModel.equals(state.sensorModel) &&
-            this.sensorID.equals(state.sensorID) && this.active == state.active;
-    }
-
 }
