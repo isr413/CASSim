@@ -197,6 +197,13 @@ public class Snapshot extends Jsonable {
         return !this.remoteStates.isEmpty();
     }
 
+    public boolean hasRemoteMatch(Set<String> matchers) {
+        for (String matcher : matchers) {
+            if (this.hasRemoteStateWithTag(matcher)) return true;
+        }
+        return false;
+    }
+
     public boolean hasRemoteStateWithID(String remoteID) {
         return this.remoteStates.containsKey(remoteID);
     }

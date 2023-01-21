@@ -148,6 +148,13 @@ public class RemoteProto extends Jsonable {
         return this.remoteGroups.contains(groupTag);
     }
 
+    public boolean hasRemoteMatch(Set<String> matchers) {
+        for (String matcher : matchers) {
+            if (this.hasRemoteGroupWithTag(matcher)) return true;
+        }
+        return false;
+    }
+
     public boolean hasSensorConfigWithID(String sensorID) {
         return this.sensorConfigByID.containsKey(sensorID);
     }
@@ -158,6 +165,13 @@ public class RemoteProto extends Jsonable {
 
     public boolean hasSensorConfigWithTag(String groupTag) {
         return !this.getSensorConfigsWithTag(groupTag).isEmpty();
+    }
+
+    public boolean hasSensorMatch(Set<String> matchers) {
+        for (String matcher : matchers) {
+            if (this.hasSensorConfigWithTag(matcher)) return true;
+        }
+        return false;
     }
 
     public boolean hasSensors() {

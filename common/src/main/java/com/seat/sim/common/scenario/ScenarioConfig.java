@@ -173,6 +173,13 @@ public class ScenarioConfig extends Jsonable {
         return !this.getRemoteConfigsWithTag(groupTag).isEmpty();
     }
 
+    public boolean hasRemoteMatch(Set<String> matchers) {
+        for (String matcher : matchers) {
+            if (this.hasRemoteConfigWithTag(matcher)) return true;
+        }
+        return false;
+    }
+
     public boolean hasRemotes() {
         return !this.getRemoteIDs().isEmpty();
     }

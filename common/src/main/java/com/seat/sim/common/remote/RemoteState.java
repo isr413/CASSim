@@ -189,6 +189,20 @@ public class RemoteState extends Jsonable {
         return this.remoteID.equals(remoteID);
     }
 
+    public boolean hasRemoteMatch(Set<String> matchers) {
+        for (String matcher : matchers) {
+            if (this.hasRemoteGroupWithTag(matcher)) return true;
+        }
+        return false;
+    }
+
+    public boolean hasSensorMatch(Set<String> matchers) {
+        for (String matcher : matchers) {
+            if (this.hasSensorStateWithTag(matcher)) return true;
+        }
+        return false;
+    }
+
     public boolean hasSensors() {
         return !this.sensorStates.isEmpty();
     }

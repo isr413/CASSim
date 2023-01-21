@@ -90,6 +90,10 @@ public class SensorConfig extends Jsonable {
         return this.count > 0;
     }
 
+    public boolean hasSensorMatch(Set<String> matchers) {
+        return this.proto.hasSensorMatch(matchers);
+    }
+
     public boolean hasSensorWithID(String sensorID) {
         return this.sensorIDs.contains(sensorID);
     }

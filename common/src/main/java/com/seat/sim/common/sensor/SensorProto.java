@@ -150,6 +150,13 @@ public class SensorProto extends Jsonable {
         return this.sensorGroups.contains(groupTag);
     }
 
+    public boolean hasSensorMatch(Set<String> matchers) {
+        for (String matcher : matchers) {
+            if (this.hasSensorGroupWithTag(matcher)) return true;
+        }
+        return false;
+    }
+
     public boolean hasSensorMatchers() {
         return !this.sensorMatchers.isEmpty();
     }

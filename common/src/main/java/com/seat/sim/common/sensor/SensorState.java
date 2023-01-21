@@ -97,6 +97,13 @@ public class SensorState extends Jsonable {
         return this.sensorID.equals(sensorID);
     }
 
+    public boolean hasSensorMatch(Set<String> matchers) {
+        for (String matcher : matchers) {
+            if (this.hasSensorGroupWithTag(matcher)) return true;
+        }
+        return false;
+    }
+
     public boolean hasSensorModel(String sensorModel) {
         if (sensorModel == null || this.sensorModel == null) return this.sensorModel == sensorModel;
         return this.sensorModel.equals(sensorModel);

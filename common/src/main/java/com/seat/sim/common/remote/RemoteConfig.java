@@ -111,6 +111,10 @@ public class RemoteConfig extends Jsonable {
         return this.count > 0;
     }
 
+    public boolean hasRemoteMatch(Set<String> matchers) {
+        return this.proto.hasRemoteMatch(matchers);
+    }
+
     public boolean hasRemoteWithID(String remoteID) {
         return this.remoteIDs.contains(remoteID);
     }
