@@ -5,9 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
-import com.seat.sim.common.json.JSONArrayBuilder;
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 import org.junit.Test;
 
 
@@ -61,18 +59,18 @@ public class VectorTest {
 
     @Test
     public void decodeShouldProduceEquivalentVector() {
-        JSONArrayBuilder json = JSONBuilder.Array();
+        JsonArrayBuilder json = JsonBuilder.Array();
         json.put(0.0);
         json.put(1.0);
         json.put(2.0);
-        VectorTest.assertVectorEquals(new Vector(0.0, 1.0, 2.0), new Vector(json.toJSON()));
-        VectorTest.assertVectorEquals(new Vector(0.0, 1.0, 2.0), new Vector(JSONOptional.of(json.toString())));
-        json = JSONBuilder.Array();
+        VectorTest.assertVectorEquals(new Vector(0.0, 1.0, 2.0), new Vector(json.toJson()));
+        VectorTest.assertVectorEquals(new Vector(0.0, 1.0, 2.0), new Vector(Json.of(json.toString())));
+        json = JsonBuilder.Array();
         json.put(-1.0);
         json.put(-2.0);
         json.put(-3.0);
-        VectorTest.assertVectorEquals(new Vector(-1.0, -2.0, -3.0), new Vector(json.toJSON()));
-        VectorTest.assertVectorEquals(new Vector(-1.0, -2.0, -3.0), new Vector(JSONOptional.of(json.toString())));
+        VectorTest.assertVectorEquals(new Vector(-1.0, -2.0, -3.0), new Vector(json.toJson()));
+        VectorTest.assertVectorEquals(new Vector(-1.0, -2.0, -3.0), new Vector(Json.of(json.toString())));
     }
 
     @Test
@@ -123,9 +121,9 @@ public class VectorTest {
         Vector positives = new Vector(1, 2, 3);
         Vector negatives = new Vector(-1, -2, -3);
         Vector zeros = new Vector(0, 0, 0);
-        VectorTest.assertVectorEquals(positives, new Vector(JSONOptional.of(positives.encode())));
-        VectorTest.assertVectorEquals(negatives, new Vector(JSONOptional.of(negatives.encode())));
-        VectorTest.assertVectorEquals(zeros, new Vector(JSONOptional.of(zeros.encode())));
+        VectorTest.assertVectorEquals(positives, new Vector(Json.of(positives.encode())));
+        VectorTest.assertVectorEquals(negatives, new Vector(Json.of(negatives.encode())));
+        VectorTest.assertVectorEquals(zeros, new Vector(Json.of(zeros.encode())));
     }
 
     @Test
@@ -151,13 +149,13 @@ public class VectorTest {
     }
 
     @Test
-    public void toJSONShouldProduceDecodableJSON() {
+    public void toJsonShouldProduceDecodableJson() {
         Vector positives = new Vector(1, 2, 3);
         Vector negatives = new Vector(-1, -2, -3);
         Vector zeros = new Vector(0, 0, 0);
-        VectorTest.assertVectorEquals(positives, new Vector(positives.toJSON()));
-        VectorTest.assertVectorEquals(negatives, new Vector(negatives.toJSON()));
-        VectorTest.assertVectorEquals(zeros, new Vector(zeros.toJSON()));
+        VectorTest.assertVectorEquals(positives, new Vector(positives.toJson()));
+        VectorTest.assertVectorEquals(negatives, new Vector(negatives.toJson()));
+        VectorTest.assertVectorEquals(zeros, new Vector(zeros.toJson()));
     }
 
     @Test
@@ -325,5 +323,4 @@ public class VectorTest {
             Vector.getZVector(a.getMagnitude(), a.getAngleBetweenZ()));
         VectorTest.assertVectorEquals(a, Vector.get3DVector(a.getMagnitude(), a.getAngleBetweenZ(), a.getAngleXY()));
     }
-
 }
