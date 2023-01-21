@@ -1,6 +1,6 @@
 package com.seat.sim.common.json;
 
-/** A helper class to support parsing encoded JSON. */
+/** A helper class to support parsing encoded Json. */
 public class JsonParser {
 
     private static boolean isQuoted(String encoding) {
@@ -17,19 +17,19 @@ public class JsonParser {
         return encoding;
     }
 
-    /** Returns {@code true} if the input string is a JSON encoding. */
-    public static boolean isEncodedJSON(String encoding) {
+    /** Returns {@code true} if the input string is a Json encoding. */
+    public static boolean isEncodedJson(String encoding) {
         return JsonParser.isEncodedJsonArray(encoding) || JsonParser.isEncodedJsonObject(encoding);
     }
 
-    /** Returns {@code true} if the input string is a JSON Array encoding. */
+    /** Returns {@code true} if the input string is a Json Array encoding. */
     public static boolean isEncodedJsonArray(String encoding) {
         encoding = JsonParser.trimEncoding(encoding);
         if (encoding == null || encoding.length() < 2) return false;
         return encoding.charAt(0) == '[' && encoding.charAt(encoding.length()-1) == ']';
     }
 
-    /** Returns {@code true} if the input string is a JSON Object encoding. */
+    /** Returns {@code true} if the input string is a Json Object encoding. */
     public static boolean isEncodedJsonObject(String encoding) {
         encoding = JsonParser.trimEncoding(encoding);
         if (encoding == null || encoding.length() < 2) return false;

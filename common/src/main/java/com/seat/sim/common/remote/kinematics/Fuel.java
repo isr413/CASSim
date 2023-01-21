@@ -10,14 +10,6 @@ public class Fuel extends Jsonable {
     private double initialFuel;
     private double maxFuel;
 
-    public Fuel() {
-        this(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-    }
-
-    public Fuel(double maxFuel) {
-        this(maxFuel, maxFuel);
-    }
-
     public Fuel(double initialFuel, double maxFuel) {
         this.initialFuel = initialFuel;
         this.maxFuel = maxFuel;

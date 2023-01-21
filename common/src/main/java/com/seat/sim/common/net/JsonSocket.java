@@ -12,67 +12,63 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.seat.sim.common.core.CommonException;
-import com.seat.sim.common.json.JSONArray;
-import com.seat.sim.common.json.JSONArrayBuilder;
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 import com.seat.sim.common.remote.intent.IntentionSet;
 import com.seat.sim.common.scenario.ScenarioConfig;
 import com.seat.sim.common.scenario.Snapshot;
 
-public class JSONSocket {
+public class JsonSocket {
 
     protected static final InetAddress DEFAULT_ADDRESS = InetAddress.getLoopbackAddress();
     protected static final int DEFAULT_PORT = 8080;
 
-    public static JSONSocket Client() throws CommonException {
-        return JSONSocket.Client(JSONSocket.DEFAULT_ADDRESS, JSONSocket.DEFAULT_PORT);
+    public static JsonSocket Client() throws CommonException {
+        return JsonSocket.Client(JsonSocket.DEFAULT_ADDRESS, JsonSocket.DEFAULT_PORT);
     }
 
-    public static JSONSocket Client(int port) throws CommonException {
-        return JSONSocket.Client(JSONSocket.DEFAULT_ADDRESS, port);
+    public static JsonSocket Client(int port) throws CommonException {
+        return JsonSocket.Client(JsonSocket.DEFAULT_ADDRESS, port);
     }
 
-    public static JSONSocket Client(InetAddress address) throws CommonException {
+    public static JsonSocket Client(InetAddress address) throws CommonException {
         try {
-            return new JSONSocket(new Socket(address, JSONSocket.DEFAULT_PORT));
+            return new JsonSocket(new Socket(address, JsonSocket.DEFAULT_PORT));
         } catch(IOException e) {
             throw new CommonException(e.toString());
         }
     }
 
-    public static JSONSocket Client(String address) throws CommonException {
+    public static JsonSocket Client(String address) throws CommonException {
         try {
-            return new JSONSocket(new Socket(address, JSONSocket.DEFAULT_PORT));
+            return new JsonSocket(new Socket(address, JsonSocket.DEFAULT_PORT));
         } catch(IOException e) {
             throw new CommonException(e.toString());
         }
     }
 
-    public static JSONSocket Client(InetAddress address, int port) throws CommonException {
+    public static JsonSocket Client(InetAddress address, int port) throws CommonException {
         try {
-            return new JSONSocket(new Socket(address, port));
+            return new JsonSocket(new Socket(address, port));
         } catch(IOException e) {
             throw new CommonException(e.toString());
         }
     }
 
-    public static JSONSocket Client(String address, int port) throws CommonException {
+    public static JsonSocket Client(String address, int port) throws CommonException {
         try {
-            return new JSONSocket(new Socket(address, port));
+            return new JsonSocket(new Socket(address, port));
         } catch(IOException e) {
             throw new CommonException(e.toString());
         }
     }
 
-    public static JSONSocket Server() throws CommonException {
-        return JSONSocket.Server(JSONSocket.DEFAULT_PORT);
+    public static JsonSocket Server() throws CommonException {
+        return JsonSocket.Server(JsonSocket.DEFAULT_PORT);
     }
 
-    public static JSONSocket Server(int port) throws CommonException {
+    public static JsonSocket Server(int port) throws CommonException {
         try {
-            return new JSONSocket(new ServerSocket(port));
+            return new JsonSocket(new ServerSocket(port));
         } catch(IOException e) {
             throw new CommonException(e.toString());
         }
@@ -83,7 +79,7 @@ public class JSONSocket {
     private BufferedReader in;
     private PrintWriter out;
 
-    private JSONSocket(ServerSocket socket) throws CommonException {
+    private JsonSocket(ServerSocket socket) throws CommonException {
         try {
             this.serverSocket = socket;
             this.clientSocket = this.serverSocket.accept();
@@ -94,7 +90,7 @@ public class JSONSocket {
         }
     }
 
-    private JSONSocket(Socket socket) throws CommonException {
+    private JsonSocket(Socket socket) throws CommonException {
         try {
             this.serverSocket = null;
             this.clientSocket = socket;
@@ -124,14 +120,13 @@ public class JSONSocket {
             this.clientSocket.getInetAddress().toString();
     }
 
-    public JSONOptional getInputBlocking() throws CommonException {
+    public Json getInputBlocking() throws CommonException {
         try {
             while (true) {
                 if (this.in.ready()) {
                     String encoding = in.readLine();
-                    JSONOptional optional = JSONOptional.ofNullable(encoding);
-                    if (!optional.isPresent()) throw new CommonException(encoding);
-                    return optional;
+                    Json json = Json.of(encoding);
+                    return json;
                 }
             }
         } catch(IOException e) {
@@ -141,16 +136,16 @@ public class JSONSocket {
 
     public Map<String, IntentionSet> getIntentionsBlocking() throws CommonException {
         try {
-            JSONArray json = this.getInputBlocking().getArray();
+            JsonArray json = this.getInputBlocking().getJsonArray();
             HashMap<String, IntentionSet> controllers = new HashMap<>();
             for (int i = 0; i < json.length(); i++) {
-                IntentionSet controller = new IntentionSet(json.getJSONOptional(i));
+                IntentionSet controller = new IntentionSet(json.getJson(i));
                 if (controller.hasIntentions()) {
                     controllers.put(controller.getRemoteID(), controller);
                 }
             }
             return controllers;
-        } catch (JSONException e) {
+        } catch (JsonException e) {
             throw new CommonException(e.toString());
         }
     }
@@ -171,22 +166,22 @@ public class JSONSocket {
         this.out.println(encoding);
     }
 
-    public void send(JSONOptional optional) throws CommonException {
+    public void send(Json json) throws CommonException {
         try {
-            this.out.println(optional.toString());
-        } catch (JSONException e) {
+            this.out.println(json.toString());
+        } catch (JsonException e) {
             throw new CommonException(e.toString());
         }
     }
 
     public void sendIntentions(Collection<IntentionSet> intentions) throws CommonException {
         try {
-            JSONArrayBuilder json = JSONBuilder.Array();
+            JsonArrayBuilder json = JsonBuilder.Array();
             for (IntentionSet intention : intentions) {
-                json.put(intention.toJSON());
+                json.put(intention.toJson());
             }
-            this.send(json.toJSON().toString());
-        } catch (JSONException e) {
+            this.send(json.toJson().toString());
+        } catch (JsonException e) {
             throw new CommonException(e.toString());
         }
     }
@@ -194,7 +189,7 @@ public class JSONSocket {
     public void sendScenarioConfig(ScenarioConfig scenario) throws CommonException {
         try {
             this.send(scenario.encode());
-        } catch (JSONException e) {
+        } catch (JsonException e) {
             throw new CommonException(e.toString());
         }
     }
@@ -202,9 +197,8 @@ public class JSONSocket {
     public void sendSnapshot(Snapshot snap) throws CommonException {
         try {
             this.send(snap.encode());
-        } catch (JSONException e) {
+        } catch (JsonException e) {
             throw new CommonException(e.toString());
         }
     }
-
 }

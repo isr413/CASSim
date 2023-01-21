@@ -8,20 +8,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.seat.sim.common.core.CommonException;
-import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
+import com.seat.sim.common.json.*;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.remote.RemoteConfig;
-import com.seat.sim.common.remote.RemoteRegistry;
 import com.seat.sim.common.util.Random;
 
 /** A serializable class to store scenario configurations. */
-public class ScenarioConfig extends JSONAble {
+public class ScenarioConfig extends Jsonable {
     public static final String GRID = "grid";
     public static final String MISSION_LENGTH = "mission_length";
     public static final String NUM_REMOTES = "num_remotes";
@@ -40,24 +33,6 @@ public class ScenarioConfig extends JSONAble {
     private String scenarioID;
     private long seed;
     private double stepSize;
-
-    public ScenarioConfig(Grid grid, int missionLength, double stepSize) {
-        this(ScenarioConfig.DEFAULT_ID, ScenarioConfig.DEFAULT_SEED, grid,
-            missionLength, stepSize, null);
-    }
-
-    public ScenarioConfig(String scenarioID, Grid grid, int missionLength, double stepSize) {
-        this(scenarioID, ScenarioConfig.DEFAULT_SEED, grid, missionLength,
-            stepSize, null);
-    }
-
-    public ScenarioConfig(long seed, Grid grid, int missionLength, double stepSize) {
-        this(ScenarioConfig.DEFAULT_ID, seed, grid, missionLength, stepSize, null);
-    }
-
-    public ScenarioConfig(String scenarioID, long seed, Grid grid, int missionLength, double stepSize) {
-        this(scenarioID, seed, grid, missionLength, stepSize, null);
-    }
 
     public ScenarioConfig(Grid grid, int missionLength, double stepSize, Collection<RemoteConfig> remoteConfigs) {
         this(ScenarioConfig.DEFAULT_ID, ScenarioConfig.DEFAULT_SEED, grid, missionLength, stepSize, remoteConfigs);
@@ -84,8 +59,8 @@ public class ScenarioConfig extends JSONAble {
         this.init();
     }
 
-    public ScenarioConfig(JSONOptional optional) throws JSONException {
-        super(optional);
+    public ScenarioConfig(Json json) throws JsonException {
+        super(json);
     }
 
     private void init() {
@@ -98,39 +73,46 @@ public class ScenarioConfig extends JSONAble {
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
+    protected void decode(JsonObject json) throws JsonException {
         this.scenarioID = json.getString(ScenarioConfig.SCENARIO_ID);
         this.seed = json.getLong(ScenarioConfig.SEED);
-        this.grid = new Grid(json.getJSONOptional(ScenarioConfig.GRID));
+        this.grid = new Grid(json.getJson(ScenarioConfig.GRID));
         this.missionLength = json.getInt(ScenarioConfig.MISSION_LENGTH);
         this.stepSize = json.getDouble(ScenarioConfig.STEP_SIZE);
         this.remoteConfigs = (json.hasKey(ScenarioConfig.REMOTE_CONFIG)) ?
-            json.getJSONArray(ScenarioConfig.REMOTE_CONFIG).toList(JSONOptional.class).stream()
-                .map(optional -> RemoteRegistry.decodeTo(RemoteConfig.class, optional))
+            json.getJsonArray(ScenarioConfig.REMOTE_CONFIG).toList(Json.class).stream()
+                .map(config -> new RemoteConfig(config))
                 .collect(Collectors.toList()) :
             new ArrayList<>();
         this.init();
     }
 
-    protected JSONObjectBuilder getJSONBuilder() throws JSONException {
-        JSONObjectBuilder json = JSONBuilder.Object();
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = JsonBuilder.Object();
         json.put(ScenarioConfig.SCENARIO_ID, this.scenarioID);
         json.put(ScenarioConfig.SEED, this.seed);
-        json.put(ScenarioConfig.GRID, this.grid.toJSON());
+        json.put(ScenarioConfig.GRID, this.grid.toJson());
         json.put(ScenarioConfig.MISSION_LENGTH, this.missionLength);
         json.put(ScenarioConfig.STEP_SIZE, this.stepSize);
         json.put(ScenarioConfig.NUM_REMOTES, this.getNumberOfRemotes());
         if (this.hasRemotes()) {
             json.put(
                 ScenarioConfig.REMOTE_CONFIG,
-                JSONBuilder.Array(
+                JsonBuilder.toJsonArray(
                     this.remoteConfigs.stream()
-                        .map(config -> config.toJSON())
+                        .map(config -> config.toJson())
                         .collect(Collectors.toList())
-                ).toJSON()
+                )
             );
         }
         return json;
+    }
+
+    public boolean equals(ScenarioConfig config) {
+        if (config == null) return false;
+        return this.scenarioID.equals(config.scenarioID) && this.seed == config.seed && 
+            this.grid.equals(config.grid) && this.missionLength == config.missionLength &&
+            this.stepSize == config.stepSize && this.remoteConfigs.equals(config.remoteConfigs);
     }
 
     public Grid getGrid() {
@@ -157,18 +139,13 @@ public class ScenarioConfig extends JSONAble {
         return this.remoteConfigs;
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends RemoteConfig> Collection<T> getRemoteConfigsWithType(Class<T> cls) {
+    public Collection<RemoteConfig> getRemoteConfigsWithTag(String groupTag) {
         return this.getRemoteConfigs().stream()
-            .filter(config -> cls.isAssignableFrom(config.getClass()))
-            .map(config -> (T) config)
+            .filter(config -> config.hasRemoteWithTag(groupTag))
             .collect(Collectors.toList());
     }
 
-    public RemoteConfig getRemoteConfigWithID(String remoteID) throws CommonException {
-        if (!this.hasRemoteWithID(remoteID)) {
-            throw new CommonException(String.format("Scenario %s has no remote %s", this.scenarioID, remoteID));
-        }
+    public RemoteConfig getRemoteConfigWithID(String remoteID) {
         return this.remoteConfigsByID.get(remoteID);
     }
 
@@ -180,10 +157,6 @@ public class ScenarioConfig extends JSONAble {
         return this.scenarioID;
     }
 
-    public String getScenarioType() {
-        return this.getClass().getName();
-    }
-
     public long getSeed() {
         return this.seed;
     }
@@ -192,27 +165,24 @@ public class ScenarioConfig extends JSONAble {
         return this.stepSize;
     }
 
-    public boolean hasRemoteConfigWithType(Class<? extends RemoteConfig> cls) {
-        return !this.getRemoteConfigsWithType(cls).isEmpty();
+    public boolean hasRemoteConfigWithID(String remoteID) {
+        return this.remoteConfigsByID.containsKey(remoteID);
+    }
+
+    public boolean hasRemoteConfigWithTag(String groupTag) {
+        return !this.getRemoteConfigsWithTag(groupTag).isEmpty();
     }
 
     public boolean hasRemotes() {
         return !this.getRemoteIDs().isEmpty();
     }
 
-    public boolean hasRemoteWithID(String remoteID) {
-        return this.remoteConfigsByID.containsKey(remoteID);
+    public boolean hasScenarioID(String scenarioID) {
+        if (scenarioID == null || this.scenarioID == null) return this.scenarioID == scenarioID;
+        return this.scenarioID.equals(scenarioID);
     }
 
-    public JSONOptional toJSON() {
-        return this.getJSONBuilder().toJSON();
+    public Json toJson() {
+        return this.getJsonBuilder().toJson();
     }
-
-    public boolean equals(ScenarioConfig config) {
-        if (config == null) return false;
-        return this.getScenarioType().equals(config.getScenarioType()) && this.scenarioID.equals(config.scenarioID) &&
-            this.seed == config.seed && this.grid.equals(config.grid) && this.missionLength == config.missionLength &&
-            this.stepSize == config.stepSize && this.remoteConfigs.equals(config.remoteConfigs);
-    }
-
 }

@@ -9,17 +9,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.CommonException;
-import com.seat.sim.common.json.JSONAble;
-import com.seat.sim.common.json.JSONBuilder;
-import com.seat.sim.common.json.JSONException;
-import com.seat.sim.common.json.JSONObject;
-import com.seat.sim.common.json.JSONObjectBuilder;
-import com.seat.sim.common.json.JSONOptional;
-import com.seat.sim.common.remote.RemoteRegistry;
+import com.seat.sim.common.json.*;
 import com.seat.sim.common.remote.RemoteState;
 
 /** A serializable class to represent a single snapshot of the current sim state. */
-public class Snapshot extends JSONAble {
+public class Snapshot extends Jsonable {
     public static final String ACTIVE_REMOTES = "active_remote_ids";
     public static final String DYNAMIC_REMOTES = "dynamic_remote_ids";
     public static final String HASH = "hash";
@@ -50,28 +44,57 @@ public class Snapshot extends JSONAble {
         this.remoteStates = new HashMap<>(remoteStates);
     }
 
-    public Snapshot(JSONOptional optional) throws JSONException {
-        super(optional);
+    public Snapshot(Json json) throws JsonException {
+        super(json);
     }
 
     @Override
-    protected void decode(JSONObject json) throws JSONException {
+    protected void decode(JsonObject json) throws JsonException {
         this.hash = json.getString(Snapshot.HASH);
         this.scenarioID = json.getString(Snapshot.SCENARIO_ID);
-        this.status = ScenarioStatus.values()[json.getInt(ScenarioStatus.STATUS)];
+        this.status = ScenarioStatus.decode(json.getJsonObject(ScenarioStatus.STATUS));
         this.time = json.getDouble(Snapshot.TIME);
         this.stepSize = json.getDouble(Snapshot.STEP_SIZE);
         this.activeRemoteIDs = (json.hasKey(Snapshot.ACTIVE_REMOTES)) ?
-            new HashSet<>(json.getJSONArray(Snapshot.ACTIVE_REMOTES).toList(String.class)) :
+            new HashSet<>(json.getJsonArray(Snapshot.ACTIVE_REMOTES).toList(String.class)) :
             new HashSet<>();
         this.dynamicRemoteIDs = (json.hasKey(Snapshot.DYNAMIC_REMOTES)) ?
-            new HashSet<>(json.getJSONArray(Snapshot.DYNAMIC_REMOTES).toList(String.class)) :
+            new HashSet<>(json.getJsonArray(Snapshot.DYNAMIC_REMOTES).toList(String.class)) :
             new HashSet<>();
         this.remoteStates = (json.hasKey(Snapshot.STATE)) ?
-            json.getJSONArray(Snapshot.STATE).toList(JSONOptional.class).stream()
-                .map(optional -> RemoteRegistry.decodeTo(RemoteState.class, optional))
+            json.getJsonArray(Snapshot.STATE).toList(Json.class).stream()
+                .map(state -> new RemoteState(state))
                 .collect(Collectors.toMap(RemoteState::getRemoteID, Function.identity())) :
             new HashMap<>();
+    }
+
+    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+        JsonObjectBuilder json = JsonBuilder.Object();
+        json.put(Snapshot.HASH, this.hash);
+        json.put(Snapshot.SCENARIO_ID, this.scenarioID);
+        json.put(ScenarioStatus.STATUS, this.status.getType());
+        json.put(Snapshot.TIME, this.time);
+        json.put(Snapshot.STEP_SIZE, this.stepSize);
+        if (this.hasActiveRemotes()) {
+            json.put(Snapshot.ACTIVE_REMOTES, JsonBuilder.toJsonArray(this.activeRemoteIDs));
+        }
+        if (this.hasDynamicRemotes()) {
+            json.put(Snapshot.DYNAMIC_REMOTES, JsonBuilder.toJsonArray(this.dynamicRemoteIDs));
+        }
+        json.put(
+            Snapshot.STATE,
+            JsonBuilder.toJsonArray(
+                this.remoteStates.values().stream()
+                    .map(remoteState -> remoteState.toJson())
+                    .collect(Collectors.toList())
+            )
+        );
+        return json;
+    }
+
+    public boolean equals(Snapshot snap) {
+        if (snap == null) return false;
+        return this.hash.equals(snap.hash);
     }
 
     public Set<String> getActiveRemoteIDs() {
@@ -118,10 +141,14 @@ public class Snapshot extends JSONAble {
         return this.remoteStates.values();
     }
 
+    public Collection<RemoteState> getRemoteStatesWithTag(String groupTag) {
+        return this.getRemoteStates().stream()
+            .filter(remoteState -> remoteState.hasRemoteGroupWithTag(groupTag))
+            .collect(Collectors.toList());
+
+    }
+
     public RemoteState getRemoteStateWithID(String remoteID) throws CommonException {
-        if (!this.hasRemoteWithID(remoteID)) {
-            throw new CommonException(String.format("No state for remote %s", remoteID));
-        }
         return this.remoteStates.get(remoteID);
     }
 
@@ -161,12 +188,30 @@ public class Snapshot extends JSONAble {
         return this.status.equals(ScenarioStatus.ERROR);
     }
 
+    public boolean hasHash(String hash) {
+        if (hash == null || this.hash == null) return this.hash == null;
+        return this.hash.equals(hash);
+    }
+
     public boolean hasRemotes() {
         return !this.remoteStates.isEmpty();
     }
 
-    public boolean hasRemoteWithID(String remoteID) {
+    public boolean hasRemoteStateWithID(String remoteID) {
         return this.remoteStates.containsKey(remoteID);
+    }
+
+    public boolean hasRemoteStateWithTag(String groupTag) {
+        return !this.getRemoteStatesWithTag(groupTag).isEmpty();
+    }
+
+    public boolean hasScenarioID(String scenarioID) {
+        if (scenarioID == null || this.scenarioID == null) return this.scenarioID == scenarioID;
+        return this.scenarioID.equals(scenarioID);
+    }
+
+    public boolean hasScenarioStatus(ScenarioStatus status) {
+        return this.status.equals(status);
     }
 
     public boolean isDone() {
@@ -177,33 +222,7 @@ public class Snapshot extends JSONAble {
         return this.status.equals(ScenarioStatus.START) || this.status.equals(ScenarioStatus.IN_PROGRESS);
     }
 
-    public JSONOptional toJSON() throws JSONException {
-        JSONObjectBuilder json = JSONBuilder.Object();
-        json.put(Snapshot.HASH, this.hash);
-        json.put(Snapshot.SCENARIO_ID, this.scenarioID);
-        json.put(ScenarioStatus.STATUS, this.status.getType());
-        json.put(Snapshot.TIME, this.time);
-        json.put(Snapshot.STEP_SIZE, this.stepSize);
-        if (this.hasActiveRemotes()) {
-            json.put(Snapshot.ACTIVE_REMOTES, JSONBuilder.Array(this.activeRemoteIDs).toJSON());
-        }
-        if (this.hasDynamicRemotes()) {
-            json.put(Snapshot.DYNAMIC_REMOTES, JSONBuilder.Array(this.dynamicRemoteIDs).toJSON());
-        }
-        json.put(
-            Snapshot.STATE,
-            JSONBuilder.Array(
-                this.remoteStates.values().stream()
-                    .map(remoteState -> remoteState.toJSON())
-                    .collect(Collectors.toList())
-            ).toJSON()
-        );
-        return json.toJSON();
+    public Json toJson() throws JsonException {
+        return this.getJsonBuilder().toJson();
     }
-
-    public boolean equals(Snapshot snap) {
-        if (snap == null) return false;
-        return this.hash.equals(snap.hash);
-    }
-
 }

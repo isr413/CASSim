@@ -223,6 +223,11 @@ public class Vector extends Jsonable {
         return Vector.angleBetween(Vector.Y_BASIS, this.getProjectionYZ());
     }
 
+    /** Returns the vector's length. */
+    public double getMagnitude() {
+        return Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
+    }
+
     /** Returns a new vector of this vector projected onto the XY plane. */
     public Vector getProjectionXY() {
         return new Vector(this.x, this.y, 0);
@@ -238,6 +243,12 @@ public class Vector extends Jsonable {
         return new Vector(0, this.y, this.z);
     }
 
+    /** Returns the vector scaled down by its length. */
+    public Vector getUnitVector() {
+        double magnitude = this.getMagnitude();
+        return new Vector(this.x / magnitude, this.y / magnitude, this.z / magnitude);
+    }
+
     /** Returns the vector's X component. */
     public double getX() {
         return this.x;
@@ -251,17 +262,6 @@ public class Vector extends Jsonable {
     /** Returns the vector's Z component. */
     public double getZ() {
         return this.z;
-    }
-
-    /** Returns the vector's length. */
-    public double getMagnitude() {
-        return Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
-    }
-
-    /** Returns the vector scaled down by its length. */
-    public Vector getUnitVector() {
-        double magnitude = this.getMagnitude();
-        return new Vector(this.x / magnitude, this.y / magnitude, this.z / magnitude);
     }
 
     /** Returns a decodable Json representation of this vector. */

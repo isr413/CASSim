@@ -40,7 +40,7 @@ public class IntentRegistry {
         if (!json.isJsonObject()) {
             throw new JsonException(String.format("Cannot decode intention type of %s", json.toString()));
         }
-        switch (IntentionType.decodeType(json.getJsonObject())) {
+        switch (IntentionType.decode(json.getJsonObject())) {
             case ACTIVATE: return new ActivateIntention(json);
             case DEACTIVATE: return new DeactivateIntention(json);
             case DONE: return new DoneIntention();

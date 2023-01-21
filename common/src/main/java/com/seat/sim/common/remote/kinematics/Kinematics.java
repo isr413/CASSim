@@ -15,14 +15,10 @@ public class Kinematics extends Jsonable {
     private Vector location;
     private Motion motion;
 
-    public Kinematics() {
-        this(null, null, null, null);
-    }
-
     public Kinematics(Vector location, Motion motion, Fuel fuel, Vector fuelUsage) {
         this.location = location;
-        this.motion = (motion != null) ? motion : new Motion();
-        this.fuel = (fuel != null) ? fuel : new Fuel();
+        this.motion = (motion != null) ? motion : new Motion(0, 0, 0);
+        this.fuel = (fuel != null) ? fuel : new Fuel(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
         this.fuelUsage = (fuelUsage != null) ? fuelUsage : new Vector();
     }
 
@@ -37,10 +33,10 @@ public class Kinematics extends Jsonable {
             null;
         this.motion = (json.hasKey(Kinematics.MOTION)) ?
             new Motion(json.getJson(Kinematics.MOTION)) :
-            new Motion();
+            new Motion(0, 0, 0);
         this.fuel = (json.hasKey(Kinematics.FUEL)) ?
             new Fuel(json.getJson(Kinematics.FUEL)) :
-            new Fuel();
+            new Fuel(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
         this.fuelUsage = (json.hasKey(Kinematics.FUEL_USAGE)) ?
             new Vector(json.getJson(Kinematics.FUEL_USAGE)) :
             new Vector();

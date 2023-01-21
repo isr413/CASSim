@@ -91,6 +91,10 @@ public class RemoteController extends Jsonable {
         this.addIntention(IntentRegistry.GoTo(location, maxVelocity, maxAcceleration));
     }
 
+    public boolean hasRemoteID(String remoteID) {
+        return this.intentions.hasRemoteID(remoteID);
+    }
+
     public void move(Vector acceleration) {
         this.addIntention(IntentRegistry.Move(acceleration));
     }

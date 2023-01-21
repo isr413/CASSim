@@ -12,14 +12,6 @@ public class Motion extends Jsonable {
     private double maxAcceleration;
     private double maxVelocity;
 
-    public Motion() {
-        this(0, 0, 0);
-    }
-
-    public Motion(double maxVelocity, double maxAcceleration) {
-        this(0, maxVelocity, maxAcceleration);
-    }
-
     public Motion(double initialVelocity, double maxVelocity, double maxAcceleration) {
         this.initialVelocity = initialVelocity;
         this.maxVelocity = maxVelocity;

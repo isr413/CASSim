@@ -18,7 +18,7 @@ public enum IntentionType implements SerializableEnum {
 
     public static final String INTENTION_TYPE = "intention_type";
 
-    public static IntentionType decodeType(JsonObject json) {
+    public static IntentionType decode(JsonObject json) {
         return (json.hasKey(IntentionType.INTENTION_TYPE)) ?
             IntentionType.Value(json.getInt(IntentionType.INTENTION_TYPE)) :
             IntentionType.NONE;

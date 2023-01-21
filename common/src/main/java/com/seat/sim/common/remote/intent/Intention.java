@@ -16,7 +16,7 @@ public abstract class Intention extends Jsonable {
 
     @Override
     protected void decode(JsonObject json) throws JsonException {
-        this.intentType = IntentionType.decodeType(json);
+        this.intentType = IntentionType.decode(json);
     }
 
     protected JsonObjectBuilder getJsonBuilder() throws JsonException {

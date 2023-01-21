@@ -92,6 +92,11 @@ public class IntentionSet extends Jsonable {
         return this.intentions.containsKey(intentionType);
     }
 
+    public boolean hasRemoteID(String remoteID) {
+        if (remoteID == null || this.remoteID == null) return this.remoteID == remoteID;
+        return this.remoteID.equals(remoteID);
+    }
+
     public boolean removeIntention(Intention intent) {
         if (!this.hasIntention(intent)) {
             Debugger.logger.warn(String.format("Remote %s has no intention for %s", this.remoteID, intent.getLabel()));

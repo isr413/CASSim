@@ -21,5 +21,4 @@ public interface SerializableEnum {
 
     /** Must be implemented to return the enum's type (enum constant). */
     int getType();
-
 }

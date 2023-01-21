@@ -1,7 +1,7 @@
 package com.seat.sim.common.json;
 
 /** 
- * An inherited API to support the JSON serialization and deserialization of 
+ * An inherited API to support the Json serialization and deserialization of 
  * Objects.
  */
 public abstract class Jsonable {
@@ -10,9 +10,9 @@ public abstract class Jsonable {
     protected Jsonable() {}
 
     /** 
-     * Jsonable constructor for decoding JSON.
+     * Jsonable constructor for decoding Json.
      *
-     * @throws JsonException if the JSON does not decode
+     * @throws JsonException if the Json does not decode
      */
     protected Jsonable(Json json) throws JsonException {
         this.decode(json);
@@ -54,12 +54,22 @@ public abstract class Jsonable {
     }
 
     /** 
-     * Returns the JSON serialization of this Object.
+     * Returns the Json serialization of this Object.
      *
      * @throws JsonException if the Object cannot be serialized
      */
     public String encode() throws JsonException {
         return this.toJson().toString();
+    }
+
+    /** 
+     * Returns {@code true} if the the Json has the same encoding.
+     *
+     * @throws JsonException if the Json cannot be serialized
+     */
+    public boolean equals(Json json) throws JsonException {
+        if (json == null) return false;
+        return this.equals(json.toString());
     }
 
     /** 
@@ -88,16 +98,6 @@ public abstract class Jsonable {
      * @throws JsonException if the JsonObject cannot be serialized
      */
     public boolean equals(JsonObject json) throws JsonException {
-        if (json == null) return false;
-        return this.equals(json.toString());
-    }
-
-    /** 
-     * Returns {@code true} if the the Json has the same encoding.
-     *
-     * @throws JsonException if the Json cannot be serialized
-     */
-    public boolean equals(Json json) throws JsonException {
         if (json == null) return false;
         return this.equals(json.toString());
     }

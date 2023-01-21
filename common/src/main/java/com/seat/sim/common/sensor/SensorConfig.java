@@ -41,7 +41,7 @@ public class SensorConfig extends Jsonable {
 
     @Override
     protected void decode(JsonObject json) throws JsonException {
-        this.proto = SensorRegistry.decodeTo(SensorProto.class, json.getJson(SensorConfig.PROTO));
+        this.proto = new SensorProto(json.getJson(SensorConfig.PROTO));
         this.count = json.getInt(SensorConfig.COUNT);
         this.sensorIDs = (json.hasKey(SensorConfig.SENSOR_IDS)) ?
             new HashSet<>(json.getJsonArray(SensorConfig.SENSOR_IDS).toList(String.class)) :
@@ -51,7 +51,6 @@ public class SensorConfig extends Jsonable {
 
     protected JsonObjectBuilder getJsonBuilder() throws JsonException {
         JsonObjectBuilder json = JsonBuilder.Object();
-        json.put(SensorRegistry.SENSOR_TYPE, this.getSensorType());
         json.put(SensorConfig.PROTO, this.proto.toJson());
         json.put(SensorConfig.COUNT, this.count);
         if (this.hasSensors()) {
@@ -63,8 +62,8 @@ public class SensorConfig extends Jsonable {
 
     public boolean equals(SensorConfig config) {
         if (config == null) return false;
-        return this.getSensorType().equals(config.getSensorType()) && this.proto.equals(config.proto) &&
-            this.count == config.count && this.sensorIDs.equals(config.sensorIDs) && this.active == config.active;
+        return this.proto.equals(config.proto) && this.count == config.count && 
+            this.sensorIDs.equals(config.sensorIDs) && this.active == config.active;
     }
 
     public int getCount() {
@@ -83,10 +82,6 @@ public class SensorConfig extends Jsonable {
         return this.proto.getSensorModel();
     }
 
-    public String getSensorType() {
-        return this.getClass().getName();
-    }
-
     public boolean hasProto() {
         return this.proto != null;
     }
@@ -97,6 +92,10 @@ public class SensorConfig extends Jsonable {
 
     public boolean hasSensorWithID(String sensorID) {
         return this.sensorIDs.contains(sensorID);
+    }
+
+    public boolean hasSensorWithModel(String sensorModel) {
+        return this.proto.hasSensorModel(sensorModel);
     }
 
     public boolean hasSensorWithTag(String groupTag) {

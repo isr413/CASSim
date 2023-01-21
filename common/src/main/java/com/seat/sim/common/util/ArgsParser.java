@@ -39,18 +39,7 @@ public class ArgsParser {
         return new HashSet<String>(this.parsedArgs.values());
     }
 
-    public Integer getInt(String param) throws CommonException {
-        if (!this.hasParam(param)) {
-            throw new CommonException(String.format("No param matching %s", param));
-        }
-        try {
-            return Integer.parseInt(this.parsedArgs.get(param));
-        } catch (NumberFormatException e) {
-            throw new CommonException(e.toString());
-        }
-    }
-
-    public Double getDouble(String param) throws NumberFormatException {
+    public double getDouble(String param) throws NumberFormatException {
         if (!this.hasParam(param)) {
             throw new CommonException(String.format("No param matching %s", param));
         }
@@ -61,7 +50,18 @@ public class ArgsParser {
         }
     }
 
-    public Long getLong(String param) throws NumberFormatException {
+    public int getInt(String param) throws CommonException {
+        if (!this.hasParam(param)) {
+            throw new CommonException(String.format("No param matching %s", param));
+        }
+        try {
+            return Integer.parseInt(this.parsedArgs.get(param));
+        } catch (NumberFormatException e) {
+            throw new CommonException(e.toString());
+        }
+    }
+
+    public long getLong(String param) throws NumberFormatException {
         if (!this.hasParam(param)) {
             throw new CommonException(String.format("No param matching %s", param));
         }
@@ -87,4 +87,7 @@ public class ArgsParser {
         return this.parsedArgs.containsKey(param);
     }
 
+    public boolean hasParams() {
+        return !this.parsedArgs.isEmpty();
+    }
 }

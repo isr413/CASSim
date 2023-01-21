@@ -23,15 +23,6 @@ public class SensorProto extends Jsonable {
     private Set<String> sensorMatchers;
     private String sensorModel;
 
-    public SensorProto(String sensorModel, double range, double accuracy, double delay, double batteryUsage) {
-        this(sensorModel, null, null, range, accuracy, delay, batteryUsage);
-    }
-
-    public SensorProto(String sensorModel, Set<String> sensorGroups, double range, double accuracy, double delay,
-            double batteryUsage) {
-        this(sensorModel, sensorGroups, null, range, accuracy, delay, batteryUsage);
-    }
-
     public SensorProto(String sensorModel, Set<String> sensorGroups, Set<String> sensorMatchers, double range, 
             double accuracy, double delay, double batteryUsage) {
         this.sensorModel = sensorModel;
@@ -70,7 +61,6 @@ public class SensorProto extends Jsonable {
 
     protected JsonObjectBuilder getJsonBuilder() throws JsonException {
         JsonObjectBuilder json = JsonBuilder.Object();
-        json.put(SensorRegistry.SENSOR_TYPE, this.getSensorType());
         json.put(SensorProto.SENSOR_MODEL, this.sensorModel);
         if (this.hasSensorGroups()) {
             json.put(SensorProto.SENSOR_GROUPS, JsonBuilder.toJsonArray(this.sensorGroups));
@@ -128,10 +118,6 @@ public class SensorProto extends Jsonable {
         return this.range;
     }
 
-    public String getSensorType() {
-        return this.getClass().getName();
-    }
-
     public boolean hasAccuracy() {
         return this.accuracy > 0;
     }
@@ -170,6 +156,11 @@ public class SensorProto extends Jsonable {
 
     public boolean hasSensorMatcherWithTag(String matcherTag) {
         return this.sensorMatchers.contains(matcherTag);
+    }
+
+    public boolean hasSensorModel(String sensorModel) {
+        if (sensorModel == null || this.sensorModel == null) return this.sensorModel == sensorModel;
+        return this.sensorModel.equals(sensorModel);
     }
 
     public Json toJson() throws JsonException {

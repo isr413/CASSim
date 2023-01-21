@@ -19,14 +19,6 @@ public class SensorState extends Jsonable {
     private String sensorModel;
     private Set<String> subjects;
 
-    public SensorState(String sensorID, String sensorModel, boolean active) {
-        this(sensorID, sensorModel, null, null, active);
-    }
-
-    public SensorState(String sensorID, String sensorModel, Set<String> sensorGroups, boolean active) {
-        this(sensorID, sensorModel, sensorGroups, null, active);
-    }
-
     public SensorState(String sensorID, String sensorModel, Set<String> sensorGroups, Set<String> subjects,
             boolean active) {
         this.sensorID = sensorID;
@@ -55,7 +47,6 @@ public class SensorState extends Jsonable {
 
     protected JsonObjectBuilder getJsonBuilder() throws JsonException {
         JsonObjectBuilder json = JsonBuilder.Object();
-        json.put(SensorRegistry.SENSOR_TYPE, this.getSensorType());
         json.put(SensorState.SENSOR_ID, this.sensorID);
         json.put(SensorProto.SENSOR_MODEL, this.sensorModel);
         if (this.hasSensorGroups()) {
@@ -89,10 +80,6 @@ public class SensorState extends Jsonable {
         return this.sensorModel;
     }
 
-    public String getSensorType() {
-        return this.getClass().getName();
-    }
-
     public Set<String> getSubjects() {
         return this.subjects;
     }
@@ -103,6 +90,16 @@ public class SensorState extends Jsonable {
 
     public boolean hasSensorGroupWithTag(String groupTag) {
         return this.sensorGroups.contains(groupTag);
+    }
+
+    public boolean hasSensorID(String sensorID) {
+        if (sensorID == null || this.sensorID == null) return this.sensorID == sensorID;
+        return this.sensorID.equals(sensorID);
+    }
+
+    public boolean hasSensorModel(String sensorModel) {
+        if (sensorModel == null || this.sensorModel == null) return this.sensorModel == sensorModel;
+        return this.sensorModel.equals(sensorModel);
     }
 
     public boolean hasSubjects() {

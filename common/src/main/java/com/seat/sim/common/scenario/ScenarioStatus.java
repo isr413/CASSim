@@ -1,6 +1,6 @@
 package com.seat.sim.common.scenario;
 
-import com.seat.sim.common.json.JSONObject;
+import com.seat.sim.common.json.JsonObject;
 import com.seat.sim.common.json.SerializableEnum;
 
 /** A serializable enumeration to denote types of scenario statuses. */
@@ -13,7 +13,7 @@ public enum ScenarioStatus implements SerializableEnum {
 
     public static final String STATUS = "status";
 
-    public static ScenarioStatus decodeStatus(JSONObject json) {
+    public static ScenarioStatus decode(JsonObject json) {
         return (json.hasKey(ScenarioStatus.STATUS)) ?
             ScenarioStatus.Value(json.getInt(ScenarioStatus.STATUS)) :
             ScenarioStatus.NONE;
@@ -41,5 +41,4 @@ public enum ScenarioStatus implements SerializableEnum {
     public String toString() {
         return this.getLabel();
     }
-
 }

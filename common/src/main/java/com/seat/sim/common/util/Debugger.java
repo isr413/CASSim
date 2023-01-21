@@ -53,5 +53,4 @@ public class Debugger {
     public void warn(String msg) {
         System.out.println(Debugger.ANSI_YELLOW + "WARN: " + msg + Debugger.ANSI_RESET);
     }
-
 }

@@ -2,16 +2,15 @@ package com.seat.sim.common.remote;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.json.*;
 import com.seat.sim.common.math.Vector;
-import com.seat.sim.common.sensor.SensorRegistry;
 import com.seat.sim.common.sensor.SensorState;
 
 /** A serializable snapshot of a Remote. */
@@ -19,20 +18,25 @@ public class RemoteState extends Jsonable {
     public static final String ACTIVE = "active";
     public static final String FUEL = "fuel";
     public static final String LOCATION = "location";
+    public static final String REMOTE_GROUPS = "remote_groups";
     public static final String REMOTE_ID = "remote_id";
     public static final String VELOCITY = "velocity";
 
     private boolean active;
     private double fuel;
     private Vector location;
+    private Set<String> remoteGroups;
     private String remoteID;
     private Map<String, SensorState> sensorStates;
     private TeamColor team;
     private Vector velocity;
 
-    public RemoteState(String remoteID, TeamColor team, Vector location, Vector velocity, double fuel, boolean active,
-            Collection<SensorState> sensorStates) {
+    public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, Vector location, Vector velocity, 
+            double fuel, boolean active, Collection<SensorState> sensorStates) {
         this.remoteID = remoteID;
+        this.remoteGroups = (remoteGroups != null) ?
+            new HashSet<>(remoteGroups) :
+            new HashSet<>();
         this.team = (team != null) ? team : TeamColor.NONE;
         this.location = location;
         this.velocity = velocity;
@@ -50,6 +54,9 @@ public class RemoteState extends Jsonable {
     @Override
     protected void decode(JsonObject json) throws JsonException {
         this.remoteID = json.getString(RemoteState.REMOTE_ID);
+        this.remoteGroups = (json.hasKey(RemoteState.REMOTE_GROUPS)) ?
+            new HashSet<>(json.getJsonArray(RemoteState.REMOTE_GROUPS).toList(String.class)) :
+            new HashSet<>();
         this.team = (json.hasKey(TeamColor.TEAM)) ?
             TeamColor.decodeType(json) :
             TeamColor.NONE;
@@ -65,15 +72,17 @@ public class RemoteState extends Jsonable {
         this.active = json.getBoolean(RemoteState.ACTIVE);
         this.sensorStates = (json.hasKey(RemoteProto.SENSORS)) ?
             json.getJsonArray(RemoteProto.SENSORS).toList(Json.class).stream()
-                .map(state -> SensorRegistry.decodeTo(SensorState.class, state))
+                .map(state -> new SensorState(state))
                 .collect(Collectors.toMap(SensorState::getSensorID, Function.identity())) :
             new HashMap<>();
     }
 
     protected JsonObjectBuilder getJsonBuilder() throws JsonException {
         JsonObjectBuilder json = JsonBuilder.Object();
-        json.put(RemoteRegistry.REMOTE_TYPE, this.getRemoteType());
         json.put(RemoteState.REMOTE_ID, this.remoteID);
+        if (this.hasRemoteGroups()) {
+            json.put(RemoteState.REMOTE_GROUPS, JsonBuilder.toJsonArray(this.remoteGroups));
+        }
         if (this.hasTeam()) {
             json.put(TeamColor.TEAM, this.team.getType());
         }
@@ -102,9 +111,8 @@ public class RemoteState extends Jsonable {
 
     public boolean equals(RemoteState state) {
         if (state == null) return false;
-        return this.getRemoteType().equals(state.getRemoteType()) && this.remoteID.equals(state.remoteID) &&
-            this.team.equals(state.team) && this.location.equals(state.location) &&
-            this.velocity.equals(state.velocity) && this.fuel == state.fuel &&
+        return this.remoteID.equals(state.remoteID) && this.team.equals(state.team) && 
+            this.location.equals(state.location) && this.velocity.equals(state.velocity) && this.fuel == state.fuel &&
             this.active == state.active && this.sensorStates.equals(state.sensorStates);
     }
 
@@ -120,12 +128,12 @@ public class RemoteState extends Jsonable {
         return this.location;
     }
 
-    public String getRemoteID() {
-        return this.remoteID;
+    public Set<String> getRemoteGroups() {
+        return this.remoteGroups;
     }
 
-    public String getRemoteType() {
-        return this.getClass().getName();
+    public String getRemoteID() {
+        return this.remoteID;
     }
 
     public Set<String> getSensorIDs() {
@@ -138,7 +146,7 @@ public class RemoteState extends Jsonable {
 
     public Collection<SensorState> getSensorStatesWithModel(String sensorModel) {
         return this.getSensorStates().stream()
-            .filter(sensorState -> sensorState.getSensorModel().equals(sensorModel))
+            .filter(sensorState -> sensorState.hasSensorModel(sensorModel))
             .collect(Collectors.toList());
     }
 
@@ -148,10 +156,7 @@ public class RemoteState extends Jsonable {
             .collect(Collectors.toList());
     }
 
-    public SensorState getSensorStateWithID(String sensorID) throws CommonException {
-        if (!this.hasSensorStateWithID(sensorID)) {
-            throw new CommonException(String.format("Remote %s has no sensor %s", this.remoteID, sensorID));
-        }
+    public SensorState getSensorStateWithID(String sensorID) {
         return this.sensorStates.get(sensorID);
     }
 
@@ -169,6 +174,19 @@ public class RemoteState extends Jsonable {
 
     public boolean hasLocation() {
         return this.location != null;
+    }
+
+    public boolean hasRemoteGroups() {
+        return !this.remoteGroups.isEmpty();
+    }
+
+    public boolean hasRemoteGroupWithTag(String groupTag) {
+        return this.remoteGroups.contains(groupTag);
+    }
+
+    public boolean hasRemoteID(String remoteID) {
+        if (remoteID == null || this.remoteID == null) return this.remoteID == remoteID;
+        return this.remoteID.equals(remoteID);
     }
 
     public boolean hasSensors() {
