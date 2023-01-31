@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.TeamColor;
@@ -32,9 +33,11 @@ public class Remote {
     private Vector location;
     private RemoteProto proto;
     private String remoteID;
+    private Scenario scenario;
     private TeamColor team;
 
-    public Remote(RemoteProto proto, String remoteID, TeamColor team, boolean active) {
+    public Remote(Scenario scenario, RemoteProto proto, String remoteID, TeamColor team, boolean active) {
+        this.scenario = scenario;
         this.proto = proto;
         this.remoteID = remoteID;
         this.team = team;
@@ -64,6 +67,23 @@ public class Remote {
                 }
             }
         }
+    }
+
+    protected void updateFuel(double usage, double stepSize) {
+        this.fuel -= (usage * stepSize);
+        if (this.fuel < 0) {
+            this.fuel = 0;
+        }
+        if (this.getMaxFuel() < this.fuel) {
+            this.fuel = this.getMaxFuel();
+        }
+        if (!this.isEnabled()) {
+            this.setInactive();
+        }
+    }
+
+    protected void updateLocation(Vector delta, double stepSize) {
+        this.location = Vector.add(this.location, Vector.scale(delta, stepSize));
     }
 
     public boolean activateAllSensors() {
@@ -112,6 +132,11 @@ public class Remote {
         return true;
     }
 
+    public boolean equals(Remote remote) {
+        if (remote == null) return false;
+        return this.remoteID.equals(remote.remoteID);
+    }
+
     public Collection<String> getActiveSensorIDs() {
         return this.activeSensors.keySet();
     }
@@ -152,6 +177,10 @@ public class Remote {
         return this.proto;
     }
 
+    public Set<String> getRemoteGroups() {
+        return this.proto.getRemoteGroups();
+    }
+
     public String getRemoteID() {
         return this.remoteID;
     }
@@ -159,10 +188,6 @@ public class Remote {
     public RemoteState getRemoteState() {
         return new RemoteState(this.remoteID, this.team, this.location, null, this.fuel, this.active,
             this.getSensorStates());
-    }
-
-    public String getRemoteType() {
-        return this.proto.getRemoteType();
     }
 
     public Collection<String> getSensorIDs() {
@@ -224,6 +249,22 @@ public class Remote {
         return this.location != null;
     }
 
+    public boolean hasRemoteGroups() {
+        return this.proto.hasRemoteGroups();
+    }
+
+    public boolean hasRemoteGroupWithTag(String groupTag) {
+        return this.proto.hasRemoteGroupWithTag(groupTag);
+    }
+
+    public boolean hasRemoteMatch(Set<String> matchers) {
+        return this.proto.hasRemoteMatch(matchers);
+    }
+
+    public boolean hasSensorMatch(Set<String> matchers) {
+        return this.proto.hasSensorMatch(matchers);
+    }
+
     public boolean hasSensors() {
         return !this.allSensors.isEmpty();
     }
@@ -234,10 +275,6 @@ public class Remote {
 
     public boolean hasSensorWithModel(String sensorModel) {
         return !this.getSensorsWithModel(sensorModel).isEmpty();
-    }
-
-    public boolean hasSensorWithType(Class<? extends Sensor> classType) {
-        return !this.getSensorsWithType(classType).isEmpty();
     }
 
     public boolean hasTeam() {
@@ -332,27 +369,4 @@ public class Remote {
         }
         this.updateFuel(fuelUsage, stepSize);
     }
-
-    protected void updateFuel(double usage, double stepSize) {
-        this.fuel -= (usage * stepSize);
-        if (this.fuel < 0) {
-            this.fuel = 0;
-        }
-        if (this.getMaxFuel() < this.fuel) {
-            this.fuel = this.getMaxFuel();
-        }
-        if (!this.isEnabled()) {
-            this.setInactive();
-        }
-    }
-
-    protected void updateLocation(Vector delta, double stepSize) {
-        this.location = Vector.add(this.location, Vector.scale(delta, stepSize));
-    }
-
-    public boolean equals(Remote remote) {
-        if (remote == null) return false;
-        return this.remoteID.equals(remote.remoteID);
-    }
-
 }
