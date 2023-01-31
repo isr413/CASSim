@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Consumer;
@@ -14,34 +15,37 @@ import java.util.function.Consumer;
 /** A union type for the JsonArray and JsonObject types. */
 public final class Json {
 
-    /** 
+    /**
      * Returns a wrapper for the JsonArray interface type.
      *
      * @throws JsonException if the JsonArray is null
      */
     public static Json of(JsonArray json) throws JsonException {
-        if (json == null) throw new JsonException(new NullPointerException().toString());
+        if (json == null)
+            throw new JsonException(new NullPointerException().toString());
         return new Json(json);
     }
 
-    /** 
+    /**
      * Returns a wrapper for the JsonObject interface type.
      *
      * @throws JsonException if the JsonObject is null
      */
     public static Json of(JsonObject json) throws JsonException {
-        if (json == null) throw new JsonException(new NullPointerException().toString());
+        if (json == null)
+            throw new JsonException(new NullPointerException().toString());
         return new Json(json);
     }
 
-    /** 
-     * Returns a wrapper for the JsonArray or JsonObject interace type based on 
+    /**
+     * Returns a wrapper for the JsonArray or JsonObject interace type based on
      * the encoding.
      *
      * @throws JsonException if the encoding is null or does not decode
-    */
+     */
     public static Json of(String encoding) throws JsonException {
-        if (encoding == null) throw new JsonException(new NullPointerException().toString());
+        if (encoding == null)
+            throw new JsonException(new NullPointerException().toString());
         if (JsonParser.isEncodedJsonArray(encoding)) {
             return new Json(new JsonArrayOption(JsonParser.trimEncoding(encoding)));
         }
@@ -51,74 +55,78 @@ public final class Json {
         throw new JsonException(String.format("Cannot decode invalid JSON string %s", encoding));
     }
 
-    private JsonArray arrayOption;
-    private JsonObject objectOption;
+    private Optional<JsonArray> arrayOption;
+    private Optional<JsonObject> objectOption;
 
     private Json(JsonArray json) {
-        this.arrayOption = json;
-        this.objectOption = null;
+        this.arrayOption = Optional.of(json);
+        this.objectOption = Optional.empty();
     }
 
     private Json(JsonObject json) {
-        this.arrayOption = null;
-        this.objectOption = json;
+        this.arrayOption = Optional.empty();
+        this.objectOption = Optional.of(json);
     }
 
     /** Returns {@code true} if the json is a shallow copy. */
     public boolean equals(Json json) {
-        return this.arrayOption == json.arrayOption && this.objectOption == json.objectOption;
+        return this.arrayOption.equals(json.arrayOption) && this.objectOption.equals(json.objectOption);
     }
 
-    /** 
+    /**
      * Returns the wrapped JsonArray.
      *
      * @throws JsonException if the option being wrapped is not a JsonArray
      */
     public JsonArray getJsonArray() throws JsonException {
-        if (!this.isJsonArray()) throw new JsonException(new NoSuchElementException().toString());
-        return this.arrayOption;
+        if (!this.isJsonArray())
+            throw new JsonException(new NoSuchElementException().toString());
+        return this.arrayOption.get();
     }
 
-    /** 
+    /**
      * Returns the wrapped JsonObject.
      *
      * @throws JsonException if the option being wrapped is not a JsonObject
      */
     public JsonObject getJsonObject() throws JsonException {
-        if (!this.isJsonObject()) throw new JsonException(new NoSuchElementException().toString());
-        return this.objectOption;
+        if (!this.isJsonObject())
+            throw new JsonException(new NoSuchElementException().toString());
+        return this.objectOption.get();
     }
 
     /** Returns {@code true} if the JsonArray option is present. */
     public boolean isJsonArray() {
-        return this.arrayOption != null;
+        return this.arrayOption.isPresent();
     }
 
     /** Returns {@code true} if the JsonObject option is present. */
     public boolean isJsonObject() {
-        return this.objectOption != null;
+        return this.objectOption.isPresent();
     }
 
-    /** 
+    /**
      * Returns the String serialization of the value.
      *
      * @throws JsonException if the JSON cannot be serialized
      * @return the JSON String serialization
      */
     public String toString() throws JsonException {
-        if (this.isJsonArray()) return this.arrayOption.toString();
-        return this.objectOption.toString();
+        if (this.isJsonArray())
+            return this.getJsonArray().toString();
+        return this.getJsonObject().toString();
     }
 
-    /** 
+    /**
      * Returns the String serialization (pretty printed) of the value.
      *
      * @throws JsonException if the JSON cannot be serialized
      * @return the JSON String serialization
      */
     public String toString(int tabSize) throws JsonException {
-        if (this.isJsonArray()) return this.arrayOption.toString(tabSize);
-        return this.objectOption.toString(tabSize);
+        if (this.isJsonArray())
+            return this.getJsonArray().toString(tabSize);
+        return this.getJsonObject().toString(tabSize);
     }
 
     /** org.json implementation of the JsonArray interface. */
@@ -133,7 +141,7 @@ public final class Json {
         public JsonArrayOption(String encoding) throws JsonException {
             try {
                 this.json = new org.json.JSONArray(encoding);
-            } catch(org.json.JSONException e) {
+            } catch (org.json.JSONException e) {
                 throw new JsonException(e.toString());
             }
         }
