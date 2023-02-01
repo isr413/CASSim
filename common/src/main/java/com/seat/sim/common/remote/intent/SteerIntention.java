@@ -1,21 +1,31 @@
 package com.seat.sim.common.remote.intent;
 
+import java.util.Optional;
+
 import com.seat.sim.common.json.*;
 import com.seat.sim.common.math.Vector;
 
 public class SteerIntention extends Intention {
     private static final String DIRECTION = "direction";
 
-    private Vector direction;
+    private Optional<Vector> direction;
 
     public SteerIntention() {
-        super(IntentionType.STEER);
-        this.direction = null;
+        this(Optional.empty());
     }
 
     public SteerIntention(Vector direction) {
+        this(Optional.of(direction));
+    }
+
+    private SteerIntention(Optional<Vector> direction) {
         super(IntentionType.STEER);
-        this.direction = direction;
+        this.direction = (direction != null) ? direction : Optional.empty();
+        if (this.direction.isPresent() && !Double.isFinite(this.direction.get().getMagnitude())) {
+            throw new RuntimeException(
+                    String.format("cannot Steer remote with non-finite direction `%s`",
+                            this.direction.get().toString()));
+        }
     }
 
     public SteerIntention(Json json) throws JsonException {
@@ -25,28 +35,28 @@ public class SteerIntention extends Intention {
     @Override
     protected void decode(JsonObject json) throws JsonException {
         super.decode(json);
-        this.direction = (json.hasKey(SteerIntention.DIRECTION)) ?
-            new Vector(json.getJson(SteerIntention.DIRECTION)) :
-            null;
+        this.direction = (json.hasKey(SteerIntention.DIRECTION))
+                ? Optional.of(new Vector(json.getJson(SteerIntention.DIRECTION)))
+                : Optional.empty();
     }
 
     @Override
     protected JsonObjectBuilder getJsonBuilder() throws JsonException {
         JsonObjectBuilder json = super.getJsonBuilder();
         if (this.hasDirection()) {
-            json.put(SteerIntention.DIRECTION, this.direction.toJson());
+            json.put(SteerIntention.DIRECTION, this.getDirection().toJson());
         }
         return json;
     }
 
     public boolean equals(SteerIntention intent) {
-        if (intent == null) return false;
-        return super.equals(intent) &&
-            ((this.hasDirection() && this.direction.equals(intent.direction)) || this.direction == intent.direction);
+        if (intent == null)
+            return false;
+        return super.equals(intent) && this.direction.equals(intent.direction);
     }
 
     public Vector getDirection() {
-        return this.direction;
+        return this.direction.get();
     }
 
     @Override
@@ -55,6 +65,6 @@ public class SteerIntention extends Intention {
     }
 
     public boolean hasDirection() {
-        return this.direction != null;
+        return this.direction.isPresent() && Double.isFinite(this.getDirection().getMagnitude());
     }
 }

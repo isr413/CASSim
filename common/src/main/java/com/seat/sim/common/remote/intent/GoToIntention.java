@@ -28,7 +28,7 @@ public class GoToIntention extends Intention {
 
     private GoToIntention(Vector location, Optional<Double> maxVelocity, Optional<Double> maxAcceleration) {
         super(IntentionType.GOTO);
-        this.location = (location != null) ? location : new Vector();
+        this.location = location;
         this.maxVelocity = (maxVelocity != null) ? maxVelocity : Optional.empty();
         this.maxAcceleration = (maxAcceleration != null) ? maxAcceleration : Optional.empty();
     }

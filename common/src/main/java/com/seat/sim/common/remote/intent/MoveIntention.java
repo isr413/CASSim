@@ -14,7 +14,11 @@ public class MoveIntention extends Intention {
 
     public MoveIntention(Vector acceleration) {
         super(IntentionType.MOVE);
-        this.acceleration = acceleration;
+        this.acceleration = (acceleration != null) ? acceleration : new Vector();
+        if (!Double.isFinite(this.acceleration.getMagnitude())) {
+            throw new RuntimeException(
+                    String.format("cannot Move remote with a non-finite force `%s`", this.acceleration.toString()));
+        }
     }
 
     public MoveIntention(Json json) throws JsonException {
@@ -24,20 +28,23 @@ public class MoveIntention extends Intention {
     @Override
     protected void decode(JsonObject json) throws JsonException {
         super.decode(json);
-        this.acceleration = (json.hasKey(MoveIntention.ACCELERATION)) ?
-            new Vector(json.getJson(MoveIntention.ACCELERATION)) :
-            new Vector();
+        this.acceleration = (json.hasKey(MoveIntention.ACCELERATION))
+                ? new Vector(json.getJson(MoveIntention.ACCELERATION))
+                : new Vector();
     }
 
     @Override
     protected JsonObjectBuilder getJsonBuilder() throws JsonException {
         JsonObjectBuilder json = super.getJsonBuilder();
-        json.put(MoveIntention.ACCELERATION, this.acceleration.toJson());
+        if (this.hasAcceleration()) {
+            json.put(MoveIntention.ACCELERATION, this.acceleration.toJson());
+        }
         return json;
     }
 
     public boolean equals(MoveIntention intent) {
-        if (intent == null) return false;
+        if (intent == null)
+            return false;
         return super.equals(intent) && this.acceleration.equals(intent.acceleration);
     }
 
@@ -51,6 +58,6 @@ public class MoveIntention extends Intention {
     }
 
     public boolean hasAcceleration() {
-        return this.acceleration.getMagnitude() > 0;
+        return Double.isFinite(this.acceleration.getMagnitude()) && this.acceleration.getMagnitude() > 0;
     }
 }

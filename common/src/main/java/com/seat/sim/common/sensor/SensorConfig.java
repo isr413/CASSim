@@ -13,25 +13,21 @@ public class SensorConfig extends Jsonable {
     public static final String SENSOR_IDS = "sensor_ids";
 
     private boolean active;
-    private int count;
     private SensorProto proto;
     private Set<String> sensorIDs;
 
     public SensorConfig(SensorProto proto, int count, boolean active) {
-        this(proto, count, new HashSet<String>(), active);
-        for (int i = 0; i < count; i++) {
-            this.sensorIDs.add(String.format("%s:(%d)", proto.getLabel(), i));
-        }
+        this(proto, new HashSet<String>(), active);
+        this.init(count);
     }
 
     public SensorConfig(SensorProto proto, Collection<String> sensorIDs, boolean active) {
-        this(proto, sensorIDs.size(), new HashSet<String>(sensorIDs), active);
+        this(proto, new HashSet<String>(sensorIDs), active);
     }
 
-    private SensorConfig(SensorProto proto, int count, HashSet<String> sensorIDs, boolean active) {
-        this.proto = proto;
-        this.count = count;
-        this.sensorIDs = sensorIDs;
+    private SensorConfig(SensorProto proto, HashSet<String> sensorIDs, boolean active) {
+        this.proto = (proto != null) ? proto : new SensorProto();
+        this.sensorIDs = (sensorIDs != null) ? new HashSet<>(sensorIDs) : new HashSet<>();
         this.active = active;
     }
 
@@ -39,20 +35,29 @@ public class SensorConfig extends Jsonable {
         super(json);
     }
 
+    private void init(int count) {
+        for (int i = 0; i < count; i++) {
+            this.sensorIDs.add(String.format("%s:(%d)", proto.getLabel(), i));
+        }
+    }
+
     @Override
     protected void decode(JsonObject json) throws JsonException {
-        this.proto = new SensorProto(json.getJson(SensorConfig.PROTO));
-        this.count = json.getInt(SensorConfig.COUNT);
-        this.sensorIDs = (json.hasKey(SensorConfig.SENSOR_IDS)) ?
-            new HashSet<>(json.getJsonArray(SensorConfig.SENSOR_IDS).toList(String.class)) :
-            new HashSet<>();
+        this.proto = (json.hasKey(SensorConfig.PROTO)) ? new SensorProto(json.getJson(SensorConfig.PROTO))
+                : new SensorProto();
+        this.sensorIDs = (json.hasKey(SensorConfig.SENSOR_IDS))
+                ? new HashSet<>(json.getJsonArray(SensorConfig.SENSOR_IDS).toList(String.class))
+                : new HashSet<>();
+        if (this.sensorIDs.isEmpty() && json.hasKey(SensorConfig.COUNT)) {
+            this.init(json.getInt(SensorConfig.COUNT));
+        }
         this.active = json.getBoolean(SensorState.ACTIVE);
     }
 
     protected JsonObjectBuilder getJsonBuilder() throws JsonException {
         JsonObjectBuilder json = JsonBuilder.Object();
         json.put(SensorConfig.PROTO, this.proto.toJson());
-        json.put(SensorConfig.COUNT, this.count);
+        json.put(SensorConfig.COUNT, this.getCount());
         if (this.hasSensors()) {
             json.put(SensorConfig.SENSOR_IDS, JsonBuilder.toJsonArray(this.sensorIDs));
         }
@@ -61,13 +66,14 @@ public class SensorConfig extends Jsonable {
     }
 
     public boolean equals(SensorConfig config) {
-        if (config == null) return false;
-        return this.proto.equals(config.proto) && this.count == config.count && 
-            this.sensorIDs.equals(config.sensorIDs) && this.active == config.active;
+        if (config == null)
+            return false;
+        return this.proto.equals(config.proto) && this.sensorIDs.equals(config.sensorIDs)
+                && this.active == config.active;
     }
 
     public int getCount() {
-        return this.count;
+        return this.sensorIDs.size();
     }
 
     public SensorProto getProto() {
@@ -87,7 +93,7 @@ public class SensorConfig extends Jsonable {
     }
 
     public boolean hasSensors() {
-        return this.count > 0;
+        return !this.sensorIDs.isEmpty();
     }
 
     public boolean hasSensorMatch(Set<String> matchers) {

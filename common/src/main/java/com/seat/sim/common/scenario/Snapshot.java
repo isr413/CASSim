@@ -12,7 +12,9 @@ import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.*;
 import com.seat.sim.common.remote.RemoteState;
 
-/** A serializable class to represent a single snapshot of the current sim state. */
+/**
+ * A serializable class to represent a single snapshot of the current sim state.
+ */
 public class Snapshot extends Jsonable {
     public static final String ACTIVE_REMOTES = "active_remote_ids";
     public static final String DYNAMIC_REMOTES = "dynamic_remote_ids";
@@ -41,7 +43,7 @@ public class Snapshot extends Jsonable {
         this.stepSize = stepSize;
         this.activeRemoteIDs = (activeRemoteIDs != null) ? new HashSet<>(activeRemoteIDs) : new HashSet<>();
         this.dynamicRemoteIDs = (dynamicRemoteIDs != null) ? new HashSet<>(dynamicRemoteIDs) : new HashSet<>();
-        this.remoteStates = new HashMap<>(remoteStates);
+        this.remoteStates = (remoteStates != null) ? new HashMap<>(remoteStates) : new HashMap<>();
     }
 
     public Snapshot(Json json) throws JsonException {
@@ -55,17 +57,17 @@ public class Snapshot extends Jsonable {
         this.status = ScenarioStatus.decode(json.getJsonObject(ScenarioStatus.STATUS));
         this.time = json.getDouble(Snapshot.TIME);
         this.stepSize = json.getDouble(Snapshot.STEP_SIZE);
-        this.activeRemoteIDs = (json.hasKey(Snapshot.ACTIVE_REMOTES)) ?
-            new HashSet<>(json.getJsonArray(Snapshot.ACTIVE_REMOTES).toList(String.class)) :
-            new HashSet<>();
-        this.dynamicRemoteIDs = (json.hasKey(Snapshot.DYNAMIC_REMOTES)) ?
-            new HashSet<>(json.getJsonArray(Snapshot.DYNAMIC_REMOTES).toList(String.class)) :
-            new HashSet<>();
-        this.remoteStates = (json.hasKey(Snapshot.STATE)) ?
-            json.getJsonArray(Snapshot.STATE).toList(Json.class).stream()
-                .map(state -> new RemoteState(state))
-                .collect(Collectors.toMap(RemoteState::getRemoteID, Function.identity())) :
-            new HashMap<>();
+        this.activeRemoteIDs = (json.hasKey(Snapshot.ACTIVE_REMOTES))
+                ? new HashSet<>(json.getJsonArray(Snapshot.ACTIVE_REMOTES).toList(String.class))
+                : new HashSet<>();
+        this.dynamicRemoteIDs = (json.hasKey(Snapshot.DYNAMIC_REMOTES))
+                ? new HashSet<>(json.getJsonArray(Snapshot.DYNAMIC_REMOTES).toList(String.class))
+                : new HashSet<>();
+        this.remoteStates = (json.hasKey(Snapshot.STATE))
+                ? json.getJsonArray(Snapshot.STATE).toList(Json.class).stream()
+                        .map(state -> new RemoteState(state))
+                        .collect(Collectors.toMap(RemoteState::getRemoteID, Function.identity()))
+                : new HashMap<>();
     }
 
     protected JsonObjectBuilder getJsonBuilder() throws JsonException {
@@ -81,19 +83,20 @@ public class Snapshot extends Jsonable {
         if (this.hasDynamicRemotes()) {
             json.put(Snapshot.DYNAMIC_REMOTES, JsonBuilder.toJsonArray(this.dynamicRemoteIDs));
         }
-        json.put(
-            Snapshot.STATE,
-            JsonBuilder.toJsonArray(
-                this.remoteStates.values().stream()
-                    .map(remoteState -> remoteState.toJson())
-                    .collect(Collectors.toList())
-            )
-        );
+        if (this.hasRemotes()) {
+            json.put(
+                    Snapshot.STATE,
+                    JsonBuilder.toJsonArray(
+                            this.remoteStates.values().stream()
+                                    .map(remoteState -> remoteState.toJson())
+                                    .collect(Collectors.toList())));
+        }
         return json;
     }
 
     public boolean equals(Snapshot snap) {
-        if (snap == null) return false;
+        if (snap == null)
+            return false;
         return this.hash.equals(snap.hash);
     }
 
@@ -103,20 +106,20 @@ public class Snapshot extends Jsonable {
 
     public Collection<RemoteState> getActiveRemoteStates() {
         return this.getActiveDynamicRemoteIDs().stream()
-            .map(remoteID -> this.getRemoteStateWithID(remoteID))
-            .collect(Collectors.toList());
+                .map(remoteID -> this.getRemoteStateWithID(remoteID))
+                .collect(Collectors.toList());
     }
 
     public Set<String> getActiveDynamicRemoteIDs() {
         return this.getActiveRemoteIDs().stream()
-            .filter(remoteID -> this.hasDynamicRemoteWithID(remoteID))
-            .collect(Collectors.toSet());
+                .filter(remoteID -> this.hasDynamicRemoteWithID(remoteID))
+                .collect(Collectors.toSet());
     }
 
     public Collection<RemoteState> getActiveDynamicRemoteStates() {
         return this.getActiveDynamicRemoteIDs().stream()
-            .map(remoteID -> this.getRemoteStateWithID(remoteID))
-            .collect(Collectors.toList());
+                .map(remoteID -> this.getRemoteStateWithID(remoteID))
+                .collect(Collectors.toList());
     }
 
     public Set<String> getDynamicRemoteIDs() {
@@ -125,8 +128,8 @@ public class Snapshot extends Jsonable {
 
     public Collection<RemoteState> getDynamicRemoteStates() {
         return this.getDynamicRemoteIDs().stream()
-            .map(remoteID -> this.getRemoteStateWithID(remoteID))
-            .collect(Collectors.toList());
+                .map(remoteID -> this.getRemoteStateWithID(remoteID))
+                .collect(Collectors.toList());
     }
 
     public String getHash() {
@@ -143,8 +146,8 @@ public class Snapshot extends Jsonable {
 
     public Collection<RemoteState> getRemoteStatesWithTag(String groupTag) {
         return this.getRemoteStates().stream()
-            .filter(remoteState -> remoteState.hasRemoteGroupWithTag(groupTag))
-            .collect(Collectors.toList());
+                .filter(remoteState -> remoteState.hasRemoteGroupWithTag(groupTag))
+                .collect(Collectors.toList());
 
     }
 
@@ -189,7 +192,8 @@ public class Snapshot extends Jsonable {
     }
 
     public boolean hasHash(String hash) {
-        if (hash == null || this.hash == null) return this.hash == null;
+        if (hash == null || this.hash == null)
+            return this.hash == null;
         return this.hash.equals(hash);
     }
 
@@ -199,7 +203,8 @@ public class Snapshot extends Jsonable {
 
     public boolean hasRemoteMatch(Set<String> matchers) {
         for (String matcher : matchers) {
-            if (this.hasRemoteStateWithTag(matcher)) return true;
+            if (this.hasRemoteStateWithTag(matcher))
+                return true;
         }
         return false;
     }
@@ -213,7 +218,8 @@ public class Snapshot extends Jsonable {
     }
 
     public boolean hasScenarioID(String scenarioID) {
-        if (scenarioID == null || this.scenarioID == null) return this.scenarioID == scenarioID;
+        if (scenarioID == null || this.scenarioID == null)
+            return this.scenarioID == scenarioID;
         return this.scenarioID.equals(scenarioID);
     }
 

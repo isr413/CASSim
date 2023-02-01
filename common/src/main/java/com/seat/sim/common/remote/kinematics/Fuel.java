@@ -13,7 +13,11 @@ public class Fuel extends Jsonable {
 
     private Optional<Vector> fuelUsage;
     private double initialFuel;
-    private double maxFuel;
+    private Optional<Double> maxFuel;
+
+    public Fuel() {
+        this(0, null, null);
+    }
 
     public Fuel(double maxFuel) {
         this(maxFuel, maxFuel);
@@ -24,9 +28,17 @@ public class Fuel extends Jsonable {
     }
 
     public Fuel(double initialFuel, double maxFuel, Vector fuelUsage) {
+        this(initialFuel, Optional.of(maxFuel), fuelUsage);
+    }
+
+    private Fuel(double initialFuel, Optional<Double> maxFuel, Vector fuelUsage) {
         this.initialFuel = initialFuel;
-        this.maxFuel = maxFuel;
+        this.maxFuel = (maxFuel != null) ? maxFuel : Optional.empty();
         this.fuelUsage = (fuelUsage != null) ? Optional.of(fuelUsage) : Optional.empty();
+        if (!Double.isFinite(initialFuel)) {
+            throw new RuntimeException(
+                    String.format("cannot create Fuel with non-finite initial fuel `%f`", initialFuel));
+        }
     }
 
     public Fuel(Json json) throws JsonException {
@@ -35,9 +47,8 @@ public class Fuel extends Jsonable {
 
     @Override
     protected void decode(JsonObject json) throws JsonException {
-        this.initialFuel = (json.hasKey(Fuel.INITIAL_FUEL)) ? json.getDouble(Fuel.INITIAL_FUEL)
-                : Double.POSITIVE_INFINITY;
-        this.maxFuel = (json.hasKey(Fuel.MAX_FUEL)) ? json.getDouble(Fuel.MAX_FUEL) : Double.POSITIVE_INFINITY;
+        this.initialFuel = (json.hasKey(Fuel.INITIAL_FUEL)) ? json.getDouble(Fuel.INITIAL_FUEL) : 0;
+        this.maxFuel = (json.hasKey(Fuel.MAX_FUEL)) ? Optional.of(json.getDouble(Fuel.MAX_FUEL)) : Optional.empty();
         this.fuelUsage = (json.hasKey(Fuel.FUEL_USAGE)) ? Optional.of(new Vector(json.getJson(Fuel.FUEL_USAGE)))
                 : Optional.empty();
     }
@@ -59,7 +70,8 @@ public class Fuel extends Jsonable {
     public boolean equals(Fuel fuel) {
         if (fuel == null)
             return false;
-        return this.initialFuel == fuel.initialFuel && this.maxFuel == fuel.maxFuel;
+        return this.initialFuel == fuel.initialFuel && this.maxFuel.equals(fuel.maxFuel)
+                && this.fuelUsage.equals(fuel.fuelUsage);
     }
 
     public Vector getFuelUsage() {
@@ -71,7 +83,7 @@ public class Fuel extends Jsonable {
     }
 
     public double getMaxFuel() {
-        return this.maxFuel;
+        return this.maxFuel.get();
     }
 
     public boolean hasFuelUsage() {
@@ -79,11 +91,11 @@ public class Fuel extends Jsonable {
     }
 
     public boolean hasInitialFuel() {
-        return Double.isFinite(this.initialFuel);
+        return Double.isFinite(this.initialFuel) && this.initialFuel > 0;
     }
 
     public boolean hasMaxFuel() {
-        return Double.isFinite(this.maxFuel);
+        return this.maxFuel.isPresent() && Double.isFinite(this.getMaxFuel());
     }
 
     public Json toJson() throws JsonException {

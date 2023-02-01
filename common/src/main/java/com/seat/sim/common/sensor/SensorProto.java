@@ -1,6 +1,7 @@
 package com.seat.sim.common.sensor;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import com.seat.sim.common.json.*;
@@ -15,23 +16,61 @@ public class SensorProto extends Jsonable {
     public static final String SENSOR_MATCHERS = "sensor_matchers";
     public static final String SENSOR_MODEL = "sensor_model";
 
-    private double accuracy;
-    private double batteryUsage;
-    private double delay;
-    private double range;
+    protected static final String DEFAULT_MODEL = "default";
+
+    private Optional<Double> accuracy;
+    private Optional<Double> batteryUsage;
+    private Optional<Double> delay;
+    private Optional<Double> range;
     private Set<String> sensorGroups;
     private Set<String> sensorMatchers;
     private String sensorModel;
 
-    public SensorProto(String sensorModel, Set<String> sensorGroups, Set<String> sensorMatchers, double range, 
-            double accuracy, double delay, double batteryUsage) {
+    public SensorProto() {
+        this(SensorProto.DEFAULT_MODEL);
+    }
+
+    public SensorProto(String sensorModel) {
+        this(sensorModel, null, null, null, null, null, null);
+    }
+
+    public SensorProto(String sensorModel, Set<String> sensorGroups) {
+        this(sensorModel, sensorGroups, null, null, null, null, null);
+    }
+
+    public SensorProto(String sensorModel, double range, double accuracy, double delay, double batteryUsage) {
+        this(sensorModel, null, range, accuracy, delay, batteryUsage, null);
+    }
+
+    public SensorProto(String sensorModel, Set<String> sensorGroups, double range, double accuracy, double delay,
+            double batteryUsage) {
+        this(sensorModel, sensorGroups, range, accuracy, delay, batteryUsage, null);
+    }
+
+    public SensorProto(String sensorModel, double range, double accuracy, double delay, double batteryUsage,
+            Set<String> sensorMatchers) {
+        this(sensorModel, null, range, accuracy, delay, batteryUsage, sensorMatchers);
+    }
+
+    public SensorProto(String sensorModel, Set<String> sensorGroups, double range, double accuracy, double delay,
+            double batteryUsage, Set<String> sensorMatchers) {
+        this(sensorModel, sensorGroups, Optional.of(range), Optional.of(accuracy), Optional.of(delay),
+                Optional.of(batteryUsage), sensorMatchers);
+    }
+
+    private SensorProto(String sensorModel, Set<String> sensorGroups, Optional<Double> range, Optional<Double> accuracy,
+            Optional<Double> delay, Optional<Double> batteryUsage, Set<String> sensorMatchers) {
         this.sensorModel = sensorModel;
         this.sensorGroups = (sensorGroups != null) ? new HashSet<>(sensorGroups) : new HashSet<>();
+        this.range = (range != null) ? range : Optional.empty();
+        this.accuracy = (accuracy != null) ? accuracy : Optional.empty();
+        this.delay = (delay != null) ? delay : Optional.empty();
+        this.batteryUsage = (batteryUsage != null) ? batteryUsage : Optional.empty();
         this.sensorMatchers = (sensorMatchers != null) ? new HashSet<>(sensorMatchers) : new HashSet<>();
-        this.range = range;
-        this.accuracy = accuracy;
-        this.delay = delay;
-        this.batteryUsage = batteryUsage;
+        if (this.batteryUsage.isPresent() && !Double.isFinite(this.batteryUsage.get())) {
+            throw new RuntimeException(
+                    String.format("cannot create Sensor with non-finite battery usage `%f`", this.batteryUsage.get()));
+        }
     }
 
     public SensorProto(Json json) throws JsonException {
@@ -41,22 +80,21 @@ public class SensorProto extends Jsonable {
     @Override
     protected void decode(JsonObject json) throws JsonException {
         this.sensorModel = json.getString(SensorProto.SENSOR_MODEL);
-        this.sensorGroups = (json.hasKey(SensorProto.SENSOR_GROUPS)) ?
-            new HashSet<>(json.getJsonArray(SensorProto.SENSOR_GROUPS).toList(String.class)) :
-            new HashSet<>();
-        this.sensorMatchers = (json.hasKey(SensorProto.SENSOR_MATCHERS)) ?
-            new HashSet<>(json.getJsonArray(SensorProto.SENSOR_MATCHERS).toList(String.class)) :
-            new HashSet<>();
-        this.range = (json.hasKey(SensorProto.RANGE)) ?
-            json.getDouble(SensorProto.RANGE) :
-            Double.POSITIVE_INFINITY;
-        this.accuracy = (json.hasKey(SensorProto.ACCURACY)) ?
-            json.getDouble(SensorProto.ACCURACY) :
-            1;
-        this.delay = (json.hasKey(SensorProto.DELAY)) ?
-            json.getDouble(SensorProto.DELAY) :
-            0;
-        this.batteryUsage = json.getDouble(SensorProto.BATTERY_USAGE);
+        this.sensorGroups = (json.hasKey(SensorProto.SENSOR_GROUPS))
+                ? new HashSet<>(json.getJsonArray(SensorProto.SENSOR_GROUPS).toList(String.class))
+                : new HashSet<>();
+        this.range = (json.hasKey(SensorProto.RANGE)) ? Optional.of(json.getDouble(SensorProto.RANGE))
+                : Optional.empty();
+        this.accuracy = (json.hasKey(SensorProto.ACCURACY)) ? Optional.of(json.getDouble(SensorProto.ACCURACY))
+                : Optional.empty();
+        this.delay = (json.hasKey(SensorProto.DELAY)) ? Optional.of(json.getDouble(SensorProto.DELAY))
+                : Optional.empty();
+        this.batteryUsage = (json.hasKey(SensorProto.BATTERY_USAGE))
+                ? Optional.of(json.getDouble(SensorProto.BATTERY_USAGE))
+                : Optional.empty();
+        this.sensorMatchers = (json.hasKey(SensorProto.SENSOR_MATCHERS))
+                ? new HashSet<>(json.getJsonArray(SensorProto.SENSOR_MATCHERS).toList(String.class))
+                : new HashSet<>();
     }
 
     protected JsonObjectBuilder getJsonBuilder() throws JsonException {
@@ -65,29 +103,32 @@ public class SensorProto extends Jsonable {
         if (this.hasSensorGroups()) {
             json.put(SensorProto.SENSOR_GROUPS, JsonBuilder.toJsonArray(this.sensorGroups));
         }
-        if (this.hasSensorMatchers()) {
-            json.put(SensorProto.SENSOR_MATCHERS, JsonBuilder.toJsonArray(this.sensorMatchers));
-        }
-        if (this.hasLimitedRange()) {
+        if (this.hasRange()) {
             json.put(SensorProto.RANGE, this.range);
         }
-        if (this.hasLimitedAccuracy()) {
+        if (this.hasAccuracy()) {
             json.put(SensorProto.ACCURACY, this.accuracy);
         }
         if (this.hasDelay()) {
             json.put(SensorProto.DELAY, this.delay);
         }
-        json.put(SensorProto.BATTERY_USAGE, this.batteryUsage);
+        if (this.hasBatteryUsage()) {
+            json.put(SensorProto.BATTERY_USAGE, this.batteryUsage);
+        }
+        if (this.hasSensorMatchers()) {
+            json.put(SensorProto.SENSOR_MATCHERS, JsonBuilder.toJsonArray(this.sensorMatchers));
+        }
         return json;
     }
 
     public boolean equals(SensorProto proto) {
-        if (proto == null) return false;
+        if (proto == null)
+            return false;
         return this.sensorModel.equals(proto.sensorModel) && this.sensorGroups.equals(proto.sensorGroups);
     }
 
     public double getBatteryUsage() {
-        return this.batteryUsage;
+        return this.batteryUsage.get();
     }
 
     public String getLabel() {
@@ -95,11 +136,11 @@ public class SensorProto extends Jsonable {
     }
 
     public double getSensorAccuracy() {
-        return this.accuracy;
+        return this.accuracy.get();
     }
 
     public double getSensorDelay() {
-        return this.delay;
+        return this.delay.get();
     }
 
     public Set<String> getSensorGroups() {
@@ -115,31 +156,23 @@ public class SensorProto extends Jsonable {
     }
 
     public double getSensorRange() {
-        return this.range;
+        return this.range.get();
     }
 
     public boolean hasAccuracy() {
-        return this.accuracy > 0;
+        return this.accuracy.isPresent() && Double.isFinite(this.getSensorAccuracy());
     }
 
     public boolean hasBatteryUsage() {
-        return this.batteryUsage > 0;
+        return this.batteryUsage.isPresent() && Double.isFinite(this.getBatteryUsage()) && this.getBatteryUsage() > 0;
     }
 
     public boolean hasDelay() {
-        return this.delay > 0;
-    }
-
-    public boolean hasLimitedAccuracy() {
-        return this.hasAccuracy() && this.accuracy < 1;
-    }
-
-    public boolean hasLimitedRange() {
-        return this.hasRange() && this.range != Double.POSITIVE_INFINITY;
+        return this.delay.isPresent() && Double.isFinite(this.getSensorDelay()) && this.getSensorDelay() > 0;
     }
 
     public boolean hasRange() {
-        return this.range > 0;
+        return this.range.isPresent() && Double.isFinite(this.getSensorRange());
     }
 
     public boolean hasSensorGroups() {
@@ -152,7 +185,8 @@ public class SensorProto extends Jsonable {
 
     public boolean hasSensorMatch(Set<String> matchers) {
         for (String matcher : matchers) {
-            if (this.hasSensorGroupWithTag(matcher)) return true;
+            if (this.hasSensorGroupWithTag(matcher))
+                return true;
         }
         return false;
     }
@@ -166,7 +200,8 @@ public class SensorProto extends Jsonable {
     }
 
     public boolean hasSensorModel(String sensorModel) {
-        if (sensorModel == null || this.sensorModel == null) return this.sensorModel == sensorModel;
+        if (sensorModel == null || this.sensorModel == null)
+            return this.sensorModel == sensorModel;
         return this.sensorModel.equals(sensorModel);
     }
 

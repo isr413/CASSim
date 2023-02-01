@@ -1,5 +1,7 @@
 package com.seat.sim.common.remote.kinematics;
 
+import java.util.Optional;
+
 import com.seat.sim.common.json.*;
 
 /** A struct class to store motion data for a Remote asset. */
@@ -9,25 +11,33 @@ public class Motion extends Jsonable {
     public static final String MAX_VELOCITY = "max_velocity";
 
     private double initialVelocity;
-    private double maxAcceleration;
-    private double maxVelocity;
+    private Optional<Double> maxAcceleration;
+    private Optional<Double> maxVelocity;
 
     public Motion() {
         this(0);
     }
 
     public Motion(double initialVelocity) {
-        this(initialVelocity, Double.POSITIVE_INFINITY);
+        this(initialVelocity, null, null);
     }
 
     public Motion(double initialVelocity, double maxVelocity) {
-        this(initialVelocity, maxVelocity, Double.POSITIVE_INFINITY);
+        this(initialVelocity, Optional.of(maxVelocity), null);
     }
 
     public Motion(double initialVelocity, double maxVelocity, double maxAcceleration) {
+        this(initialVelocity, Optional.of(maxVelocity), Optional.of(maxAcceleration));
+    }
+
+    private Motion(double initialVelocity, Optional<Double> maxVelocity, Optional<Double> maxAcceleration) {
         this.initialVelocity = initialVelocity;
-        this.maxVelocity = maxVelocity;
-        this.maxAcceleration = maxAcceleration;
+        this.maxVelocity = (maxVelocity != null) ? maxVelocity : Optional.empty();
+        this.maxAcceleration = (maxAcceleration != null) ? maxAcceleration : Optional.empty();
+        if (!Double.isFinite(this.initialVelocity)) {
+            throw new RuntimeException(
+                    String.format("cannot create Motion with non-finite initial velocity `%f`", this.initialVelocity));
+        }
     }
 
     public Motion(Json json) throws JsonException {
@@ -36,12 +46,12 @@ public class Motion extends Jsonable {
 
     @Override
     protected void decode(JsonObject json) throws JsonException {
-        this.initialVelocity = (json.hasKey(Motion.INITIAL_VELOCITY)) ? json.getDouble(Motion.INITIAL_VELOCITY)
-                : 0;
-        this.maxVelocity = (json.hasKey(Motion.MAX_VELOCITY)) ? json.getDouble(Motion.MAX_VELOCITY)
-                : Double.POSITIVE_INFINITY;
-        this.maxAcceleration = (json.hasKey(Motion.MAX_ACCELERATION)) ? json.getDouble(Motion.MAX_ACCELERATION)
-                : Double.POSITIVE_INFINITY;
+        this.initialVelocity = (json.hasKey(Motion.INITIAL_VELOCITY)) ? json.getDouble(Motion.INITIAL_VELOCITY) : 0;
+        this.maxVelocity = (json.hasKey(Motion.MAX_VELOCITY)) ? Optional.of(json.getDouble(Motion.MAX_VELOCITY))
+                : Optional.empty();
+        this.maxAcceleration = (json.hasKey(Motion.MAX_ACCELERATION))
+                ? Optional.of(json.getDouble(Motion.MAX_ACCELERATION))
+                : Optional.empty();
     }
 
     protected JsonObjectBuilder getJsonBuilder() throws JsonException {
@@ -61,8 +71,8 @@ public class Motion extends Jsonable {
     public boolean equals(Motion motion) {
         if (motion == null)
             return false;
-        return this.initialVelocity == motion.initialVelocity && this.maxVelocity == motion.maxVelocity &&
-                this.maxAcceleration == motion.maxAcceleration;
+        return this.initialVelocity == motion.initialVelocity && this.maxVelocity.equals(motion.maxVelocity)
+                && this.maxAcceleration.equals(motion.maxAcceleration);
     }
 
     public double getInitialVelocity() {
@@ -70,11 +80,11 @@ public class Motion extends Jsonable {
     }
 
     public double getMaxAcceleration() {
-        return this.maxAcceleration;
+        return this.maxAcceleration.get();
     }
 
     public double getMaxVelocity() {
-        return this.maxVelocity;
+        return this.maxVelocity.get();
     }
 
     public boolean hasInitialVelocity() {
@@ -82,11 +92,11 @@ public class Motion extends Jsonable {
     }
 
     public boolean hasMaxAcceleration() {
-        return Double.isFinite(this.maxAcceleration);
+        return this.maxAcceleration.isPresent() && Double.isFinite(this.getMaxAcceleration());
     }
 
     public boolean hasMaxVelocity() {
-        return Double.isFinite(this.maxVelocity);
+        return this.maxVelocity.isPresent() && Double.isFinite(this.getMaxVelocity());
     }
 
     public boolean isMobile() {

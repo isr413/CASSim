@@ -36,12 +36,12 @@ public class SensorState extends Jsonable {
     protected void decode(JsonObject json) throws JsonException {
         this.sensorID = json.getString(SensorState.SENSOR_ID);
         this.sensorModel = json.getString(SensorProto.SENSOR_MODEL);
-        this.sensorGroups = (json.hasKey(SensorState.SENSOR_GROUPS)) ?
-            new HashSet<>(json.getJsonArray(SensorState.SENSOR_GROUPS).toList(String.class)) :
-            new HashSet<>();
-        this.subjects = (json.hasKey(SensorState.SUBJECTS)) ?
-            new HashSet<>(json.getJsonArray(SensorState.SUBJECTS).toList(String.class)) :
-            new HashSet<>();
+        this.sensorGroups = (json.hasKey(SensorState.SENSOR_GROUPS))
+                ? new HashSet<>(json.getJsonArray(SensorState.SENSOR_GROUPS).toList(String.class))
+                : new HashSet<>();
+        this.subjects = (json.hasKey(SensorState.SUBJECTS))
+                ? new HashSet<>(json.getJsonArray(SensorState.SUBJECTS).toList(String.class))
+                : new HashSet<>();
         this.active = json.getBoolean(SensorState.ACTIVE);
     }
 
@@ -60,7 +60,8 @@ public class SensorState extends Jsonable {
     }
 
     public boolean equals(SensorState state) {
-        if (state == null) return false;
+        if (state == null)
+            return false;
         return this.sensorID.equals(state.sensorID) && this.sensorModel.equals(state.sensorModel);
     }
 
@@ -93,19 +94,22 @@ public class SensorState extends Jsonable {
     }
 
     public boolean hasSensorID(String sensorID) {
-        if (sensorID == null || this.sensorID == null) return this.sensorID == sensorID;
+        if (sensorID == null || this.sensorID == null)
+            return this.sensorID == sensorID;
         return this.sensorID.equals(sensorID);
     }
 
     public boolean hasSensorMatch(Set<String> matchers) {
         for (String matcher : matchers) {
-            if (this.hasSensorGroupWithTag(matcher)) return true;
+            if (this.hasSensorGroupWithTag(matcher))
+                return true;
         }
         return false;
     }
 
     public boolean hasSensorModel(String sensorModel) {
-        if (sensorModel == null || this.sensorModel == null) return this.sensorModel == sensorModel;
+        if (sensorModel == null || this.sensorModel == null)
+            return this.sensorModel == sensorModel;
         return this.sensorModel.equals(sensorModel);
     }
 
