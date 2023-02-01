@@ -12,6 +12,18 @@ public class Motion extends Jsonable {
     private double maxAcceleration;
     private double maxVelocity;
 
+    public Motion() {
+        this(0);
+    }
+
+    public Motion(double initialVelocity) {
+        this(initialVelocity, Double.POSITIVE_INFINITY);
+    }
+
+    public Motion(double initialVelocity, double maxVelocity) {
+        this(initialVelocity, maxVelocity, Double.POSITIVE_INFINITY);
+    }
+
     public Motion(double initialVelocity, double maxVelocity, double maxAcceleration) {
         this.initialVelocity = initialVelocity;
         this.maxVelocity = maxVelocity;
@@ -24,15 +36,12 @@ public class Motion extends Jsonable {
 
     @Override
     protected void decode(JsonObject json) throws JsonException {
-        this.initialVelocity = (json.hasKey(Motion.INITIAL_VELOCITY)) ?
-            json.getDouble(Motion.INITIAL_VELOCITY) :
-            Double.POSITIVE_INFINITY;
-        this.maxVelocity = (json.hasKey(Motion.MAX_VELOCITY)) ?
-            json.getDouble(Motion.MAX_VELOCITY) :
-            Double.POSITIVE_INFINITY;
-        this.maxAcceleration = (json.hasKey(Motion.MAX_ACCELERATION)) ?
-            json.getDouble(Motion.MAX_ACCELERATION) :
-            Double.POSITIVE_INFINITY;
+        this.initialVelocity = (json.hasKey(Motion.INITIAL_VELOCITY)) ? json.getDouble(Motion.INITIAL_VELOCITY)
+                : 0;
+        this.maxVelocity = (json.hasKey(Motion.MAX_VELOCITY)) ? json.getDouble(Motion.MAX_VELOCITY)
+                : Double.POSITIVE_INFINITY;
+        this.maxAcceleration = (json.hasKey(Motion.MAX_ACCELERATION)) ? json.getDouble(Motion.MAX_ACCELERATION)
+                : Double.POSITIVE_INFINITY;
     }
 
     protected JsonObjectBuilder getJsonBuilder() throws JsonException {
@@ -50,9 +59,10 @@ public class Motion extends Jsonable {
     }
 
     public boolean equals(Motion motion) {
-        if (motion == null) return false;
+        if (motion == null)
+            return false;
         return this.initialVelocity == motion.initialVelocity && this.maxVelocity == motion.maxVelocity &&
-            this.maxAcceleration == motion.maxAcceleration;
+                this.maxAcceleration == motion.maxAcceleration;
     }
 
     public double getInitialVelocity() {
@@ -68,15 +78,15 @@ public class Motion extends Jsonable {
     }
 
     public boolean hasInitialVelocity() {
-        return this.initialVelocity != Double.POSITIVE_INFINITY;
+        return Double.isFinite(this.initialVelocity) && this.initialVelocity > 0;
     }
 
     public boolean hasMaxAcceleration() {
-        return this.maxAcceleration != Double.POSITIVE_INFINITY;
+        return Double.isFinite(this.maxAcceleration);
     }
 
     public boolean hasMaxVelocity() {
-        return this.maxVelocity != Double.POSITIVE_INFINITY;
+        return Double.isFinite(this.maxVelocity);
     }
 
     public Json toJson() throws JsonException {

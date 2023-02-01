@@ -1,25 +1,40 @@
 package com.seat.sim.common.remote.kinematics;
 
+import java.util.Optional;
+
 import com.seat.sim.common.json.*;
 import com.seat.sim.common.math.Vector;
 
 /** A class to model a Remote's fuel, fuel usage, location, and motion. */
 public class Kinematics extends Jsonable {
     public static final String FUEL = "fuel";
-    public static final String FUEL_USAGE = "fuel_usage";
     public static final String LOCATION = "location";
     public static final String MOTION = "motion";
 
-    private Fuel fuel;
-    private Vector fuelUsage;
-    private Vector location;
-    private Motion motion;
+    private Optional<Fuel> fuel;
+    private Optional<Vector> location;
+    private Optional<Motion> motion;
 
-    public Kinematics(Vector location, Motion motion, Fuel fuel, Vector fuelUsage) {
-        this.location = location;
-        this.motion = (motion != null) ? motion : new Motion(0, 0, 0);
-        this.fuel = (fuel != null) ? fuel : new Fuel(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-        this.fuelUsage = (fuelUsage != null) ? fuelUsage : new Vector();
+    public Kinematics(Vector location) {
+        this(location, null, null);
+    }
+
+    public Kinematics(Vector location, Motion motion) {
+        this(location, motion, null);
+    }
+
+    public Kinematics(Fuel fuel) {
+        this(null, null, fuel);
+    }
+
+    public Kinematics(Vector location, Fuel fuel) {
+        this(location, null, fuel);
+    }
+
+    public Kinematics(Vector location, Motion motion, Fuel fuel) {
+        this.location = (location != null) ? Optional.of(location) : Optional.empty();
+        this.motion = (motion != null) ? Optional.of(motion) : Optional.empty();
+        this.fuel = (fuel != null) ? Optional.of(fuel) : Optional.empty();
     }
 
     public Kinematics(Json json) throws JsonException {
@@ -28,111 +43,102 @@ public class Kinematics extends Jsonable {
 
     @Override
     protected void decode(JsonObject json) throws JsonException {
-        this.location = (json.hasKey(Kinematics.LOCATION)) ?
-            new Vector(json.getJson(Kinematics.LOCATION)) :
-            null;
-        this.motion = (json.hasKey(Kinematics.MOTION)) ?
-            new Motion(json.getJson(Kinematics.MOTION)) :
-            new Motion(0, 0, 0);
-        this.fuel = (json.hasKey(Kinematics.FUEL)) ?
-            new Fuel(json.getJson(Kinematics.FUEL)) :
-            new Fuel(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-        this.fuelUsage = (json.hasKey(Kinematics.FUEL_USAGE)) ?
-            new Vector(json.getJson(Kinematics.FUEL_USAGE)) :
-            new Vector();
+        this.location = (json.hasKey(Kinematics.LOCATION)) ? Optional.of(new Vector(json.getJson(Kinematics.LOCATION)))
+                : Optional.empty();
+        this.motion = (json.hasKey(Kinematics.MOTION)) ? Optional.of(new Motion(json.getJson(Kinematics.MOTION)))
+                : Optional.empty();
+        this.fuel = (json.hasKey(Kinematics.FUEL)) ? Optional.of(new Fuel(json.getJson(Kinematics.FUEL)))
+                : Optional.empty();
     }
 
     protected JsonObjectBuilder getJsonBuilder() throws JsonException {
         JsonObjectBuilder json = JsonBuilder.Object();
         if (this.hasLocation()) {
-            json.put(Kinematics.LOCATION, this.location.toJson());
+            json.put(Kinematics.LOCATION, this.getLocation().toJson());
         }
         if (this.hasMotion()) {
-            json.put(Kinematics.MOTION, this.motion.toJson());
+            json.put(Kinematics.MOTION, this.getMotion().toJson());
         }
-        if (this.hasFiniteFuel()) {
-            json.put(Kinematics.FUEL, this.fuel.toJson());
-        }
-        if (this.hasFuelUsage()) {
-            json.put(Kinematics.FUEL_USAGE, this.fuelUsage.toJson());
+        if (this.hasFuel()) {
+            json.put(Kinematics.FUEL, this.getFuel().toJson());
         }
         return json;
     }
 
     public boolean equals(Kinematics kinematics) {
-        if (kinematics == null) return false;
-        return ((this.hasLocation() && this.location.equals(kinematics.location))
-                || this.location == kinematics.location) &&
-            this.motion.equals(kinematics.motion) && this.fuel.equals(kinematics.fuel) &&
-            this.fuelUsage.equals(kinematics.fuelUsage);
+        if (kinematics == null)
+            return false;
+        return this.location.equals(kinematics.location) && this.motion.equals(kinematics.motion)
+                && this.fuel.equals(kinematics.fuel);
     }
 
     public double getInitialFuel() {
-        return this.fuel.getInitialFuel();
+        return this.getFuel().getInitialFuel();
     }
 
     public double getInitialVelocity() {
-        return this.motion.getInitialVelocity();
+        return this.getMotion().getInitialVelocity();
     }
 
     public Fuel getFuel() {
-        return this.fuel;
+        return this.fuel.get();
     }
 
     public Vector getFuelUsage() {
-        return this.fuelUsage;
+        return this.getFuel().getFuelUsage();
     }
 
     public Vector getLocation() {
-        return this.location;
+        return this.location.get();
     }
 
     public double getMaxAcceleration() {
-        return this.motion.getMaxAcceleration();
+        return this.getMotion().getMaxAcceleration();
     }
 
     public double getMaxFuel() {
-        return this.fuel.getMaxFuel();
+        return this.getFuel().getMaxFuel();
     }
 
     public double getMaxVelocity() {
-        return this.motion.getMaxVelocity();
+        return this.getMotion().getMaxVelocity();
     }
 
     public Motion getMotion() {
-        return this.motion;
+        return this.motion.get();
     }
 
     /** Override to change fuel usage formula. */
     public double getRemoteFuelUsage() {
-        return this.fuelUsage.getX();
+        return this.getFuelUsage().getX();
     }
 
     /** Override to change fuel usage formula. */
     public double getRemoteFuelUsage(Vector acceleration) {
-        if (acceleration.getMagnitude() == 0) return this.getRemoteFuelUsage();
-        return this.fuelUsage.getY() * acceleration.getProjectionXY().getMagnitude() +
-            this.fuelUsage.getZ() * acceleration.getZ();
+        if (acceleration.getMagnitude() == 0)
+            return this.getRemoteFuelUsage();
+        return this.getFuelUsage().getY() * acceleration.getProjectionXY().getMagnitude() +
+                this.getFuelUsage().getZ() * acceleration.getZ();
     }
 
-    public boolean hasFiniteFuel() {
-        return this.fuel.hasInitialFuel();
+    public boolean hasFuel() {
+        return this.fuel.isPresent() && this.getFuel().hasInitialFuel();
     }
 
     public boolean hasFuelUsage() {
-        return this.fuelUsage.getMagnitude() > 0;
+        return this.hasFuelUsage() && this.getFuelUsage().getMagnitude() > 0;
     }
 
     public boolean hasLocation() {
-        return this.location != null;
+        return this.location.isPresent();
     }
 
     public boolean hasMotion() {
-        return this.motion.getMaxVelocity() > 0 && this.motion.getMaxAcceleration() > 0;
+        return this.motion.isPresent() && this.getMaxVelocity() > 0 && this.getMaxAcceleration() > 0;
     }
 
     public boolean isEnabled() {
-        return this.fuel.getInitialFuel() > 0;
+        return this.hasFuel() && this.getInitialFuel() > 0;
     }
 
     public Json toJson() throws JsonException {
