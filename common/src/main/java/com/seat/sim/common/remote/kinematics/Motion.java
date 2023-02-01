@@ -89,6 +89,11 @@ public class Motion extends Jsonable {
         return Double.isFinite(this.maxVelocity);
     }
 
+    public boolean isMobile() {
+        return (!this.hasMaxVelocity() || this.getMaxVelocity() > 0)
+                && (this.hasInitialVelocity() || !this.hasMaxAcceleration() || this.getMaxAcceleration() > 0);
+    }
+
     public Json toJson() throws JsonException {
         return this.getJsonBuilder().toJson();
     }

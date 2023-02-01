@@ -75,7 +75,7 @@ public class Fuel extends Jsonable {
     }
 
     public boolean hasFuelUsage() {
-        return this.fuelUsage.isPresent();
+        return this.fuelUsage.isPresent() && this.getFuelUsage().getMagnitude() > 0;
     }
 
     public boolean hasInitialFuel() {

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,14 +21,43 @@ public class RemoteProto extends Jsonable {
     public static final String REMOTE_GROUPS = "remote_groups";
     public static final String SENSORS = "sensors";
 
-    private Kinematics kinematics;
+    private Optional<Kinematics> kinematics;
     private Set<String> remoteGroups;
     private Map<String, SensorConfig> sensorConfigByID;
     private List<SensorConfig> sensorConfigs;
 
+    public RemoteProto() {
+        this(null, null, null);
+    }
+
+    public RemoteProto(Set<String> remoteGroups) {
+        this(remoteGroups, null, null);
+    }
+
+    public RemoteProto(Set<String> remoteGroups, Kinematics kinematics) {
+        this(remoteGroups, kinematics, null);
+    }
+
+    public RemoteProto(Collection<SensorConfig> sensorConfigs) {
+        this(null, null, sensorConfigs);
+    }
+
+    public RemoteProto(Set<String> remoteGroups, Collection<SensorConfig> sensorConfigs) {
+        this(remoteGroups, null, sensorConfigs);
+    }
+
+    public RemoteProto(Kinematics kinematics) {
+        this(null, kinematics, null);
+    }
+
+    public RemoteProto(Kinematics kinematics, Collection<SensorConfig> sensorConfigs) {
+        this(null, kinematics, sensorConfigs);
+    }
+
     public RemoteProto(Set<String> remoteGroups, Kinematics kinematics, Collection<SensorConfig> sensorConfigs) {
         this.remoteGroups = (remoteGroups != null) ? new HashSet<>(remoteGroups) : new HashSet<>();
-        this.kinematics = (kinematics != null) ? kinematics : new Kinematics(null, null, null, null);
+        this.kinematics = (kinematics != null) ? Optional.of(kinematics)
+                : Optional.empty();
         this.sensorConfigs = (sensorConfigs != null) ? new ArrayList<>(sensorConfigs) : new ArrayList<>();
         this.init();
     }
@@ -47,17 +77,17 @@ public class RemoteProto extends Jsonable {
 
     @Override
     protected void decode(JsonObject json) throws JsonException {
-        this.remoteGroups = (json.hasKey(RemoteProto.REMOTE_GROUPS)) ?
-            new HashSet<>(json.getJsonArray(RemoteProto.REMOTE_GROUPS).toList(String.class)) :
-            new HashSet<>();
-        this.kinematics = (json.hasKey(RemoteProto.KINEMATICS)) ?
-            new Kinematics(json.getJson(RemoteProto.KINEMATICS)) :
-            new Kinematics(null, null, null, null);
-        this.sensorConfigs = (json.hasKey(RemoteProto.SENSORS)) ?
-            this.sensorConfigs = json.getJsonArray(RemoteProto.SENSORS).toList(Json.class).stream()
-                .map(config -> new SensorConfig(config))
-                .collect(Collectors.toList()) :
-            new ArrayList<>();
+        this.remoteGroups = (json.hasKey(RemoteProto.REMOTE_GROUPS))
+                ? new HashSet<>(json.getJsonArray(RemoteProto.REMOTE_GROUPS).toList(String.class))
+                : new HashSet<>();
+        this.kinematics = (json.hasKey(RemoteProto.KINEMATICS))
+                ? Optional.of(new Kinematics(json.getJson(RemoteProto.KINEMATICS)))
+                : Optional.empty();
+        this.sensorConfigs = (json.hasKey(RemoteProto.SENSORS))
+                ? this.sensorConfigs = json.getJsonArray(RemoteProto.SENSORS).toList(Json.class).stream()
+                        .map(config -> new SensorConfig(config))
+                        .collect(Collectors.toList())
+                : new ArrayList<>();
         this.init();
     }
 
@@ -67,29 +97,28 @@ public class RemoteProto extends Jsonable {
             json.put(RemoteProto.REMOTE_GROUPS, JsonBuilder.toJsonArray(this.remoteGroups));
         }
         if (this.hasKinematics()) {
-            json.put(RemoteProto.KINEMATICS, this.kinematics.toJson());
+            json.put(RemoteProto.KINEMATICS, this.getKinematics().toJson());
         }
         if (this.hasSensors()) {
             json.put(
-                RemoteProto.SENSORS,
-                JsonBuilder.toJsonArray(
-                    this.sensorConfigs.stream()
-                        .map(config -> config.toJson())
-                        .collect(Collectors.toList())
-                )
-            );
+                    RemoteProto.SENSORS,
+                    JsonBuilder.toJsonArray(
+                            this.sensorConfigs.stream()
+                                    .map(config -> config.toJson())
+                                    .collect(Collectors.toList())));
         }
         return json;
     }
 
     public boolean equals(RemoteProto proto) {
-        if (proto == null) return false;
-        return this.remoteGroups.equals(proto.remoteGroups) && this.kinematics.equals(proto.kinematics) && 
-            this.sensorConfigs.equals(proto.sensorConfigs);
+        if (proto == null)
+            return false;
+        return this.remoteGroups.equals(proto.remoteGroups) && this.kinematics.equals(proto.kinematics) &&
+                this.sensorConfigs.equals(proto.sensorConfigs);
     }
 
     public Kinematics getKinematics() {
-        return this.kinematics;
+        return this.kinematics.get();
     }
 
     public String getLabel() {
@@ -97,7 +126,7 @@ public class RemoteProto extends Jsonable {
     }
 
     public Vector getLocation() {
-        return this.kinematics.getLocation();
+        return this.getKinematics().getLocation();
     }
 
     public int getNumberOfSensors() {
@@ -114,14 +143,14 @@ public class RemoteProto extends Jsonable {
 
     public Collection<SensorConfig> getSensorConfigsWithModel(String sensorModel) {
         return this.sensorConfigs.stream()
-            .filter(config -> config.hasSensorWithModel(sensorModel))
-            .collect(Collectors.toList());
+                .filter(config -> config.hasSensorWithModel(sensorModel))
+                .collect(Collectors.toList());
     }
 
     public Collection<SensorConfig> getSensorConfigsWithTag(String groupTag) {
         return this.sensorConfigs.stream()
-            .filter(config -> config.hasSensorWithTag(groupTag))
-            .collect(Collectors.toList());
+                .filter(config -> config.hasSensorWithTag(groupTag))
+                .collect(Collectors.toList());
     }
 
     public SensorConfig getSensorConfigWithID(String sensorID) {
@@ -133,11 +162,11 @@ public class RemoteProto extends Jsonable {
     }
 
     public boolean hasKinematics() {
-        return this.kinematics != null;
+        return this.kinematics.isPresent();
     }
 
     public boolean hasLocation() {
-        return this.kinematics.hasLocation();
+        return this.hasKinematics() && this.getKinematics().hasLocation();
     }
 
     public boolean hasRemoteGroups() {
@@ -150,7 +179,8 @@ public class RemoteProto extends Jsonable {
 
     public boolean hasRemoteMatch(Set<String> matchers) {
         for (String matcher : matchers) {
-            if (this.hasRemoteGroupWithTag(matcher)) return true;
+            if (this.hasRemoteGroupWithTag(matcher))
+                return true;
         }
         return false;
     }
@@ -169,7 +199,8 @@ public class RemoteProto extends Jsonable {
 
     public boolean hasSensorMatch(Set<String> matchers) {
         for (String matcher : matchers) {
-            if (this.hasSensorConfigWithTag(matcher)) return true;
+            if (this.hasSensorConfigWithTag(matcher))
+                return true;
         }
         return false;
     }
@@ -179,11 +210,11 @@ public class RemoteProto extends Jsonable {
     }
 
     public boolean isEnabled() {
-        return this.kinematics.isEnabled();
+        return !this.hasKinematics() || this.getKinematics().isEnabled();
     }
 
     public boolean isMobile() {
-        return this.kinematics.hasMotion();
+        return this.hasKinematics() && this.getKinematics().isMobile();
     }
 
     public Json toJson() throws JsonException {

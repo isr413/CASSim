@@ -41,29 +41,27 @@ public class IntentRegistry {
             throw new JsonException(String.format("Cannot decode intention type of %s", json.toString()));
         }
         switch (IntentionType.decode(json.getJsonObject())) {
-            case ACTIVATE: return new ActivateIntention(json);
-            case DEACTIVATE: return new DeactivateIntention(json);
-            case DONE: return new DoneIntention();
-            case GOTO: return new GoToIntention(json);
-            case MOVE: return new MoveIntention(json);
-            case SHUTDOWN: return new ShutdownIntention();
-            case STARTUP: return new StartupIntention();
-            case STEER: return new SteerIntention(json);
-            case STOP: return new StopIntention();
-            default: return new NoneIntention();
+            case ACTIVATE:
+                return new ActivateIntention(json);
+            case DEACTIVATE:
+                return new DeactivateIntention(json);
+            case DONE:
+                return new DoneIntention();
+            case GOTO:
+                return new GoToIntention(json);
+            case MOVE:
+                return new MoveIntention(json);
+            case SHUTDOWN:
+                return new ShutdownIntention();
+            case STARTUP:
+                return new StartupIntention();
+            case STEER:
+                return new SteerIntention(json);
+            case STOP:
+                return new StopIntention();
+            default:
+                return new NoneIntention();
         }
-    }
-
-    public static GoToIntention GoTo() {
-        return new GoToIntention();
-    }
-
-    public static GoToIntention GoTo(double maxVelocity) {
-        return new GoToIntention(maxVelocity);
-    }
-
-    public static GoToIntention GoTo(double maxVelocity, double maxAcceleration) {
-        return new GoToIntention(maxVelocity, maxAcceleration);
     }
 
     public static GoToIntention GoTo(Vector location) {

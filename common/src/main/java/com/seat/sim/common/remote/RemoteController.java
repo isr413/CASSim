@@ -59,24 +59,13 @@ public class RemoteController extends Jsonable {
     }
 
     public boolean equals(RemoteController controller) {
-        if (controller == null) return false;
+        if (controller == null)
+            return false;
         return this.intentions.equals(controller.intentions);
     }
 
     public IntentionSet getIntentions() {
         return this.intentions;
-    }
-
-    public void goHome() {
-        this.addIntention(IntentRegistry.GoTo());
-    }
-
-    public void goHome(double maxVelocity) {
-        this.addIntention(IntentRegistry.GoTo(maxVelocity));
-    }
-
-    public void goHome(double maxVelocity, double maxAcceleration) {
-        this.addIntention(IntentRegistry.GoTo(maxVelocity, maxAcceleration));
     }
 
     public void goToLocation(Vector location) {
@@ -117,10 +106,6 @@ public class RemoteController extends Jsonable {
 
     public void steer(Vector direction) {
         this.addIntention(IntentRegistry.Steer(direction));
-    }
-
-    public void steerHome() {
-        this.addIntention(IntentRegistry.Steer());
     }
 
     public void stop() {

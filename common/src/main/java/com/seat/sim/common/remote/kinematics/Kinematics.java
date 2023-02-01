@@ -56,7 +56,7 @@ public class Kinematics extends Jsonable {
         if (this.hasLocation()) {
             json.put(Kinematics.LOCATION, this.getLocation().toJson());
         }
-        if (this.hasMotion()) {
+        if (this.isMobile()) {
             json.put(Kinematics.MOTION, this.getMotion().toJson());
         }
         if (this.hasFuel()) {
@@ -115,6 +115,8 @@ public class Kinematics extends Jsonable {
 
     /** Override to change fuel usage formula. */
     public double getRemoteFuelUsage(Vector acceleration) {
+        if (!this.hasFuel() || !this.hasFuelUsage())
+            return 0;
         if (acceleration.getMagnitude() == 0)
             return this.getRemoteFuelUsage();
         return this.getFuelUsage().getY() * acceleration.getProjectionXY().getMagnitude() +
@@ -122,23 +124,23 @@ public class Kinematics extends Jsonable {
     }
 
     public boolean hasFuel() {
-        return this.fuel.isPresent() && this.getFuel().hasInitialFuel();
+        return this.fuel.isPresent() && (!this.getFuel().hasMaxFuel() || this.getMaxFuel() > 0);
     }
 
     public boolean hasFuelUsage() {
-        return this.hasFuelUsage() && this.getFuelUsage().getMagnitude() > 0;
+        return this.hasFuel() && this.getFuel().hasFuelUsage();
     }
 
     public boolean hasLocation() {
         return this.location.isPresent();
     }
 
-    public boolean hasMotion() {
-        return this.motion.isPresent() && this.getMaxVelocity() > 0 && this.getMaxAcceleration() > 0;
+    public boolean isEnabled() {
+        return !this.hasFuel() || this.getInitialFuel() > 0;
     }
 
-    public boolean isEnabled() {
-        return this.hasFuel() && this.getInitialFuel() > 0;
+    public boolean isMobile() {
+        return this.motion.isPresent() && this.getMotion().isMobile();
     }
 
     public Json toJson() throws JsonException {
