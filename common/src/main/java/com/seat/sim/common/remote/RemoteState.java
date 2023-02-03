@@ -32,48 +32,48 @@ public class RemoteState extends Jsonable {
     private TeamColor team;
     private Optional<Vector> velocity;
 
-    public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, boolean active,
-            Collection<SensorState> sensorStates) {
-        this(remoteID, remoteGroups, team, null, null, null, active, sensorStates);
-    }
-
-    public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, Vector location, boolean active,
-            Collection<SensorState> sensorStates) {
-        this(remoteID, remoteGroups, team, location, null, null, active, sensorStates);
-    }
-
-    public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, Vector location, Vector velocity,
-            boolean active, Collection<SensorState> sensorStates) {
-        this(remoteID, remoteGroups, team, location, velocity, null, active, sensorStates);
-    }
-
-    public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, double fuel, boolean active,
-            Collection<SensorState> sensorStates) {
-        this(remoteID, remoteGroups, team, null, null, fuel, active, sensorStates);
+    public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, Collection<SensorState> sensorStates,
+            boolean active) {
+        this(remoteID, remoteGroups, team, null, null, null, sensorStates, active);
     }
 
     public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, Vector location,
-            double fuel, boolean active, Collection<SensorState> sensorStates) {
-        this(remoteID, remoteGroups, team, location, null, fuel, active, sensorStates);
+            Collection<SensorState> sensorStates, boolean active) {
+        this(remoteID, remoteGroups, team, location, null, null, sensorStates, active);
     }
 
     public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, Vector location, Vector velocity,
-            double fuel, boolean active, Collection<SensorState> sensorStates) {
-        this(remoteID, remoteGroups, team, location, null, Optional.of(fuel), active, sensorStates);
+            Collection<SensorState> sensorStates, boolean active) {
+        this(remoteID, remoteGroups, team, location, velocity, null, sensorStates, active);
+    }
+
+    public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, double fuel,
+            Collection<SensorState> sensorStates, boolean active) {
+        this(remoteID, remoteGroups, team, null, null, fuel, sensorStates, active);
+    }
+
+    public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, Vector location,
+            double fuel, Collection<SensorState> sensorStates, boolean active) {
+        this(remoteID, remoteGroups, team, location, null, fuel, sensorStates, active);
+    }
+
+    public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, Vector location, Vector velocity,
+            double fuel, Collection<SensorState> sensorStates, boolean active) {
+        this(remoteID, remoteGroups, team, location, null, Optional.of(fuel), sensorStates, active);
     }
 
     private RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, Vector location, Vector velocity,
-            Optional<Double> fuel, boolean active, Collection<SensorState> sensorStates) {
+            Optional<Double> fuel, Collection<SensorState> sensorStates, boolean active) {
         this.remoteID = remoteID;
         this.remoteGroups = (remoteGroups != null) ? new HashSet<>(remoteGroups) : new HashSet<>();
         this.team = (team != null) ? team : TeamColor.NONE;
         this.location = (location != null) ? Optional.of(location) : Optional.empty();
         this.velocity = (velocity != null) ? Optional.of(velocity) : Optional.empty();
         this.fuel = (fuel != null) ? fuel : Optional.empty();
-        this.active = active;
         this.sensorStates = (sensorStates != null)
                 ? sensorStates.stream().collect(Collectors.toMap(SensorState::getSensorID, Function.identity()))
                 : new HashMap<>();
+        this.active = active;
     }
 
     public RemoteState(Json json) throws JsonException {

@@ -23,16 +23,15 @@ public class Zone extends Jsonable {
 
     @Override
     protected void decode(JsonObject json) throws JsonException {
-        if (json.hasKey(Zone.ZONE_LOCATION)) {
-            this.location = Optional.of(new Vector(json.getJson(Zone.ZONE_LOCATION)));
-        }
+        this.location = (json.hasKey(Zone.ZONE_LOCATION)) ? Optional.of(new Vector(json.getJson(Zone.ZONE_LOCATION)))
+                : Optional.empty();
         this.size = json.getInt(Zone.ZONE_SIZE);
     }
 
     protected JsonObjectBuilder getJsonBuilder() throws JsonException {
         JsonObjectBuilder json = JsonBuilder.Object();
         if (this.hasLocation()) {
-            json.put(Zone.ZONE_LOCATION, this.location.get().toJson());
+            json.put(Zone.ZONE_LOCATION, this.getLocation().toJson());
         }
         json.put(Zone.ZONE_SIZE, this.size);
         return json;

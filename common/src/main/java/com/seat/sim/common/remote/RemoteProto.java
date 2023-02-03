@@ -117,6 +117,14 @@ public class RemoteProto extends Jsonable {
                 this.sensorConfigs.equals(proto.sensorConfigs);
     }
 
+    public double getInitialFuel() {
+        return this.getKinematics().getInitialFuel();
+    }
+
+    public double getInitialVelocity() {
+        return this.getKinematics().getInitialVelocity();
+    }
+
     public Kinematics getKinematics() {
         return this.kinematics.get();
     }
@@ -127,6 +135,18 @@ public class RemoteProto extends Jsonable {
 
     public Vector getLocation() {
         return this.getKinematics().getLocation();
+    }
+
+    public double getMaxAcceleration() {
+        return this.getKinematics().getMaxAcceleration();
+    }
+
+    public double getMaxFuel() {
+        return this.getKinematics().getMaxFuel();
+    }
+
+    public double getMaxVelocity() {
+        return this.getKinematics().getMaxVelocity();
     }
 
     public int getNumberOfSensors() {
@@ -161,12 +181,28 @@ public class RemoteProto extends Jsonable {
         return this.sensorConfigByID.keySet();
     }
 
+    public boolean hasFuel() {
+        return this.hasKinematics() && this.getKinematics().hasFuel();
+    }
+
     public boolean hasKinematics() {
         return this.kinematics.isPresent();
     }
 
     public boolean hasLocation() {
         return this.hasKinematics() && this.getKinematics().hasLocation();
+    }
+
+    public boolean hasMaxAcceleration() {
+        return this.hasKinematics() && this.getKinematics().hasMaxAcceleration();
+    }
+
+    public boolean hasMaxFuel() {
+        return this.hasKinematics() && this.getKinematics().hasMaxFuel();
+    }
+
+    public boolean hasMaxVelocity() {
+        return this.hasKinematics() && this.getKinematics().hasMaxVelocity();
     }
 
     public boolean hasRemoteGroups() {

@@ -2,7 +2,10 @@ package com.seat.sim.common.math;
 
 import com.seat.sim.common.json.*;
 
-/** A vector triple of doubles for representing points and forces in 2D and 3D space. */
+/**
+ * A vector triple of doubles for representing points and forces in 2D and 3D
+ * space.
+ */
 public class Vector extends Jsonable {
     public static final double PRECISION = 1_000_000.0;
 
@@ -24,88 +27,106 @@ public class Vector extends Jsonable {
 
     /** Returns the angle between the provided vectors. */
     public static double angleBetween(Vector a, Vector b) {
-        return Math.acos((a.x*b.x + a.y*b.y + a.z*b.z) / (a.getMagnitude() * b.getMagnitude()));
+        return Math.acos((a.x * b.x + a.y * b.y + a.z * b.z) / (a.getMagnitude() * b.getMagnitude()));
     }
 
     /** Returns the cross product of the provided vectors. */
     public static Vector cross(Vector a, Vector b) {
         return new Vector(
-            a.y*b.z - a.z*b.y,
-            a.z*b.x - a.x*b.z,
-            a.x*b.y - a.y*b.x
-        );
+                a.y * b.z - a.z * b.y,
+                a.z * b.x - a.x * b.z,
+                a.x * b.y - a.y * b.x);
     }
 
     /** Returns the Euclidean distance between the two vectors. */
     public static double dist(Vector a, Vector b) {
-        return Math.sqrt(Math.pow(b.x-a.x, 2) + Math.pow(b.y-a.y, 2) + Math.pow(b.z-a.z, 2));
+        return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2) + Math.pow(b.z - a.z, 2));
     }
 
     /** Returns the dot product of the provided vectors. */
     public static double dot(Vector a, Vector b) {
-        return a.x*b.x + a.y*b.y + a.z*b.z;
+        return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
     /** Returns the 2D vector with the provided magnitude at the provided angle. */
     public static Vector get2DVector(double magnitude, double angleXY) {
-        return Vector.get3DVector(magnitude, Math.PI/2.0, angleXY);
+        return Vector.get3DVector(magnitude, Math.PI / 2.0, angleXY);
     }
 
     /** Returns the 3D vector with the provided magnitude at the provided angles. */
     public static Vector get3DVector(double magnitude, double angleBetween, double angleXY) {
         return new Vector(
-            Vector.getXComponent(magnitude, angleBetween, angleXY),
-            Vector.getYComponent(magnitude, angleBetween, angleXY),
-            Vector.getZComponent(magnitude, angleBetween)
-        );
+                Vector.getXComponent(magnitude, angleBetween, angleXY),
+                Vector.getYComponent(magnitude, angleBetween, angleXY),
+                Vector.getZComponent(magnitude, angleBetween));
     }
 
-    /** Computes X component of the magnitude given the provided angles (in radians). */
+    /**
+     * Computes X component of the magnitude given the provided angles (in radians).
+     */
     public static double getXComponent(double magnitude, double angleXY) {
-        return Vector.getXComponent(magnitude, Math.PI/2.0, angleXY);
+        return Vector.getXComponent(magnitude, Math.PI / 2.0, angleXY);
     }
 
-    /** Computes X component of the magnitude given the provided angles (in radians). */
+    /**
+     * Computes X component of the magnitude given the provided angles (in radians).
+     */
     public static double getXComponent(double magnitude, double angleBetween, double angleXY) {
         return magnitude * Math.sin(angleBetween) * Math.cos(angleXY);
     }
 
-    /** Computes X component of the magnitude given the provided angles (in radians). */
+    /**
+     * Computes X component of the magnitude given the provided angles (in radians).
+     */
     public static Vector getXVector(double magnitude, double angleXY) {
-        return Vector.getXVector(magnitude, Math.PI/2.0, angleXY);
+        return Vector.getXVector(magnitude, Math.PI / 2.0, angleXY);
     }
 
-    /** Computes X component of the magnitude given the provided angles (in radians). */
+    /**
+     * Computes X component of the magnitude given the provided angles (in radians).
+     */
     public static Vector getXVector(double magnitude, double angleBetween, double angleXY) {
         return new Vector(Vector.getXComponent(magnitude, angleBetween, angleXY), 0, 0);
     }
 
-    /** Computes Y component of the magnitude given the provided angles (in radians). */
+    /**
+     * Computes Y component of the magnitude given the provided angles (in radians).
+     */
     public static double getYComponent(double magnitude, double angleXY) {
-        return Vector.getYComponent(magnitude, Math.PI/2.0, angleXY);
+        return Vector.getYComponent(magnitude, Math.PI / 2.0, angleXY);
     }
 
-    /** Computes Y component of the magnitude given the provided angles (in radians). */
+    /**
+     * Computes Y component of the magnitude given the provided angles (in radians).
+     */
     public static double getYComponent(double magnitude, double angleBetween, double angleXY) {
         return magnitude * Math.sin(angleBetween) * Math.sin(angleXY);
     }
 
-    /** Computes Y component of the magnitude given the provided angles (in radians). */
+    /**
+     * Computes Y component of the magnitude given the provided angles (in radians).
+     */
     public static Vector getYVector(double magnitude, double angleXY) {
-        return Vector.getYVector(magnitude, Math.PI/2.0, angleXY);
+        return Vector.getYVector(magnitude, Math.PI / 2.0, angleXY);
     }
 
-    /** Computes Y component of the magnitude given the provided angles (in radians). */
+    /**
+     * Computes Y component of the magnitude given the provided angles (in radians).
+     */
     public static Vector getYVector(double magnitude, double angleBetween, double angleXY) {
         return new Vector(0, Vector.getYComponent(magnitude, angleBetween, angleXY), 0);
     }
 
-    /** Computes Z component of the magnitude given the provided angles (in radians). */
+    /**
+     * Computes Z component of the magnitude given the provided angles (in radians).
+     */
     public static double getZComponent(double magnitude, double angleBetween) {
         return magnitude * Math.cos(angleBetween);
     }
 
-    /** Computes Z component of the magnitude given the provided angles (in radians). */
+    /**
+     * Computes Z component of the magnitude given the provided angles (in radians).
+     */
     public static Vector getZVector(double magnitude, double angleBetween) {
         return new Vector(0, 0, Vector.getZComponent(magnitude, angleBetween));
     }
@@ -120,9 +141,12 @@ public class Vector extends Jsonable {
         return new Vector(a.x * scalar, a.y * scalar, a.z * scalar);
     }
 
-    /** Returns a new vector that has the components of a scaled by the components of b. */
+    /**
+     * Returns a new vector that has the components of a scaled by the components of
+     * b.
+     */
     public static Vector scaleNonUniform(Vector a, Vector b) {
-        return new Vector(a.x*b.x, a.y*b.y, a.z*b.z);
+        return new Vector(a.x * b.x, a.y * b.y, a.z * b.z);
     }
 
     /** Returns the slope between the vectors. */
@@ -152,12 +176,17 @@ public class Vector extends Jsonable {
         this(0, 0, 0);
     }
 
-    /** Constructs a 1D vector with the provided component and zero Y and Z components. */
+    /**
+     * Constructs a 1D vector with the provided component and zero Y and Z
+     * components.
+     */
     public Vector(double x) {
         this(x, 0, 0);
     }
 
-    /** Constructs a 2D vector with the provided components and a zero Z component. */
+    /**
+     * Constructs a 2D vector with the provided components and a zero Z component.
+     */
     public Vector(double x, double y) {
         this(x, y, 0);
     }
@@ -199,7 +228,8 @@ public class Vector extends Jsonable {
 
     /** Returns true if both vectors have equal components. */
     public boolean equals(Vector vec) {
-        if (vec == null) return false;
+        if (vec == null)
+            return false;
         return this.x == vec.x && this.y == vec.y && this.z == vec.z;
     }
 
@@ -208,24 +238,33 @@ public class Vector extends Jsonable {
         return Vector.angleBetween(Vector.Z_BASIS, this);
     }
 
-    /** Returns the angle between the vector and the XY plane where X is the adjacent axis. */
+    /**
+     * Returns the angle between the vector and the XY plane where X is the adjacent
+     * axis.
+     */
     public double getAngleXY() {
         return Vector.angleBetween(Vector.X_BASIS, this.getProjectionXY());
     }
 
-    /** Returns the angle between the vector and the XZ plane where X is the adjacent axis. */
+    /**
+     * Returns the angle between the vector and the XZ plane where X is the adjacent
+     * axis.
+     */
     public double getAngleXZ() {
         return Vector.angleBetween(Vector.X_BASIS, this.getProjectionXZ());
     }
 
-    /** Returns the angle between the vector and the YZ plane where Y is the adjacent axis. */
+    /**
+     * Returns the angle between the vector and the YZ plane where Y is the adjacent
+     * axis.
+     */
     public double getAngleYZ() {
         return Vector.angleBetween(Vector.Y_BASIS, this.getProjectionYZ());
     }
 
     /** Returns the vector's length. */
     public double getMagnitude() {
-        return Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
+        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
     }
 
     /** Returns a new vector of this vector projected onto the XY plane. */

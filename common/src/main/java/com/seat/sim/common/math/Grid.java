@@ -1,5 +1,7 @@
 package com.seat.sim.common.math;
 
+import java.util.Optional;
+
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.json.*;
 
@@ -15,11 +17,11 @@ public class Grid extends Jsonable {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    private int height;     // number of zones in each column of the grid
+    private int height; // number of zones in each column of the grid
     private boolean isCustomGrid;
-    private int width;      // number of zones in each row of the grid
+    private int width; // number of zones in each row of the grid
     private Zone[][] zones;
-    private int zoneSize;   // zones in the same map grid must have a uniform size
+    private int zoneSize; // zones in the same map grid must have a uniform size
 
     public Grid(int width, int height, int zoneSize) {
         this(width, height, zoneSize, null);
@@ -38,9 +40,8 @@ public class Grid extends Jsonable {
             for (int y = 0; y < this.height; y++) {
                 for (int x = 0; x < this.width; x++) {
                     this.zones[y][x] = new Zone(
-                        new Vector(this.zoneSize * (x + 0.5), this.zoneSize * (y + 0.5)),
-                        this.zoneSize
-                    );
+                            new Vector(this.zoneSize * (x + 0.5), this.zoneSize * (y + 0.5)),
+                            this.zoneSize);
                 }
             }
         }
@@ -70,12 +71,10 @@ public class Grid extends Jsonable {
             for (int y = 0; y < this.height; y++) {
                 for (int x = 0; x < this.width; x++) {
                     this.zones[y][x] = new Zone(
-                        new Vector(
-                            this.zoneSize * (x + 0.5),
-                            this.zoneSize * (y + 0.5)
-                        ),
-                        this.zoneSize
-                    );
+                            new Vector(
+                                    this.zoneSize * (x + 0.5),
+                                    this.zoneSize * (y + 0.5)),
+                            this.zoneSize);
                 }
             }
         }
@@ -101,8 +100,10 @@ public class Grid extends Jsonable {
     }
 
     public boolean equals(Grid grid) {
-        if (grid == null) return false;
-        if (!(this.width == grid.width && this.height == grid.height && this.zoneSize == grid.zoneSize)) return false;
+        if (grid == null)
+            return false;
+        if (!(this.width == grid.width && this.height == grid.height && this.zoneSize == grid.zoneSize))
+            return false;
         for (int y = 0; y < this.height; y++) {
             for (int x = 0; x < this.width; x++) {
                 if (!this.zones[y][x].equals(grid.zones[y][x])) {
@@ -113,31 +114,43 @@ public class Grid extends Jsonable {
         return true;
     }
 
-    public Vector getBoundsCollisionLocation(Vector location, Vector nextLocation) {
+    public Optional<Vector> getBoundsCollisionLocation(Vector location, Vector nextLocation) {
         if (this.isInbounds(nextLocation)) {
-            return null;
+            return Optional.empty();
         }
         double slope = Vector.slope(location, nextLocation);
-        if (nextLocation.getX() < 0 && nextLocation.getY() < 0) {
-            return new Vector(0, 0);
-        } else if (this.getWidth() < nextLocation.getX() && nextLocation.getY() < 0) {
-            return new Vector(this.getWidth(), 0);
-        } else if (nextLocation.getY() < 0) {
+        Vector topLeft = new Vector(0, 0);
+        Vector topRight = new Vector(this.getWidth(), 0);
+        Vector botRight = new Vector(this.getWidth(), this.getHeight());
+        Vector botLeft = new Vector(0, this.getHeight());
+        if (nextLocation.getX() < 0 && nextLocation.getY() < 0
+                && SimMath.near(Vector.slope(location, topLeft), slope)) {
+            return Optional.of(topLeft);
+        } else if (this.getWidth() < nextLocation.getX() && nextLocation.getY() < 0
+                && SimMath.near(Vector.slope(location, topRight), slope)) {
+            return Optional.of(topRight);
+        } else if (this.getWidth() < nextLocation.getX() && this.getHeight() < nextLocation.getY()
+                && SimMath.near(Vector.slope(location, botRight), slope)) {
+            return Optional.of(botRight);
+        } else if (nextLocation.getX() < 0 && this.getHeight() < nextLocation.getY()
+                && SimMath.near(Vector.slope(location, botLeft), slope)) {
+            return Optional.of(botLeft);
+        } else if (nextLocation.getY() < 0
+                && (Math.abs(Vector.slope(location, topLeft)) < Math.abs(slope)
+                        || Math.abs(Vector.slope(location, topRight)) < Math.abs(slope))) {
             double deltaX = (Double.isFinite(slope) && slope != 0) ? (0 - location.getY()) / slope : 0;
-            return new Vector(location.getX() + deltaX, 0);
-        } else if (this.getWidth() < nextLocation.getX() && this.getHeight() < nextLocation.getY()) {
-            return new Vector(this.getWidth(), this.getHeight());
+            return Optional.of(new Vector(location.getX() + deltaX, 0));
+        } else if (this.getHeight() < nextLocation.getY()
+                && (Math.abs(Vector.slope(location, botLeft)) < Math.abs(slope)
+                        || Math.abs(Vector.slope(location, botRight)) < Math.abs(slope))) {
+            double deltaX = (Double.isFinite(slope) && slope != 0) ? (this.getHeight() - location.getY()) / slope : 0;
+            return Optional.of(new Vector(location.getX() + deltaX, this.getHeight()));
         } else if (this.getWidth() < nextLocation.getX()) {
             double deltaY = (Double.isFinite(slope)) ? (this.getWidth() - location.getX()) * slope : 0;
-            return new Vector(this.getWidth(), location.getY() + deltaY);
-        } else if (nextLocation.getX() < 0 && this.getHeight() < nextLocation.getY()) {
-            return new Vector(0, this.getWidth());
-        } else if (this.getHeight() < nextLocation.getY()) {
-            double deltaX = (Double.isFinite(slope) && slope != 0) ? (this.getHeight()-location.getY()) / slope : 0;
-            return new Vector(location.getX() + deltaX, this.getHeight());
+            return Optional.of(new Vector(this.getWidth(), location.getY() + deltaY));
         } else {
             double deltaY = (Double.isFinite(slope)) ? (0 - location.getX()) * slope : 0;
-            return new Vector(0, location.getY() + deltaY);
+            return Optional.of(new Vector(0, location.getY() + deltaY));
         }
     }
 
@@ -153,21 +166,27 @@ public class Grid extends Jsonable {
         return String.format("<g: (%d, %d)>", this.width, this.height);
     }
 
-    public Vector getLocationAfterBounce(Vector location, Vector nextLocation) {
-        Vector boundsCollision = this.getBoundsCollisionLocation(location, nextLocation);
-        if (boundsCollision == null) {
-            return null;
+    public Optional<Vector> getLocationAfterBounce(Vector location, Vector nextLocation) {
+        Optional<Vector> optional = this.getBoundsCollisionLocation(location, nextLocation);
+        if (optional.isEmpty()) {
+            return Optional.empty();
         }
+        Vector boundsCollision = optional.get();
         double deltaX = nextLocation.getX() - boundsCollision.getX();
         double deltaY = nextLocation.getY() - boundsCollision.getY();
+        Vector locationAfter = null;
         if ((boundsCollision.getX() == 0 || boundsCollision.getX() == this.getWidth()) &&
                 (boundsCollision.getY() == 0 || boundsCollision.getY() == this.getHeight())) {
-            return new Vector(boundsCollision.getX() - deltaX, boundsCollision.getY() - deltaY);
+            locationAfter = new Vector(boundsCollision.getX() - deltaX, boundsCollision.getY() - deltaY);
         } else if (boundsCollision.getY() == 0 || boundsCollision.getY() == this.getHeight()) {
-            return new Vector(boundsCollision.getX() + deltaX, boundsCollision.getY() - deltaY);
+            locationAfter = new Vector(boundsCollision.getX() + deltaX, boundsCollision.getY() - deltaY);
         } else {
-            return new Vector(boundsCollision.getX() - deltaX, boundsCollision.getY() + deltaY);
+            locationAfter = new Vector(boundsCollision.getX() - deltaX, boundsCollision.getY() + deltaY);
         }
+        if (!this.isInbounds(locationAfter)) {
+            return this.getLocationAfterBounce(boundsCollision, locationAfter);
+        }
+        return Optional.of(locationAfter);
     }
 
     public int getWidth() {
@@ -178,7 +197,9 @@ public class Grid extends Jsonable {
         return this.width;
     }
 
-    /** Returns the Zone located at row, col.
+    /**
+     * Returns the Zone located at row, col.
+     * 
      * @throws CommonException if the either y or x are out of bounds
      */
     public Zone getZone(int row, int col) throws CommonException {
@@ -191,14 +212,19 @@ public class Grid extends Jsonable {
         return this.zones[row][col];
     }
 
-    /** Returns the Zone that contains the location with the specified x and y coordinates.
+    /**
+     * Returns the Zone that contains the location with the specified x and y
+     * coordinates.
+     * 
      * @throws CommonException if the either y or x are out of bounds
      */
     public Zone getZoneAtLocation(double x, double y) throws CommonException {
         return this.getZone((int) (y / this.zoneSize), (int) (x / this.zoneSize));
     }
 
-    /** Returns the Zone that contains the location with the specified coordinates.
+    /**
+     * Returns the Zone that contains the location with the specified coordinates.
+     * 
      * @throws CommonException if the vector is out of bounds
      */
     public Zone getZoneAtLocation(Vector location) throws CommonException {
@@ -215,7 +241,7 @@ public class Grid extends Jsonable {
 
     public boolean isInbounds(Vector location) {
         return 0 <= location.getX() && location.getX() <= this.getWidth() && 0 <= location.getY() &&
-            location.getY() <= this.getHeight();
+                location.getY() <= this.getHeight();
     }
 
     public boolean isOutOfBounds(Vector location) {

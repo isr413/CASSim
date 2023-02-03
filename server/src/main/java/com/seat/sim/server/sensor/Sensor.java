@@ -27,36 +27,29 @@ public class Sensor {
     }
 
     public boolean equals(Sensor sensor) {
-        if (sensor == null) return false;
+        if (sensor == null)
+            return false;
         return this.sensorID.equals(sensor.sensorID);
-    }
-
-    public double getAccuracy() {
-        return this.proto.getSensorAccuracy();
     }
 
     public double getBatteryUsage() {
         return this.proto.getBatteryUsage();
     }
 
-    public double getDelay() {
-        return this.proto.getSensorDelay();
-    }
-
     public String getLabel() {
         return this.getSensorID();
-    }
-
-    public String getModel() {
-        return this.proto.getSensorModel();
     }
 
     public SensorProto getProto() {
         return this.proto;
     }
 
-    public double getRange() {
-        return this.proto.getSensorRange();
+    public double getSensorAccuracy() {
+        return this.proto.getSensorAccuracy();
+    }
+
+    public double getSensorDelay() {
+        return this.proto.getSensorDelay();
     }
 
     public Set<String> getSensorGroups() {
@@ -71,19 +64,28 @@ public class Sensor {
         return this.proto.getSensorMatchers();
     }
 
+    public String getSensorModel() {
+        return this.proto.getSensorModel();
+    }
+
+    public double getSensorRange() {
+        return this.proto.getSensorRange();
+    }
+
     public SensorState getState() {
-        return new SensorState(this.sensorID, this.getModel(), this.getGroups(), this.getSubjects(), this.isActive());
+        return new SensorState(this.getSensorID(), this.getSensorModel(), this.getSensorGroups(), this.getSubjects(),
+                this.isActive());
     }
 
     public Set<String> getSubjects() {
         return this.scenario
-            .getActiveRemotes()
-            .stream()
-            .filter(remote -> !this.hasSensorMatchers() || remote.hasSensorMatch(this.getSensorMatchers()))
-            .filter(remote -> !this.remote.hasLocation() || 
-                    Vector.dist(this.remote.getLocation(), remote.getLocation()) < this.getRange())
-            .map(remote -> remote.getRemoteID())
-            .collect(Collectors.toSet());
+                .getActiveRemotes()
+                .stream()
+                .filter(remote -> !this.hasSensorMatchers() || remote.hasSensorMatch(this.getSensorMatchers()))
+                .filter(remote -> !this.remote.hasLocation() ||
+                        Vector.dist(this.remote.getLocation(), remote.getLocation()) <= this.getSensorRange())
+                .map(remote -> remote.getRemoteID())
+                .collect(Collectors.toSet());
     }
 
     public boolean hasAccuracy() {
@@ -94,16 +96,8 @@ public class Sensor {
         return this.proto.hasBatteryUsage();
     }
 
-    public boolean hasLimitedAccuracy() {
-        return this.proto.hasLimitedAccuracy();
-    }
-
-    public boolean hasLimitedRange() {
-        return this.proto.hasLimitedRange();
-    }
-
-    public boolean hasModel(String sensorModel) {
-        return this.proto.hasSensorModel(sensorModel);
+    public boolean hasDelay() {
+        return this.proto.hasDelay();
     }
 
     public boolean hasRange() {
@@ -119,7 +113,8 @@ public class Sensor {
     }
 
     public boolean hasSensorID(String sensorID) {
-        if (sensorID == null || this.sensorID == null) return this.sensorID == sensorID;
+        if (sensorID == null || this.sensorID == null)
+            return this.sensorID == sensorID;
         return this.sensorID.equals(sensorID);
     }
 
@@ -133,6 +128,10 @@ public class Sensor {
 
     public boolean hasSensorMatcherWithTag(String sensorMatcher) {
         return this.proto.hasSensorMatcherWithTag(sensorMatcher);
+    }
+
+    public boolean hasSensorModel(String sensorModel) {
+        return this.proto.hasSensorModel(sensorModel);
     }
 
     public boolean hasSubjects() {
@@ -155,8 +154,8 @@ public class Sensor {
         return this.getLabel();
     }
 
-    public void update(Scenario scenario, Remote remote, double stepSize) throws SimException {
-        if (this.isActive() && !remote.isActive()) {
+    public void update(double stepSize) throws SimException {
+        if (this.isActive() && !this.remote.isActive()) {
             this.setInactive();
         }
     }

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,6 @@ import com.seat.sim.common.sensor.SensorState;
 import com.seat.sim.server.core.SimException;
 import com.seat.sim.server.scenario.Scenario;
 import com.seat.sim.server.sensor.Sensor;
-import com.seat.sim.server.sensor.SensorFactory;
 
 public class Remote {
 
@@ -29,8 +29,8 @@ public class Remote {
     private Map<String, Sensor> activeSensors;
     private Map<String, Sensor> allSensors;
     private boolean done;
-    private double fuel;
-    private Vector location;
+    private Optional<Double> fuel;
+    private Optional<Vector> location;
     private RemoteProto proto;
     private String remoteID;
     private Scenario scenario;
@@ -41,8 +41,8 @@ public class Remote {
         this.proto = proto;
         this.remoteID = remoteID;
         this.team = team;
-        this.location = proto.getLocation();
-        this.fuel = proto.getKinematics().getMaxFuel();
+        this.location = (proto.hasLocation()) ? Optional.of(this.proto.getLocation()) : Optional.empty();
+        this.fuel = (proto.hasFuel()) ? Optional.of(this.proto.getInitialFuel()) : Optional.empty();
         this.active = active;
         this.done = false;
         this.init();
@@ -56,11 +56,10 @@ public class Remote {
             SensorProto sensorProto = sensorConfig.getProto();
             Iterator<String> sensorIDs = sensorConfig.getSensorIDs().iterator();
             for (int i = 0; i < sensorConfig.getCount(); i++) {
-                String sensorID = (i < sensorConfig.getSensorIDs().size()) ?
-                    sensorIDs.next() :
-                    String.format("%s:(%d)", sensorProto.getLabel(), sensorCount);
+                String sensorID = (i < sensorConfig.getSensorIDs().size()) ? sensorIDs.next()
+                        : String.format("%s:(%d)", sensorProto.getLabel(), sensorCount);
                 sensorCount++;
-                Sensor sensor = SensorFactory.getSensor(sensorProto, sensorID, sensorConfig.isActive());
+                Sensor sensor = new Sensor(scenario, this, sensorProto, sensorID, sensorConfig.isActive());
                 this.allSensors.put(sensorID, sensor);
                 if (sensorConfig.isActive()) {
                     this.activeSensors.put(sensorID, sensor);
@@ -70,12 +69,12 @@ public class Remote {
     }
 
     protected void updateFuel(double usage, double stepSize) {
-        this.fuel -= (usage * stepSize);
-        if (this.fuel < 0) {
-            this.fuel = 0;
-        }
-        if (this.getMaxFuel() < this.fuel) {
-            this.fuel = this.getMaxFuel();
+        if (!this.hasFuel())
+            return;
+        if (this.hasMaxFuel()) {
+            this.fuel = Optional.of(Math.min(Math.max(this.getFuel() - (usage * stepSize), 0), this.getMaxFuel()));
+        } else {
+            this.fuel = Optional.of(Math.max(this.getFuel() - (usage * stepSize), 0));
         }
         if (!this.isEnabled()) {
             this.setInactive();
@@ -83,57 +82,56 @@ public class Remote {
     }
 
     protected void updateLocation(Vector delta, double stepSize) {
-        this.location = Vector.add(this.location, Vector.scale(delta, stepSize));
+        if (!this.hasLocation())
+            return;
+        this.location = Optional.of(Vector.add(this.getLocation(), Vector.scale(delta, stepSize)));
     }
 
     public boolean activateAllSensors() {
-        this.allSensors.keySet().stream()
-            .filter(sensorID -> this.hasInactiveSensorWithID(sensorID))
-            .forEach(sensorID -> this.activateSensorWithID(sensorID));
-        return true;
+        return this.activateSensors(this.allSensors.keySet());
     }
 
     public boolean activateSensors(Collection<String> sensorIDs) {
-        boolean flag = true;
-        for (String sensorID : sensorIDs) {
-            if (this.hasActiveSensorWithID(sensorID)) continue;
-            flag = this.activateSensorWithID(sensorID) && flag;
-        }
-        return flag;
+        sensorIDs
+                .stream()
+                .filter(sensorID -> this.hasInactiveSensorWithID(sensorID))
+                .forEach(sensorID -> this.activateSensorWithID(sensorID));
+        return true;
     }
 
     public boolean activateSensorWithID(String sensorID) {
-        if (!this.hasSensorWithID(sensorID)) return false;
-        if (this.hasActiveSensorWithID(sensorID)) return true;
+        if (!this.hasSensorWithID(sensorID))
+            return false;
+        if (this.hasActiveSensorWithID(sensorID))
+            return true;
         this.activeSensors.put(sensorID, this.allSensors.get(sensorID));
         return true;
     }
 
     public boolean deactivateAllSensors() {
-        this.getSensors().stream()
-            .filter(sensor -> this.hasActiveSensorWithID(sensor.getSensorID()))
-            .forEach(sensor -> this.deactivateSensorWithID(sensor.getSensorID()));
-        return true;
+        return this.deactivateSensors(this.allSensors.keySet());
     }
 
     public boolean deactivateSensors(Collection<String> sensorIDs) {
-        boolean flag = true;
-        for (String sensorID : sensorIDs) {
-            if (this.hasInactiveSensorWithID(sensorID)) continue;
-            flag = this.deactivateSensorWithID(sensorID) && flag;
-        }
-        return flag;
+        sensorIDs
+                .stream()
+                .filter(sensorID -> this.hasActiveSensorWithID(sensorID))
+                .map(sensorID -> this.deactivateSensorWithID(sensorID));
+        return true;
     }
 
     public boolean deactivateSensorWithID(String sensorID) {
-        if (!this.hasSensorWithID(sensorID)) return false;
-        if (this.hasInactiveSensorWithID(sensorID)) return true;
+        if (!this.hasSensorWithID(sensorID))
+            return false;
+        if (this.hasInactiveSensorWithID(sensorID))
+            return true;
         this.activeSensors.remove(sensorID);
         return true;
     }
 
     public boolean equals(Remote remote) {
-        if (remote == null) return false;
+        if (remote == null)
+            return false;
         return this.remoteID.equals(remote.remoteID);
     }
 
@@ -146,19 +144,21 @@ public class Remote {
     }
 
     public double getFuel() {
-        return this.fuel;
+        return this.fuel.get();
     }
 
     public Collection<String> getInactiveSensorIDs() {
-        return this.getSensorIDs().stream()
-            .filter(sensorID -> this.hasInactiveSensorWithID(sensorID))
-            .collect(Collectors.toList());
+        return this.getSensorIDs()
+                .stream()
+                .filter(sensorID -> this.hasInactiveSensorWithID(sensorID))
+                .collect(Collectors.toList());
     }
 
     public Collection<Sensor> getInactiveSensors() {
-        return this.getInactiveSensorIDs().stream()
-            .map(sensorID -> this.getSensorWithID(sensorID))
-            .collect(Collectors.toList());
+        return this.getInactiveSensorIDs()
+                .stream()
+                .map(sensorID -> this.getSensorWithID(sensorID))
+                .collect(Collectors.toList());
     }
 
     public String getLabel() {
@@ -166,11 +166,11 @@ public class Remote {
     }
 
     public Vector getLocation() {
-        return this.location;
+        return this.location.get();
     }
 
     public double getMaxFuel() {
-        return this.proto.getKinematics().getMaxFuel();
+        return this.proto.getMaxFuel();
     }
 
     public RemoteProto getProto() {
@@ -186,8 +186,19 @@ public class Remote {
     }
 
     public RemoteState getRemoteState() {
-        return new RemoteState(this.remoteID, this.team, this.location, null, this.fuel, this.active,
-            this.getSensorStates());
+        if (this.hasLocation() && this.hasFuel()) {
+            return new RemoteState(this.getRemoteID(), this.getRemoteGroups(), this.getTeam(), this.getLocation(),
+                    this.getFuel(), this.getSensorStates(), this.isActive());
+        } else if (this.hasLocation()) {
+            return new RemoteState(this.getRemoteID(), this.getRemoteGroups(), this.getTeam(), this.getLocation(),
+                    this.getSensorStates(), this.isActive());
+        } else if (this.hasFuel()) {
+            return new RemoteState(this.getRemoteID(), this.getRemoteGroups(), this.getTeam(), this.getFuel(),
+                    this.getSensorStates(), this.isActive());
+        } else {
+            return new RemoteState(this.getRemoteID(), this.getRemoteGroups(), this.getTeam(), this.getSensorStates(),
+                    this.isActive());
+        }
     }
 
     public Collection<String> getSensorIDs() {
@@ -199,23 +210,24 @@ public class Remote {
     }
 
     public Collection<SensorState> getSensorStates() {
-        return this.getSensors().stream()
-            .map(sensor -> sensor.getState())
-            .collect(Collectors.toList());
+        return this.getSensors()
+                .stream()
+                .map(sensor -> sensor.getState())
+                .collect(Collectors.toList());
+    }
+
+    public Collection<Sensor> getSensorsWithMatch(String matcher) {
+        return this.getSensors()
+                .stream()
+                .filter(sensor -> sensor.hasSensorGroupWithTag(matcher))
+                .collect(Collectors.toList());
     }
 
     public Collection<Sensor> getSensorsWithModel(String sensorModel) {
-        return this.getSensors().stream()
-            .filter(sensor -> sensor.getSensorModel().equals(sensorModel))
-            .collect(Collectors.toList());
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends Sensor> Collection<T> getSensorsWithType(Class<T> classType) {
-        return this.getSensors().stream()
-            .filter(sensor -> classType.isAssignableFrom(sensor.getClass()))
-            .map(sensor -> (T) sensor)
-            .collect(Collectors.toList());
+        return this.getSensors()
+                .stream()
+                .filter(sensor -> sensor.hasSensorModel(sensorModel))
+                .collect(Collectors.toList());
     }
 
     public Sensor getSensorWithID(String sensorID) throws SimException {
@@ -237,6 +249,14 @@ public class Remote {
         return this.activeSensors.containsKey(sensorID);
     }
 
+    public boolean hasFuel() {
+        return this.proto.hasFuel();
+    }
+
+    public boolean hasMaxFuel() {
+        return this.proto.hasMaxFuel();
+    }
+
     public boolean hasInactiveSensors() {
         return this.activeSensors.size() < this.allSensors.size();
     }
@@ -246,7 +266,7 @@ public class Remote {
     }
 
     public boolean hasLocation() {
-        return this.location != null;
+        return this.location.isPresent();
     }
 
     public boolean hasRemoteGroups() {
@@ -274,7 +294,7 @@ public class Remote {
     }
 
     public boolean hasSensorWithModel(String sensorModel) {
-        return !this.getSensorsWithModel(sensorModel).isEmpty();
+        return this.proto.hasSensorConfigWithModel(sensorModel);
     }
 
     public boolean hasTeam() {
@@ -290,7 +310,7 @@ public class Remote {
     }
 
     public boolean isEnabled() {
-        return this.getProto().isEnabled() && this.fuel > 0;
+        return this.getProto().isEnabled() && (!this.hasFuel() || this.getFuel() > 0);
     }
 
     public boolean isMobile() {
@@ -306,11 +326,11 @@ public class Remote {
         this.done = true;
     }
 
-    public void setFuel(double fuel) throws SimException{
-        if (fuel < 0 || this.getMaxFuel() < fuel) {
+    public void setFuel(double fuel) throws SimException {
+        if (fuel < 0 || (this.hasMaxFuel() && this.getMaxFuel() < fuel)) {
             throw new SimException(String.format("Remote %s cannot set fuel to %f", this.getRemoteID(), fuel));
         }
-        this.fuel = fuel;
+        this.fuel = Optional.of(fuel);
     }
 
     public void setInactive() {
@@ -319,14 +339,14 @@ public class Remote {
     }
 
     public void setLocation(Vector location) {
-        this.location = location;
+        this.location = (location != null) ? Optional.of(location) : Optional.empty();
     }
 
-    public void update(Scenario scenario, double stepSize) throws SimException {
-        this.update(scenario, null, stepSize);
+    public void update(double stepSize) throws SimException {
+        this.update(null, stepSize);
     }
 
-    public void update(Scenario scenario, IntentionSet intentions, double stepSize) throws SimException {
+    public void update(IntentionSet intentions, double stepSize) throws SimException {
         if (!this.isEnabled() || this.isDone()) {
             if (this.isActive()) {
                 this.setInactive();
@@ -346,8 +366,8 @@ public class Remote {
                 }
             }
             if (intentions.hasIntentionWithType(IntentionType.DEACTIVATE)) {
-                DeactivateIntention intent =
-                    (DeactivateIntention) intentions.getIntentionWithType(IntentionType.DEACTIVATE);
+                DeactivateIntention intent = (DeactivateIntention) intentions
+                        .getIntentionWithType(IntentionType.DEACTIVATE);
                 if (intent.hasDeactivations()) {
                     this.deactivateSensors(intent.getDeactivations());
                 } else {
@@ -361,11 +381,14 @@ public class Remote {
                 this.setDone();
             }
         }
-        if (!this.isActive() || this.isDone()) return;
+        if (!this.isActive() || this.isDone())
+            return;
         double fuelUsage = 0;
         for (Sensor sensor : this.activeSensors.values()) {
-            sensor.update(scenario, this, stepSize);
-            fuelUsage += sensor.getBatteryUsage();
+            sensor.update(stepSize);
+            if (sensor.hasBatteryUsage()) {
+                fuelUsage += sensor.getBatteryUsage();
+            }
         }
         this.updateFuel(fuelUsage, stepSize);
     }

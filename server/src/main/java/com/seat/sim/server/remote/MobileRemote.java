@@ -33,17 +33,15 @@ public class MobileRemote extends Remote {
     }
 
     public double getBrakeDistance(double velocity, double acceleration) {
-        return (velocity > 0 && Double.isFinite(acceleration)) ?
-            0.5 * velocity * velocity / acceleration :
-            0;
+        return (velocity > 0 && Double.isFinite(acceleration)) ? 0.5 * velocity * velocity / acceleration : 0;
     }
 
     public double getMaxAcceleration() {
-        return super.getProto().getKinematics().getMaxAcceleration();
+        return super.getProto().getMaxAcceleration();
     }
 
     public double getMaxVelocity() {
-        return super.getProto().getKinematics().getMaxVelocity();
+        return super.getProto().getMaxVelocity();
     }
 
     public Vector getNextLocation(double stepSize) {
@@ -83,7 +81,7 @@ public class MobileRemote extends Remote {
     @Override
     public RemoteState getRemoteState() {
         return new RemoteState(super.getRemoteID(), super.getTeam(), super.getLocation(), this.getVelocity(),
-            super.getFuel(), super.isActive(), super.getSensorStates());
+                super.getFuel(), super.isActive(), super.getSensorStates());
     }
 
     public Vector getVelocity() {
@@ -91,15 +89,15 @@ public class MobileRemote extends Remote {
     }
 
     public boolean hasAcceleration() {
-        return this.acceleration != null && this.acceleration.getMagnitude() > 0;
+        return this.acceleration.getMagnitude() > 0;
     }
 
     public boolean hasMaxAcceleration() {
-        return super.getProto().getKinematics().getMotion().hasMaxAcceleration();
+        return super.getProto().hasMaxAcceleration();
     }
 
     public boolean hasMaxVelocity() {
-        return super.getProto().getKinematics().getMotion().hasMaxVelocity();
+        return super.getProto().hasMaxVelocity();
     }
 
     public boolean hasVelocity() {
@@ -113,7 +111,7 @@ public class MobileRemote extends Remote {
     public void setAcceleration(Vector acceleration) throws SimException {
         if (this.getMaxAcceleration() + MobileRemote.DOUBLE_PRECISION < acceleration.getMagnitude()) {
             throw new SimException(String.format("Remote %s cannot set acceleration to %s", super.getRemoteID(),
-                acceleration.toString()));
+                    acceleration.toString()));
         }
         this.acceleration = acceleration;
     }
@@ -121,7 +119,7 @@ public class MobileRemote extends Remote {
     public void setVelocity(Vector velocity) throws SimException {
         if (this.getMaxVelocity() + MobileRemote.DOUBLE_PRECISION < velocity.getMagnitude()) {
             throw new SimException(String.format("Remote %s cannot set velocity to %s", super.getRemoteID(),
-                velocity.toString()));
+                    velocity.toString()));
         }
         this.velocity = velocity;
     }
@@ -189,7 +187,7 @@ public class MobileRemote extends Remote {
             Vector nextLocation = Vector.add(this.getLocation(), Vector.scale(nextVelocity, stepSize));
             if (Vector.subtract(targetLocation, nextLocation).getMagnitude() < brakeDistance) {
                 double targetVelocityMagnitude = Math.sqrt(maxAcceleration) *
-                    Math.sqrt(maxAcceleration + 2 * deltaLocation.getMagnitude()) - maxAcceleration;
+                        Math.sqrt(maxAcceleration + 2 * deltaLocation.getMagnitude()) - maxAcceleration;
                 nextVelocity = Vector.scale(nextVelocity.getUnitVector(), targetVelocityMagnitude);
                 Vector nextAcceleration = Vector.subtract(nextVelocity, this.velocity);
                 if (maxAcceleration < nextAcceleration.getMagnitude()) {
@@ -233,8 +231,8 @@ public class MobileRemote extends Remote {
     }
 
     @Override
-    public void update(Scenario scenario, IntentionSet intentions, double stepSize) throws SimException {
-        super.update(scenario, intentions, stepSize);
+    public void update(IntentionSet intentions, double stepSize) throws SimException {
+        super.update(intentions, stepSize);
         if (!this.isEnabled() || !this.isActive() || this.isDone()) {
             if (this.isInMotion()) {
                 this.updateVelocityTo(new Vector(), stepSize);
@@ -252,10 +250,10 @@ public class MobileRemote extends Remote {
             GoToIntention intent = (GoToIntention) intentions.getIntentionWithType(IntentionType.GOTO);
             if (intent.hasLocation()) {
                 this.updateLocationTo(intent.getLocation(), intent.getMaxVelocity(), intent.getMaxAcceleration(),
-                    stepSize);
+                        stepSize);
             } else if (this.getProto().hasLocation()) {
                 this.updateLocationTo(this.getProto().getLocation(), intent.getMaxVelocity(),
-                    intent.getMaxAcceleration(), stepSize);
+                        intent.getMaxAcceleration(), stepSize);
             }
         } else if (intentions.hasIntentionWithType(IntentionType.MOVE)) {
             MoveIntention intent = (MoveIntention) intentions.getIntentionWithType(IntentionType.MOVE);
@@ -268,29 +266,26 @@ public class MobileRemote extends Remote {
             SteerIntention intent = (SteerIntention) intentions.getIntentionWithType(IntentionType.STEER);
             if (intent.hasDirection()) {
                 this.updateVelocityTo(
-                    Vector.scale(
-                        intent.getDirection().getUnitVector(),
-                        this.getVelocity().getMagnitude()
-                    ),
-                    stepSize);
+                        Vector.scale(
+                                intent.getDirection().getUnitVector(),
+                                this.getVelocity().getMagnitude()),
+                        stepSize);
                 this.updateLocation(this.velocity, stepSize);
             } else if (this.getProto().hasLocation()) {
                 this.updateVelocityTo(
-                    Vector.scale(
-                        Vector.subtract(this.getProto().getLocation(), this.getLocation()).getUnitVector(),
-                        this.getVelocity().getMagnitude()
-                    ),
-                    stepSize
-                );
+                        Vector.scale(
+                                Vector.subtract(this.getProto().getLocation(), this.getLocation()).getUnitVector(),
+                                this.getVelocity().getMagnitude()),
+                        stepSize);
                 this.updateLocation(this.velocity, stepSize);
             }
         } else {
             this.updateVelocity(this.acceleration, stepSize);
             this.updateLocation(this.velocity, stepSize);
         }
-        if (!this.isEnabled() || !this.isActive() || this.isDone()) return;
+        if (!this.isEnabled() || !this.isActive() || this.isDone())
+            return;
         double fuelUsage = super.getProto().getKinematics().getRemoteFuelUsage(this.acceleration);
         this.updateFuel(fuelUsage, stepSize);
     }
-
 }

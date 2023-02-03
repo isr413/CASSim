@@ -135,6 +135,18 @@ public class Kinematics extends Jsonable {
         return this.location.isPresent();
     }
 
+    public boolean hasMaxAcceleration() {
+        return this.isMobile() && this.getMotion().hasMaxAcceleration();
+    }
+
+    public boolean hasMaxFuel() {
+        return this.hasFuel() && this.getFuel().hasMaxFuel();
+    }
+
+    public boolean hasMaxVelocity() {
+        return this.isMobile() && this.getMotion().hasMaxVelocity();
+    }
+
     public boolean isEnabled() {
         return !this.hasFuel() || this.getInitialFuel() > 0;
     }
