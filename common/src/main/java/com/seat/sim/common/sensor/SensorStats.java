@@ -37,6 +37,18 @@ public class SensorStats extends Jsonable {
     this.accuracy = accuracy;
     this.delay = delay;
     this.range = (range != null) ? range : Optional.empty();
+    if (!Double.isFinite(this.batteryUsage)) {
+      throw new RuntimeException(
+          String.format("cannot create Sensor with non-finite battery usage `%f`", this.batteryUsage));
+    }
+    if (!Double.isFinite(this.accuracy)) {
+      throw new RuntimeException(
+          String.format("cannot create Sensor with non-finite accuracy `%f`", this.accuracy));
+    }
+    if (!Double.isFinite(this.delay)) {
+      throw new RuntimeException(
+          String.format("cannot create Sensor with non-finite delay `%f`", this.delay));
+    }
   }
 
   public SensorStats(Json json) throws JsonException {

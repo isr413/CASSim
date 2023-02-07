@@ -81,10 +81,6 @@ public class SensorConfig extends Jsonable {
     return this.proto.getModel();
   }
 
-  public boolean hasProto() {
-    return this.proto != null;
-  }
-
   public boolean hasSensors() {
     return !this.sensorIDs.isEmpty();
   }

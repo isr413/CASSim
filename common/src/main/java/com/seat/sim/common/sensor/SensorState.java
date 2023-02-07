@@ -25,6 +25,12 @@ public class SensorState extends Jsonable {
     this.tags = (tags != null) ? new HashSet<>(tags) : new HashSet<>();
     this.subjects = (subjects != null) ? new HashSet<>(subjects) : new HashSet<>();
     this.active = active;
+    if (this.sensorID == null || this.sensorID.isBlank() || this.sensorID.isEmpty()) {
+      throw new RuntimeException("cannot create SensorState with empty ID");
+    }
+    if (this.sensorModel == null || this.sensorModel.isBlank() || this.sensorModel.isEmpty()) {
+      throw new RuntimeException("cannot create SensorState with empty model");
+    }
   }
 
   public SensorState(Json json) throws JsonException {
