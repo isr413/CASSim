@@ -181,6 +181,10 @@ public class RemoteState extends Jsonable {
     return this.location.isPresent();
   }
 
+  public boolean hasMatch(Set<String> matchers) {
+    return this.hasRemoteMatch(matchers) || this.hasSensorMatch(matchers);
+  }
+
   public boolean hasRemoteID(String remoteID) {
     if (remoteID == null || this.remoteID == null) {
       return this.remoteID == remoteID;

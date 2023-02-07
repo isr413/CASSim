@@ -43,22 +43,23 @@ public class FuelProto extends Jsonable {
 
   @Override
   protected void decode(JsonObject json) throws JsonException {
-    this.initialFuel = (json.hasKey(Fuel.INITIAL_FUEL)) ? json.getDouble(Fuel.INITIAL_FUEL) : 0;
-    this.maxFuel = (json.hasKey(Fuel.MAX_FUEL)) ? Optional.of(json.getDouble(Fuel.MAX_FUEL)) : Optional.empty();
-    this.fuelUsage = (json.hasKey(Fuel.FUEL_USAGE)) ? Optional.of(new Vector(json.getJson(Fuel.FUEL_USAGE)))
+    this.initialFuel = (json.hasKey(FuelProto.INITIAL_FUEL)) ? json.getDouble(FuelProto.INITIAL_FUEL) : 0;
+    this.maxFuel = (json.hasKey(FuelProto.MAX_FUEL)) ? Optional.of(json.getDouble(FuelProto.MAX_FUEL))
+        : Optional.empty();
+    this.fuelUsage = (json.hasKey(FuelProto.FUEL_USAGE)) ? Optional.of(new Vector(json.getJson(FuelProto.FUEL_USAGE)))
         : Optional.empty();
   }
 
   protected JsonObjectBuilder getJsonBuilder() throws JsonException {
     JsonObjectBuilder json = JsonBuilder.Object();
     if (this.hasInitialFuel()) {
-      json.put(Fuel.INITIAL_FUEL, this.initialFuel);
+      json.put(FuelProto.INITIAL_FUEL, this.initialFuel);
     }
     if (this.hasMaxFuel()) {
-      json.put(Fuel.MAX_FUEL, this.maxFuel);
+      json.put(FuelProto.MAX_FUEL, this.maxFuel);
     }
     if (this.hasFuelUsage()) {
-      json.put(Fuel.FUEL_USAGE, this.getFuelUsage().toJson());
+      json.put(FuelProto.FUEL_USAGE, this.getFuelUsage().toJson());
     }
     return json;
   }

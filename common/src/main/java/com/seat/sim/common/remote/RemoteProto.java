@@ -15,6 +15,7 @@ import com.seat.sim.common.sensor.SensorConfig;
 /** A serializable prototype of a Remote. */
 public class RemoteProto extends Jsonable {
   public static final String KINEMATICS_PROTO = "kinematics_proto";
+  public static final String SENSOR_COUNT = "sensor_count";
   public static final String SENSORS = "sensors";
   public static final String TAGS = "tags";
 
@@ -56,6 +57,7 @@ public class RemoteProto extends Jsonable {
     if (this.hasTags()) {
       json.put(RemoteProto.TAGS, JsonBuilder.toJsonArray(this.tags));
     }
+    json.put(RemoteProto.SENSOR_COUNT, this.getSensorCount());
     if (this.hasSensors()) {
       json.put(
           RemoteProto.SENSORS,
@@ -80,6 +82,13 @@ public class RemoteProto extends Jsonable {
 
   public Collection<SensorConfig> getSensorConfigs() {
     return this.sensorConfigs;
+  }
+
+  public int getSensorCount() {
+    return this.sensorConfigs
+        .stream()
+        .mapToInt(config -> config.getCount())
+        .sum();
   }
 
   public Set<String> getTags() {
