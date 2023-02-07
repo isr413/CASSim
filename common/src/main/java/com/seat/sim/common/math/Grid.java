@@ -109,16 +109,16 @@ public class Grid extends Jsonable {
     Vector botRight = new Vector(this.getWidth(), this.getHeight());
     Vector botLeft = new Vector(0, this.getHeight());
     if (nextLocation.getX() < 0 && nextLocation.getY() < 0
-        && SimMath.near(Vector.slope(location, topLeft), slope)) {
+        && Vector.near(Vector.slope(location, topLeft), slope)) {
       return Optional.of(topLeft);
     } else if (this.getWidth() < nextLocation.getX() && nextLocation.getY() < 0
-        && SimMath.near(Vector.slope(location, topRight), slope)) {
+        && Vector.near(Vector.slope(location, topRight), slope)) {
       return Optional.of(topRight);
     } else if (this.getWidth() < nextLocation.getX() && this.getHeight() < nextLocation.getY()
-        && SimMath.near(Vector.slope(location, botRight), slope)) {
+        && Vector.near(Vector.slope(location, botRight), slope)) {
       return Optional.of(botRight);
     } else if (nextLocation.getX() < 0 && this.getHeight() < nextLocation.getY()
-        && SimMath.near(Vector.slope(location, botLeft), slope)) {
+        && Vector.near(Vector.slope(location, botLeft), slope)) {
       return Optional.of(botLeft);
     } else if (nextLocation.getY() < 0
         && (Math.abs(Vector.slope(location, topLeft)) < Math.abs(slope)

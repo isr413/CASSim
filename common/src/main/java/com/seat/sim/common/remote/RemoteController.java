@@ -43,7 +43,7 @@ public class RemoteController extends Jsonable {
   }
 
   public void brake(Vector acceleration) {
-    this.addIntention(IntentRegistry.Push(Vector.scale(acceleration, -1)));
+    this.addIntention(IntentRegistry.Push(acceleration.invert()));
   }
 
   public void deactivateAllSensors() {

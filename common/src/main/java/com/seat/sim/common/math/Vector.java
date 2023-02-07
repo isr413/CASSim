@@ -131,6 +131,29 @@ public class Vector extends Jsonable {
     return new Vector(0, 0, Vector.getZComponent(magnitude, angleBetween));
   }
 
+  /** Returns a new vector pointing in the opposite direction as Vector a. */
+  public static Vector invert(Vector a) {
+    return Vector.scale(a, -1);
+  }
+
+  /**
+   * Returns a new vector that has the components of a scaled
+   * by the components of b.
+   */
+  public static Vector mul(Vector a, Vector b) {
+    return new Vector(a.x * b.x, a.y * b.y, a.z * b.z);
+  }
+
+  /** Returns {@code true} if the two vectors are within precision of each other. */
+  public static boolean near(double d1, double d2) {
+    return Math.round((d1 - d2) * Vector.PRECISION) / Vector.PRECISION == 0;
+  }
+  
+  /** Returns {@code true} if the two vectors are within precision of each other. */
+  public static boolean near(Vector a, Vector b) {
+    return Vector.near(Vector.sub(a, b).getMagnitude(), 0);
+  }
+
   /** Returns a new vector that has the components of a to the power of exp. */
   public static Vector pow(Vector a, double exp) {
     return new Vector(Math.pow(a.x, exp), Math.pow(a.y, exp), Math.pow(a.z, exp));
@@ -139,14 +162,6 @@ public class Vector extends Jsonable {
   /** Returns a new vector that has the components of a scaled by scalar. */
   public static Vector scale(Vector a, double scalar) {
     return new Vector(a.x * scalar, a.y * scalar, a.z * scalar);
-  }
-
-  /**
-   * Returns a new vector that has the components of a scaled by the components of
-   * b.
-   */
-  public static Vector scaleNonUniform(Vector a, Vector b) {
-    return new Vector(a.x * b.x, a.y * b.y, a.z * b.z);
   }
 
   /** Returns the slope between the vectors. */
@@ -162,8 +177,19 @@ public class Vector extends Jsonable {
     return new Vector(Math.sqrt(a.x), Math.sqrt(a.y), Math.sqrt(a.z));
   }
 
+  /** 
+   * Returns a new vector scaled down to the limit if the magnitude of the 
+   * vector surpasses the limit. Otherwise, returns the original vector.
+   */
+  public static Vector squeeze(Vector a, double limit) {
+    if (!Double.isFinite(limit) || a.getMagnitude() <= limit) {
+      return a;
+    }
+    return Vector.scale(a.getUnitVector(), limit);
+  }
+
   /** Returns a new vector that is the vector subtraction of a - b. */
-  public static Vector subtract(Vector a, Vector b) {
+  public static Vector sub(Vector a, Vector b) {
     return new Vector(a.x - b.x, a.y - b.y, a.z - b.z);
   }
 
@@ -301,6 +327,24 @@ public class Vector extends Jsonable {
   /** Returns the vector's Z component. */
   public double getZ() {
     return this.z;
+  }
+
+  /** Returns a new vector pointing in the opposite direction. */
+  public Vector invert() {
+    return this.scale(-1);
+  }
+
+  /** Returns a new vector that has the components of a scaled by scalar. */
+  public Vector scale(double scalar) {
+    return Vector.scale(this, scalar);
+  }
+
+  /** 
+   * Returns a new vector scaled down to the limit if the magnitude of the 
+   * vector surpasses the limit. Otherwise, returns the original vector.
+   */
+  public Vector squeeze(double limit) {
+    return Vector.squeeze(this, limit);
   }
 
   /** Returns a decodable Json representation of this vector. */
