@@ -8,204 +8,121 @@ import com.seat.sim.common.json.*;
 
 /** A serializable prototype of a generic Sensor. */
 public class SensorProto extends Jsonable {
-    public static final String ACCURACY = "accuracy";
-    public static final String BATTERY_USAGE = "battery_usage";
-    public static final String DELAY = "delay";
-    public static final String RANGE = "range";
-    public static final String SENSOR_GROUPS = "sensor_groups";
-    public static final String SENSOR_MATCHERS = "sensor_matchers";
-    public static final String SENSOR_MODEL = "sensor_model";
+  public static final String MATCHERS = "matchers";
+  public static final String MODEL = "model";
+  public static final String STATS = "stats";
+  public static final String TAGS = "tags";
 
-    protected static final String DEFAULT_MODEL = "default";
+  protected static final String DEFAULT_MODEL = "default";
 
-    private Optional<Double> accuracy;
-    private Optional<Double> batteryUsage;
-    private Optional<Double> delay;
-    private Optional<Double> range;
-    private Set<String> sensorGroups;
-    private Set<String> sensorMatchers;
-    private String sensorModel;
+  private Set<String> matchers;
+  private String model;
+  private Optional<SensorStats> stats;
+  private Set<String> tags;
 
-    public SensorProto() {
-        this(SensorProto.DEFAULT_MODEL);
-    }
+  public SensorProto() {
+    this(SensorProto.DEFAULT_MODEL, null, null, null);
+  }
 
-    public SensorProto(String sensorModel) {
-        this(sensorModel, null, null, null, null, null, null);
-    }
+  public SensorProto(String model, Set<String> tags, Set<String> matchers, SensorStats stats) {
+    this.model = (model != null && !model.isBlank()) ? model : SensorProto.DEFAULT_MODEL;
+    this.tags = (tags != null) ? new HashSet<>(tags) : new HashSet<>();
+    this.matchers = (matchers != null) ? new HashSet<>(matchers) : new HashSet<>();
+    this.stats = (stats != null) ? Optional.of(stats) : Optional.empty();
+  }
 
-    public SensorProto(String sensorModel, Set<String> sensorGroups) {
-        this(sensorModel, sensorGroups, null, null, null, null, null);
-    }
+  public SensorProto(Json json) throws JsonException {
+    super(json);
+  }
 
-    public SensorProto(String sensorModel, double range, double accuracy, double delay, double batteryUsage) {
-        this(sensorModel, null, range, accuracy, delay, batteryUsage, null);
-    }
-
-    public SensorProto(String sensorModel, Set<String> sensorGroups, double range, double accuracy, double delay,
-            double batteryUsage) {
-        this(sensorModel, sensorGroups, range, accuracy, delay, batteryUsage, null);
-    }
-
-    public SensorProto(String sensorModel, double range, double accuracy, double delay, double batteryUsage,
-            Set<String> sensorMatchers) {
-        this(sensorModel, null, range, accuracy, delay, batteryUsage, sensorMatchers);
-    }
-
-    public SensorProto(String sensorModel, Set<String> sensorGroups, double range, double accuracy, double delay,
-            double batteryUsage, Set<String> sensorMatchers) {
-        this(sensorModel, sensorGroups, Optional.of(range), Optional.of(accuracy), Optional.of(delay),
-                Optional.of(batteryUsage), sensorMatchers);
-    }
-
-    private SensorProto(String sensorModel, Set<String> sensorGroups, Optional<Double> range, Optional<Double> accuracy,
-            Optional<Double> delay, Optional<Double> batteryUsage, Set<String> sensorMatchers) {
-        this.sensorModel = sensorModel;
-        this.sensorGroups = (sensorGroups != null) ? new HashSet<>(sensorGroups) : new HashSet<>();
-        this.range = (range != null) ? range : Optional.empty();
-        this.accuracy = (accuracy != null) ? accuracy : Optional.empty();
-        this.delay = (delay != null) ? delay : Optional.empty();
-        this.batteryUsage = (batteryUsage != null) ? batteryUsage : Optional.empty();
-        this.sensorMatchers = (sensorMatchers != null) ? new HashSet<>(sensorMatchers) : new HashSet<>();
-        if (this.batteryUsage.isPresent() && !Double.isFinite(this.batteryUsage.get())) {
-            throw new RuntimeException(
-                    String.format("cannot create Sensor with non-finite battery usage `%f`", this.batteryUsage.get()));
-        }
-    }
-
-    public SensorProto(Json json) throws JsonException {
-        super(json);
-    }
-
-    @Override
+  @Override
     protected void decode(JsonObject json) throws JsonException {
-        this.sensorModel = json.getString(SensorProto.SENSOR_MODEL);
-        this.sensorGroups = (json.hasKey(SensorProto.SENSOR_GROUPS))
-                ? new HashSet<>(json.getJsonArray(SensorProto.SENSOR_GROUPS).toList(String.class))
-                : new HashSet<>();
-        this.range = (json.hasKey(SensorProto.RANGE)) ? Optional.of(json.getDouble(SensorProto.RANGE))
-                : Optional.empty();
-        this.accuracy = (json.hasKey(SensorProto.ACCURACY)) ? Optional.of(json.getDouble(SensorProto.ACCURACY))
-                : Optional.empty();
-        this.delay = (json.hasKey(SensorProto.DELAY)) ? Optional.of(json.getDouble(SensorProto.DELAY))
-                : Optional.empty();
-        this.batteryUsage = (json.hasKey(SensorProto.BATTERY_USAGE))
-                ? Optional.of(json.getDouble(SensorProto.BATTERY_USAGE))
-                : Optional.empty();
-        this.sensorMatchers = (json.hasKey(SensorProto.SENSOR_MATCHERS))
-                ? new HashSet<>(json.getJsonArray(SensorProto.SENSOR_MATCHERS).toList(String.class))
-                : new HashSet<>();
+        this.model = (json.hasKey(SensorProto.MODEL))
+            ? json.getString(SensorProto.MODEL)
+            : SensorProto.DEFAULT_MODEL;
+        this.tags = (json.hasKey(SensorProto.TAGS))
+            ? new HashSet<>(json.getJsonArray(SensorProto.TAGS).toList(String.class))
+            : new HashSet<>();
+        this.matchers = (json.hasKey(SensorProto.MATCHERS))
+            ? new HashSet<>(json.getJsonArray(SensorProto.MATCHERS).toList(String.class))
+            : new HashSet<>();
+        this.stats = (json.hasKey(SensorProto.STATS))
+            ? Optional.of(new SensorStats(json.getJson(SensorProto.STATS)))
+            : Optional.empty();
     }
 
-    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
-        JsonObjectBuilder json = JsonBuilder.Object();
-        json.put(SensorProto.SENSOR_MODEL, this.sensorModel);
-        if (this.hasSensorGroups()) {
-            json.put(SensorProto.SENSOR_GROUPS, JsonBuilder.toJsonArray(this.sensorGroups));
-        }
-        if (this.hasRange()) {
-            json.put(SensorProto.RANGE, this.range);
-        }
-        if (this.hasAccuracy()) {
-            json.put(SensorProto.ACCURACY, this.accuracy);
-        }
-        if (this.hasDelay()) {
-            json.put(SensorProto.DELAY, this.delay);
-        }
-        if (this.hasBatteryUsage()) {
-            json.put(SensorProto.BATTERY_USAGE, this.batteryUsage);
-        }
-        if (this.hasSensorMatchers()) {
-            json.put(SensorProto.SENSOR_MATCHERS, JsonBuilder.toJsonArray(this.sensorMatchers));
-        }
-        return json;
+  protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+    JsonObjectBuilder json = JsonBuilder.Object();
+    json.put(SensorProto.MODEL, this.model);
+    if (this.hasTags()) {
+      json.put(SensorProto.TAGS, JsonBuilder.toJsonArray(this.tags));
     }
+    if (this.hasMatchers()) {
+      json.put(SensorProto.MATCHERS, JsonBuilder.toJsonArray(this.matchers));
+    }
+    if (this.hasStats()) {
+      json.put(SensorProto.STATS, this.getStats().toJson());
+    }
+    return json;
+  }
 
-    public boolean equals(SensorProto proto) {
-        if (proto == null)
-            return false;
-        return this.sensorModel.equals(proto.sensorModel) && this.sensorGroups.equals(proto.sensorGroups);
-    }
+  public String getLabel() {
+    return String.format("s:<%s>", this.model);
+  }
 
-    public double getBatteryUsage() {
-        return this.batteryUsage.get();
-    }
+  public Set<String> getMatchers() {
+    return this.matchers;
+  }
 
-    public String getLabel() {
-        return String.format("s:<%s>", this.sensorModel);
-    }
+  public String getModel() {
+    return this.model;
+  }
 
-    public double getSensorAccuracy() {
-        return this.accuracy.get();
-    }
+  public SensorStats getStats() {
+    return this.stats.get();
+  }
 
-    public double getSensorDelay() {
-        return this.delay.get();
-    }
+  public Set<String> getTags() {
+    return this.tags;
+  }
 
-    public Set<String> getSensorGroups() {
-        return this.sensorGroups;
+  public boolean hasMatch(Set<String> matchers) {
+    for (String matcher : matchers) {
+      if (this.hasTag(matcher)) {
+        return true;
+      }
     }
+    return false;
+  }
 
-    public Set<String> getSensorMatchers() {
-        return this.sensorMatchers;
-    }
+  public boolean hasMatcher(String matcher) {
+    return this.matchers.contains(matcher);
+  }
 
-    public String getSensorModel() {
-        return this.sensorModel;
-    }
+  public boolean hasMatchers() {
+    return !this.matchers.isEmpty();
+  }
 
-    public double getSensorRange() {
-        return this.range.get();
+  public boolean hasModel(String model) {
+    if (model == null || this.model == null) {
+      return this.model == model;
     }
+    return this.model.equals(model);
+  }
 
-    public boolean hasAccuracy() {
-        return this.accuracy.isPresent() && Double.isFinite(this.getSensorAccuracy());
-    }
+  public boolean hasTag(String tag) {
+    return this.tags.contains(tag);
+  }
 
-    public boolean hasBatteryUsage() {
-        return this.batteryUsage.isPresent() && Double.isFinite(this.getBatteryUsage()) && this.getBatteryUsage() > 0;
-    }
+  public boolean hasStats() {
+    return this.stats.isPresent();
+  }
 
-    public boolean hasDelay() {
-        return this.delay.isPresent() && Double.isFinite(this.getSensorDelay()) && this.getSensorDelay() > 0;
-    }
+  public boolean hasTags() {
+    return !this.tags.isEmpty();
+  }
 
-    public boolean hasRange() {
-        return this.range.isPresent() && Double.isFinite(this.getSensorRange());
-    }
-
-    public boolean hasSensorGroups() {
-        return !this.sensorGroups.isEmpty();
-    }
-
-    public boolean hasSensorGroupWithTag(String groupTag) {
-        return this.sensorGroups.contains(groupTag);
-    }
-
-    public boolean hasSensorMatch(Set<String> matchers) {
-        for (String matcher : matchers) {
-            if (this.hasSensorGroupWithTag(matcher))
-                return true;
-        }
-        return false;
-    }
-
-    public boolean hasSensorMatchers() {
-        return !this.sensorMatchers.isEmpty();
-    }
-
-    public boolean hasSensorMatcherWithTag(String matcherTag) {
-        return this.sensorMatchers.contains(matcherTag);
-    }
-
-    public boolean hasSensorModel(String sensorModel) {
-        if (sensorModel == null || this.sensorModel == null)
-            return this.sensorModel == sensorModel;
-        return this.sensorModel.equals(sensorModel);
-    }
-
-    public Json toJson() throws JsonException {
-        return this.getJsonBuilder().toJson();
-    }
+  public Json toJson() throws JsonException {
+    return this.getJsonBuilder().toJson();
+  }
 }
