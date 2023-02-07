@@ -8,100 +8,95 @@ import com.seat.sim.common.json.*;
 import com.seat.sim.common.util.Debugger;
 
 public class ActivateIntention extends Intention {
-    private static final String ACTIVATIONS = "activations";
+  private static final String ACTIVATIONS = "activations";
 
-    private Set<String> activations;
+  private Set<String> activations;
 
-    public ActivateIntention() {
-        super(IntentionType.ACTIVATE);
-        this.activations = new HashSet<>();
+  public ActivateIntention() {
+    super(IntentionType.ACTIVATE);
+    this.activations = new HashSet<>();
+  }
+
+  public ActivateIntention(String sensorID) {
+    this();
+    this.addActivation(sensorID);
+  }
+
+  public ActivateIntention(Collection<String> sensorIDs) {
+    this();
+    this.addActivations(sensorIDs);
+  }
+
+  public ActivateIntention(Json json) throws JsonException {
+    super(json);
+  }
+
+  @Override
+  protected void decode(JsonObject json) throws JsonException {
+    super.decode(json);
+    this.activations = (json.hasKey(ActivateIntention.ACTIVATIONS))
+        ? new HashSet<>(json.getJsonArray(ActivateIntention.ACTIVATIONS).toList(String.class))
+        : new HashSet<>();
+  }
+
+  @Override
+  protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+    JsonObjectBuilder json = super.getJsonBuilder();
+    if (this.hasActivations()) {
+      json.put(ActivateIntention.ACTIVATIONS, JsonBuilder.toJsonArray(this.activations));
     }
+    return json;
+  }
 
-    public ActivateIntention(String sensorID) {
-        this();
-        this.addActivation(sensorID);
+  public boolean addActivation(String sensorID) {
+    if (this.hasActivationOfSensor(sensorID)) {
+      Debugger.logger.warn(String.format("Sensor %s is already intended to be activated", sensorID));
+      return true;
     }
+    this.activations.add(sensorID);
+    return true;
+  }
 
-    public ActivateIntention(Collection<String> sensorIDs) {
-        this();
-        this.addActivations(sensorIDs);
+  public boolean addActivations(Collection<String> sensorIDs) {
+    if (sensorIDs == null) {
+      return false;
     }
+    for (String sensorID : sensorIDs) {
+      this.addActivation(sensorID);
+    }
+    return true;
+  }
 
-    public ActivateIntention(Json json) throws JsonException {
-        super(json);
-    }
+  public Set<String> getActivations() {
+    return this.activations;
+  }
 
-    @Override
-    protected void decode(JsonObject json) throws JsonException {
-        super.decode(json);
-        this.activations = (json.hasKey(ActivateIntention.ACTIVATIONS)) ?
-            new HashSet<>(json.getJsonArray(ActivateIntention.ACTIVATIONS).toList(String.class)) :
-            new HashSet<>();
-    }
+  @Override
+  public String getLabel() {
+    return "<ACTIVATE>";
+  }
 
-    @Override
-    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
-        JsonObjectBuilder json = super.getJsonBuilder();
-        if (this.hasActivations()) {
-            json.put(ActivateIntention.ACTIVATIONS, JsonBuilder.toJsonArray(this.activations));
-        }
-        return json;
-    }
+  public boolean hasActivationOfSensor(String sensorID) {
+    return this.activations.contains(sensorID);
+  }
 
-    public boolean addActivation(String sensorID) {
-        if (this.hasActivationOfSensor(sensorID)) {
-            Debugger.logger.warn(String.format("Sensor %s is already intended to be activated", sensorID));
-            return true;
-        }
-        this.activations.add(sensorID);
-        return true;
-    }
+  public boolean hasActivations() {
+    return !this.activations.isEmpty();
+  }
 
-    public boolean addActivations(Collection<String> sensorIDs) {
-        if (sensorIDs == null) return false;
-        boolean flag = true;
-        for (String sensorID : sensorIDs) {
-            flag = this.addActivation(sensorID) && flag;
-        }
-        return flag;
+  public boolean removeActivation(String sensorID) {
+    if (!this.hasActivationOfSensor(sensorID)) {
+      Debugger.logger.warn(String.format("Sensor %s is not intended to be activated", sensorID));
+      return true;
     }
+    this.activations.remove(sensorID);
+    return true;
+  }
 
-    public boolean equals(ActivateIntention intent) {
-        if (intent == null) return false;
-        return super.equals(intent) && this.activations.equals(intent.activations);
+  public boolean removeActivations(Collection<String> sensorIDs) {
+    for (String sensorID : sensorIDs) {
+      this.removeActivation(sensorID);
     }
-
-    public Set<String> getActivations() {
-        return this.activations;
-    }
-
-    @Override
-    public String getLabel() {
-        return "<ACTIVATE>";
-    }
-
-    public boolean hasActivationOfSensor(String sensorID) {
-        return this.activations.contains(sensorID);
-    }
-
-    public boolean hasActivations() {
-        return !this.activations.isEmpty();
-    }
-
-    public boolean removeActivation(String sensorID) {
-        if (!this.hasActivationOfSensor(sensorID)) {
-            Debugger.logger.warn(String.format("Sensor %s is not intended to be activated", sensorID));
-            return true;
-        }
-        this.activations.remove(sensorID);
-        return true;
-    }
-
-    public boolean removeActivations(Collection<String> sensorIDs) {
-        boolean flag = true;
-        for (String sensorID : sensorIDs) {
-            flag = this.removeActivation(sensorID) && flag;
-        }
-        return flag;
-    }
+    return true;
+  }
 }

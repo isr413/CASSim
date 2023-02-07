@@ -14,14 +14,15 @@ public enum IntentionType implements SerializableEnum {
     SHUTDOWN(6),
     STARTUP(7),
     STEER(8),
-    STOP(9);
+    STOP(9),
+    PUSH(10);
 
     public static final String INTENTION_TYPE = "intention_type";
 
     public static IntentionType decode(JsonObject json) {
-        return (json.hasKey(IntentionType.INTENTION_TYPE)) ?
-            IntentionType.Value(json.getInt(IntentionType.INTENTION_TYPE)) :
-            IntentionType.NONE;
+        return (json.hasKey(IntentionType.INTENTION_TYPE))
+                ? IntentionType.Value(json.getInt(IntentionType.INTENTION_TYPE))
+                : IntentionType.NONE;
     }
 
     public static IntentionType Value(int value) {
@@ -32,11 +33,6 @@ public enum IntentionType implements SerializableEnum {
 
     private IntentionType(int type) {
         this.type = type;
-    }
-
-    public boolean equals(IntentionType type) {
-        if (type == null) return false;
-        return this.type == type.type;
     }
 
     public int getType() {
