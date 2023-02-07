@@ -11,108 +11,118 @@ import com.seat.sim.common.remote.intent.IntentionSet;
 /** A controller to signal intents to a Remote. */
 public class RemoteController extends Jsonable {
 
-    private IntentionSet intentions;
+  private IntentionSet intentions;
 
-    public RemoteController(String remoteID) {
-        this.intentions = new IntentionSet(remoteID);
-    }
+  public RemoteController(String remoteID) {
+    this.intentions = new IntentionSet(remoteID);
+  }
 
-    public RemoteController(Json json) throws JsonException {
-        super(json);
-    }
+  public RemoteController(Json json) throws JsonException {
+    super(json);
+  }
 
-    @Override
-    protected void decode(Json json) throws JsonException {
-        this.intentions = new IntentionSet(json);
-    }
+  @Override
+  protected void decode(Json json) throws JsonException {
+    this.intentions = new IntentionSet(json);
+  }
 
-    protected void addIntention(Intention intent) {
-        this.intentions.addIntention(intent);
-    }
+  protected void addIntention(Intention intent) {
+    this.intentions.addIntention(intent);
+  }
 
-    public void activateAllSensors() {
-        this.addIntention(IntentRegistry.Activate());
-    }
+  public void activateAllSensors() {
+    this.addIntention(IntentRegistry.Activate());
+  }
 
-    public void activateAllSensors(Collection<String> sensorIDs) {
-        this.addIntention(IntentRegistry.Activate(sensorIDs));
-    }
+  public void activateAllSensors(Collection<String> sensorIDs) {
+    this.addIntention(IntentRegistry.Activate(sensorIDs));
+  }
 
-    public void activateSensor(String sensorID) {
-        this.addIntention(IntentRegistry.Activate(sensorID));
-    }
+  public void activateSensor(String sensorID) {
+    this.addIntention(IntentRegistry.Activate(sensorID));
+  }
 
-    public void deactivateAllSensors() {
-        this.addIntention(IntentRegistry.Deactivate());
-    }
+  public void brake(Vector acceleration) {
+    this.addIntention(IntentRegistry.Push(Vector.scale(acceleration, -1)));
+  }
 
-    public void deactivateAllSensors(Collection<String> sensorIDs) {
-        this.addIntention(IntentRegistry.Deactivate(sensorIDs));
-    }
+  public void deactivateAllSensors() {
+    this.addIntention(IntentRegistry.Deactivate());
+  }
 
-    public void deactivateSensor(String sensorID) {
-        this.addIntention(IntentRegistry.Deactivate(sensorID));
-    }
+  public void deactivateAllSensors(Collection<String> sensorIDs) {
+    this.addIntention(IntentRegistry.Deactivate(sensorIDs));
+  }
 
-    public void done() {
-        this.addIntention(IntentRegistry.Done());
-    }
+  public void deactivateSensor(String sensorID) {
+    this.addIntention(IntentRegistry.Deactivate(sensorID));
+  }
 
-    public boolean equals(RemoteController controller) {
-        if (controller == null)
-            return false;
-        return this.intentions.equals(controller.intentions);
-    }
+  public void done() {
+    this.addIntention(IntentRegistry.Done());
+  }
 
-    public IntentionSet getIntentions() {
-        return this.intentions;
-    }
+  public IntentionSet getIntentions() {
+    return this.intentions;
+  }
+  
+  public void goHome() {
+    this.addIntention(IntentRegistry.GoTo());
+  }
 
-    public void goToLocation(Vector location) {
-        this.addIntention(IntentRegistry.GoTo(location));
-    }
+  public void goToLocation(Vector location) {
+    this.addIntention(IntentRegistry.GoTo(location));
+  }
 
-    public void goToLocation(Vector location, double maxVelocity) {
-        this.addIntention(IntentRegistry.GoTo(location, maxVelocity));
-    }
+  public void goToLocation(Vector location, double maxVelocity) {
+    this.addIntention(IntentRegistry.GoTo(location, maxVelocity));
+  }
 
-    public void goToLocation(Vector location, double maxVelocity, double maxAcceleration) {
-        this.addIntention(IntentRegistry.GoTo(location, maxVelocity, maxAcceleration));
-    }
+  public void goToLocation(Vector location, double maxVelocity, double maxAcceleration) {
+    this.addIntention(IntentRegistry.GoTo(location, maxVelocity, maxAcceleration));
+  }
 
-    public boolean hasRemoteID(String remoteID) {
-        return this.intentions.hasRemoteID(remoteID);
-    }
+  public boolean hasRemoteID(String remoteID) {
+    return this.intentions.hasRemoteID(remoteID);
+  }
 
-    public void move(Vector acceleration) {
-        this.addIntention(IntentRegistry.Move(acceleration));
-    }
+  public void maintainCourse() {
+    this.addIntention(IntentRegistry.Move());
+  }
 
-    public void moveForward() {
-        this.addIntention(IntentRegistry.Move());
-    }
+  public void move(Vector acceleration) {
+    this.addIntention(IntentRegistry.Move(acceleration));
+  }
 
-    public void none() {
-        this.addIntention(IntentRegistry.None());
-    }
+  public void none() {
+    this.addIntention(IntentRegistry.None());
+  }
 
-    public void shutdown() {
-        this.addIntention(IntentRegistry.Shutdown());
-    }
+  public void push(Vector force) {
+    this.addIntention(IntentRegistry.Push(force));
+  }
 
-    public void startup() {
-        this.addIntention(IntentRegistry.Startup());
-    }
+  public void shutdown() {
+    this.addIntention(IntentRegistry.Shutdown());
+  }
 
-    public void steer(Vector direction) {
-        this.addIntention(IntentRegistry.Steer(direction));
-    }
+  public void startup() {
+    this.addIntention(IntentRegistry.Startup());
+  }
 
-    public void stop() {
-        this.addIntention(IntentRegistry.Stop());
-    }
+  public void steer(Vector direction) {
+    this.addIntention(IntentRegistry.Steer(direction));
+  }
+  
+  public void steerHome() {
+    this.addIntention(IntentRegistry.Steer());
+  }
 
-    public Json toJson() throws JsonException {
-        return this.intentions.toJson();
-    }
+  public void stop() {
+    this.addIntention(IntentRegistry.Stop());
+  }
+
+  public Json toJson() throws JsonException {
+    return this.intentions.toJson();
+  }
 }

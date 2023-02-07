@@ -16,258 +16,240 @@ import com.seat.sim.common.sensor.SensorState;
 
 /** A serializable snapshot of a Remote. */
 public class RemoteState extends Jsonable {
-    public static final String ACTIVE = "active";
-    public static final String FUEL = "fuel";
-    public static final String LOCATION = "location";
-    public static final String REMOTE_GROUPS = "remote_groups";
-    public static final String REMOTE_ID = "remote_id";
-    public static final String VELOCITY = "velocity";
+  public static final String ACTIVE = "active";
+  public static final String FUEL = "fuel";
+  public static final String LOCATION = "location";
+  public static final String REMOTE_ID = "remote_id";
+  public static final String TAGS = "tags";
+  public static final String VELOCITY = "velocity";
 
-    private boolean active;
-    private Optional<Double> fuel;
-    private Optional<Vector> location;
-    private Set<String> remoteGroups;
-    private String remoteID;
-    private Map<String, SensorState> sensorStates;
-    private TeamColor team;
-    private Optional<Vector> velocity;
+  private boolean active;
+  private Optional<Double> fuel;
+  private Optional<Vector> location;
+  private String remoteID;
+  private Map<String, SensorState> sensorStates;
+  private Set<String> tags;
+  private TeamColor team;
+  private Optional<Vector> velocity;
 
-    public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, Collection<SensorState> sensorStates,
-            boolean active) {
-        this(remoteID, remoteGroups, team, null, null, null, sensorStates, active);
+  public RemoteState(String remoteID, Set<String> tags, TeamColor team, Vector location, Vector velocity,
+      Collection<SensorState> sensorStates, boolean active) {
+    this(remoteID, tags, team, location, velocity, null, sensorStates, active);
+  }
+
+  public RemoteState(String remoteID, Set<String> tags, TeamColor team, Vector location, Vector velocity,
+      double fuel, Collection<SensorState> sensorStates, boolean active) {
+    this(remoteID, tags, team, location, null, Optional.of(fuel), sensorStates, active);
+  }
+
+  private RemoteState(String remoteID, Set<String> tags, TeamColor team, Vector location, Vector velocity,
+      Optional<Double> fuel, Collection<SensorState> sensorStates, boolean active) {
+    this.remoteID = remoteID;
+    this.tags = (tags != null) ? new HashSet<>(tags) : new HashSet<>();
+    this.team = (team != null) ? team : TeamColor.NONE;
+    this.location = (location != null) ? Optional.of(location) : Optional.empty();
+    this.velocity = (velocity != null) ? Optional.of(velocity) : Optional.empty();
+    this.fuel = (fuel != null) ? fuel : Optional.empty();
+    this.sensorStates = (sensorStates != null)
+        ? sensorStates.stream().collect(Collectors.toMap(SensorState::getSensorID, Function.identity()))
+        : new HashMap<>();
+    this.active = active;
+    if (this.remoteID == null || this.remoteID.isBlank() || this.remoteID.isEmpty()) {
+      throw new RuntimeException("cannot create RemoteState with empty ID");
     }
+  }
 
-    public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, Vector location,
-            Collection<SensorState> sensorStates, boolean active) {
-        this(remoteID, remoteGroups, team, location, null, null, sensorStates, active);
-    }
+  public RemoteState(Json json) throws JsonException {
+    super(json);
+  }
 
-    public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, Vector location, Vector velocity,
-            Collection<SensorState> sensorStates, boolean active) {
-        this(remoteID, remoteGroups, team, location, velocity, null, sensorStates, active);
-    }
+  @Override
+  protected void decode(JsonObject json) throws JsonException {
+    this.remoteID = json.getString(RemoteState.REMOTE_ID);
+    this.tags = (json.hasKey(RemoteState.TAGS))
+        ? new HashSet<>(json.getJsonArray(RemoteState.TAGS).toList(String.class))
+        : new HashSet<>();
+    this.team = (json.hasKey(TeamColor.TEAM)) ? TeamColor.decodeType(json) : TeamColor.NONE;
+    this.location = (json.hasKey(RemoteState.LOCATION))
+        ? Optional.of(new Vector(json.getJson(RemoteState.LOCATION)))
+        : Optional.empty();
+    this.velocity = (json.hasKey(RemoteState.VELOCITY))
+        ? Optional.of(new Vector(json.getJson(RemoteState.VELOCITY)))
+        : Optional.empty();
+    this.fuel = (json.hasKey(RemoteState.FUEL)) ? Optional.of(json.getDouble(RemoteState.FUEL)) : Optional.empty();
+    this.active = json.getBoolean(RemoteState.ACTIVE);
+    this.sensorStates = (json.hasKey(RemoteProto.SENSORS))
+        ? json.getJsonArray(RemoteProto.SENSORS).toList(Json.class).stream()
+            .map(state -> new SensorState(state))
+            .collect(Collectors.toMap(SensorState::getSensorID, Function.identity()))
+        : new HashMap<>();
+  }
 
-    public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, double fuel,
-            Collection<SensorState> sensorStates, boolean active) {
-        this(remoteID, remoteGroups, team, null, null, fuel, sensorStates, active);
+  protected JsonObjectBuilder getJsonBuilder() throws JsonException {
+    JsonObjectBuilder json = JsonBuilder.Object();
+    json.put(RemoteState.REMOTE_ID, this.remoteID);
+    if (this.hasTags()) {
+      json.put(RemoteState.TAGS, JsonBuilder.toJsonArray(this.tags));
     }
+    if (this.hasTeam()) {
+      json.put(TeamColor.TEAM, this.team.getType());
+    }
+    if (this.hasLocation()) {
+      json.put(RemoteState.LOCATION, this.getLocation().toJson());
+    }
+    if (this.isMobile()) {
+      json.put(RemoteState.VELOCITY, this.getVelocity().toJson());
+    }
+    if (this.hasFuel()) {
+      json.put(RemoteState.FUEL, this.getFuel());
+    }
+    json.put(RemoteState.ACTIVE, this.active);
+    if (this.hasSensors()) {
+      json.put(
+          RemoteProto.SENSORS,
+          JsonBuilder.toJsonArray(
+              this.sensorStates.values().stream()
+                  .map(sensorState -> sensorState.toJson())
+                  .collect(Collectors.toList())));
+    }
+    return json;
+  }
 
-    public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, Vector location,
-            double fuel, Collection<SensorState> sensorStates, boolean active) {
-        this(remoteID, remoteGroups, team, location, null, fuel, sensorStates, active);
-    }
+  public double getFuel() {
+    return this.fuel.get();
+  }
 
-    public RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, Vector location, Vector velocity,
-            double fuel, Collection<SensorState> sensorStates, boolean active) {
-        this(remoteID, remoteGroups, team, location, null, Optional.of(fuel), sensorStates, active);
-    }
+  public String getLabel() {
+    return String.format("%s:<remote>", this.remoteID);
+  }
 
-    private RemoteState(String remoteID, Set<String> remoteGroups, TeamColor team, Vector location, Vector velocity,
-            Optional<Double> fuel, Collection<SensorState> sensorStates, boolean active) {
-        this.remoteID = remoteID;
-        this.remoteGroups = (remoteGroups != null) ? new HashSet<>(remoteGroups) : new HashSet<>();
-        this.team = (team != null) ? team : TeamColor.NONE;
-        this.location = (location != null) ? Optional.of(location) : Optional.empty();
-        this.velocity = (velocity != null) ? Optional.of(velocity) : Optional.empty();
-        this.fuel = (fuel != null) ? fuel : Optional.empty();
-        this.sensorStates = (sensorStates != null)
-                ? sensorStates.stream().collect(Collectors.toMap(SensorState::getSensorID, Function.identity()))
-                : new HashMap<>();
-        this.active = active;
-    }
+  public Vector getLocation() {
+    return this.location.get();
+  }
 
-    public RemoteState(Json json) throws JsonException {
-        super(json);
-    }
+  public String getRemoteID() {
+    return this.remoteID;
+  }
 
-    @Override
-    protected void decode(JsonObject json) throws JsonException {
-        this.remoteID = json.getString(RemoteState.REMOTE_ID);
-        this.remoteGroups = (json.hasKey(RemoteState.REMOTE_GROUPS))
-                ? new HashSet<>(json.getJsonArray(RemoteState.REMOTE_GROUPS).toList(String.class))
-                : new HashSet<>();
-        this.team = (json.hasKey(TeamColor.TEAM)) ? TeamColor.decodeType(json) : TeamColor.NONE;
-        this.location = (json.hasKey(RemoteState.LOCATION))
-                ? Optional.of(new Vector(json.getJson(RemoteState.LOCATION)))
-                : Optional.empty();
-        this.velocity = (json.hasKey(RemoteState.VELOCITY))
-                ? Optional.of(new Vector(json.getJson(RemoteState.VELOCITY)))
-                : Optional.empty();
-        this.fuel = (json.hasKey(RemoteState.FUEL)) ? Optional.of(json.getDouble(RemoteState.FUEL)) : Optional.empty();
-        this.active = json.getBoolean(RemoteState.ACTIVE);
-        this.sensorStates = (json.hasKey(RemoteProto.SENSORS))
-                ? json.getJsonArray(RemoteProto.SENSORS).toList(Json.class).stream()
-                        .map(state -> new SensorState(state))
-                        .collect(Collectors.toMap(SensorState::getSensorID, Function.identity()))
-                : new HashMap<>();
-    }
+  public Set<String> getSensorIDs() {
+    return this.sensorStates.keySet();
+  }
 
-    protected JsonObjectBuilder getJsonBuilder() throws JsonException {
-        JsonObjectBuilder json = JsonBuilder.Object();
-        json.put(RemoteState.REMOTE_ID, this.remoteID);
-        if (this.hasRemoteGroups()) {
-            json.put(RemoteState.REMOTE_GROUPS, JsonBuilder.toJsonArray(this.remoteGroups));
-        }
-        if (this.hasTeam()) {
-            json.put(TeamColor.TEAM, this.team.getType());
-        }
-        if (this.hasLocation()) {
-            json.put(RemoteState.LOCATION, this.getLocation().toJson());
-        }
-        if (this.isMobile()) {
-            json.put(RemoteState.VELOCITY, this.getVelocity().toJson());
-        }
-        if (this.hasFuel()) {
-            json.put(RemoteState.FUEL, this.getFuel());
-        }
-        json.put(RemoteState.ACTIVE, this.active);
-        if (this.hasSensors()) {
-            json.put(
-                    RemoteProto.SENSORS,
-                    JsonBuilder.toJsonArray(
-                            this.sensorStates.values().stream()
-                                    .map(sensorState -> sensorState.toJson())
-                                    .collect(Collectors.toList())));
-        }
-        return json;
-    }
+  public Collection<SensorState> getSensorStates() {
+    return this.sensorStates.values();
+  }
 
-    public boolean equals(RemoteState state) {
-        if (state == null)
-            return false;
-        return this.remoteID.equals(state.remoteID) && this.team.equals(state.team) &&
-                this.location.equals(state.location) && this.velocity.equals(state.velocity) &&
-                this.fuel.equals(state.fuel) &&
-                this.active == state.active && this.sensorStates.equals(state.sensorStates);
-    }
+  public Collection<SensorState> getSensorStatesWithModel(String sensorModel) {
+    return this.getSensorStates()
+        .stream()
+        .filter(sensorState -> sensorState.hasSensorModel(sensorModel))
+        .collect(Collectors.toList());
+  }
 
-    public double getFuel() {
-        return this.fuel.get();
-    }
+  public Collection<SensorState> getSensorStatesWithTag(String tag) {
+    return this.getSensorStates()
+        .stream()
+        .filter(sensorState -> sensorState.hasTag(tag))
+        .collect(Collectors.toList());
+  }
 
-    public String getLabel() {
-        return String.format("%s:<remote>", this.remoteID);
-    }
+  public SensorState getSensorStateWithID(String sensorID) {
+    return this.sensorStates.get(sensorID);
+  }
 
-    public Vector getLocation() {
-        return this.location.get();
-    }
+  public double getSpeed() {
+    return this.getVelocity().getMagnitude();
+  }
 
-    public Set<String> getRemoteGroups() {
-        return this.remoteGroups;
-    }
+  public Set<String> getTags() {
+    return this.tags;
+  }
 
-    public String getRemoteID() {
-        return this.remoteID;
-    }
+  public TeamColor getTeam() {
+    return this.team;
+  }
 
-    public Set<String> getSensorIDs() {
-        return this.sensorStates.keySet();
-    }
+  public Vector getVelocity() {
+    return this.velocity.get();
+  }
 
-    public Collection<SensorState> getSensorStates() {
-        return this.sensorStates.values();
-    }
+  public boolean hasFuel() {
+    return this.fuel.isPresent();
+  }
 
-    public Collection<SensorState> getSensorStatesWithModel(String sensorModel) {
-        return this.getSensorStates().stream()
-                .filter(sensorState -> sensorState.hasSensorModel(sensorModel))
-                .collect(Collectors.toList());
-    }
+  public boolean hasLocation() {
+    return this.location.isPresent();
+  }
 
-    public Collection<SensorState> getSensorStatesWithTag(String groupTag) {
-        return this.getSensorStates().stream()
-                .filter(sensorState -> sensorState.hasSensorGroupWithTag(groupTag))
-                .collect(Collectors.toList());
+  public boolean hasRemoteID(String remoteID) {
+    if (remoteID == null || this.remoteID == null) {
+      return this.remoteID == remoteID;
     }
+    return this.remoteID.equals(remoteID);
+  }
 
-    public SensorState getSensorStateWithID(String sensorID) {
-        return this.sensorStates.get(sensorID);
+  public boolean hasRemoteMatch(Set<String> matchers) {
+    for (String matcher : matchers) {
+      if (this.hasTag(matcher)) {
+        return true;
+      }
     }
+    return false;
+  }
 
-    public TeamColor getTeam() {
-        return this.team;
+  public boolean hasSensorMatch(Set<String> matchers) {
+    for (SensorState state : this.getSensorStates()) {
+      if (state.hasMatch(matchers)) {
+        return true;
+      }
     }
+    return false;
+  }
 
-    public Vector getVelocity() {
-        return this.velocity.get();
-    }
+  public boolean hasSensors() {
+    return !this.sensorStates.isEmpty();
+  }
 
-    public boolean hasFuel() {
-        return this.fuel.isPresent();
-    }
+  public boolean hasSensorStateWithID(String sensorID) {
+    return this.sensorStates.containsKey(sensorID);
+  }
 
-    public boolean hasLocation() {
-        return this.location.isPresent();
-    }
+  public boolean hasSensorStateWithModel(String sensorModel) {
+    return !this.getSensorStatesWithModel(sensorModel).isEmpty();
+  }
 
-    public boolean hasRemoteGroups() {
-        return !this.remoteGroups.isEmpty();
-    }
+  public boolean hasSensorStateWithTag(String tag) {
+    return !this.getSensorStatesWithTag(tag).isEmpty();
+  }
 
-    public boolean hasRemoteGroupWithTag(String groupTag) {
-        return this.remoteGroups.contains(groupTag);
-    }
+  public boolean hasTags() {
+    return !this.tags.isEmpty();
+  }
 
-    public boolean hasRemoteID(String remoteID) {
-        if (remoteID == null || this.remoteID == null)
-            return this.remoteID == remoteID;
-        return this.remoteID.equals(remoteID);
-    }
+  public boolean hasTag(String tag) {
+    return this.tags.contains(tag);
+  }
+  public boolean hasTeam() {
+    return !this.team.equals(TeamColor.NONE);
+  }
 
-    public boolean hasRemoteMatch(Set<String> matchers) {
-        for (String matcher : matchers) {
-            if (this.hasRemoteGroupWithTag(matcher))
-                return true;
-        }
-        return false;
-    }
+  public boolean isActive() {
+    return this.active && this.isEnabled();
+  }
 
-    public boolean hasSensorMatch(Set<String> matchers) {
-        for (String matcher : matchers) {
-            if (this.hasSensorStateWithTag(matcher))
-                return true;
-        }
-        return false;
-    }
+  public boolean isEnabled() {
+    return !this.hasFuel() || this.getFuel() > 0;
+  }
 
-    public boolean hasSensors() {
-        return !this.sensorStates.isEmpty();
-    }
+  public boolean isInMotion() {
+    return this.isMobile() && this.getSpeed() > 0;
+  }
 
-    public boolean hasSensorStateWithID(String sensorID) {
-        return this.sensorStates.containsKey(sensorID);
-    }
+  public boolean isMobile() {
+    return this.velocity.isPresent();
+  }
 
-    public boolean hasSensorStateWithModel(String sensorModel) {
-        return !this.getSensorStatesWithModel(sensorModel).isEmpty();
-    }
-
-    public boolean hasSensorStateWithTag(String groupTag) {
-        return !this.getSensorStatesWithTag(groupTag).isEmpty();
-    }
-
-    public boolean hasTeam() {
-        return !this.team.equals(TeamColor.NONE);
-    }
-
-    public boolean isActive() {
-        return this.active && this.isEnabled();
-    }
-
-    public boolean isEnabled() {
-        return !this.hasFuel() || this.getFuel() > 0;
-    }
-
-    public boolean isInMotion() {
-        return this.isMobile() && this.getVelocity().getMagnitude() > 0;
-    }
-
-    public boolean isMobile() {
-        return this.velocity.isPresent();
-    }
-
-    public Json toJson() throws JsonException {
-        return this.getJsonBuilder().toJson();
-    }
+  public Json toJson() throws JsonException {
+    return this.getJsonBuilder().toJson();
+  }
 }
