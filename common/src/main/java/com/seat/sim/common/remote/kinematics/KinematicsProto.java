@@ -15,6 +15,10 @@ public class KinematicsProto extends Jsonable {
   private Optional<Vector> location;
   private Optional<MotionProto> motionProto;
 
+  public KinematicsProto() {
+    this(null, null, null);
+  }
+
   public KinematicsProto(Vector location, FuelProto fuelProto, MotionProto motionProto) {
     this.location = (location != null) ? Optional.of(location) : Optional.empty();
     this.motionProto = (motionProto != null) ? Optional.of(motionProto) : Optional.empty();

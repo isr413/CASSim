@@ -80,10 +80,16 @@ public class GoToIntention extends Intention {
   }
 
   public double getMaxAcceleration() {
+    if (this.maxAcceleration.isEmpty()) {
+      return Double.POSITIVE_INFINITY;
+    }
     return this.maxAcceleration.get();
   }
 
   public double getMaxVelocity() {
+    if (this.maxVelocity.isEmpty()) {
+      return Double.POSITIVE_INFINITY;
+    }
     return this.maxVelocity.get();
   }
 

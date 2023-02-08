@@ -14,6 +14,7 @@ public class Vector extends Jsonable {
   public static final Vector X_BASIS = new Vector(1, 0, 0);
   public static final Vector Y_BASIS = new Vector(0, 1, 0);
   public static final Vector Z_BASIS = new Vector(0, 0, 1);
+  public static final Vector ZERO = new Vector(0, 0, 0);
 
   /** Returns the a new vector with the absolute value of the components of a. */
   public static Vector abs(Vector a) {
@@ -334,6 +335,11 @@ public class Vector extends Jsonable {
     return this.scale(-1);
   }
 
+  /** Returns {@code true} if the two vectors are within precision of each other. */
+  public boolean near(Vector target) {
+    return Vector.near(this, target);
+  }
+ 
   /** Returns a new vector that has the components of a scaled by scalar. */
   public Vector scale(double scalar) {
     return Vector.scale(this, scalar);

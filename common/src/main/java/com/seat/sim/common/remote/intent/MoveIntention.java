@@ -9,12 +9,12 @@ public class MoveIntention extends Intention {
   private Vector acceleration;
 
   public MoveIntention() {
-    this(new Vector());
+    this(Vector.ZERO);
   }
 
   public MoveIntention(Vector acceleration) {
     super(IntentionType.MOVE);
-    this.acceleration = (acceleration != null) ? acceleration : new Vector();
+    this.acceleration = (acceleration != null) ? acceleration : Vector.ZERO;
     if (!Double.isFinite(this.acceleration.getMagnitude())) {
       throw new RuntimeException(
           String.format("cannot Move remote with a non-finite force `%s`", this.acceleration.toString()));
@@ -30,7 +30,7 @@ public class MoveIntention extends Intention {
     super.decode(json);
     this.acceleration = (json.hasKey(MoveIntention.ACCELERATION))
         ? new Vector(json.getJson(MoveIntention.ACCELERATION))
-        : new Vector();
+        : Vector.ZERO;
   }
 
   @Override

@@ -56,7 +56,7 @@ public class FuelProto extends Jsonable {
       json.put(FuelProto.INITIAL_FUEL, this.initialFuel);
     }
     if (this.hasMaxFuel()) {
-      json.put(FuelProto.MAX_FUEL, this.maxFuel);
+      json.put(FuelProto.MAX_FUEL, this.getMaxFuel());
     }
     if (this.hasFuelUsage()) {
       json.put(FuelProto.FUEL_USAGE, this.getFuelUsage().toJson());
@@ -65,6 +65,9 @@ public class FuelProto extends Jsonable {
   }
 
   public Vector getFuelUsage() {
+    if (!this.hasFuelUsage()) {
+      return Vector.ZERO;
+    }
     return this.fuelUsage.get();
   }
 
@@ -73,6 +76,9 @@ public class FuelProto extends Jsonable {
   }
 
   public double getMaxFuel() {
+    if (this.maxFuel.isEmpty()) {
+      return Double.POSITIVE_INFINITY;
+    }
     return this.maxFuel.get();
   }
 

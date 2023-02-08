@@ -43,7 +43,9 @@ public class RemoteProto extends Jsonable {
         ? new HashSet<>(json.getJsonArray(RemoteProto.TAGS).toList(String.class))
         : new HashSet<>();
     this.sensorConfigs = (json.hasKey(RemoteProto.SENSORS))
-        ? this.sensorConfigs = json.getJsonArray(RemoteProto.SENSORS).toList(Json.class).stream()
+        ? this.sensorConfigs = json.getJsonArray(RemoteProto.SENSORS)
+            .toList(Json.class)
+            .stream()
             .map(config -> new SensorConfig(config))
             .collect(Collectors.toList())
         : new ArrayList<>();
@@ -62,7 +64,8 @@ public class RemoteProto extends Jsonable {
       json.put(
           RemoteProto.SENSORS,
           JsonBuilder.toJsonArray(
-              this.sensorConfigs.stream()
+              this.sensorConfigs
+                  .stream()
                   .map(config -> config.toJson())
                   .collect(Collectors.toList())));
     }

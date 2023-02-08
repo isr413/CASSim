@@ -16,7 +16,7 @@ public class MotionProto extends Jsonable {
   private Optional<Double> maxVelocity;
 
   public MotionProto() {
-    this(new Vector());
+    this(Vector.ZERO);
   }
 
   public MotionProto(Vector initialVelocity) {
@@ -32,7 +32,7 @@ public class MotionProto extends Jsonable {
   }
 
   private MotionProto(Vector initialVelocity, Optional<Double> maxVelocity, Optional<Double> maxAcceleration) {
-    this.initialVelocity = (initialVelocity != null) ? initialVelocity : new Vector();
+    this.initialVelocity = (initialVelocity != null) ? initialVelocity : Vector.ZERO;
     this.maxVelocity = (maxVelocity != null) ? maxVelocity : Optional.empty();
     this.maxAcceleration = (maxAcceleration != null) ? maxAcceleration : Optional.empty();
     if (!Double.isFinite(this.initialVelocity.getMagnitude())) {
@@ -49,7 +49,7 @@ public class MotionProto extends Jsonable {
   protected void decode(JsonObject json) throws JsonException {
     this.initialVelocity = (json.hasKey(MotionProto.INITIAL_VELOCITY))
         ? new Vector(json.getJson(MotionProto.INITIAL_VELOCITY))
-        : new Vector();
+        : Vector.ZERO;
     this.maxVelocity = (json.hasKey(MotionProto.MAX_VELOCITY))
         ? Optional.of(json.getDouble(MotionProto.MAX_VELOCITY))
         : Optional.empty();
@@ -64,10 +64,10 @@ public class MotionProto extends Jsonable {
       json.put(MotionProto.INITIAL_VELOCITY, this.initialVelocity.toJson());
     }
     if (this.hasMaxVelocity()) {
-      json.put(MotionProto.MAX_VELOCITY, this.maxVelocity);
+      json.put(MotionProto.MAX_VELOCITY, this.getMaxVelocity());
     }
     if (this.hasMaxAcceleration()) {
-      json.put(MotionProto.MAX_ACCELERATION, this.maxAcceleration);
+      json.put(MotionProto.MAX_ACCELERATION, this.getMaxAcceleration());
     }
     return json;
   }
@@ -81,10 +81,16 @@ public class MotionProto extends Jsonable {
   }
 
   public double getMaxAcceleration() {
+    if (this.maxAcceleration.isEmpty()) {
+      return Double.POSITIVE_INFINITY;
+    }
     return this.maxAcceleration.get();
   }
 
   public double getMaxVelocity() {
+    if (this.maxVelocity.isEmpty()) {
+      return Double.POSITIVE_INFINITY;
+    }
     return this.maxVelocity.get();
   }
 

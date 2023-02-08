@@ -2,13 +2,13 @@ package com.seat.sim.common.remote;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.json.*;
 
 /** A serializable Remote configuration. */
 public class RemoteConfig extends Jsonable {
+  public static final String ACTIVE = "active";
   public static final String COUNT = "count";
   public static final String DYNAMIC = "dynamic";
   public static final String PROTO = "__proto__";
@@ -49,12 +49,12 @@ public class RemoteConfig extends Jsonable {
         : new RemoteProto();
     this.team = (json.hasKey(TeamColor.TEAM)) ? TeamColor.decodeType(json) : TeamColor.NONE;
     this.remoteIDs = (json.hasKey(RemoteConfig.REMOTE_IDS))
-        ? json.getJsonArray(RemoteConfig.REMOTE_IDS).toList(String.class).stream().collect(Collectors.toSet())
+        ? new HashSet<>(json.getJsonArray(RemoteConfig.REMOTE_IDS).toList(String.class))
         : new HashSet<>();
     if (this.remoteIDs.isEmpty() && json.hasKey(RemoteConfig.COUNT)) {
       this.init(json.getInt(RemoteConfig.COUNT));
     }
-    this.active = json.getBoolean(RemoteState.ACTIVE);
+    this.active = json.getBoolean(RemoteConfig.ACTIVE);
     this.dynamic = json.getBoolean(RemoteConfig.DYNAMIC);
   }
 
@@ -70,7 +70,7 @@ public class RemoteConfig extends Jsonable {
     if (this.hasRemoteIDs()) {
       json.put(RemoteConfig.REMOTE_IDS, JsonBuilder.toJsonArray(this.remoteIDs));
     }
-    json.put(RemoteState.ACTIVE, this.active);
+    json.put(RemoteConfig.ACTIVE, this.active);
     json.put(RemoteConfig.DYNAMIC, this.dynamic);
     return json;
   }

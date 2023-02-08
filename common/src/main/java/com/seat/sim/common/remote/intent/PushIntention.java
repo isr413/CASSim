@@ -9,12 +9,12 @@ public class PushIntention extends Intention {
   private Vector force;
 
   public PushIntention() {
-    this(new Vector());
+    this(Vector.ZERO);
   }
 
   public PushIntention(Vector force) {
     super(IntentionType.PUSH);
-    this.force = (force != null) ? force : new Vector();
+    this.force = (force != null) ? force : Vector.ZERO;
     if (!Double.isFinite(this.force.getMagnitude())) {
       throw new RuntimeException(
           String.format("cannot Push remote with a non-finite force `%s`", this.force.toString()));
@@ -30,7 +30,7 @@ public class PushIntention extends Intention {
     super.decode(json);
     this.force = (json.hasKey(PushIntention.FORCE))
         ? new Vector(json.getJson(PushIntention.FORCE))
-        : new Vector();
+        : Vector.ZERO;
   }
 
   @Override

@@ -109,7 +109,9 @@ public class ScenarioConfig extends Jsonable {
     this.missionLength = json.getInt(ScenarioConfig.MISSION_LENGTH);
     this.stepSize = json.getDouble(ScenarioConfig.STEP_SIZE);
     this.remoteConfigs = (json.hasKey(ScenarioConfig.REMOTE_CONFIGS))
-        ? json.getJsonArray(ScenarioConfig.REMOTE_CONFIGS).toList(Json.class).stream()
+        ? json.getJsonArray(ScenarioConfig.REMOTE_CONFIGS)
+            .toList(Json.class)
+            .stream()
             .map(config -> new RemoteConfig(config))
             .collect(Collectors.toList())
         : new ArrayList<>();
@@ -129,7 +131,8 @@ public class ScenarioConfig extends Jsonable {
       json.put(
           ScenarioConfig.REMOTE_CONFIGS,
           JsonBuilder.toJsonArray(
-              this.remoteConfigs.stream()
+              this.remoteConfigs
+                  .stream()
                   .map(config -> config.toJson())
                   .collect(Collectors.toList())));
     }

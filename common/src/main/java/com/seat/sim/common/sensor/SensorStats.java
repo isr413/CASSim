@@ -94,6 +94,9 @@ public class SensorStats extends Jsonable {
   }
 
   public double getRange() {
+    if (this.range.isEmpty()) {
+      return Double.POSITIVE_INFINITY;
+    }
     return this.range.get();
   }
 

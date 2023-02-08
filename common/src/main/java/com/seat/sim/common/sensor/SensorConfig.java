@@ -8,6 +8,7 @@ import com.seat.sim.common.json.*;
 
 /** A serializable configuration of a generic Sensor. */
 public class SensorConfig extends Jsonable {
+  public static final String ACTIVE = "active";
   public static final String COUNT = "count";
   public static final String PROTO = "__proto__";
   public static final String SENSOR_IDS = "sensor_ids";
@@ -51,7 +52,7 @@ public class SensorConfig extends Jsonable {
     if (this.sensorIDs.isEmpty() && json.hasKey(SensorConfig.COUNT)) {
       this.init(json.getInt(SensorConfig.COUNT));
     }
-    this.active = json.getBoolean(SensorState.ACTIVE);
+    this.active = json.getBoolean(SensorConfig.ACTIVE);
   }
 
   protected JsonObjectBuilder getJsonBuilder() throws JsonException {
@@ -61,7 +62,7 @@ public class SensorConfig extends Jsonable {
     if (this.hasSensors()) {
       json.put(SensorConfig.SENSOR_IDS, JsonBuilder.toJsonArray(this.sensorIDs));
     }
-    json.put(SensorState.ACTIVE, this.active);
+    json.put(SensorConfig.ACTIVE, this.active);
     return json;
   }
 
