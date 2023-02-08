@@ -73,16 +73,10 @@ public class Scenario {
     this.allRemotes = new HashMap<>();
     this.activeRemotes = new HashMap<>();
     this.dynamicRemotes = new HashMap<>();
-    int remoteCount = 0;
     for (RemoteConfig remoteConfig : this.config.getRemoteConfigs()) {
       RemoteProto remoteProto = remoteConfig.getProto();
-      Iterator<String> remoteIDs = remoteConfig.getRemoteIDs().iterator();
-      for (int i = 0; i < remoteConfig.getCount(); i++) {
-        String remoteID = (i < remoteConfig.getRemoteIDs().size()) ?
-          remoteIDs.next() :
-          String.format("%s:(%d)", remoteProto.getLabel(), remoteCount);
+      for (String remoteID : remoteConfig.getRemoteIDs()) {
         Remote remote = new Remote(this, remoteProto, remoteID, remoteConfig.getTeam(), remoteConfig.isActive());
-        remoteCount++;
         this.allRemotes.put(remoteID, remote);
         if (remoteConfig.isActive()) {
           this.activeRemotes.put(remoteID, remote);
@@ -147,10 +141,16 @@ public class Scenario {
   }
 
   public int getGridHeight() {
+    if (!this.hasGrid()) {
+      return 0;
+    }
     return this.getGrid().getHeight();
   }
 
   public int getGridWidth() {
+    if (!this.hasGrid()) {
+      return 0;
+    }
     return this.getGrid().getWidth();
   }
 
@@ -180,6 +180,10 @@ public class Scenario {
     return this.allRemotes.values();
   }
 
+  public Map<String, RemoteState> getRemoteStates() {
+    return this.getRemotes().stream().collect(Collectors.toMap(Remote::getRemoteID, Remote::getRemoteState));
+  }
+
   public Remote getRemoteWithID(String remoteID) throws SimException {
     if (!this.hasRemoteWithID(remoteID)) {
       throw new SimException(String.format("Scenario <%s> has no remote %s", this.getScenarioID(),
@@ -201,12 +205,8 @@ public class Scenario {
       this.getStepSize(),
       this.getActiveRemoteIDs(),
       this.getDynamicRemoteIDs(),
-      this.getState()
+      this.getRemoteStates()
     );
-  }
-
-  public Map<String, RemoteState> getState() {
-    return this.getRemotes().stream().collect(Collectors.toMap(Remote::getRemoteID, Remote::getRemoteState));
   }
 
   public ScenarioStatus getStatus() {
@@ -222,6 +222,9 @@ public class Scenario {
   }
 
   public int getZoneSize() {
+    if (!this.hasGrid()) {
+      return 0;
+    }
     return this.getGrid().getZoneSize();
   }
 
@@ -297,50 +300,6 @@ public class Scenario {
     this.time = time;
   }
 
-  private void updateRemotes(Map<String, IntentionSet> intentions, double stepSize) throws SimException {
-    for (Remote remote : this.getRemotes()) {
-      if (!remote.isEnabled()) {
-          continue;
-      }
-      Debugger.logger.info(String.format("Updating remote %s ...", remote.getRemoteID()));
-      Vector prevLocation = null;
-      if (this.hasGrid() && this.getGrid().isInbounds(remote.getLocation())) {
-        prevLocation = remote.getLocation();
-      }
-      if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
-        remote.update(intentions.get(remote.getRemoteID()), stepSize);
-      } else if (this.hasDynamicRemoteWithID(remote.getRemoteID())) {
-        remote.update(stepSize);
-      } else {
-        this.updatePassiveRemote(remote, stepSize);
-      }
-      if (this.hasGrid() && this.getGrid().isOutOfBounds(remote.getLocation())) {
-        if (remote.isMobile() && prevLocation != null) {
-          this.enforceBounds(remote, prevLocation);
-        }
-      }
-      if ((!remote.isActive() || remote.isDone()) && this.hasActiveRemoteWithID(remote.getRemoteID())) {
-        this.activeRemotes.remove(remote.getRemoteID());
-      } else if (remote.isActive() && !this.hasActiveRemoteWithID(remote.getRemoteID())) {
-        this.activeRemotes.put(remote.getRemoteID(), remote);
-      }
-    }
-  }
-
-  private void updatePassiveRemote(Remote remote, double stepSize) throws SimException {
-    RemoteController controller = new RemoteController(remote.getRemoteID());
-    if (this.justStarted() && remote.isActive()) {
-      controller.activateAllSensors();
-    }
-    if ((!remote.isActive() || remote.isDone())) {
-      controller.deactivateAllSensors();
-    }
-    if (this.hasGrid() && this.getGrid().isInbounds(remote.getLocation())) {
-      controller.maintainCourse();
-    }
-    remote.update(controller.getIntentions(), stepSize);
-  }
-
   public void update() throws SimException {
     this.update(null, this.config.getStepSize());
   }
@@ -365,5 +324,54 @@ public class Scenario {
     if (this.getMissionLength() <= this.time) {
       this.setStatus(ScenarioStatus.DONE);
     }
+  }
+
+  private void updateRemotes(Map<String, IntentionSet> intentions, double stepSize) throws SimException {
+    for (Remote remote : this.getRemotes()) {
+      if (!remote.isEnabled() || remote.isDone()) {
+        if (this.hasActiveRemoteWithID(remote.getRemoteID())) {
+          this.activeRemotes.remove(remote.getRemoteID());
+        }
+        continue;
+      }
+      Debugger.logger.info(String.format("Updating remote %s ...", remote.getRemoteID()));
+      Vector prevLocation = null;
+      if (this.hasGrid() && this.getGrid().isInbounds(remote.getLocation())) {
+        prevLocation = remote.getLocation();
+      }
+      if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
+        remote.update(intentions.get(remote.getRemoteID()), stepSize);
+      } else if (this.hasDynamicRemoteWithID(remote.getRemoteID())) {
+        remote.update(stepSize);
+      } else {
+        this.updatePassiveRemote(remote, stepSize);
+      }
+      if (this.hasGrid() && this.getGrid().isOutOfBounds(remote.getLocation())) {
+        if (remote.isMobile() && prevLocation != null) {
+          this.enforceBounds(remote, prevLocation);
+        } else {
+          throw new SimException(String.format("Remote `%s` has been lost out-of-bounds", remote.getLabel()));
+        }
+      }
+      if ((!remote.isActive() || remote.isDone()) && this.hasActiveRemoteWithID(remote.getRemoteID())) {
+        this.activeRemotes.remove(remote.getRemoteID());
+      } else if (remote.isActive() && !this.hasActiveRemoteWithID(remote.getRemoteID())) {
+        this.activeRemotes.put(remote.getRemoteID(), remote);
+      }
+    }
+  }
+
+  private void updatePassiveRemote(Remote remote, double stepSize) throws SimException {
+    RemoteController controller = new RemoteController(remote.getRemoteID());
+    if (this.justStarted() && remote.isActive()) {
+      controller.activateAllSensors();
+    }
+    if ((!remote.isActive() || remote.isDone())) {
+      controller.deactivateAllSensors();
+    }
+    if (this.hasGrid() && this.getGrid().isInbounds(remote.getLocation())) {
+      controller.maintainCourse();
+    }
+    remote.update(controller.getIntentions(), stepSize);
   }
 }

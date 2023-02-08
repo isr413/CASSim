@@ -44,8 +44,7 @@ public class AppServer {
       Map<String, IntentionSet> intentions = this.socket.getIntentionsBlocking();
       Debugger.logger.state("Received intention(s)");
 
-      Debugger.logger.info(String.format("Updating scenario <%s> to time=%.2f ...", scenario.getScenarioID(),
-        time));
+      Debugger.logger.info(String.format("Updating scenario <%s> to time=%.2f ...", scenario.getScenarioID(), time));
       if (scenario.getMissionLength() < time) {
         scenario.update(intentions, scenario.getMissionLength() + scenario.getStepSize() - time);
       } else {
