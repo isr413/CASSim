@@ -5,7 +5,7 @@ import java.util.Collection;
 import com.seat.sim.common.core.Application;
 import com.seat.sim.common.core.CommonException;
 import com.seat.sim.common.gui.GUIGridFrame;
-import com.seat.sim.common.net.JSONSocket;
+import com.seat.sim.common.net.JsonSocket;
 import com.seat.sim.common.remote.intent.IntentionSet;
 import com.seat.sim.common.scenario.Snapshot;
 import com.seat.sim.common.util.Debugger;
@@ -17,26 +17,26 @@ public class AppClient {
 
     private Application app;
     private long frameTime;
-    private JSONSocket socket;
+    private JsonSocket socket;
 
     public AppClient(Application app) throws CommonException {
         this.app = app;
-        this.socket = JSONSocket.Client();
+        this.socket = JsonSocket.Client();
     }
 
     public AppClient(Application app, String hostname) throws CommonException {
         this.app = app;
-        this.socket = JSONSocket.Client(hostname);
+        this.socket = JsonSocket.Client(hostname);
     }
 
     public AppClient(Application app, int port) throws CommonException {
         this.app = app;
-        this.socket = JSONSocket.Client(port);
+        this.socket = JsonSocket.Client(port);
     }
 
     public AppClient(Application app, String hostname, int port) throws CommonException {
         this.app = app;
-        this.socket = JSONSocket.Client(hostname, port);
+        this.socket = JsonSocket.Client(hostname, port);
     }
 
     public void run() throws ClientException, CommonException {
@@ -113,5 +113,4 @@ public class AppClient {
         Debugger.logger.state(String.format("Scenario <%s> done", app.getScenarioID()));
         socket.close();
     }
-
 }

@@ -1,6 +1,7 @@
 package com.seat.sim.common.core;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -13,38 +14,49 @@ import com.seat.sim.common.scenario.Snapshot;
 
 public interface Application {
 
-    Grid getGrid();
+  Optional<Grid> getGrid();
 
-    int getMissionLength();
+  int getMissionLength();
 
-    Collection<RemoteConfig> getRemoteConfigs();
+  Collection<RemoteConfig> getRemoteConfigs();
 
-    default Set<String> getRemoteIDs() {
-        return this.getRemoteConfigs().stream()
-            .map(config -> config.getRemoteIDs())
-            .flatMap(remoteIDs -> remoteIDs.stream())
-            .collect(Collectors.toSet());
+  default Set<String> getRemoteIDs() {
+    return this.getRemoteConfigs()
+        .stream()
+        .map(config -> config.getRemoteIDs())
+        .flatMap(remoteIDs -> remoteIDs.stream())
+        .collect(Collectors.toSet());
+  }
+
+  default ScenarioConfig getScenarioConfig() {
+    if (!hasGrid()) {
+      return new ScenarioConfig(
+        getScenarioID(),
+        getSeed(),
+        getMissionLength(),
+        getStepSize(),
+        getRemoteConfigs()
+      );
     }
+    return new ScenarioConfig(
+      getScenarioID(),
+      getSeed(),
+      getGrid().get(),
+      getMissionLength(),
+      getStepSize(),
+      getRemoteConfigs()
+    );
+  }
 
-    default ScenarioConfig getScenarioConfig() {
-        return new ScenarioConfig(
-            getScenarioID(),
-            getSeed(),
-            getGrid(),
-            getMissionLength(),
-            getStepSize(),
-            getRemoteConfigs()
-        );
-    }
+  String getScenarioID();
 
-    String getScenarioID();
+  default long getSeed() {
+    return new Random().nextLong();
+  }
 
-    default long getSeed() {
-        return new Random().nextLong();
-    }
+  double getStepSize();
 
-    double getStepSize();
+  boolean hasGrid();
 
-    Collection<IntentionSet> update(Snapshot snap);
-
+  Collection<IntentionSet> update(Snapshot snap);
 }
