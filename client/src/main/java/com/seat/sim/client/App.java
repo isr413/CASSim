@@ -2,7 +2,7 @@ package com.seat.sim.client;
 
 import com.seat.sim.client.core.AppClient;
 import com.seat.sim.client.core.ClientException;
-import com.seat.sim.client.sandbox.ACSOS;
+import com.seat.sim.client.sandbox.Default;
 import com.seat.sim.common.core.Application;
 import com.seat.sim.common.util.ArgsParser;
 
@@ -13,9 +13,9 @@ public class App {
   private static final String ID_ARG = "-id";
   private static final String PORT_ARG = "-p";
 
-  private static Application getApplication(String scenarioID, String[] args) throws ClientException {
-    if (scenarioID.equals("ACSOS")) {
-      return new ACSOS(args);
+  private static Application getApplication(String scenarioID, ArgsParser args) throws ClientException {
+    if (scenarioID.equals("Default")) {
+      return new Default(args);
     }
     throw new ClientException(String.format("Unrecognized application ID <%s>", scenarioID));
   }
@@ -26,7 +26,7 @@ public class App {
       throw new ClientException("No application ID has been provided");
     }
     String scenarioID = parser.getString(App.ID_ARG);
-    Application app = App.getApplication(scenarioID, args);
+    Application app = App.getApplication(scenarioID, parser);
     AppClient client;
     if (parser.hasParam(App.HOST_ARG) && parser.hasParam(App.PORT_ARG)) {
       client = new AppClient(app, parser.getString(App.HOST_ARG), parser.getInt(App.PORT_ARG));

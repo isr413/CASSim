@@ -177,8 +177,10 @@ public class JsonSocket {
   public void sendIntentions(Collection<IntentionSet> intentions) throws CommonException {
     try {
       JsonArrayBuilder json = JsonBuilder.Array();
-      for (IntentionSet intention : intentions) {
-        json.put(intention.toJson());
+      if (intentions != null && !intentions.isEmpty()) {
+        for (IntentionSet intention : intentions) {
+          json.put(intention.toJson());
+        }
       }
       this.send(json.toJson().toString());
     } catch (JsonException e) {

@@ -336,7 +336,7 @@ public class Scenario {
       }
       Debugger.logger.info(String.format("Updating remote %s ...", remote.getRemoteID()));
       Vector prevLocation = null;
-      if (this.hasGrid() && this.getGrid().isInbounds(remote.getLocation())) {
+      if (this.hasGrid() && remote.hasLocation() && this.getGrid().isInbounds(remote.getLocation())) {
         prevLocation = remote.getLocation();
       }
       if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
@@ -346,7 +346,7 @@ public class Scenario {
       } else {
         this.updatePassiveRemote(remote, stepSize);
       }
-      if (this.hasGrid() && this.getGrid().isOutOfBounds(remote.getLocation())) {
+      if (this.hasGrid() && remote.hasLocation() && this.getGrid().isOutOfBounds(remote.getLocation())) {
         if (remote.isMobile() && prevLocation != null) {
           this.enforceBounds(remote, prevLocation);
         } else {
@@ -369,7 +369,7 @@ public class Scenario {
     if ((!remote.isActive() || remote.isDone())) {
       controller.deactivateAllSensors();
     }
-    if (this.hasGrid() && this.getGrid().isInbounds(remote.getLocation())) {
+    if (this.hasGrid() && remote.hasLocation() && this.getGrid().isInbounds(remote.getLocation())) {
       controller.maintainCourse();
     }
     remote.update(controller.getIntentions(), stepSize);

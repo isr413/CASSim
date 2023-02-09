@@ -60,7 +60,7 @@ public class Snapshot extends Jsonable {
   protected void decode(JsonObject json) throws JsonException {
     this.hash = json.getString(Snapshot.HASH);
     this.scenarioID = json.getString(Snapshot.SCENARIO_ID);
-    this.status = ScenarioStatus.decode(json.getJsonObject(ScenarioStatus.STATUS));
+    this.status = ScenarioStatus.Value(json.getInt(ScenarioStatus.STATUS));
     this.time = json.getDouble(Snapshot.TIME);
     this.stepSize = json.getDouble(Snapshot.STEP_SIZE);
     this.activeRemoteIDs = (json.hasKey(Snapshot.ACTIVE_REMOTES))
