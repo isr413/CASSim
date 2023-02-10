@@ -22,11 +22,12 @@ public class Random {
   }
 
   public Vector getRandomDirection2D() {
-    return this.getRandomLocation2D(1, 1).getUnitVector();
+    return new Vector(this.getRandomPoint(-1, 1), this.getRandomPoint(-1, 1)).getUnitVector();
   }
 
   public Vector getRandomDirection3D() {
-    return this.getRandomLocation3D(1, 1, 1).getUnitVector();
+    return new Vector(this.getRandomPoint(-1, 1), this.getRandomPoint(-1, 1), this.getRandomPoint(-1, 1))
+        .getUnitVector();
   }
 
   public Vector getRandomLocation2D(int width, int height) {
@@ -51,6 +52,10 @@ public class Random {
 
   public double getRandomPoint(double x) {
     return this.rng.nextDouble() * x;
+  }
+
+  public double getRandomPoint(double start, double end) {
+    return start + (end - start) * this.rng.nextDouble();
   }
 
   public double getRandomProbability() {
