@@ -59,11 +59,11 @@ public class GUIGridFrame extends JFrame {
       panelHeight = (int) screenSize.getHeight();
     }
     this.panel = new GUIGridPanel(panelWidth, panelHeight, gridWidth, gridHeight, zoneSize);
-    add(this.panel);
-    setTitle(title);
-    setSize(panelWidth, panelHeight);
-    setLocationRelativeTo(null);
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    this.add(this.panel);
+    this.setTitle(title);
+    this.setSize(panelWidth, panelHeight);
+    this.setLocationRelativeTo(null);
+    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
   }
 
   public void displaySnap(Snapshot snap) {
@@ -157,7 +157,7 @@ public class GUIGridFrame extends JFrame {
     }
 
     public int getCenterY() {
-      return (int) Math.round(this.height / 2.0);
+      return (int) Math.round(this.height / 2.0) - 60;
     }
 
     public int getHeight() {

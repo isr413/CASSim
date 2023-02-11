@@ -3,6 +3,7 @@ package com.seat.sim.client;
 import com.seat.sim.client.core.AppClient;
 import com.seat.sim.client.core.ClientException;
 import com.seat.sim.client.sandbox.Default;
+import com.seat.sim.client.sandbox.RandomWalk;
 import com.seat.sim.common.core.Application;
 import com.seat.sim.common.util.ArgsParser;
 
@@ -16,6 +17,9 @@ public class App {
   private static Application getApplication(String scenarioID, ArgsParser args) throws ClientException {
     if (scenarioID.equals("Default")) {
       return new Default(args);
+    }
+    if (scenarioID.equals("RandomWalk")) {
+      return new RandomWalk(args);
     }
     throw new ClientException(String.format("Unrecognized application ID <%s>", scenarioID));
   }

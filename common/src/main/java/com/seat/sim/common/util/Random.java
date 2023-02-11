@@ -16,11 +16,6 @@ public class Random {
     this.rng = new java.util.Random(seed);
   }
 
-  public boolean equals(Random rng) {
-    if (rng == null) return false;
-    return this.seed == rng.seed;
-  }
-
   public Vector getRandomDirection2D() {
     return new Vector(this.getRandomPoint(-1, 1), this.getRandomPoint(-1, 1)).getUnitVector();
   }
