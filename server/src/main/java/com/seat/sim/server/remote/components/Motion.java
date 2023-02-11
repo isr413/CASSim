@@ -76,7 +76,7 @@ public class Motion {
     }
     this.velocity = Vector.add(this.velocity, force.scale(stepSize));
     if (this.hasMaxVelocity()) {
-      this.velocity.squeeze(this.getMaxVelocity());
+      this.velocity = this.velocity.squeeze(this.getMaxVelocity());
     }
   }
 
