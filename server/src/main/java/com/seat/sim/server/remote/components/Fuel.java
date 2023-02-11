@@ -50,7 +50,7 @@ public class Fuel {
     if (!this.hasFuelUsage()) {
       return;
     }
-    this.updateFuelBy(this.getFuelUsage().getX(), stepSize);
+    this.updateFuelBy(-this.getFuelUsage().getX(), stepSize);
   }
 
   public void updateFuelBy(double fuelUsage, double stepSize) throws SimException {

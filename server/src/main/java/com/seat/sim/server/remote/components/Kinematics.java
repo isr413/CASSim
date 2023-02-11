@@ -224,9 +224,9 @@ public class Kinematics {
     }
     if (this.hasFuel()) {
       if (this.isMobile()) {
-        this.getFuel().updateFuelBy(this.getRemoteFuelUsage(acceleration), stepSize);
+        this.getFuel().updateFuelBy(-this.getRemoteFuelUsage(acceleration), stepSize);
       } else {
-        this.getFuel().updateFuelBy(this.getRemoteFuelUsage(), stepSize);
+        this.getFuel().updateFuelBy(-this.getRemoteFuelUsage(), stepSize);
       }
     }
   }

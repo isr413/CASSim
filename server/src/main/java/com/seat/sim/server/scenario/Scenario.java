@@ -3,7 +3,6 @@ package com.seat.sim.server.scenario;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -91,7 +90,7 @@ public class Scenario {
           if (remote.hasMaxVelocity()) {
             remote.setVelocityTo(this.rng.getRandomSpeed2D(remote.getMaxVelocity()));
           } else {
-            remote.setVelocityTo(Vector.scale(this.rng.getRandomDirection2D(), this.getZoneSize()));
+            remote.setVelocityTo(this.rng.getRandomDirection2D().scale(this.getZoneSize()));
           }
         }
       }

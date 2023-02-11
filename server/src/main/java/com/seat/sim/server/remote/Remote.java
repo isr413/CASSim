@@ -59,6 +59,13 @@ public class Remote {
     return this.getVelocity().getUnitVector();
   }
 
+  public double getFuelAmount() {
+    if (this.kinematics.isEmpty()) {
+      return 0.;
+    }
+    return this.getKinematics().getFuelAmount();
+  }
+
   public Kinematics getKinematics() {
     return this.kinematics.get();
   }
@@ -87,16 +94,13 @@ public class Remote {
   }
 
   public RemoteState getRemoteState() {
-    if (this.hasKinematics() && this.getKinematics().hasFuel()) {
+    if (this.hasFuel()) {
       return new RemoteState(
           this.getRemoteID(),
           this.getTags(),
           this.getTeam(),
-          (this.hasKinematics() && this.getKinematics().hasLocation()) ? this.getKinematics().getLocation()
-              : null,
-          (this.hasKinematics() && this.getKinematics().isMobile())
-              ? this.getKinematics().getVelocity()
-              : null,
+          (this.hasLocation()) ? this.getKinematics().getLocation() : null,
+          (this.isMobile()) ? this.getVelocity() : null,
           this.getKinematics().getFuelAmount(),
           (this.hasSensors()) ? this.getSensorController().getSensorStates() : null,
           this.isActive());
@@ -105,11 +109,8 @@ public class Remote {
         this.getRemoteID(),
         this.getTags(),
         this.getTeam(),
-        (this.hasKinematics() && this.getKinematics().hasLocation()) ? this.getKinematics().getLocation()
-            : null,
-        (this.hasKinematics() && this.getKinematics().isMobile())
-            ? this.getKinematics().getVelocity()
-            : null,
+        (this.hasLocation()) ? this.getKinematics().getLocation() : null,
+        (this.isMobile()) ? this.getVelocity() : null,
         (this.hasSensors()) ? this.getSensorController().getSensorStates() : null,
         this.isActive());
   }
@@ -135,6 +136,10 @@ public class Remote {
       return Vector.ZERO;
     }
     return this.getKinematics().getVelocity();
+  }
+
+  public boolean hasFuel() {
+    return this.hasKinematics() && this.getKinematics().hasFuel();
   }
 
   public boolean hasKinematics() {
@@ -186,7 +191,7 @@ public class Remote {
   }
 
   public boolean isEnabled() {
-    return !this.hasKinematics() || !this.getKinematics().hasFuel() || !this.getKinematics().isFuelEmpty();
+    return !this.hasFuel() || !this.getKinematics().isFuelEmpty();
   }
 
   public boolean isMobile() {
@@ -265,7 +270,7 @@ public class Remote {
           }
         }
       }
-      this.getKinematics().updateFuelBy(this.getSensorController().getSensorFuelUsage(), stepSize);
+      this.getKinematics().updateFuelBy(-this.getSensorController().getSensorFuelUsage(), stepSize);
     }
     if (!this.isActive() || !this.isEnabled() || this.isDone()) {
       return;
@@ -273,7 +278,7 @@ public class Remote {
     if (!this.hasKinematics() || !this.getKinematics().hasLocation()) {
       return;
     }
-    if (intentions == null || !intentions.hasIntentions() || !this.getKinematics().isMobile()) {
+    if (intentions == null || !intentions.hasIntentions() || !this.isMobile()) {
       this.getKinematics().update(stepSize);
       return;
     }

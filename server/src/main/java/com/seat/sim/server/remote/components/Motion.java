@@ -43,11 +43,11 @@ public class Motion {
   }
 
   public boolean isInMotion() {
-    return this.getSpeed() > 0;
+    return this.getSpeed() > 0.;
   }
 
   public boolean isMobile() {
-    return this.proto.isMobile();
+    return this.proto.isMobile() || this.getSpeed() > 0.;
   }
 
   public void setVelocityTo(Vector velocity) {
