@@ -101,7 +101,7 @@ public class RemoteState extends Jsonable {
       json.put(RemoteState.VELOCITY, this.getVelocity().toJson());
     }
     if (this.hasFuel()) {
-      json.put(RemoteState.FUEL, this.getFuel());
+      json.put(RemoteState.FUEL, this.getFuelAmount());
     }
     json.put(RemoteState.ACTIVE, this.active);
     if (this.hasSensors()) {
@@ -115,7 +115,10 @@ public class RemoteState extends Jsonable {
     return json;
   }
 
-  public double getFuel() {
+  public double getFuelAmount() {
+    if (this.fuel.isEmpty()) {
+      return 0.;
+    }
     return this.fuel.get();
   }
 
@@ -158,6 +161,9 @@ public class RemoteState extends Jsonable {
   }
 
   public double getSpeed() {
+    if (this.velocity.isEmpty()) {
+      return 0.;
+    }
     return this.getVelocity().getMagnitude();
   }
 
@@ -170,6 +176,9 @@ public class RemoteState extends Jsonable {
   }
 
   public Vector getVelocity() {
+    if (this.velocity.isEmpty()) {
+      return Vector.ZERO;
+    }
     return this.velocity.get();
   }
 
@@ -242,7 +251,7 @@ public class RemoteState extends Jsonable {
   }
 
   public boolean isEnabled() {
-    return !this.hasFuel() || this.getFuel() > 0;
+    return !this.hasFuel() || this.getFuelAmount() > 0;
   }
 
   public boolean isInMotion() {

@@ -65,7 +65,7 @@ public class FuelProto extends Jsonable {
   }
 
   public Vector getFuelUsage() {
-    if (!this.hasFuelUsage()) {
+    if (this.fuelUsage.isEmpty()) {
       return Vector.ZERO;
     }
     return this.fuelUsage.get();
