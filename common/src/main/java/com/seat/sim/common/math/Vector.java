@@ -7,7 +7,7 @@ import com.seat.sim.common.json.*;
  * space.
  */
 public class Vector extends Jsonable {
-  public static final double PRECISION = 1_000_000.0;
+  public static final double PRECISION = 0.00001;
 
   /** A basis vectors for vectors in 3D space. */
   public static final Vector BASIS_VECTOR = new Vector(1, 1, 1);
@@ -147,7 +147,7 @@ public class Vector extends Jsonable {
 
   /** Returns {@code true} if the two vectors are within precision of each other. */
   public static boolean near(double d1, double d2) {
-    return Math.round((d1 - d2) * Vector.PRECISION) / Vector.PRECISION == 0;
+    return Math.abs(d1 - d2) < Vector.PRECISION;
   }
   
   /** Returns {@code true} if the two vectors are within precision of each other. */
@@ -220,9 +220,9 @@ public class Vector extends Jsonable {
 
   /** Constructs a 3D vector with the provided components. */
   public Vector(double x, double y, double z) {
-    this.x = (Double.isFinite(x)) ? Math.round(x * Vector.PRECISION) / Vector.PRECISION : x;
-    this.y = (Double.isFinite(y)) ? Math.round(y * Vector.PRECISION) / Vector.PRECISION : y;
-    this.z = (Double.isFinite(z)) ? Math.round(z * Vector.PRECISION) / Vector.PRECISION : z;
+    this.x = x;
+    this.y = y;
+    this.z = z;
   }
 
   /** Constructs a copy of the provided vector. */
