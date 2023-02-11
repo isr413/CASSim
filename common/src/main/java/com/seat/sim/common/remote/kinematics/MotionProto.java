@@ -95,7 +95,7 @@ public class MotionProto extends Jsonable {
   }
 
   public boolean hasInitialVelocity() {
-    return Double.isFinite(this.getInitialSpeed()) && this.getInitialSpeed() > 0;
+    return Double.isFinite(this.getInitialSpeed()) && this.getInitialSpeed() > 0.;
   }
 
   public boolean hasMaxAcceleration() {
@@ -107,8 +107,8 @@ public class MotionProto extends Jsonable {
   }
 
   public boolean isMobile() {
-    return (!this.hasMaxVelocity() || this.getMaxVelocity() > 0)
-        && (this.hasInitialVelocity() || !this.hasMaxAcceleration() || this.getMaxAcceleration() > 0);
+    return (!this.hasMaxVelocity() || this.getMaxVelocity() > 0.)
+        && (this.hasInitialVelocity() || !this.hasMaxAcceleration() || this.getMaxAcceleration() > 0.);
   }
 
   public Json toJson() throws JsonException {

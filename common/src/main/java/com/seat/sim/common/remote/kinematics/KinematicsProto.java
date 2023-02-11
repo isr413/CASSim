@@ -80,9 +80,9 @@ public class KinematicsProto extends Jsonable {
   /** Override to change fuel usage formula. */
   public double getRemoteFuelUsage(Vector acceleration) {
     if (!this.hasFuelProto() || !this.getFuelProto().hasFuelUsage()) {
-      return 0;
+      return 0.;
     }
-    if (acceleration == null || acceleration.getMagnitude() == 0) {
+    if (acceleration == null || acceleration.getMagnitude() == 0.) {
       return this.getFuelProto().getFuelUsage().getX();
     }
     return this.getFuelProto().getFuelUsage().getX()

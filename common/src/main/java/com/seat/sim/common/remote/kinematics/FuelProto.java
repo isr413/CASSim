@@ -43,7 +43,7 @@ public class FuelProto extends Jsonable {
 
   @Override
   protected void decode(JsonObject json) throws JsonException {
-    this.initialFuel = (json.hasKey(FuelProto.INITIAL_FUEL)) ? json.getDouble(FuelProto.INITIAL_FUEL) : 0;
+    this.initialFuel = (json.hasKey(FuelProto.INITIAL_FUEL)) ? json.getDouble(FuelProto.INITIAL_FUEL) : 0.;
     this.maxFuel = (json.hasKey(FuelProto.MAX_FUEL)) ? Optional.of(json.getDouble(FuelProto.MAX_FUEL))
         : Optional.empty();
     this.fuelUsage = (json.hasKey(FuelProto.FUEL_USAGE)) ? Optional.of(new Vector(json.getJson(FuelProto.FUEL_USAGE)))
@@ -83,11 +83,11 @@ public class FuelProto extends Jsonable {
   }
 
   public boolean hasFuelUsage() {
-    return this.fuelUsage.isPresent() && this.getFuelUsage().getMagnitude() > 0;
+    return this.fuelUsage.isPresent() && this.getFuelUsage().getMagnitude() > 0.;
   }
 
   public boolean hasInitialFuel() {
-    return Double.isFinite(this.initialFuel) && this.initialFuel > 0;
+    return Double.isFinite(this.initialFuel) && this.initialFuel > 0.;
   }
 
   public boolean hasMaxFuel() {

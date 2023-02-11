@@ -39,7 +39,7 @@ public class RemoteState extends Jsonable {
 
   public RemoteState(String remoteID, Set<String> tags, TeamColor team, Vector location, Vector velocity,
       double fuel, Collection<SensorState> sensorStates, boolean active) {
-    this(remoteID, tags, team, location, null, Optional.of(fuel), sensorStates, active);
+    this(remoteID, tags, team, location, velocity, Optional.of(fuel), sensorStates, active);
   }
 
   private RemoteState(String remoteID, Set<String> tags, TeamColor team, Vector location, Vector velocity,
@@ -251,11 +251,11 @@ public class RemoteState extends Jsonable {
   }
 
   public boolean isEnabled() {
-    return !this.hasFuel() || this.getFuelAmount() > 0;
+    return !this.hasFuel() || this.getFuelAmount() > 0.;
   }
 
   public boolean isInMotion() {
-    return this.isMobile() && this.getSpeed() > 0;
+    return this.isMobile() && this.getSpeed() > 0.;
   }
 
   public boolean isMobile() {
