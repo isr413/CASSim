@@ -1,5 +1,7 @@
 package com.seat.sim.common.math;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.Optional;
 
 import com.seat.sim.common.core.CommonException;
@@ -11,11 +13,6 @@ public class Grid extends Jsonable {
   public static final String GRID_WIDTH = "grid_width";
   public static final String ZONES = "zones";
   public static final String ZONE_SIZE = "zone_size";
-
-  public static Grid fromBitmap() {
-    // TODO: implement
-    throw new UnsupportedOperationException("Not yet implemented");
-  }
 
   private int height; // number of zones in each column of the grid
   private boolean isCustomGrid;
@@ -42,6 +39,27 @@ public class Grid extends Jsonable {
           this.zones[y][x] = new Zone(
               new Vector(this.zoneSize * (x + 0.5), this.zoneSize * (y + 0.5)),
               this.zoneSize);
+        }
+      }
+    }
+  }
+
+  public Grid(BufferedImage img) {
+    this(img, 1);
+  }
+
+  public Grid(BufferedImage img, int zoneSize) {
+    this.width = img.getWidth();
+    this.height= img.getHeight();
+    this.zoneSize = zoneSize;
+    this.isCustomGrid = true;
+    this.zones = new Zone[img.getHeight()][img.getWidth()];
+    for (int y = 0; y < img.getHeight(); y++) {
+      for (int x = 0; x < img.getWidth(); x++) {
+        if (img.getRGB(x, y) == Color.BLACK.getRGB()) {
+          this.zones[y][x] = new Zone(ZoneType.BLOCKED, new Vector(x, y), zoneSize);
+        } else {
+          this.zones[y][x] = new Zone(new Vector(x, y), zoneSize);
         }
       }
     }
@@ -99,44 +117,15 @@ public class Grid extends Jsonable {
     return json;
   }
 
-  public Optional<Vector> getBoundsCollisionLocation(Vector location, Vector nextLocation) {
-    if (this.isInbounds(nextLocation)) {
-      return Optional.empty();
+  public Optional<Zone> checkZoneAtLocation(Vector location) {
+    return this.checkZoneAtLocation(location.getX(), location.getY());
+  }
+
+  public Optional<Zone> checkZoneAtLocation(double x, double y) {
+    if (this.hasZoneAtLocation(x, y)) {
+      return Optional.of(this.getZoneAtLocation(x, y));
     }
-    double slope = Vector.slope(location, nextLocation);
-    Vector topLeft = new Vector(0, 0);
-    Vector topRight = new Vector(this.getWidth(), 0);
-    Vector botRight = new Vector(this.getWidth(), this.getHeight());
-    Vector botLeft = new Vector(0, this.getHeight());
-    if (nextLocation.getX() < 0 && nextLocation.getY() < 0
-        && Vector.near(Vector.slope(location, topLeft), slope)) {
-      return Optional.of(topLeft);
-    } else if (this.getWidth() < nextLocation.getX() && nextLocation.getY() < 0
-        && Vector.near(Vector.slope(location, topRight), slope)) {
-      return Optional.of(topRight);
-    } else if (this.getWidth() < nextLocation.getX() && this.getHeight() < nextLocation.getY()
-        && Vector.near(Vector.slope(location, botRight), slope)) {
-      return Optional.of(botRight);
-    } else if (nextLocation.getX() < 0 && this.getHeight() < nextLocation.getY()
-        && Vector.near(Vector.slope(location, botLeft), slope)) {
-      return Optional.of(botLeft);
-    } else if (nextLocation.getY() < 0
-        && (Math.abs(Vector.slope(location, topLeft)) < Math.abs(slope)
-            || Math.abs(Vector.slope(location, topRight)) < Math.abs(slope))) {
-      double deltaX = (Double.isFinite(slope) && slope != 0) ? (0 - location.getY()) / slope : 0;
-      return Optional.of(new Vector(location.getX() + deltaX, 0));
-    } else if (this.getHeight() < nextLocation.getY()
-        && (Math.abs(Vector.slope(location, botLeft)) < Math.abs(slope)
-            || Math.abs(Vector.slope(location, botRight)) < Math.abs(slope))) {
-      double deltaX = (Double.isFinite(slope) && slope != 0) ? (this.getHeight() - location.getY()) / slope : 0;
-      return Optional.of(new Vector(location.getX() + deltaX, this.getHeight()));
-    } else if (this.getWidth() < nextLocation.getX()) {
-      double deltaY = (Double.isFinite(slope)) ? (this.getWidth() - location.getX()) * slope : 0;
-      return Optional.of(new Vector(this.getWidth(), location.getY() + deltaY));
-    } else {
-      double deltaY = (Double.isFinite(slope)) ? (0 - location.getX()) * slope : 0;
-      return Optional.of(new Vector(0, location.getY() + deltaY));
-    }
+    return Optional.empty();
   }
 
   public int getHeight() {
@@ -149,29 +138,6 @@ public class Grid extends Jsonable {
 
   public String getLabel() {
     return String.format("<g: (%d, %d)>", this.width, this.height);
-  }
-
-  public Optional<Vector> getLocationAfterBounce(Vector location, Vector nextLocation) {
-    Optional<Vector> optional = this.getBoundsCollisionLocation(location, nextLocation);
-    if (optional.isEmpty()) {
-      return Optional.empty();
-    }
-    Vector boundsCollision = optional.get();
-    double deltaX = nextLocation.getX() - boundsCollision.getX();
-    double deltaY = nextLocation.getY() - boundsCollision.getY();
-    Vector locationAfter = null;
-    if ((boundsCollision.getX() == 0 || boundsCollision.getX() == this.getWidth()) &&
-        (boundsCollision.getY() == 0 || boundsCollision.getY() == this.getHeight())) {
-      locationAfter = new Vector(boundsCollision.getX() - deltaX, boundsCollision.getY() - deltaY);
-    } else if (boundsCollision.getY() == 0 || boundsCollision.getY() == this.getHeight()) {
-      locationAfter = new Vector(boundsCollision.getX() + deltaX, boundsCollision.getY() - deltaY);
-    } else {
-      locationAfter = new Vector(boundsCollision.getX() - deltaX, boundsCollision.getY() + deltaY);
-    }
-    if (!this.isInbounds(locationAfter)) {
-      return this.getLocationAfterBounce(boundsCollision, locationAfter);
-    }
-    return Optional.of(locationAfter);
   }
 
   public int getWidth() {
@@ -224,13 +190,16 @@ public class Grid extends Jsonable {
     return this.zoneSize;
   }
 
-  public boolean isInbounds(Vector location) {
-    return 0 <= location.getX() && location.getX() <= this.getWidth() && 0 <= location.getY() &&
-        location.getY() <= this.getHeight();
+  public boolean hasZoneAtLocation(Vector location) {
+    return this.hasZoneAtLocation(location.getX(), location.getY());
   }
 
-  public boolean isOutOfBounds(Vector location) {
-    return !this.isInbounds(location);
+  public boolean hasZoneAtLocation(double x, double y) {
+    return 0 <= x && x < this.getWidth() && 0 <= y && y < this.getHeight();
+  }
+
+  public boolean hasZones() {
+    return this.isCustomGrid;
   }
 
   public Json toJson() throws JsonException {

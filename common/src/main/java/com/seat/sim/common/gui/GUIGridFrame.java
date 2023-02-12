@@ -13,52 +13,37 @@ import javax.swing.JPanel;
 
 import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.math.Grid;
+import com.seat.sim.common.math.ZoneType;
 import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.scenario.Snapshot;
 
 public class GUIGridFrame extends JFrame {
 
-  protected static final int DEFAULT_PANEL_WIDTH = 1280;
-  protected static final int DEFAULT_PANEL_HEIGHT = 720;
-  protected static final String DEFAULT_TITLE = "App";
+  private static final int DEFAULT_PANEL_WIDTH = 1280;
+  private static final int DEFAULT_PANEL_HEIGHT = 720;
+  private static final String DEFAULT_TITLE = "CASSim";
 
   private GUIGridPanel panel;
 
   public GUIGridFrame(Grid grid) {
-    this(grid.getWidth(), grid.getHeight(), grid.getZoneSize());
-  }
-
-  public GUIGridFrame(int gridWidth, int gridHeight, int zoneSize) {
-    this(GUIGridFrame.DEFAULT_TITLE, gridWidth, gridHeight, zoneSize);
+    this(GUIGridFrame.DEFAULT_TITLE, grid);
   }
 
   public GUIGridFrame(String title, Grid grid) {
-    this(title, grid.getWidth(), grid.getHeight(), grid.getZoneSize());
-  }
-
-  public GUIGridFrame(String title, int gridWidth, int gridHeight, int zoneSize) {
-    this(title, GUIGridFrame.DEFAULT_PANEL_WIDTH, GUIGridFrame.DEFAULT_PANEL_HEIGHT, gridWidth, gridHeight, zoneSize);
+    this(title, GUIGridFrame.DEFAULT_PANEL_WIDTH, GUIGridFrame.DEFAULT_PANEL_HEIGHT, grid);
   }
 
   public GUIGridFrame(int panelWidth, int panelHeight, Grid grid) {
-    this(panelWidth, panelHeight, grid.getWidth(), grid.getHeight(), grid.getZoneSize());
-  }
-
-  public GUIGridFrame(int panelWidth, int panelHeight, int gridWidth, int gridHeight, int zoneSize) {
-    this(GUIGridFrame.DEFAULT_TITLE, panelWidth, panelHeight, gridWidth, gridHeight, zoneSize);
+    this(GUIGridFrame.DEFAULT_TITLE, panelWidth, panelHeight, grid);
   }
 
   public GUIGridFrame(String title, int panelWidth, int panelHeight, Grid grid) {
-    this(title, panelWidth, panelHeight, grid.getWidth(), grid.getHeight(), grid.getZoneSize());
-  }
-
-  public GUIGridFrame(String title, int panelWidth, int panelHeight, int gridWidth, int gridHeight, int zoneSize) {
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     if (screenSize.getWidth() < panelWidth || screenSize.getHeight() < panelHeight) {
       panelWidth = (int) screenSize.getWidth();
       panelHeight = (int) screenSize.getHeight();
     }
-    this.panel = new GUIGridPanel(panelWidth, panelHeight, gridWidth, gridHeight, zoneSize);
+    this.panel = new GUIGridPanel(panelWidth, panelHeight, grid);
     this.add(this.panel);
     this.setTitle(title);
     this.setSize(panelWidth, panelHeight);
@@ -83,31 +68,69 @@ public class GUIGridFrame extends JFrame {
 
   static class GUIGridPanel extends JPanel implements ActionListener {
 
-    protected static final Color DEFAULT_GRID_COLOR = Color.LIGHT_GRAY;
-    protected static final Color DEFAULT_MAP_BOUNDS_COLOR = Color.DARK_GRAY;
-    protected static final int DEFAULT_POINT_SIZE = 4;
+    private static final Color DEFAULT_GRID_COLOR = Color.DARK_GRAY;
+    private static final Color DEFAULT_GRID_LINES_COLOR = Color.LIGHT_GRAY;
+    private static final int DEFAULT_POINT_SIZE = 4;
 
-    private int gridHeight;
-    private int gridWidth;
+    private Grid grid;
     private int height;
     private ArrayList<Point> points;
     private int width;
-    private int zoneSize;
 
-    public GUIGridPanel(int width, int height, int gridWidth, int gridHeight, int zoneSize) {
+    public GUIGridPanel(int width, int height, Grid grid) {
       this.width = width;
       this.height = height;
-      this.gridWidth = gridWidth;
-      this.gridHeight = gridHeight;
-      this.zoneSize = zoneSize;
+      this.grid = grid;
       this.points = new ArrayList<>();
     }
 
     private void drawDisplay(Graphics g) {
       Graphics2D g2d = (Graphics2D) g;
-      this.drawGridLines(g2d);
-      this.drawGridBounds(g2d);
+      this.drawGrid(g2d);
       this.drawPoints(g2d);
+    }
+
+    private void drawGrid(Graphics2D g2d) {
+      this.drawGridBackground(g2d);
+      this.drawGridLines(g2d);
+    }
+
+    private void drawGridBackground(Graphics2D g2d) {
+      g2d.setPaint(GUIGridPanel.DEFAULT_GRID_COLOR);
+      g2d.drawRect(this.getGridBoundsX(), this.getGridBoundsY(), this.grid.getWidth(), this.grid.getHeight());
+      if (!this.grid.hasZones()) {
+        return;
+      }
+      for (int y = 0; y < this.grid.getHeightInZones(); y++) {
+        for (int x = 0; x < this.grid.getWidthInZones(); x++) {
+          if (!this.grid.getZone(y, x).hasZoneType(ZoneType.BLOCKED)) {
+            continue;
+          }
+          g2d.drawRect(
+                this.getGridBoundsX() + x * this.grid.getZoneSize(),
+                this.getGridBoundsY() + y * this.grid.getZoneSize(),
+                this.grid.getZoneSize(),
+                this.grid.getZoneSize()
+              );
+        }
+      }
+    }
+
+    private void drawGridLines(Graphics2D g2d) {
+      if (this.grid.getZoneSize() < GUIGridPanel.DEFAULT_POINT_SIZE + 4) {
+        return;
+      }
+      g2d.setPaint(GUIGridPanel.DEFAULT_GRID_LINES_COLOR);
+      for (int i = this.getGridBoundsX() + this.grid.getZoneSize();
+           i < this.getGridBoundsX() + this.grid.getWidth();
+           i += this.grid.getZoneSize()) {
+        g2d.drawLine(i, this.getGridBoundsY(), i, this.getGridBoundsY() + this.grid.getHeight());
+      }
+      for (int j = this.getGridBoundsY() + this.grid.getZoneSize();
+           j < this.getGridBoundsY() + this.grid.getHeight();
+           j += this.grid.getZoneSize()) {
+        g2d.drawLine(this.getGridBoundsX(), j, this.getGridBoundsX() + this.grid.getWidth(), j);
+      }
     }
 
     private void drawPoints(Graphics2D g2d) {
@@ -122,29 +145,12 @@ public class GUIGridFrame extends JFrame {
       }
     }
 
-    private void drawGridLines(Graphics2D g2d) {
-      g2d.setPaint(GUIGridPanel.DEFAULT_GRID_COLOR);
-      for (int i = this.getGridBoundsX() + this.zoneSize; i < this.getGridBoundsX() + this.gridWidth;
-          i += this.zoneSize) {
-        g2d.drawLine(i, this.getGridBoundsY(), i, this.getGridBoundsY() + this.gridHeight);
-      }
-      for (int j = this.getGridBoundsY() + this.zoneSize; j < this.getGridBoundsY() + this.gridHeight;
-          j += this.zoneSize) {
-        g2d.drawLine(this.getGridBoundsX(), j, this.getGridBoundsX() + this.gridWidth, j);
-      }
-    }
-
-    private void drawGridBounds(Graphics2D g2d) {
-      g2d.setPaint(GUIGridPanel.DEFAULT_MAP_BOUNDS_COLOR);
-      g2d.drawRect(this.getGridBoundsX(), this.getGridBoundsY(), this.gridWidth, this.gridHeight);
-    }
-
     private int getGridBoundsX() {
-      return this.getCenterX() - (int) Math.round(this.gridWidth / 2.0);
+      return this.getCenterX() - (int) Math.round(this.grid.getWidth() / 2.0);
     }
 
     private int getGridBoundsY() {
-      return this.getCenterY() - (int) Math.round(this.gridHeight / 2.0);
+      return this.getCenterY() - (int) Math.round(this.grid.getHeight() / 2.0);
     }
 
     @Override
@@ -210,6 +216,5 @@ public class GUIGridFrame extends JFrame {
       this(x, y);
       this.color = color;
     }
-
   }
 }
