@@ -33,6 +33,13 @@ public abstract class Intention extends Jsonable {
     return String.format("i:%s", this.intentType.getLabel());
   }
 
+  public boolean hasIntentionType(IntentionType intentType) {
+    if (intentType == null || this.intentType == null) {
+      return this.intentType == intentType;
+    }
+    return this.intentType.equals(intentType);
+  }
+
   public Json toJson() throws JsonException {
     return this.getJsonBuilder().toJson();
   }
