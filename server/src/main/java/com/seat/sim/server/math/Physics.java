@@ -4,11 +4,39 @@ import java.util.Optional;
 
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Vector;
+import com.seat.sim.common.math.Zone;
+import com.seat.sim.common.math.ZoneType;
 
 public class Physics {
 
+  private static Vector getBotRightCorner(Grid grid) {
+    return new Vector(grid.getWidth(), grid.getHeight());
+  }
+
+  private static Vector getBotRightCorner(Zone zone) {
+    return new Vector(
+          zone.getLocation().getX() + zone.getSize() / 2,
+          zone.getLocation().getY() + zone.getSize() / 2
+        );
+  }
+
+  private static Vector getTopLeftCorner(Grid grid) {
+    return Vector.ZERO;
+  }
+
+  private static Vector getTopLeftCorner(Zone zone) {
+    return new Vector(
+          zone.getLocation().getX() - zone.getSize() / 2,
+          zone.getLocation().getY() - zone.getSize() / 2
+        );
+  }
+
   public static Optional<Vector> getBounce(Vector tail, Vector tip, Grid grid) {
-    return Physics.getBounce(tail, tip, Vector.ZERO, new Vector(grid.getWidth(), grid.getHeight()));
+    return Physics.getBounce(tail, tip, Physics.getTopLeftCorner(grid), Physics.getBotRightCorner(grid));
+  }
+
+  public static Optional<Vector> getBounce(Vector tail, Vector tip, Zone zone) {
+    return Physics.getBounce(tail, tip, Physics.getTopLeftCorner(zone), Physics.getBotRightCorner(zone));
   }
 
   public static Optional<Vector> getBounce(Vector tail, Vector tip, Vector topLeft, Vector botRight) {
@@ -28,16 +56,16 @@ public class Physics {
   }
 
   public static Optional<Vector> getBoundaryCollision(Vector tail, Vector tip, Grid grid) {
-    return Physics.getBoundaryCollision(tail, tip, Vector.ZERO, new Vector(grid.getWidth(), grid.getHeight()));
+    return Physics.getBoundaryCollision(tail, tip, Physics.getTopLeftCorner(grid), Physics.getBotRightCorner(grid));
+  }
+
+  public static Optional<Vector> getBoundaryCollision(Vector tail, Vector tip, Zone zone) {
+    return Physics.getBoundaryCollision(tail, tip, Physics.getTopLeftCorner(zone), Physics.getBotRightCorner(zone));
   }
 
   public static Optional<Vector> getBoundaryCollision(Vector tail, Vector tip, Vector topLeft, Vector botRight) {
     if (Physics.isInbounds(tip, topLeft, botRight)) {
       return Optional.empty();
-    }
-    if (tail.getX() == topLeft.getX() || tail.getX() == botRight.getX() ||
-        tail.getY() == topLeft.getY() || tail.getY() == botRight.getY()) {
-      return Optional.of(tail);
     }
     if (tip.getX() == topLeft.getX() || tip.getX() == botRight.getX() ||
         tip.getY() == topLeft.getY() || tip.getY() == botRight.getY()) {
@@ -101,8 +129,93 @@ public class Physics {
             : -1;
   }
 
+  public static Optional<Vector> getRayTrace(Vector tail, Vector tip, Grid grid) {
+    if (!grid.hasZoneAtLocation(tail)) {
+      return Optional.empty();
+    }
+    if (grid.hasZoneAtLocation(tip) && grid.getZoneAtLocation(tail) == grid.getZoneAtLocation(tip)) {
+      return Optional.empty();
+    }
+    Vector ray = tail;
+    Optional<Zone> zone = Optional.of(grid.getZoneAtLocation(ray));
+    while (zone.isPresent() && Vector.dist(tail, ray) < Vector.dist(tail, tip)) {
+      Optional<Vector> coll = Physics.getBoundaryCollision(ray, tip, zone.get());
+      if (coll.isEmpty()) {
+        break;
+      }
+      ray = coll.get();
+      double size = zone.get().getSize();
+      double cx = zone.get().getLocation().getX(), cy = zone.get().getLocation().getY();
+      double x = cx - size / 2, y = cy - size / 2;
+      if (coll.get().getX() == x && coll.get().getY() == y) {
+        if (grid.hasZoneAtLocation(cx - size, cy) &&
+            grid.getZoneAtLocation(cx - size, cy).hasZoneType(ZoneType.BLOCKED)) {
+          return coll;
+        } else if (grid.hasZoneAtLocation(cx, cy - size) &&
+            grid.getZoneAtLocation(cx, cy - size).hasZoneType(ZoneType.BLOCKED)) {
+          return coll;
+        }
+        zone = grid.checkZoneAtLocation(cx - size, cy - size);
+      } else if (coll.get().getX() == x + size && coll.get().getY() == y) {
+        if (grid.hasZoneAtLocation(cx + size, cy) &&
+            grid.getZoneAtLocation(cx + size, cy).hasZoneType(ZoneType.BLOCKED)) {
+          return coll;
+        } else if (grid.hasZoneAtLocation(cx, cy - size) &&
+            grid.getZoneAtLocation(cx, cy - size).hasZoneType(ZoneType.BLOCKED)) {
+          return coll;
+        }
+        zone = grid.checkZoneAtLocation(cx + size, cy - size);
+      } else if (coll.get().getX() == x + size && coll.get().getY() == y + size) {
+        if (grid.hasZoneAtLocation(cx + size, cy) &&
+            grid.getZoneAtLocation(cx + size, cy).hasZoneType(ZoneType.BLOCKED)) {
+          return coll;
+        } else if (grid.hasZoneAtLocation(cx, cy + size) &&
+            grid.getZoneAtLocation(cx, cy + size).hasZoneType(ZoneType.BLOCKED)) {
+          return coll;
+        }
+        zone = grid.checkZoneAtLocation(cx + size, cy + size);
+      } else if (coll.get().getX() == x && coll.get().getY() == y + size) {
+        if (grid.hasZoneAtLocation(cx - size, cy) &&
+            grid.getZoneAtLocation(cx - size, cy).hasZoneType(ZoneType.BLOCKED)) {
+          return coll;
+        } else if (grid.hasZoneAtLocation(cx, cy + size) &&
+            grid.getZoneAtLocation(cx, cy + size).hasZoneType(ZoneType.BLOCKED)) {
+          return coll;
+        }
+        zone = grid.checkZoneAtLocation(cx - size, cy + size);
+      } else if (coll.get().getX() == x) {
+        zone = grid.checkZoneAtLocation(cx - size, cy);
+      } else if (coll.get().getY() == y) {
+        zone = grid.checkZoneAtLocation(cx, cy - size);
+      } else if (coll.get().getX() == x + size) {
+        zone = grid.checkZoneAtLocation(cx + size, cy);
+      } else {
+        zone = grid.checkZoneAtLocation(cx, cy + size);
+      }
+      if (zone.isPresent() && zone.get().hasZoneType(ZoneType.BLOCKED)) {
+        return coll;
+      }
+    }
+    if (grid.hasZoneAtLocation(tip) && grid.getZoneAtLocation(tip).hasZoneType(ZoneType.BLOCKED)) {
+      return Physics.getBoundaryCollision(tip, tail, grid.getZoneAtLocation(tip));
+    }
+    return Physics.getBoundaryCollision(tail, tip, grid);
+  }
+
+  public static boolean isInbounds(Vector pos, Grid grid) {
+    return Physics.isInbounds(pos, 0., 0., grid.getWidth(), grid.getHeight());
+  }
+
+  public static boolean isInbounds(Vector pos, Zone zone) {
+    return Physics.isInbounds(pos, Physics.getTopLeftCorner(zone), Physics.getBotRightCorner(zone));
+  }
+
   public static boolean isInbounds(Vector pos, Vector topLeft, Vector botRight) {
-    return topLeft.getX() < pos.getX() && pos.getX() < botRight.getX() &&
-        topLeft.getY() < pos.getY() && pos.getY() < botRight.getY();
+    return Physics.isInbounds(pos, topLeft.getX(), topLeft.getY(),
+        botRight.getX() - topLeft.getX(), botRight.getY() - topLeft.getY());
+  }
+
+  public static boolean isInbounds(Vector pos, double x, double y, double width, double height) {
+    return x <= pos.getX() && pos.getX() < x + width && y <= pos.getY() && pos.getY() < y + height;
   }
 }
