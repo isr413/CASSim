@@ -32,7 +32,7 @@ public class RandomWalk implements Application {
   public static final double STEP_SIZE = 0.5;
 
   // Grid info
-  public static final int GRID_SIZE = 20; // paper: "... uses a 64x64 grid"
+  public static final int GRID_SIZE = 64; // paper: "... uses a 64x64 grid"
   public static final int ZONE_SIZE = 14; // paper: "Each cell has an area of 200 m^2"
  
   public static final Vector GRID_CENTER = new Vector(
@@ -52,7 +52,7 @@ public class RandomWalk implements Application {
   public static final String DRONE_COMMS_BLE = "Drone_BLE";
   public static final int DRONE_COUNT = 32; // paper: "... have been equipped with 32 commercial drones"
   public static final Vector DRONE_FUEL_USAGE = new Vector(0.001, 0.001, 0.001);
-  public static final Vector DRONE_INITIAL_VELOCITY = new Vector(1, 1);
+  public static final Vector DRONE_INITIAL_VELOCITY = Vector.ZERO;
   public static final double DRONE_MAX_ACCELERATION = 15.;
   public static final double DRONE_MAX_VELOCITY = 15.;
   public static final String DRONE_TAG = "Drone";
@@ -61,7 +61,7 @@ public class RandomWalk implements Application {
   public static final TeamColor VICTIM_COLOR = TeamColor.RED;
   public static final String VICTIM_COMMS_BLE = "Victim_BLE";
   public static final int VICTIM_COUNT = 1024; // paper: "1024 victims"
-  public static final Vector VICTIM_INITIAL_VELOCITY = new Vector();
+  public static final Vector VICTIM_INITIAL_VELOCITY = Vector.ZERO;
   public static final double VICTIM_MAX_ACCELERATION = 1.4;
   public static final double VICTIM_MAX_VELOCITY = 4.;
   public static final String VICTIM_TAG = "Victim";
@@ -240,7 +240,7 @@ public class RandomWalk implements Application {
         .filter(state -> state.isActive() && state.isMobile() && state.hasTag(RandomWalk.DRONE_TAG))
         .map(state -> {
           IntentionSet intentions = new IntentionSet(state.getRemoteID());
-          System.out.println(state.getFuelAmount());
+          System.out.println(state.isInMotion());
           if (state.isInMotion() && !Vector.near(state.getSpeed(), RandomWalk.DRONE_MAX_VELOCITY)) {
             intentions.addIntention(
                   IntentRegistry.Move(state.getVelocity().getUnitVector().scale(RandomWalk.DRONE_MAX_ACCELERATION))

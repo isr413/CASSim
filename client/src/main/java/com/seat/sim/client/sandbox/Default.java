@@ -21,6 +21,13 @@ import com.seat.sim.common.util.ArgsParser;
 import com.seat.sim.common.util.Random;
 
 public class Default implements Application {
+  public static final int BLUE_COUNT = 128; // paper: "... have been equipped with 32 commercial drones"
+  public static final int GRID_SIZE = 480; // paper: "... uses a 64x64 grid"
+  public static final int MISSION_LENGTH = 360; // paper: "81 turns", each turn is 20 seconds
+  public static final int RED_COUNT = 256; // paper: "1024 victims"
+  public static final String SCENARIO_ID = "Default";
+  public static final double STEP_SIZE = 1.;
+  public static final int ZONE_SIZE = 1; // paper: "Each cell has an area of 200 m^2"
 
   private Random rng;
   private List<RemoteConfig> remotes;
@@ -28,9 +35,22 @@ public class Default implements Application {
   public Default(ArgsParser args) {
     this.remotes = new ArrayList<RemoteConfig>() {{
       add(new RemoteConfig(
-            new RemoteProto(null, null, new KinematicsProto(new Vector(240, 240), null, new MotionProto())),
+            new RemoteProto(
+                null,
+                null,
+                new KinematicsProto(
+                    new Vector(Default.GRID_SIZE / 2, Default.GRID_SIZE / 2), 
+                    null,
+                    new MotionProto())),
             TeamColor.BLUE,
-            10,
+            Default.BLUE_COUNT,
+            true,
+            false)
+          );
+      add(new RemoteConfig(
+            new RemoteProto(null, null, new KinematicsProto(null, null, new MotionProto())),
+            TeamColor.RED,
+            Default.RED_COUNT,
             true,
             false)
           );
@@ -39,11 +59,11 @@ public class Default implements Application {
   }
 
   public Optional<Grid> getGrid() {
-    return Optional.of(new Grid(480, 480, 1));
+    return Optional.of(new Grid(Default.GRID_SIZE, Default.GRID_SIZE, Default.ZONE_SIZE));
   }
 
   public int getMissionLength() {
-    return 360;
+    return Default.MISSION_LENGTH;
   }
 
   public Collection<RemoteConfig> getRemoteConfigs() {
@@ -51,11 +71,11 @@ public class Default implements Application {
   }
 
   public String getScenarioID() {
-    return this.getClass().getName();
+    return Default.SCENARIO_ID;
   }
 
   public double getStepSize() {
-    return 1;
+    return Default.STEP_SIZE;
   }
   
   public boolean hasGrid() {
