@@ -56,6 +56,9 @@ public class Physics {
       return Optional.of(new Collision(new Vector(tip.getX(), box.getTopY()), box));
     }
     if (Physics.getDirection(tail, tip) > 0) {
+      if (Vector.near(tail.getX(), box.getRightX())) {
+        return Optional.of(new Collision(tail, box));
+      }
       if (Vector.near(slope, 0.)) {
         return Optional.of(new Collision(new Vector(box.getRightX(), tip.getY()), box));
       }
@@ -84,6 +87,9 @@ public class Physics {
             box
           ));
     } else {
+      if (Vector.near(tail.getX(), box.getLeftX())) {
+        return Optional.of(new Collision(tail, box));
+      }
       if (Vector.near(slope, 0.)) {
         return Optional.of(new Collision(new Vector(box.getLeftX(), tip.getY()), box));
       }
@@ -127,6 +133,9 @@ public class Physics {
   }
 
   public static Optional<Collision> getRayTrace(Vector tail, Vector tip, Grid grid) {
+    if (!grid.hasZones()) {
+      return Physics.getBoundaryCollision(tail, tip, grid);
+    }
     if (!grid.hasZoneAtLocation(tail)) {
       return Optional.empty();
     }
@@ -136,6 +145,9 @@ public class Physics {
     Vector ray = tail;
     Optional<Zone> zone = grid.checkZoneAtLocation(tail);
     while (zone.isPresent() && Vector.dist(tail, ray) < Vector.dist(tail, tip)) {
+      if (grid.hasZoneAtLocation(tip) && grid.getZoneAtLocation(tip) == zone.get()) {
+        break;
+      }
       Optional<Collision> coll = Physics.getBoundaryCollision(ray, tip, zone.get());
       if (coll.isEmpty()) {
         break;
@@ -151,12 +163,36 @@ public class Physics {
             grid.getZoneAtLocation(cx, cy - size).hasZoneType(ZoneType.BLOCKED)) {
           return Optional.of(new Collision(ray, new Box(zone.get())));
         }
+        if (zone.isPresent() && grid.hasZoneAtLocation(cx - size, cy)) {
+          Zone tmp = grid.getZoneAtLocation(cx - size, cy);
+          if (Vector.dist(tmp.getLocation(), tip) < Vector.dist(zone.get().getLocation(), tip)) {
+            zone = Optional.of(tmp);
+          }
+        }
+        if (zone.isPresent() && grid.hasZoneAtLocation(cx, cy - size)) {
+          Zone tmp = grid.getZoneAtLocation(cx, cy - size);
+          if (Vector.dist(tmp.getLocation(), tip) < Vector.dist(zone.get().getLocation(), tip)) {
+            zone = Optional.of(tmp);
+          }
+        }
       } else if (Vector.near(ray.getX(), x + size) && Vector.near(ray.getY(), y)) {
         zone = grid.checkZoneAtLocation(cx + size, cy - size);
         if (zone.isPresent() && grid.hasZoneAtLocation(cx + size, cy) && grid.hasZoneAtLocation(cx, cy - size) &&
             grid.getZoneAtLocation(cx + size, cy).hasZoneType(ZoneType.BLOCKED) &&
             grid.getZoneAtLocation(cx, cy - size).hasZoneType(ZoneType.BLOCKED)) {
           return Optional.of(new Collision(ray, new Box(zone.get())));
+        }
+        if (zone.isPresent() && grid.hasZoneAtLocation(cx + size, cy)) {
+          Zone tmp = grid.getZoneAtLocation(cx + size, cy);
+          if (Vector.dist(tmp.getLocation(), tip) < Vector.dist(zone.get().getLocation(), tip)) {
+            zone = Optional.of(tmp);
+          }
+        }
+        if (zone.isPresent() && grid.hasZoneAtLocation(cx, cy - size)) {
+          Zone tmp = grid.getZoneAtLocation(cx, cy - size);
+          if (Vector.dist(tmp.getLocation(), tip) < Vector.dist(zone.get().getLocation(), tip)) {
+            zone = Optional.of(tmp);
+          }
         }
       } else if (Vector.near(ray.getX(), x + size) && Vector.near(ray.getY(), y + size)) {
         zone = grid.checkZoneAtLocation(cx + size, cy + size);
@@ -165,12 +201,36 @@ public class Physics {
             grid.getZoneAtLocation(cx, cy + size).hasZoneType(ZoneType.BLOCKED)) {
           return Optional.of(new Collision(ray, new Box(zone.get())));
         }
+        if (zone.isPresent() && grid.hasZoneAtLocation(cx + size, cy)) {
+          Zone tmp = grid.getZoneAtLocation(cx + size, cy);
+          if (Vector.dist(tmp.getLocation(), tip) < Vector.dist(zone.get().getLocation(), tip)) {
+            zone = Optional.of(tmp);
+          }
+        }
+        if (zone.isPresent() && grid.hasZoneAtLocation(cx, cy + size)) {
+          Zone tmp = grid.getZoneAtLocation(cx, cy + size);
+          if (Vector.dist(tmp.getLocation(), tip) < Vector.dist(zone.get().getLocation(), tip)) {
+            zone = Optional.of(tmp);
+          }
+        }
       } else if (Vector.near(ray.getX(), x) && Vector.near(ray.getY(), y + size)) {
         zone = grid.checkZoneAtLocation(cx - size, cy + size);
         if (zone.isPresent() && grid.hasZoneAtLocation(cx - size, cy) && grid.hasZoneAtLocation(cx, cy + size) &&
             grid.getZoneAtLocation(cx - size, cy).hasZoneType(ZoneType.BLOCKED) &&
             grid.getZoneAtLocation(cx, cy + size).hasZoneType(ZoneType.BLOCKED)) {
           return Optional.of(new Collision(ray, new Box(zone.get())));
+        }
+        if (zone.isPresent() && grid.hasZoneAtLocation(cx - size, cy)) {
+          Zone tmp = grid.getZoneAtLocation(cx - size, cy);
+          if (Vector.dist(tmp.getLocation(), tip) < Vector.dist(zone.get().getLocation(), tip)) {
+            zone = Optional.of(tmp);
+          }
+        }
+        if (zone.isPresent() && grid.hasZoneAtLocation(cx, cy + size)) {
+          Zone tmp = grid.getZoneAtLocation(cx, cy + size);
+          if (Vector.dist(tmp.getLocation(), tip) < Vector.dist(zone.get().getLocation(), tip)) {
+            zone = Optional.of(tmp);
+          }
         }
       } else if (Vector.near(ray.getX(), x)) {
         zone = grid.checkZoneAtLocation(cx - size, cy);
