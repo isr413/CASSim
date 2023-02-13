@@ -46,7 +46,7 @@ public class ArgsParser {
     try {
       return Double.parseDouble(this.parsedArgs.get(param));
     } catch (NumberFormatException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 
@@ -57,7 +57,7 @@ public class ArgsParser {
     try {
       return Integer.parseInt(this.parsedArgs.get(param));
     } catch (NumberFormatException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 
@@ -68,7 +68,7 @@ public class ArgsParser {
     try {
       return Long.parseLong(this.parsedArgs.get(param));
     } catch (NumberFormatException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 

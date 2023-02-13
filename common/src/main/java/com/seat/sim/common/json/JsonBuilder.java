@@ -54,7 +54,7 @@ public final class JsonBuilder {
             try {
                 this.json.put(value);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -62,7 +62,7 @@ public final class JsonBuilder {
             try {
                 this.json.put(value);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -70,7 +70,7 @@ public final class JsonBuilder {
             try {
                 this.json.put(value);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -78,7 +78,7 @@ public final class JsonBuilder {
             try {
                 this.json.put(value);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -92,7 +92,7 @@ public final class JsonBuilder {
                     this.put(value.toString());
                 }
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -104,7 +104,7 @@ public final class JsonBuilder {
                     this.json.put(new Json.JsonArrayOption(value.toString()).json);
                 }
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -116,7 +116,7 @@ public final class JsonBuilder {
                     this.json.put(new Json.JsonObjectOption(value.toString()).json);
                 }
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -124,7 +124,7 @@ public final class JsonBuilder {
             try {
                 this.json.put(value);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -132,7 +132,7 @@ public final class JsonBuilder {
             try {
                 this.json.put(value);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -140,7 +140,7 @@ public final class JsonBuilder {
             try {
                 this.json.put(value);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -156,7 +156,7 @@ public final class JsonBuilder {
             try {
                 return this.json.toString();
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -164,7 +164,7 @@ public final class JsonBuilder {
             try {
                 return this.json.toString(tabSize);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
     }
@@ -197,7 +197,7 @@ public final class JsonBuilder {
             try {
                 this.json.put(key, value);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -205,7 +205,7 @@ public final class JsonBuilder {
             try {
                 this.json.put(key, value);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -213,7 +213,7 @@ public final class JsonBuilder {
             try {
                 this.json.put(key, value);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -221,7 +221,7 @@ public final class JsonBuilder {
             try {
                 this.json.put(key, value);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -235,7 +235,7 @@ public final class JsonBuilder {
                     this.put(key, value.toString());
                 }
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -247,7 +247,7 @@ public final class JsonBuilder {
                     this.json.put(key, new Json.JsonArrayOption(value.toString()).json);
                 }
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -259,7 +259,7 @@ public final class JsonBuilder {
                     this.json.put(key, new Json.JsonObjectOption(value.toString()).json);
                 }
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -267,7 +267,7 @@ public final class JsonBuilder {
             try {
                 this.json.put(key, value);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -275,7 +275,7 @@ public final class JsonBuilder {
             try {
                 this.json.put(key, value);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -283,7 +283,7 @@ public final class JsonBuilder {
             try {
                 this.json.put(key, value);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -299,7 +299,7 @@ public final class JsonBuilder {
             try {
                 return this.json.toString();
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -307,7 +307,7 @@ public final class JsonBuilder {
             try {
                 return this.json.toString(tabSize);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
     }

@@ -142,7 +142,7 @@ public final class Json {
             try {
                 this.json = new org.json.JSONArray(encoding);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -176,7 +176,7 @@ public final class Json {
             try {
                 return this.json.get(idx);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -185,7 +185,7 @@ public final class Json {
             try {
                 return this.json.getBoolean(idx);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -194,7 +194,7 @@ public final class Json {
             try {
                 return this.json.getDouble(idx);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -203,7 +203,7 @@ public final class Json {
             try {
                 return this.json.getFloat(idx);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -212,7 +212,7 @@ public final class Json {
             try {
                 return this.json.getInt(idx);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -227,7 +227,7 @@ public final class Json {
                     return (Json) this.json.get(idx);
                 }
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -236,7 +236,7 @@ public final class Json {
             try {
                 return new JsonArrayOption(this.json.getJSONArray(idx));
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -245,7 +245,7 @@ public final class Json {
             try {
                 return new JsonObjectOption(this.json.getJSONObject(idx));
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -254,7 +254,7 @@ public final class Json {
             try {
                 return this.json.getLong(idx);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -263,7 +263,7 @@ public final class Json {
             try {
                 return this.json.getString(idx);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -304,7 +304,7 @@ public final class Json {
             try {
                 return this.json.toString();
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -312,7 +312,7 @@ public final class Json {
             try {
                 return this.json.toString(tabSize);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
     }
@@ -330,7 +330,7 @@ public final class Json {
             try {
                 this.json = new org.json.JSONObject(encoding);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -345,7 +345,7 @@ public final class Json {
             try {
                 return this.json.get(key);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -354,7 +354,7 @@ public final class Json {
             try {
                 return this.json.getBoolean(key);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -363,7 +363,7 @@ public final class Json {
             try {
                 return this.json.getDouble(key);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -372,7 +372,7 @@ public final class Json {
             try {
                 return this.json.getFloat(key);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -381,7 +381,7 @@ public final class Json {
             try {
                 return this.json.getInt(key);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -396,7 +396,7 @@ public final class Json {
                     return (Json) this.get(key);
                 }
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -405,7 +405,7 @@ public final class Json {
             try {
                 return new JsonArrayOption(this.json.getJSONArray(key));
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -414,7 +414,7 @@ public final class Json {
             try {
                 return new JsonObjectOption(this.json.getJSONObject(key));
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -423,7 +423,7 @@ public final class Json {
             try {
                 return this.json.getLong(key);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -432,7 +432,7 @@ public final class Json {
             try {
                 return this.json.getString(key);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -473,7 +473,7 @@ public final class Json {
             try {
                 return this.json.toString();
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 
@@ -481,7 +481,7 @@ public final class Json {
             try {
                 return this.json.toString(tabSize);
             } catch (org.json.JSONException e) {
-                throw new JsonException(e.toString());
+                throw new JsonException(e.getMessage());
             }
         }
 

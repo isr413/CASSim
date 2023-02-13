@@ -34,7 +34,7 @@ public class JsonSocket {
     try {
       return new JsonSocket(new Socket(address, JsonSocket.DEFAULT_PORT));
     } catch(IOException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 
@@ -42,7 +42,7 @@ public class JsonSocket {
     try {
       return new JsonSocket(new Socket(address, JsonSocket.DEFAULT_PORT));
     } catch(IOException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 
@@ -50,7 +50,7 @@ public class JsonSocket {
     try {
       return new JsonSocket(new Socket(address, port));
     } catch(IOException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 
@@ -58,7 +58,7 @@ public class JsonSocket {
     try {
       return new JsonSocket(new Socket(address, port));
     } catch(IOException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 
@@ -70,7 +70,7 @@ public class JsonSocket {
     try {
       return new JsonSocket(new ServerSocket(port));
     } catch(IOException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 
@@ -86,7 +86,7 @@ public class JsonSocket {
       this.in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
       this.out = new PrintWriter(this.clientSocket.getOutputStream(), true);
     } catch (IOException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 
@@ -97,7 +97,7 @@ public class JsonSocket {
       this.in = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
       this.out = new PrintWriter(this.clientSocket.getOutputStream(), true);
     } catch (IOException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 
@@ -110,7 +110,7 @@ public class JsonSocket {
         this.serverSocket.close();
       }
     } catch (IOException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 
@@ -130,7 +130,7 @@ public class JsonSocket {
         }
       }
     } catch(IOException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 
@@ -146,7 +146,7 @@ public class JsonSocket {
       }
       return controllers;
     } catch (JsonException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 
@@ -170,7 +170,7 @@ public class JsonSocket {
     try {
       this.out.println(json.toString());
     } catch (JsonException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 
@@ -184,7 +184,7 @@ public class JsonSocket {
       }
       this.send(json.toJson().toString());
     } catch (JsonException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 
@@ -192,7 +192,7 @@ public class JsonSocket {
     try {
       this.send(scenario.encode());
     } catch (JsonException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 
@@ -200,7 +200,7 @@ public class JsonSocket {
     try {
       this.send(snap.encode());
     } catch (JsonException e) {
-      throw new CommonException(e.toString());
+      throw new CommonException(e.getMessage());
     }
   }
 }
