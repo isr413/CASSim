@@ -2,6 +2,7 @@ package com.seat.sim.client;
 
 import com.seat.sim.client.core.AppClient;
 import com.seat.sim.client.core.ClientException;
+import com.seat.sim.client.sandbox.BmpExample;
 import com.seat.sim.client.sandbox.Default;
 import com.seat.sim.client.sandbox.RandomWalk;
 import com.seat.sim.common.core.Application;
@@ -10,13 +11,18 @@ import com.seat.sim.common.util.ArgsParser;
 public class App {
   private static final String DELAY_ARG = "-d";
   private static final String DISPLAY_ARG = "--display";
+  private static final String HEIGHT_ARG = "-height";
   private static final String HOST_ARG = "-h";
   private static final String ID_ARG = "-id";
   private static final String PORT_ARG = "-p";
+  private static final String WIDTH_ARG = "-width";
 
   private static Application getApplication(String scenarioID, ArgsParser args) throws ClientException {
     if (scenarioID.equals("Default")) {
       return new Default(args);
+    }
+    if (scenarioID.equals("BmpExample")) {
+      return new BmpExample(args);
     }
     if (scenarioID.equals("RandomWalk")) {
       return new RandomWalk(args);
@@ -40,6 +46,9 @@ public class App {
       client = new AppClient(app, parser.getInt(App.PORT_ARG));
     } else {
       client = new AppClient(app);
+    }
+    if (parser.hasParam(App.WIDTH_ARG) && parser.hasParam(App.HEIGHT_ARG)) {
+      client.setPanelDims(parser.getInt(App.WIDTH_ARG), parser.getInt(App.HEIGHT_ARG));
     }
     if (parser.hasParam(App.DELAY_ARG)) {
       client.run(parser.hasParam(App.DISPLAY_ARG), parser.getDouble(App.DELAY_ARG));

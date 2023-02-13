@@ -12,11 +12,13 @@ import com.seat.sim.common.util.Debugger;
 
 public class AppClient {
 
-  protected final static double DEFAULT_DELAY = 0.033;
-  protected final static boolean DEFAULT_DISPLAY = false;
+  private final static double DEFAULT_DELAY = 0.033;
+  private final static boolean DEFAULT_DISPLAY = false;
 
   private Application app;
   private long frameTime;
+  private int panelHeight;
+  private int panelWidth;
   private JsonSocket socket;
 
   public AppClient(Application app) throws CommonException {
@@ -37,6 +39,11 @@ public class AppClient {
   public AppClient(Application app, String hostname, int port) throws CommonException {
     this.app = app;
     this.socket = JsonSocket.Client(hostname, port);
+  }
+
+  public void setPanelDims(int width, int height) {
+    this.panelWidth = width;
+    this.panelHeight = height;
   }
 
   public void run() throws ClientException, CommonException {
@@ -64,7 +71,11 @@ public class AppClient {
     GUIGridFrame frame = null;
     if (visualDisplay && this.app.hasGrid()) {
       Debugger.logger.info("Starting visual display ...");
-      frame = new GUIGridFrame(app.getScenarioID(), this.app.getGrid().get());
+      if (this.panelWidth > 0 && this.panelHeight > 0) {
+        frame = new GUIGridFrame(app.getScenarioID(), this.panelWidth, this.panelHeight, this.app.getGrid().get());
+      } else {
+        frame = new GUIGridFrame(app.getScenarioID(), this.app.getGrid().get());
+      }
       frame.setVisible(true);
       Debugger.logger.state("Frame set to visible");
       this.frameTime = System.currentTimeMillis();
