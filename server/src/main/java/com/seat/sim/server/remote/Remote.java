@@ -313,5 +313,6 @@ public class Remote {
       this.getKinematics().update(delta, stepSize);
       return;
     }
+    this.getKinematics().update(stepSize);
   }
 }
