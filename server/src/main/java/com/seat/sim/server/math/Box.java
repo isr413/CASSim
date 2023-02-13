@@ -99,4 +99,8 @@ public class Box {
     return this.getLeftX() <= point.getX() && point.getX() <= this.getRightX() &&
         this.getTopY() <= point.getY() && point.getY() <= this.getBotY();
   }
+
+  public String toString() {
+    return String.format("[%.4f, %.4f, %.4f, %.4f]", this.x, this.y, this.width, this.height);
+  }
 }

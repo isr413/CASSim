@@ -46,4 +46,8 @@ public class Collision {
       return new Vector(this.point.getX() + delta.getX(), this.point.getY() - delta.getY());
     }
   }
+
+  public String toString() {
+    return String.format("[%s, %s]", this.point.toString(), this.box.toString());
+  }
 }
