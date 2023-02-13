@@ -51,21 +51,24 @@ public class Scenario {
     if (!this.hasGrid() || remote == null || prevLocation == null || remote.getLocation().near(prevLocation)) {
       return;
     }
-    Optional<Collision> coll = Physics.getBoundaryCollision(prevLocation, remote.getLocation(), this.getGrid());
+    Optional<Collision> coll = Physics.getRayTrace(prevLocation, remote.getLocation(), this.getGrid());
     if (coll.isEmpty()) {
       return;
     }
     Vector bounce = coll.get().reflect(remote.getLocation());
-    for (Optional<Collision> tmp = Physics.getBoundaryCollision(coll.get().getPoint(), bounce, this.getGrid());
+    for (Optional<Collision> tmp = Physics.getRayTrace(coll.get().getPoint(), bounce, this.getGrid());
          tmp.isPresent();
-         tmp = Physics.getBoundaryCollision(tmp.get().getPoint(), bounce, this.getGrid())
+         tmp = Physics.getRayTrace(tmp.get().getPoint(), bounce, this.getGrid())
         ) {
       coll = tmp;
       bounce = coll.get().reflect(bounce);
     }
     remote.setLocationTo(bounce);
-    Vector direction = Vector.sub(bounce, coll.get().getPoint()).getUnitVector();
-    remote.setVelocityTo(direction.scale(remote.getSpeed()));
+    Vector direction = Vector.sub(
+          coll.get().reflect(Vector.add(coll.get().getPoint(), remote.getVelocity())),
+          coll.get().getPoint()
+        );
+    remote.setVelocityTo(direction);
   }
 
   private void init() {
@@ -340,6 +343,15 @@ public class Scenario {
       Optional<Vector> prevLocation = Optional.empty();
       if (this.hasGrid() && remote.hasLocation() && Physics.isInbounds(remote.getLocation(), this.getGrid())) {
         prevLocation = Optional.of(remote.getLocation());
+        if (remote.isMobile()) {
+          if (this.getGrid().hasZoneAtLocation(prevLocation.get()) &&
+              this.getGrid().getZoneAtLocation(prevLocation.get()).hasZoneType(ZoneType.BLOCKED)) {
+            prevLocation = Optional.of(Vector.sub(prevLocation.get(), remote.getVelocity().scale(stepSize)));
+          }
+          if (!Vector.near(remote.getLocation(), prevLocation.get())) {
+            this.enforceBounds(remote, prevLocation.get());
+          }
+        }
       }
       if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
         remote.update(intentions.get(remote.getRemoteID()), stepSize);
