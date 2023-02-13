@@ -37,8 +37,9 @@ public class Grid extends Jsonable {
       for (int y = 0; y < this.height; y++) {
         for (int x = 0; x < this.width; x++) {
           this.zones[y][x] = new Zone(
-              new Vector(this.zoneSize * (x + 0.5), this.zoneSize * (y + 0.5)),
-              this.zoneSize);
+                new Vector(x * zoneSize + zoneSize / 2., y * zoneSize + zoneSize / 2.),
+                zoneSize
+              );
         }
       }
     }
@@ -57,9 +58,16 @@ public class Grid extends Jsonable {
     for (int y = 0; y < img.getHeight(); y++) {
       for (int x = 0; x < img.getWidth(); x++) {
         if (img.getRGB(x, y) == Color.BLACK.getRGB()) {
-          this.zones[y][x] = new Zone(ZoneType.BLOCKED, new Vector(x, y), zoneSize);
+          this.zones[y][x] = new Zone(
+                ZoneType.BLOCKED,
+                new Vector(x * zoneSize + zoneSize / 2., y * zoneSize + zoneSize / 2.),
+                zoneSize
+              );
         } else {
-          this.zones[y][x] = new Zone(new Vector(x, y), zoneSize);
+          this.zones[y][x] = new Zone(
+                new Vector(x * zoneSize + zoneSize / 2., y * zoneSize + zoneSize / 2.),
+                zoneSize
+              );
         }
       }
     }
