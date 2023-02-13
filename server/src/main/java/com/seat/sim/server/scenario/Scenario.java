@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Vector;
+import com.seat.sim.common.math.ZoneType;
 import com.seat.sim.common.remote.RemoteConfig;
 import com.seat.sim.common.remote.RemoteController;
 import com.seat.sim.common.remote.RemoteProto;
@@ -20,6 +21,8 @@ import com.seat.sim.common.scenario.Snapshot;
 import com.seat.sim.common.util.Debugger;
 import com.seat.sim.common.util.Random;
 import com.seat.sim.server.core.SimException;
+import com.seat.sim.server.math.Collision;
+import com.seat.sim.server.math.Physics;
 import com.seat.sim.server.remote.Remote;
 
 public class Scenario {
@@ -45,27 +48,24 @@ public class Scenario {
   }
 
   private void enforceBounds(Remote remote, Vector prevLocation) {
-    if (!this.hasGrid() || !remote.isMobile()) {
+    if (!this.hasGrid() || remote == null || prevLocation == null || remote.getLocation().near(prevLocation)) {
       return;
     }
-    if (this.getGrid().isInbounds(remote.getLocation())) {
+    Optional<Collision> coll = Physics.getBoundaryCollision(prevLocation, remote.getLocation(), this.getGrid());
+    if (coll.isEmpty()) {
       return;
     }
-    Optional<Vector> boundsCollision = this.getGrid().getBoundsCollisionLocation(prevLocation, remote.getLocation());
-    if (boundsCollision.isEmpty()) {
-      Debugger.logger.err(String.format("Could not compute bounce location for %s on remote %s",
-        remote.getLocation().toString(), remote.getLabel()));
-      return;
+    Vector bounce = coll.get().reflect(remote.getLocation());
+    for (Optional<Collision> tmp = Physics.getBoundaryCollision(coll.get().getPoint(), bounce, this.getGrid());
+         tmp.isPresent();
+         tmp = Physics.getBoundaryCollision(tmp.get().getPoint(), bounce, this.getGrid())
+        ) {
+      coll = tmp;
+      bounce = coll.get().reflect(bounce);
     }
-    Optional<Vector> nextLocation = this.getGrid().getLocationAfterBounce(prevLocation, remote.getLocation());
-    if (nextLocation.isEmpty()) {
-      Debugger.logger.err(String.format("Could not compute bounce location for %s on remote %s",
-        remote.getLocation().toString(), remote.getLabel()));
-      return;
-    }
-    remote.setLocationTo(nextLocation.get());
-    Vector bounceDirection = Vector.sub(nextLocation.get(), boundsCollision.get()).getUnitVector();
-    remote.setVelocityTo(bounceDirection.scale(remote.getSpeed()));
+    remote.setLocationTo(bounce);
+    Vector direction = Vector.sub(bounce, coll.get().getPoint()).getUnitVector();
+    remote.setVelocityTo(direction.scale(remote.getSpeed()));
   }
 
   private void init() {
@@ -84,7 +84,10 @@ public class Scenario {
           this.dynamicRemotes.put(remoteID, remote);
         }
         if (this.hasGrid() && !remote.hasLocation()) {
-          remote.setLocationTo(this.rng.getRandomLocation2D(this.getGridWidth(), this.getGridHeight()));
+          while (!remote.hasLocation() ||
+              this.getGrid().getZoneAtLocation(remote.getLocation()).hasZoneType(ZoneType.BLOCKED)) {
+            remote.setLocationTo(this.rng.getRandomLocation2D(this.getGridWidth(), this.getGridHeight()));
+          }
         }
         if (!remoteConfig.isDynamic() && remote.isActive() && remote.isMobile()) {
           if (remote.hasMaxVelocity()) {
@@ -334,9 +337,9 @@ public class Scenario {
         continue;
       }
       Debugger.logger.info(String.format("Updating remote %s ...", remote.getRemoteID()));
-      Vector prevLocation = null;
-      if (this.hasGrid() && remote.hasLocation() && this.getGrid().isInbounds(remote.getLocation())) {
-        prevLocation = remote.getLocation();
+      Optional<Vector> prevLocation = Optional.empty();
+      if (this.hasGrid() && remote.hasLocation() && Physics.isInbounds(remote.getLocation(), this.getGrid())) {
+        prevLocation = Optional.of(remote.getLocation());
       }
       if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
         remote.update(intentions.get(remote.getRemoteID()), stepSize);
@@ -345,12 +348,9 @@ public class Scenario {
       } else {
         this.updatePassiveRemote(remote, stepSize);
       }
-      if (this.hasGrid() && remote.hasLocation() && this.getGrid().isOutOfBounds(remote.getLocation())) {
-        if (remote.isMobile() && prevLocation != null) {
-          this.enforceBounds(remote, prevLocation);
-        } else {
-          throw new SimException(String.format("Remote `%s` has been lost out-of-bounds", remote.getLabel()));
-        }
+      if (this.hasGrid() && remote.hasLocation() &&
+          prevLocation.isPresent() && !remote.getLocation().near(prevLocation.get())) {
+        this.enforceBounds(remote, prevLocation.get());
       }
       if ((!remote.isActive() || remote.isDone()) && this.hasActiveRemoteWithID(remote.getRemoteID())) {
         this.activeRemotes.remove(remote.getRemoteID());
@@ -368,7 +368,7 @@ public class Scenario {
     if ((!remote.isActive() || remote.isDone())) {
       controller.deactivateAllSensors();
     }
-    if (this.hasGrid() && remote.hasLocation() && this.getGrid().isInbounds(remote.getLocation())) {
+    if (this.hasGrid() && remote.hasLocation() && Physics.isInbounds(remote.getLocation(), this.getGrid())) {
       controller.maintainCourse();
     }
     remote.update(controller.getIntentions(), stepSize);
