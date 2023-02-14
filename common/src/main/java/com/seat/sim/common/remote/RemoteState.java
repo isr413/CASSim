@@ -17,6 +17,7 @@ import com.seat.sim.common.sensor.SensorState;
 /** A serializable snapshot of a Remote. */
 public class RemoteState extends Jsonable {
   public static final String ACTIVE = "active";
+  public static final String DONE = "done";
   public static final String FUEL = "fuel";
   public static final String LOCATION = "location";
   public static final String REMOTE_ID = "remote_id";
@@ -24,6 +25,7 @@ public class RemoteState extends Jsonable {
   public static final String VELOCITY = "velocity";
 
   private boolean active;
+  private boolean done;
   private Optional<Double> fuel;
   private Optional<Vector> location;
   private String remoteID;
@@ -33,17 +35,17 @@ public class RemoteState extends Jsonable {
   private Optional<Vector> velocity;
 
   public RemoteState(String remoteID, Set<String> tags, TeamColor team, Vector location, Vector velocity,
-      Collection<SensorState> sensorStates, boolean active) {
-    this(remoteID, tags, team, location, velocity, null, sensorStates, active);
+      Collection<SensorState> sensorStates, boolean active, boolean done) {
+    this(remoteID, tags, team, location, velocity, null, sensorStates, active, done);
   }
 
   public RemoteState(String remoteID, Set<String> tags, TeamColor team, Vector location, Vector velocity,
-      double fuel, Collection<SensorState> sensorStates, boolean active) {
-    this(remoteID, tags, team, location, velocity, Optional.of(fuel), sensorStates, active);
+      double fuel, Collection<SensorState> sensorStates, boolean active, boolean done) {
+    this(remoteID, tags, team, location, velocity, Optional.of(fuel), sensorStates, active, done);
   }
 
   private RemoteState(String remoteID, Set<String> tags, TeamColor team, Vector location, Vector velocity,
-      Optional<Double> fuel, Collection<SensorState> sensorStates, boolean active) {
+      Optional<Double> fuel, Collection<SensorState> sensorStates, boolean active, boolean done) {
     this.remoteID = remoteID;
     this.tags = (tags != null) ? new HashSet<>(tags) : new HashSet<>();
     this.team = (team != null) ? team : TeamColor.NONE;
@@ -54,6 +56,7 @@ public class RemoteState extends Jsonable {
         ? sensorStates.stream().collect(Collectors.toMap(SensorState::getSensorID, Function.identity()))
         : new HashMap<>();
     this.active = active;
+    this.done = done;
     if (this.remoteID == null || this.remoteID.isBlank() || this.remoteID.isEmpty()) {
       throw new RuntimeException("cannot create RemoteState with empty ID");
     }
@@ -78,6 +81,7 @@ public class RemoteState extends Jsonable {
         : Optional.empty();
     this.fuel = (json.hasKey(RemoteState.FUEL)) ? Optional.of(json.getDouble(RemoteState.FUEL)) : Optional.empty();
     this.active = json.getBoolean(RemoteState.ACTIVE);
+    this.done = json.getBoolean(RemoteState.DONE);
     this.sensorStates = (json.hasKey(RemoteProto.SENSORS))
         ? json.getJsonArray(RemoteProto.SENSORS).toList(Json.class).stream()
             .map(state -> new SensorState(state))
@@ -104,6 +108,7 @@ public class RemoteState extends Jsonable {
       json.put(RemoteState.FUEL, this.getFuelAmount());
     }
     json.put(RemoteState.ACTIVE, this.active);
+    json.put(RemoteState.DONE, this.done);
     if (this.hasSensors()) {
       json.put(
           RemoteProto.SENSORS,
@@ -113,6 +118,20 @@ public class RemoteState extends Jsonable {
                   .collect(Collectors.toList())));
     }
     return json;
+  }
+
+  public Collection<SensorState> getAllSensorStatesWithModel(String sensorModel) {
+    return this.getSensorStates()
+        .stream()
+        .filter(sensorState -> sensorState.hasSensorModel(sensorModel))
+        .collect(Collectors.toList());
+  }
+
+  public Collection<SensorState> getAllSensorStatesWithTag(String tag) {
+    return this.getSensorStates()
+        .stream()
+        .filter(sensorState -> sensorState.hasTag(tag))
+        .collect(Collectors.toList());
   }
 
   public double getFuelAmount() {
@@ -142,22 +161,26 @@ public class RemoteState extends Jsonable {
     return this.sensorStates.values();
   }
 
-  public Collection<SensorState> getSensorStatesWithModel(String sensorModel) {
-    return this.getSensorStates()
-        .stream()
-        .filter(sensorState -> sensorState.hasSensorModel(sensorModel))
-        .collect(Collectors.toList());
-  }
-
-  public Collection<SensorState> getSensorStatesWithTag(String tag) {
-    return this.getSensorStates()
-        .stream()
-        .filter(sensorState -> sensorState.hasTag(tag))
-        .collect(Collectors.toList());
-  }
-
   public SensorState getSensorStateWithID(String sensorID) {
     return this.sensorStates.get(sensorID);
+  }
+
+  public Optional<SensorState> getSensorStateWithModel(String sensorModel) {
+    for (SensorState state : this.getSensorStates()) {
+      if (state.hasSensorModel(sensorModel)) {
+        return Optional.of(state);
+      }
+    }
+    return Optional.empty();
+  }
+
+  public Optional<SensorState> getSensorStateWithTag(String tag) {
+    for (SensorState state : this.getSensorStates()) {
+      if (state.hasTag(tag)) {
+        return Optional.of(state);
+      }
+    }
+    return Optional.empty();
   }
 
   public double getSpeed() {
@@ -228,11 +251,20 @@ public class RemoteState extends Jsonable {
   }
 
   public boolean hasSensorStateWithModel(String sensorModel) {
-    return !this.getSensorStatesWithModel(sensorModel).isEmpty();
+    return !this.getSensorStateWithModel(sensorModel).isEmpty();
   }
 
   public boolean hasSensorStateWithTag(String tag) {
-    return !this.getSensorStatesWithTag(tag).isEmpty();
+    return !this.getSensorStateWithTag(tag).isEmpty();
+  }
+
+  public boolean hasSubjectWithID(String subjectID) {
+    for (SensorState state : this.getSensorStates()) {
+      if (state.hasSubjectWithID(subjectID)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public boolean hasTags() {
@@ -248,6 +280,10 @@ public class RemoteState extends Jsonable {
 
   public boolean isActive() {
     return this.active && this.isEnabled();
+  }
+
+  public boolean isDone() {
+    return this.done;
   }
 
   public boolean isEnabled() {

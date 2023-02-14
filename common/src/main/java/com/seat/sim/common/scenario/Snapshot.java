@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -125,6 +126,20 @@ public class Snapshot extends Jsonable {
         .collect(Collectors.toList());
   }
 
+  public Collection<RemoteState> getAllRemoteStatesWithMatch(Set<String> matchers) {
+    return this.getRemoteStates()
+        .stream()
+        .filter(state -> state.hasMatch(matchers))
+        .collect(Collectors.toList());
+  }
+
+  public Collection<RemoteState> getAllRemoteStatesWithTag(String tag) {
+    return this.getRemoteStates()
+        .stream()
+        .filter(state -> state.hasTag(tag))
+        .collect(Collectors.toList());
+  }
+
   public Set<String> getDynamicRemoteIDs() {
     return this.dynamicRemoteIDs;
   }
@@ -148,22 +163,26 @@ public class Snapshot extends Jsonable {
     return this.remoteStates.values();
   }
 
-  public Collection<RemoteState> getRemoteStatesWithMatch(Set<String> matchers) {
-    return this.getRemoteStates()
-        .stream()
-        .filter(state -> state.hasMatch(matchers))
-        .collect(Collectors.toList());
-  }
-
-  public Collection<RemoteState> getRemoteStatesWithTag(String tag) {
-    return this.getRemoteStates()
-        .stream()
-        .filter(state -> state.hasTag(tag))
-        .collect(Collectors.toList());
+  public Optional<RemoteState> getRemoteStateWithMatch(Set<String> matchers) {
+    for (RemoteState state : this.getRemoteStates()) {
+      if (state.hasMatch(matchers)) {
+        return Optional.of(state);
+      }
+    }
+    return Optional.empty();
   }
 
   public RemoteState getRemoteStateWithID(String remoteID) throws CommonException {
     return this.remoteStates.get(remoteID);
+  }
+
+  public Optional<RemoteState> getRemoteStateWithTag(String tag) {
+    for (RemoteState state : this.getRemoteStates()) {
+      if (state.hasTag(tag)) {
+        return Optional.of(state);
+      }
+    }
+    return Optional.empty();
   }
 
   public String getScenarioID() {
