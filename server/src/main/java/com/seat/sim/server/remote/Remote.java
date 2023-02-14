@@ -23,6 +23,7 @@ import com.seat.sim.server.scenario.Scenario;
 public class Remote {
 
   private boolean active;
+  private Optional<Vector> destination;
   private boolean done;
   private Optional<Kinematics> kinematics;
   private RemoteProto proto;
@@ -36,6 +37,7 @@ public class Remote {
     this.team = team;
     this.kinematics = (proto.hasKinematicsProto()) ? Optional.of(new Kinematics(proto.getKinematicsProto()))
         : Optional.empty();
+    this.destination = Optional.empty();
     this.active = active;
     this.done = false;
     this.sensors = (proto.hasSensors()) ? Optional.of(new SensorController(scenario, this)) : Optional.empty();
@@ -53,6 +55,10 @@ public class Remote {
       Vector delta = this.getKinematics().shiftVelocityTo(Vector.ZERO);
       this.getKinematics().update(delta, stepSize);
     }
+  }
+
+  public Vector getDestination() {
+    return this.destination.get();
   }
 
   public Vector getDirection() {
@@ -103,7 +109,8 @@ public class Remote {
           (this.isMobile()) ? this.getVelocity() : null,
           this.getKinematics().getFuelAmount(),
           (this.hasSensors()) ? this.getSensorController().getSensorStates() : null,
-          this.isActive());
+          this.isActive(),
+          this.isDone());
     }
     return new RemoteState(
         this.getRemoteID(),
@@ -112,7 +119,8 @@ public class Remote {
         (this.hasLocation()) ? this.getKinematics().getLocation() : null,
         (this.isMobile()) ? this.getVelocity() : null,
         (this.hasSensors()) ? this.getSensorController().getSensorStates() : null,
-        this.isActive());
+        this.isActive(),
+        this.isDone());
   }
 
   public SensorController getSensorController() {
@@ -136,6 +144,10 @@ public class Remote {
       return Vector.ZERO;
     }
     return this.getKinematics().getVelocity();
+  }
+
+  public boolean hasDestination() {
+    return this.destination.isPresent();
   }
 
   public boolean hasFuel() {
@@ -212,6 +224,7 @@ public class Remote {
       this.getSensorController().deactivateSensors();
     }
     this.active = false;
+    this.destination = Optional.empty();
   }
 
   public void setLocationTo(Vector location) {
@@ -226,6 +239,17 @@ public class Remote {
       return;
     }
     this.getKinematics().setVelocityTo(velocity);
+  }
+
+  public void shiftToDestination(double stepSize) {
+    if (!this.hasDestination()) {
+      return;
+    }
+    Vector delta = this.getKinematics().shiftLocationTo(this.getDestination());
+    this.getKinematics().update(delta, stepSize);
+    if (this.getLocation().near(this.getDestination())) {
+      this.destination = Optional.empty();
+    }
   }
 
   public void update(double stepSize) throws SimException {
@@ -290,15 +314,23 @@ public class Remote {
     }
     if (intentions.hasIntentionWithType(IntentionType.GOTO)) {
       GoToIntention intent = (GoToIntention) intentions.getIntentionWithType(IntentionType.GOTO);
-      Vector delta = this.getKinematics().shiftLocationTo((intent.hasLocation()) ? intent.getLocation()
-          : this.getKinematics().getHomeLocation(), intent.getMaxVelocity(), intent.getMaxAcceleration()); 
+      this.destination = (intent.hasLocation()) ? Optional.of(intent.getLocation())
+          : Optional.of(this.getKinematics().getHomeLocation());
+      Vector delta = this.getKinematics().shiftLocationTo(this.getDestination(), intent.getMaxVelocity(),
+          intent.getMaxAcceleration()); 
       this.getKinematics().update(delta, stepSize);
+      if (this.getLocation().near(this.getDestination())) {
+        this.destination = Optional.empty();
+      }
       return;
     } 
     if (intentions.hasIntentionWithType(IntentionType.MOVE)) {
       MoveIntention intent = (MoveIntention) intentions.getIntentionWithType(IntentionType.MOVE);
       if (intent.hasAcceleration()) {
+        this.destination = Optional.empty();
         this.getKinematics().update(intent.getAcceleration(), stepSize);
+      } else if (this.hasDestination()) {
+        this.shiftToDestination(stepSize);
       } else {
         this.getKinematics().update(stepSize);
       }
@@ -306,11 +338,25 @@ public class Remote {
     }
     if (intentions.hasIntentionWithType(IntentionType.STEER)) {
       SteerIntention intent = (SteerIntention) intentions.getIntentionWithType(IntentionType.STEER);
-      Vector direction = (intent.hasDirection()) ? intent.getDirection()
-          : Vector.sub(this.getKinematics().getHomeLocation(), this.getKinematics().getLocation());
-      Vector delta = this.getKinematics().shiftVelocityTo(
-          direction.getUnitVector().scale(this.getKinematics().getMotion().getSpeed()));
-      this.getKinematics().update(delta, stepSize);
+      if (intent.hasDirection()) {
+        Vector delta = this
+            .getKinematics()
+            .shiftVelocityTo(intent.getDirection().getUnitVector().scale(this.getSpeed()));
+        this.destination = Optional.empty();
+        this.getKinematics().update(delta, stepSize);
+      } else if (this.hasDestination()) {
+        Vector direction = Vector.sub(this.getDestination(), this.getLocation());
+        Vector delta = this
+            .getKinematics()
+            .shiftVelocityTo(direction.getUnitVector().scale(this.getSpeed()));
+        this.getKinematics().update(delta, stepSize);
+      } else {
+        this.getKinematics().update(stepSize);
+      }
+      return;
+    }
+    if (this.hasDestination()) {
+      this.shiftToDestination(stepSize);
       return;
     }
     this.getKinematics().update(stepSize);
