@@ -18,14 +18,18 @@ public class App {
   private static final String WIDTH_ARG = "-width";
 
   private static Application getApplication(String scenarioID, ArgsParser args) throws ClientException {
-    if (scenarioID.equals("Default")) {
-      return new Default(args);
-    }
-    if (scenarioID.equals("BmpExample")) {
-      return new BmpExample(args);
-    }
-    if (scenarioID.equals("RandomWalk")) {
-      return new RandomWalk(args);
+    try {
+      if (scenarioID.equals("Default")) {
+        return new Default(args);
+      }
+      if (scenarioID.equals("BmpExample")) {
+        return new BmpExample(args);
+      }
+      if (scenarioID.equals("RandomWalk")) {
+        return new RandomWalk(args);
+      }
+    } catch (Exception e) {
+      throw new ClientException(e.getMessage());
     }
     throw new ClientException(String.format("Unrecognized application ID <%s>", scenarioID));
   }

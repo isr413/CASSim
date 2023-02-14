@@ -46,7 +46,8 @@ public class Logger implements Closeable {
   }
 
   public Logger(String scenarioID, boolean append) throws IOException {
-    this.filename = String.format("%s_%s.log", scenarioID, new SimpleDateFormat("yyyyMMddHHmmssZ").format(new Date()));
+    this.filename = String.format("logs/%s_%s.log", scenarioID,
+        new SimpleDateFormat("yyyyMMddHHmmssZ").format(new Date()));
     this.writer = new PrintWriter(new FileWriter(new File(filename), append), true);
   }
 
