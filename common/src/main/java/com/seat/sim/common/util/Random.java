@@ -79,6 +79,10 @@ public class Random {
     return this.getRandomSpeed3D(this.rng.nextGaussian() * stddev + mean);
   }
 
+  public java.util.Random getRng() {
+    return this.rng;
+  }
+
   public long getSeed() {
     return this.seed;
   }

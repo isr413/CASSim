@@ -2,6 +2,10 @@ package com.seat.sim.common.math;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import com.seat.sim.common.core.CommonException;
@@ -146,6 +150,44 @@ public class Grid extends Jsonable {
 
   public String getLabel() {
     return String.format("<g: (%d, %d)>", this.width, this.height);
+  }
+
+  public List<Zone> getNeighborhood(Vector location) {
+    if (!this.hasZoneAtLocation(location)) {
+      return Collections.emptyList();
+    }
+    return this.getNeighborhood(this.getZoneAtLocation(location));
+  }
+
+  public List<Zone> getNeighborhood(Zone zone) {
+    List<Zone> neighbors = new ArrayList<>();
+    double cx = zone.getLocation().getX(), cy = zone.getLocation().getY(), size = zone.getSize();
+    if (this.hasZoneAtLocation(cx - size, cy - size)) {
+      neighbors.add(this.getZoneAtLocation(cx - size, cy - size));
+    }
+    if (this.hasZoneAtLocation(cx, cy - size)) {
+      neighbors.add(this.getZoneAtLocation(cx, cy - size));
+    }
+    if (this.hasZoneAtLocation(cx + size, cy - size)) {
+      neighbors.add(this.getZoneAtLocation(cx + size, cy - size));
+    }
+    if (this.hasZoneAtLocation(cx - size, cy)) {
+      neighbors.add(this.getZoneAtLocation(cx - size, cy));
+    }
+    neighbors.add(zone);
+    if (this.hasZoneAtLocation(cx + size, cy)) {
+      neighbors.add(this.getZoneAtLocation(cx + size, cy));
+    }
+    if (this.hasZoneAtLocation(cx - size, cy + size)) {
+      neighbors.add(this.getZoneAtLocation(cx - size, cy + size));
+    }
+    if (this.hasZoneAtLocation(cx, cy + size)) {
+      neighbors.add(this.getZoneAtLocation(cx, cy + size));
+    }
+    if (this.hasZoneAtLocation(cx + size, cy + size)) {
+      neighbors.add(this.getZoneAtLocation(cx + size, cy + size));
+    }
+    return neighbors;
   }
 
   public int getWidth() {
