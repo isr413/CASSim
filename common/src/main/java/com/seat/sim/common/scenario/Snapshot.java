@@ -209,6 +209,10 @@ public class Snapshot extends Jsonable {
     return this.activeRemoteIDs.contains(remoteID);
   }
 
+  public boolean hasActiveRemoteWithTag(String tag) {
+    return !this.getAllRemoteStatesWithTag(tag).isEmpty();
+  }
+
   public boolean hasDynamicRemotes() {
     return !this.dynamicRemoteIDs.isEmpty();
   }
