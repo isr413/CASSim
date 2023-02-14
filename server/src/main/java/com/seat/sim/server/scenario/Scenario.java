@@ -15,6 +15,7 @@ import com.seat.sim.common.remote.RemoteController;
 import com.seat.sim.common.remote.RemoteProto;
 import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.remote.intent.IntentionSet;
+import com.seat.sim.common.remote.intent.IntentionType;
 import com.seat.sim.common.scenario.ScenarioConfig;
 import com.seat.sim.common.scenario.ScenarioStatus;
 import com.seat.sim.common.scenario.Snapshot;
@@ -312,6 +313,17 @@ public class Scenario {
     }
     if (this.hasError()) {
       this.setStatus(ScenarioStatus.IN_PROGRESS);
+    }
+    if (intentions.containsKey(this.getScenarioID())) {
+      Debugger.logger.info("Updating scenario ...");
+      IntentionSet scenarioIntentions = intentions.get(this.getScenarioID());
+      if (scenarioIntentions.hasIntentionWithType(IntentionType.DONE) ||
+          scenarioIntentions.hasIntentionWithType(IntentionType.SHUTDOWN) ||
+          scenarioIntentions.hasIntentionWithType(IntentionType.STOP)) {
+        Debugger.logger.state("Stopping scenario");
+        this.setStatus(ScenarioStatus.DONE);
+      }
+      return;
     }
     Debugger.logger.info("Updating remotes ...");
     this.updateRemotes(intentions, stepSize);

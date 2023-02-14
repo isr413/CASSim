@@ -56,6 +56,10 @@ public interface Application {
 
   double getStepSize();
 
+  default int getTrials() {
+    return 1;
+  }
+
   boolean hasGrid();
 
   Collection<IntentionSet> update(Snapshot snap);
