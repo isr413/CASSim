@@ -35,6 +35,7 @@ public class Physics {
 
   public static Optional<Collision> getBoundaryCollision(Vector tail, Vector tip, Box box) {
     if (!box.isInbounds(tail) && !box.isInbounds(tip)) {
+      // TODO: handle boundary collision of vector passing through
       return Optional.empty();
     }
     if (box.isBoundaryCollision(tip)) {
@@ -144,7 +145,7 @@ public class Physics {
     }
     Vector ray = tail;
     Optional<Zone> zone = grid.checkZoneAtLocation(tail);
-    while (zone.isPresent() && Vector.dist(tail, ray) < Vector.dist(tail, tip)) {
+    while (zone.isPresent() && Vector.dist(tail, ray) <= Vector.dist(tail, tip)) {
       if (grid.hasZoneAtLocation(tip) && grid.getZoneAtLocation(tip) == zone.get()) {
         break;
       }

@@ -51,24 +51,16 @@ public class Scenario {
     if (!this.hasGrid() || remote == null || prevLocation == null || remote.getLocation().near(prevLocation)) {
       return;
     }
-    Optional<Collision> coll = Physics.getRayTrace(prevLocation, remote.getLocation(), this.getGrid());
-    if (coll.isEmpty()) {
-      return;
-    }
-    Vector bounce = coll.get().reflect(remote.getLocation());
-    for (Optional<Collision> tmp = Physics.getRayTrace(coll.get().getPoint(), bounce, this.getGrid());
-         tmp.isPresent();
-         tmp = Physics.getRayTrace(tmp.get().getPoint(), bounce, this.getGrid())
+    for (Optional<Collision> coll = Physics.getRayTrace(prevLocation, remote.getLocation(), this.getGrid());
+         coll.isPresent();
+         coll = Physics.getRayTrace(coll.get().getPoint(), remote.getLocation(), this.getGrid())
         ) {
-      coll = tmp;
-      bounce = coll.get().reflect(bounce);
+      remote.setLocationTo(coll.get().reflect(remote.getLocation()));
+      remote.setVelocityTo(Vector.sub(
+            coll.get().reflect(Vector.add(coll.get().getPoint(), remote.getVelocity())),
+            coll.get().getPoint()
+          ));
     }
-    remote.setLocationTo(bounce);
-    Vector direction = Vector.sub(
-          coll.get().reflect(Vector.add(coll.get().getPoint(), remote.getVelocity())),
-          coll.get().getPoint()
-        );
-    remote.setVelocityTo(direction);
   }
 
   private void init() {
