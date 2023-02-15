@@ -27,6 +27,7 @@ import com.seat.sim.common.sensor.SensorStats;
 import com.seat.sim.common.util.ArgsParser;
 import com.seat.sim.common.util.Logger;
 import com.seat.sim.common.util.Random;
+import com.seat.sim.common.util.Range;
 
 public class Default implements Application {
   // Scenario info
@@ -63,16 +64,22 @@ public class Default implements Application {
   private static final double HUMAN_VISION_RANGE = 14.;
 
   // Tunable params
-  private static final int NUM_TRIALS = 100;
-  private static final double VICTIM_STOP_PROBABILITY_ALPHA = 0.5;
+  private static final Range VICTIM_STOP_PROBABILITY_ALPHA = new Range(0., 0.05, 1., true);
+  private static final int TRIALS_PER = 10;
+  private static final int NUM_TRIALS =
+      ((int) ((Default.VICTIM_STOP_PROBABILITY_ALPHA.getEnd() - Default.VICTIM_STOP_PROBABILITY_ALPHA.getStart()) /
+          Default.VICTIM_STOP_PROBABILITY_ALPHA.getStep())) * Default.TRIALS_PER;
  
+  private Range alpha;
   private Grid grid;
   private Logger logger;
   private Random rng;
   private List<RemoteConfig> remotes;
+  private int trials = 0;
 
   public Default(ArgsParser args) throws IOException {
     this.logger = new Logger(Default.SCENARIO_ID);
+    this.alpha = new Range(Default.VICTIM_STOP_PROBABILITY_ALPHA);
     this.init();
   }
 
@@ -133,7 +140,7 @@ public class Default implements Application {
               )
       );
     this.rng = new Random(this.getSeed());
-    this.logger.log(-1., String.format("Seed %d", this.rng.getSeed()));
+    this.logger.log(-1., String.format("Seed %d - ALPHA %.2f", this.rng.getSeed(), this.alpha.getStart()));
   }
 
   public Optional<Grid> getGrid() {
@@ -161,6 +168,13 @@ public class Default implements Application {
   }
 
   public void reset() {
+    this.trials++;
+    if (this.trials % Default.TRIALS_PER == 0 && !this.alpha.isDone()) {
+      this.alpha.update();
+    }
+    if (this.alpha.isDone()) {
+      this.alpha = new Range(Default.VICTIM_STOP_PROBABILITY_ALPHA);
+    }
     this.init();
   }
 
@@ -183,10 +197,17 @@ public class Default implements Application {
           IntentionSet intentions = new IntentionSet(state.getRemoteID());
           if (state.hasSubjectWithID(baseID)) {
             intentions.addIntention(IntentRegistry.Done());
-            this.logger.log(snap.getTime(), String.format("Rescued victim %s", state.getRemoteID()));
+            this.logger.log(
+                  snap.getTime(),
+                  String.format(
+                        "Rescued victim %s (%.2f)",
+                        state.getRemoteID(),
+                        this.alpha.getStart()
+                      )
+                );
             return intentions;
           }
-          if (this.rng.getRandomProbability() < Default.VICTIM_STOP_PROBABILITY_ALPHA) {
+          if (this.rng.getRandomProbability() < this.alpha.getStart()) {
             intentions.addIntention(IntentRegistry.Stop());
             return intentions;
           }

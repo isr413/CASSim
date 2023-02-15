@@ -62,5 +62,7 @@ public interface Application {
 
   boolean hasGrid();
 
+  default void reset() {}
+
   Collection<IntentionSet> update(Snapshot snap);
 }

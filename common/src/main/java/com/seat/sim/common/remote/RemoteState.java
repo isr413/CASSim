@@ -190,6 +190,13 @@ public class RemoteState extends Jsonable {
     return this.getVelocity().getMagnitude();
   }
 
+  public Set<String> getSubjects() {
+    return this.getSensorStates()
+      .stream()
+      .flatMap(state -> state.getSubjects().stream())
+      .collect(Collectors.toSet());
+  }
+
   public Set<String> getTags() {
     return this.tags;
   }
