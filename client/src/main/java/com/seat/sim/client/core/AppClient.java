@@ -63,6 +63,9 @@ public class AppClient {
     Debugger.logger.state(String.format("Loaded application <%s>", this.app.getScenarioID()));
 
     for (int t = 1; t <= this.app.getTrials(); t++) {
+      if (t > 1) {
+        this.app.reset();
+      }
       Debugger.logger.info(String.format("Sending scenario <%s> ...", app.getScenarioID()));
       this.socket.sendScenarioConfig(this.app.getScenarioConfig());
       Debugger.logger.state(String.format("Scenario <%s> sent", app.getScenarioID()));
