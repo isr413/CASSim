@@ -86,6 +86,7 @@ public class Sensor {
         .filter(remote -> !this.remote.hasKinematics() || !this.remote.getKinematics().hasLocation() ||
             !this.hasRange() || Vector.dist(this.remote.getKinematics().getLocation(),
                 remote.getKinematics().getLocation()) <= this.getRange())
+        .filter(remote -> this.scenario.getRng().getRandomProbability() < this.getAccuracy())
         .map(remote -> remote.getRemoteID())
         .collect(Collectors.toSet());
   }

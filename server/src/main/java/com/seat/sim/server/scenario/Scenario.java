@@ -190,6 +190,10 @@ public class Scenario {
     return this.allRemotes.get(remoteID);
   }
 
+  public Random getRng() {
+    return this.rng;
+  }
+
   public String getScenarioID() {
     return this.config.getScenarioID();
   }
