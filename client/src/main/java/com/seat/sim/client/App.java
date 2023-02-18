@@ -15,12 +15,14 @@ public class App {
   private static final String HOST_ARG = "-h";
   private static final String ID_ARG = "-id";
   private static final String PORT_ARG = "-p";
+  private static final String THREAD_ARG = "-j";
   private static final String WIDTH_ARG = "-width";
 
   private static Application getApplication(String scenarioID, ArgsParser args) throws ClientException {
+    int threadID = (args.hasParam(App.THREAD_ARG)) ? args.getInt(App.THREAD_ARG) : 0;
     try {
       if (scenarioID.equals("Default")) {
-        return new Default(args);
+        return new Default(args, threadID);
       }
       if (scenarioID.equals("BmpExample")) {
         return new BmpExample(args);
