@@ -54,6 +54,10 @@ public class Range {
     return this.start >= this.end;
   }
 
+  public int points() {
+    return (int) ((this.end - this.start) / this.step);
+  }
+
   public String toString() {
     return String.format("%.4f:.4f:.4f", this.start, this.step, this.end);
   }
