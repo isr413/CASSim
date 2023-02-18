@@ -1,8 +1,11 @@
 package com.seat.sim.client.sandbox;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -42,8 +45,8 @@ public class Default implements Application {
   private static final int ZONE_SIZE = 14;
 
   private static final Vector GRID_CENTER = new Vector(
-        Default.GRID_SIZE * Default.ZONE_SIZE / 2,
-        Default.GRID_SIZE * Default.ZONE_SIZE / 2
+        Default.GRID_SIZE * Default.ZONE_SIZE / 2.,
+        Default.GRID_SIZE * Default.ZONE_SIZE / 2.
       );
 
   // Base info
@@ -61,30 +64,42 @@ public class Default implements Application {
 
   // Sensors
   private static final String HUMAN_VISION = "Human_Vision";
-  private static final double HUMAN_VISION_RANGE = 14.;
+  private static final double HUMAN_VISION_RANGE = Default.ZONE_SIZE;
 
   // Tunable params
-  private static final Range VICTIM_STOP_PROBABILITY_ALPHA = new Range(0., 0.05, 1., true);
-  private static final int TRIALS_PER = 10;
-  private static final int NUM_TRIALS =
-      ((int) ((Default.VICTIM_STOP_PROBABILITY_ALPHA.getEnd() - Default.VICTIM_STOP_PROBABILITY_ALPHA.getStart()) /
-          Default.VICTIM_STOP_PROBABILITY_ALPHA.getStep())) * Default.TRIALS_PER;
+  private static final Range VICTIM_STOP_PROBABILITY_ALPHA = new Range(0., 0.1, 1., true);
+  private static final int TRIALS_PER = 4;
  
   private Range alpha;
   private Grid grid;
   private Logger logger;
   private Random rng;
   private List<RemoteConfig> remotes;
-  private int trials = 0;
+  private long seed;
+  private Iterator<Long> seeds;
+  private int totalTrials;
+  private int trials;
 
   public Default(ArgsParser args) throws IOException {
-    this.logger = new Logger(Default.SCENARIO_ID);
-    this.alpha = new Range(Default.VICTIM_STOP_PROBABILITY_ALPHA);
-    this.init();
+    this(args, 0);
   }
 
-  private void init() {
+  public Default(ArgsParser args, int threadID) throws IOException {
+    this.logger = (threadID > 0) ? new Logger(String.format("%s_%d", Default.SCENARIO_ID, threadID))
+        : new Logger(Default.SCENARIO_ID);
+    this.alpha = new Range(Default.VICTIM_STOP_PROBABILITY_ALPHA);
     this.grid = new Grid(Default.GRID_SIZE, Default.GRID_SIZE, Default.ZONE_SIZE);
+    this.init(threadID);
+  }
+
+  private void init(int threadID) throws IOException {
+    this.loadSeeds();
+    this.setTrials(threadID);
+    this.setSeed();
+    this.loadRemotes();
+  }
+
+  private void loadRemotes() {
     this.remotes = List.of(
           new RemoteConfig(
                 new RemoteProto(
@@ -139,8 +154,52 @@ public class Default implements Application {
                 true
               )
       );
-    this.rng = new Random(this.getSeed());
-    this.logger.log(-1., String.format("Seed %d - ALPHA %.2f", this.rng.getSeed(), this.alpha.getStart()));
+  }
+
+  private void loadSeeds() throws IOException {
+    this.seeds = Files.lines(Path.of("config/seeds.txt"))
+        .mapToLong(Long::parseLong)
+        .boxed()
+        .collect(Collectors.toList())
+        .iterator();
+  }
+
+  private void reset(boolean report) {
+    this.trials++;
+    if (this.trials % Default.TRIALS_PER == 0 && !this.alpha.isDone()) {
+      this.alpha.update();
+    }
+    if (this.alpha.isDone()) {
+      this.alpha = new Range(Default.VICTIM_STOP_PROBABILITY_ALPHA);
+    }
+    this.setSeed(report);
+  }
+
+  private void setSeed() {
+    this.setSeed(true);
+  }
+
+  private void setSeed(boolean report) {
+    if (this.seeds.hasNext()) {
+      this.seed = this.seeds.next();
+    } else {
+      this.seed = this.rng.getRandomNumber(Integer.MAX_VALUE);
+    }
+    this.rng = new Random(this.seed);
+    if (report) {
+      this.logger.log(-1., String.format("Seed %d - ALPHA %.2f", this.rng.getSeed(), this.alpha.getStart()));
+    }
+  }
+
+  private void setTrials(int threadID) {
+    this.totalTrials = Default.VICTIM_STOP_PROBABILITY_ALPHA.points() * Default.TRIALS_PER;
+    this.trials = 0;
+    if (threadID > 0) {
+      this.totalTrials /= 4;
+      for (int t = 0; t < (threadID - 1) * this.totalTrials; t++) {
+        this.reset(false);
+      }
+    }
   }
 
   public Optional<Grid> getGrid() {
@@ -155,6 +214,10 @@ public class Default implements Application {
     return this.remotes;
   }
 
+  public long getSeed() {
+    return this.seed;
+  }
+
   public String getScenarioID() {
     return Default.SCENARIO_ID;
   }
@@ -162,24 +225,17 @@ public class Default implements Application {
   public double getStepSize() {
     return Default.STEP_SIZE;
   }
-  
+
+  public int getTrials() {
+    return this.totalTrials;
+  }
+
   public boolean hasGrid() {
     return true;
   }
 
   public void reset() {
-    this.trials++;
-    if (this.trials % Default.TRIALS_PER == 0 && !this.alpha.isDone()) {
-      this.alpha.update();
-    }
-    if (this.alpha.isDone()) {
-      this.alpha = new Range(Default.VICTIM_STOP_PROBABILITY_ALPHA);
-    }
-    this.init();
-  }
-
-  public int getTrials() {
-    return Default.NUM_TRIALS;
+    this.reset(true);
   }
 
   public Collection<IntentionSet> update(Snapshot snap) {
