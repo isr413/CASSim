@@ -31,15 +31,15 @@ public class RemoteController extends Jsonable {
   }
 
   public void activateAllSensors() {
-    this.addIntention(IntentRegistry.Activate());
-  }
-
-  public void activateAllSensors(Collection<String> sensorIDs) {
-    this.addIntention(IntentRegistry.Activate(sensorIDs));
+    this.addIntention(IntentRegistry.ActivateAllSensors());
   }
 
   public void activateSensor(String sensorID) {
-    this.addIntention(IntentRegistry.Activate(sensorID));
+    this.addIntention(IntentRegistry.ActivateSensor(sensorID));
+  }
+
+  public void activateSensors(Collection<String> sensorIDs) {
+    this.addIntention(IntentRegistry.ActivateSensors(sensorIDs));
   }
 
   public void brake(Vector acceleration) {
@@ -47,15 +47,15 @@ public class RemoteController extends Jsonable {
   }
 
   public void deactivateAllSensors() {
-    this.addIntention(IntentRegistry.Deactivate());
-  }
-
-  public void deactivateAllSensors(Collection<String> sensorIDs) {
-    this.addIntention(IntentRegistry.Deactivate(sensorIDs));
+    this.addIntention(IntentRegistry.DeactivateAllSensors());
   }
 
   public void deactivateSensor(String sensorID) {
-    this.addIntention(IntentRegistry.Deactivate(sensorID));
+    this.addIntention(IntentRegistry.DeactivateSensor(sensorID));
+  }
+
+  public void deactivateSensors(Collection<String> sensorIDs) {
+    this.addIntention(IntentRegistry.DeactivateSensors(sensorIDs));
   }
 
   public void done() {
@@ -67,7 +67,7 @@ public class RemoteController extends Jsonable {
   }
   
   public void goHome() {
-    this.addIntention(IntentRegistry.GoTo());
+    this.addIntention(IntentRegistry.GoHome());
   }
 
   public void goToLocation(Vector location) {

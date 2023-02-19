@@ -8,27 +8,27 @@ import com.seat.sim.common.math.Vector;
 
 public class IntentRegistry {
 
-  public static ActivateIntention Activate() {
+  public static ActivateIntention ActivateAllSensors() {
     return new ActivateIntention();
   }
 
-  public static ActivateIntention Activate(String sensorID) {
+  public static ActivateIntention ActivateSensor(String sensorID) {
     return new ActivateIntention(sensorID);
   }
 
-  public static ActivateIntention Activate(Collection<String> sensorIDs) {
+  public static ActivateIntention ActivateSensors(Collection<String> sensorIDs) {
     return new ActivateIntention(sensorIDs);
   }
 
-  public static DeactivateIntention Deactivate() {
+  public static DeactivateIntention DeactivateAllSensors() {
     return new DeactivateIntention();
   }
 
-  public static DeactivateIntention Deactivate(String sensorID) {
+  public static DeactivateIntention DeactivateSensor(String sensorID) {
     return new DeactivateIntention(sensorID);
   }
 
-  public static DeactivateIntention Deactivate(Collection<String> sensorIDs) {
+  public static DeactivateIntention DeactivateSensors(Collection<String> sensorIDs) {
     return new DeactivateIntention(sensorIDs);
   }
 
@@ -66,7 +66,7 @@ public class IntentRegistry {
     }
   }
 
-  public static GoToIntention GoTo() {
+  public static GoToIntention GoHome() {
     return new GoToIntention();
   }
 
