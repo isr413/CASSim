@@ -53,7 +53,7 @@ public class Scenario {
       return;
     }
     for (Optional<Collision> coll = Physics.getRayTrace(prevLocation, remote.getLocation(), this.getGrid());
-         coll.isPresent();
+         coll.isPresent() && !coll.get().getPoint().near(remote.getLocation());
          coll = Physics.getRayTrace(coll.get().getPoint(), remote.getLocation(), this.getGrid())
         ) {
       remote.setLocationTo(coll.get().reflect(remote.getLocation()));
@@ -351,15 +351,15 @@ public class Scenario {
       Optional<Vector> prevLocation = Optional.empty();
       if (this.hasGrid() && remote.hasLocation() && Physics.isInbounds(remote.getLocation(), this.getGrid())) {
         prevLocation = Optional.of(remote.getLocation());
-        if (remote.isMobile()) {
-          if (this.getGrid().hasZoneAtLocation(prevLocation.get()) &&
-              this.getGrid().getZoneAtLocation(prevLocation.get()).hasZoneType(ZoneType.BLOCKED)) {
-            prevLocation = Optional.of(Vector.sub(prevLocation.get(), remote.getVelocity().scale(stepSize)));
-          }
-          if (!Vector.near(remote.getLocation(), prevLocation.get())) {
-            this.enforceBounds(remote, prevLocation.get());
-          }
+        if (this.getGrid().hasZones() && this.getGrid().hasZoneAtLocation(prevLocation.get()) &&
+            this.getGrid().getZoneAtLocation(prevLocation.get()).hasZoneType(ZoneType.BLOCKED)) {
+          Debugger.logger.fatal(String.format("Remote STUCK %s ...", remote.getRemoteID()));
+          continue;
         }
+      }
+      if (this.hasGrid() && remote.hasLocation() && !Physics.isInbounds(remote.getLocation(), this.getGrid())) {
+        Debugger.logger.fatal(String.format("Remote OUT-OF-BOUNDS %s ...", remote.getRemoteID()));
+        continue;
       }
       if (intentions != null && intentions.containsKey(remote.getRemoteID())) {
         remote.update(intentions.get(remote.getRemoteID()), stepSize);
