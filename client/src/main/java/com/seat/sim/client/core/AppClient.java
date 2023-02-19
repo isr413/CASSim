@@ -16,6 +16,7 @@ public class AppClient {
   private final static boolean DEFAULT_DISPLAY = false;
 
   private Application app;
+  private GUIGridFrame frame;
   private long frameTime;
   private int panelHeight;
   private int panelWidth;
@@ -72,15 +73,16 @@ public class AppClient {
 
       Debugger.logger.info(this.app.getScenarioConfig().toString());
 
-      GUIGridFrame frame = null;
       if (visualDisplay && this.app.hasGrid()) {
         Debugger.logger.info("Starting visual display ...");
-        if (this.panelWidth > 0 && this.panelHeight > 0) {
-          frame = new GUIGridFrame(app.getScenarioID(), this.panelWidth, this.panelHeight, this.app.getGrid().get());
-        } else {
-          frame = new GUIGridFrame(app.getScenarioID(), this.app.getGrid().get());
+        if (this.frame == null) {
+          if (this.panelWidth > 0 && this.panelHeight > 0) {
+            this.frame = new GUIGridFrame(app.getScenarioID(), this.panelWidth, this.panelHeight, this.app.getGrid().get());
+          } else {
+            this.frame = new GUIGridFrame(app.getScenarioID(), this.app.getGrid().get());
+          }
         }
-        frame.setVisible(true);
+        this.frame.setVisible(true);
         Debugger.logger.state("Frame set to visible");
         this.frameTime = System.currentTimeMillis();
       }
@@ -100,9 +102,9 @@ public class AppClient {
           break;
         }
 
-        if (visualDisplay && frame != null && this.app.hasGrid()) {
+        if (visualDisplay && this.frame != null && this.app.hasGrid()) {
           Debugger.logger.info(String.format("Displaying snap <%s> ...", snap.getHash()));
-          frame.displaySnap(snap);
+          this.frame.displaySnap(snap);
         }
 
         Debugger.logger.info("Updating application ...");
@@ -112,7 +114,7 @@ public class AppClient {
         this.socket.sendIntentions(intentions);
         Debugger.logger.state("Intention(s) sent");
 
-        if (!visualDisplay || frame == null || !this.app.hasGrid() || delay == 0) {
+        if (!visualDisplay || this.frame == null || !this.app.hasGrid() || delay == 0) {
           continue;
         }
 
