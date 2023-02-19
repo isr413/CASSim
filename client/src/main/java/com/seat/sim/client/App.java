@@ -30,7 +30,7 @@ public class App {
         return new BmpExample(args);
       }
       if (scenarioID.equals("RandomWalk")) {
-        return new RandomWalk(args);
+        return new RandomWalk(args, threadID, seed);
       }
     } catch (Exception e) {
       throw new ClientException(e.getMessage());
