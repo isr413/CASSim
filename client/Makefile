@@ -13,6 +13,9 @@ run:
 run_default:
 	java -jar target/client-1.0-SNAPSHOT-jar-with-dependencies.jar -id Default -h 127.0.0.1 -p 8080
 
+run_randomwalk:
+	java -jar target/client-1.0-SNAPSHOT-jar-with-dependencies.jar -id RandomWalk -h 127.0.0.1 -p 8080
+
 run_thread_%:
 	java -jar target/client-1.0-SNAPSHOT-jar-with-dependencies.jar -id Default -h 127.0.0.1 -j $* -p $(shell echo $$(( 50000 + $* )))
 
