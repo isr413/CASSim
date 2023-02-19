@@ -65,16 +65,18 @@ public class RandomWalk implements Application {
   private static final int DRONE_COUNT = 32;
   private static final Vector DRONE_FUEL_USAGE = new Vector(0.0001, 0.0001, 0.0001);
   private static final Vector DRONE_INITIAL_VELOCITY = Vector.ZERO;
-  private static final double DRONE_MAX_ACCELERATION = 1.4;
-  private static final double DRONE_MAX_VELOCITY = 6.7;
+  private static final double DRONE_SCAN_VELOCITY = 6.7;
+  private static final double DRONE_SCAN_ACCELERATION = 1.4;
+  private static final double DRONE_MAX_VELOCITY = 20.;
+  private static final double DRONE_MAX_ACCELERATION = 3.;
 
   // Victim info
   private static final String VICTIM_TAG = "Victim";
   private static final TeamColor VICTIM_COLOR = TeamColor.RED;
   private static final int VICTIM_COUNT = 1024;
   private static final Vector VICTIM_INITIAL_VELOCITY = Vector.ZERO;
-  private static final double VICTIM_MAX_ACCELERATION = 2.5;
   private static final double VICTIM_MAX_VELOCITY = 1.4;
+  private static final double VICTIM_MAX_ACCELERATION = 2.5;
 
   // Sensors
   private static final String HUMAN_VISION = "Human_Vision";
@@ -449,11 +451,12 @@ public class RandomWalk implements Application {
               this.logger.log(snap.getTime(), String.format("Drone done %s", state.getRemoteID()));
               return intent;
             }
-            intent.addIntention(IntentRegistry.GoTo());
+            intent.addIntention(IntentRegistry.GoHome());
             return intent;
           }
           if (this.shouldReturnHome(snap, state)) {
-            intent.addIntention(IntentRegistry.GoTo());
+            intent.addIntention(IntentRegistry.GoHome());
+            intent.addIntention(IntentRegistry.DeactivateAllSensors());
             this.doneRemotes.add(state.getRemoteID());
             this.logger.log(snap.getTime(), String.format("Drone returning home %s", state.getRemoteID()));
             return intent;
@@ -464,7 +467,13 @@ public class RandomWalk implements Application {
           }
           Optional<Vector> location = this.randomWalk(snap, state, true);
           if (location.isPresent()) {
-            intent.addIntention(IntentRegistry.GoTo(location.get()));
+            intent.addIntention(
+                IntentRegistry.GoTo(
+                    location.get(),
+                    RandomWalk.DRONE_SCAN_VELOCITY,
+                    RandomWalk.DRONE_SCAN_ACCELERATION
+                  )
+              );
           } else {
             intent.addIntention(IntentRegistry.Stop());
           }

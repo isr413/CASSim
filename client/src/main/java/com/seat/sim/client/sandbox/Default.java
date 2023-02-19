@@ -59,8 +59,8 @@ public class Default implements Application {
   private static final TeamColor VICTIM_COLOR = TeamColor.RED;
   private static final int VICTIM_COUNT = 1024;
   private static final Vector VICTIM_INITIAL_VELOCITY = Vector.ZERO;
-  private static final double VICTIM_MAX_ACCELERATION = 2.5;
   private static final double VICTIM_MAX_VELOCITY = 1.4;
+  private static final double VICTIM_MAX_ACCELERATION = 2.5;
 
   // Sensors
   private static final String HUMAN_VISION = "Human_Vision";
