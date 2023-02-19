@@ -15,14 +15,16 @@ public class App {
   private static final String HOST_ARG = "-h";
   private static final String ID_ARG = "-id";
   private static final String PORT_ARG = "-p";
+  private static final String SEED_ARG = "-seed";
   private static final String THREAD_ARG = "-j";
   private static final String WIDTH_ARG = "-width";
 
   private static Application getApplication(String scenarioID, ArgsParser args) throws ClientException {
     int threadID = (args.hasParam(App.THREAD_ARG)) ? args.getInt(App.THREAD_ARG) : 0;
+    long seed = (args.hasParam(App.SEED_ARG)) ? args.getLong(App.SEED_ARG) : 0;
     try {
       if (scenarioID.equals("Default")) {
-        return new Default(args, threadID);
+        return new Default(args, threadID, seed);
       }
       if (scenarioID.equals("BmpExample")) {
         return new BmpExample(args);

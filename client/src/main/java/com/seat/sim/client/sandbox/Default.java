@@ -68,7 +68,7 @@ public class Default implements Application {
 
   // Tunable params
   private static final Range VICTIM_STOP_PROBABILITY_ALPHA = new Range(0., 0.1, 1., true);
-  private static final int TRIALS_PER = 4;
+  private static final int TRIALS_PER = 100;
  
   private Range alpha;
   private Grid grid;
@@ -80,22 +80,21 @@ public class Default implements Application {
   private int totalTrials;
   private int trials;
 
-  public Default(ArgsParser args) throws IOException {
-    this(args, 0);
-  }
-
-  public Default(ArgsParser args, int threadID) throws IOException {
+  public Default(ArgsParser args, int threadID, long seed) throws IOException {
     this.logger = (threadID > 0) ? new Logger(String.format("%s_%d", Default.SCENARIO_ID, threadID))
         : new Logger(Default.SCENARIO_ID);
     this.alpha = new Range(Default.VICTIM_STOP_PROBABILITY_ALPHA);
     this.grid = new Grid(Default.GRID_SIZE, Default.GRID_SIZE, Default.ZONE_SIZE);
-    this.init(threadID);
+    this.init(threadID, seed);
   }
 
-  private void init(int threadID) throws IOException {
+  private void init(int threadID, long seed) throws IOException {
     this.loadSeeds();
     this.setTrials(threadID);
     this.setSeed();
+    while (seed > 0 && this.seed != seed) {
+      this.reset();
+    }
     this.loadRemotes();
   }
 
@@ -164,7 +163,7 @@ public class Default implements Application {
         .iterator();
   }
 
-  private void reset(boolean report) {
+  private void reset(boolean skip) {
     this.trials++;
     if (this.trials % Default.TRIALS_PER == 0 && !this.alpha.isDone()) {
       this.alpha.update();
@@ -172,21 +171,21 @@ public class Default implements Application {
     if (this.alpha.isDone()) {
       this.alpha = new Range(Default.VICTIM_STOP_PROBABILITY_ALPHA);
     }
-    this.setSeed(report);
+    this.setSeed(skip);
   }
 
   private void setSeed() {
-    this.setSeed(true);
+    this.setSeed(false);
   }
 
-  private void setSeed(boolean report) {
+  private void setSeed(boolean skip) {
     if (this.seeds.hasNext()) {
       this.seed = this.seeds.next();
     } else {
       this.seed = this.rng.getRandomNumber(Integer.MAX_VALUE);
     }
     this.rng = new Random(this.seed);
-    if (report) {
+    if (!skip) {
       this.logger.log(-1., String.format("Seed %d - ALPHA %.2f", this.rng.getSeed(), this.alpha.getStart()));
     }
   }
@@ -197,9 +196,40 @@ public class Default implements Application {
     if (threadID > 0) {
       this.totalTrials /= 4;
       for (int t = 0; t < (threadID - 1) * this.totalTrials; t++) {
-        this.reset(false);
+        this.skip();
       }
     }
+  }
+
+  private void skip() {
+    this.reset(true);
+  }
+
+  protected Optional<Vector> randomWalk(Vector location) {
+    if (!this.grid.hasZoneAtLocation(location)) {
+      return Optional.empty();
+    }
+    Zone zone = this.grid.getZoneAtLocation(location);
+    List<Zone> neighborhood = this.grid.getNeighborhood(zone);
+    Collections.shuffle(neighborhood, this.rng.getRng());
+    Optional<Zone> nextZone = neighborhood
+        .stream()
+        .filter(neighbor -> neighbor != zone && !neighbor.hasZoneType(ZoneType.BLOCKED))
+        .findFirst();
+    if (nextZone.isEmpty()) {
+      return Optional.empty();
+    }
+    Vector nextLocation = new Vector(
+          this.rng.getRandomPoint(
+              nextZone.get().getLocation().getX() - nextZone.get().getSize() / 2.,
+              nextZone.get().getLocation().getX() + nextZone.get().getSize() / 2.
+            ),
+          this.rng.getRandomPoint(
+              nextZone.get().getLocation().getY() - nextZone.get().getSize() / 2.,
+              nextZone.get().getLocation().getY() + nextZone.get().getSize() / 2.
+            )
+        );
+    return Optional.of(nextLocation);
   }
 
   public Optional<Grid> getGrid() {
@@ -235,7 +265,7 @@ public class Default implements Application {
   }
 
   public void reset() {
-    this.reset(true);
+    this.reset(false);
   }
 
   public Collection<IntentionSet> update(Snapshot snap) {
@@ -246,13 +276,13 @@ public class Default implements Application {
     }
     String baseID = snap.getRemoteStateWithTag(Default.BASE_TAG).get().getRemoteID();
     return snap
-        .getRemoteStates()
-        .stream()
-        .filter(state -> state.isActive() && state.hasTag(Default.VICTIM_TAG))
-        .map(state -> {
-          IntentionSet intentions = new IntentionSet(state.getRemoteID());
+      .getRemoteStates()
+      .stream()
+      .filter(state -> state.isActive() && state.hasTag(Default.VICTIM_TAG))
+      .map(state -> {
+          IntentionSet intent = new IntentionSet(state.getRemoteID());
           if (state.hasSubjectWithID(baseID)) {
-            intentions.addIntention(IntentRegistry.Done());
+            intent.addIntention(IntentRegistry.Done());
             this.logger.log(
                   snap.getTime(),
                   String.format(
@@ -261,36 +291,20 @@ public class Default implements Application {
                         this.alpha.getStart()
                       )
                 );
-            return intentions;
+            return intent;
           }
           if (this.rng.getRandomProbability() < this.alpha.getStart()) {
-            intentions.addIntention(IntentRegistry.Stop());
-            return intentions;
+            intent.addIntention(IntentRegistry.Stop());
+            return intent;
           }
-          Zone zone = this.grid.getZoneAtLocation(state.getLocation());
-          List<Zone> neighborhood = this.grid.getNeighborhood(zone);
-          Collections.shuffle(neighborhood, this.rng.getRng());
-          Optional<Zone> nextZone = neighborhood
-              .stream()
-              .filter(neighbor -> neighbor != zone && !neighbor.hasZoneType(ZoneType.BLOCKED))
-              .findFirst();
-          if (nextZone.isEmpty()) {
-            intentions.addIntention(IntentRegistry.Stop());
-            return intentions;
+          Optional<Vector> location = this.randomWalk(state.getLocation());
+          if (location.isPresent()) {
+            intent.addIntention(IntentRegistry.GoTo(location.get()));
+          } else {
+            intent.addIntention(IntentRegistry.Stop());
           }
-          Vector location = new Vector(
-                this.rng.getRandomPoint(
-                    nextZone.get().getLocation().getX() - nextZone.get().getSize() / 2.,
-                    nextZone.get().getLocation().getX() + nextZone.get().getSize() / 2.
-                  ),
-                this.rng.getRandomPoint(
-                    nextZone.get().getLocation().getY() - nextZone.get().getSize() / 2.,
-                    nextZone.get().getLocation().getY() + nextZone.get().getSize() / 2.
-                  )
-              );
-          intentions.addIntention(IntentRegistry.GoTo(location));
-          return intentions;
+          return intent;
         })
-        .collect(Collectors.toList()); 
+      .collect(Collectors.toList()); 
   }
 }
