@@ -16,6 +16,7 @@ import com.seat.sim.common.remote.intent.MoveIntention;
 import com.seat.sim.common.remote.intent.PushIntention;
 import com.seat.sim.common.remote.intent.SteerIntention;
 import com.seat.sim.server.core.SimException;
+import com.seat.sim.server.math.Physics;
 import com.seat.sim.server.remote.components.Kinematics;
 import com.seat.sim.server.remote.components.SensorController;
 import com.seat.sim.server.scenario.Scenario;
@@ -84,9 +85,16 @@ public class Remote {
     return this.getKinematics().getLocation();
   }
 
+  public double getMaxAcceleration() {
+    if (!this.hasKinematics()) {
+      return 0.;
+    }
+    return this.getKinematics().getMaxAcceleration();
+  }
+
   public double getMaxVelocity() {
     if (!this.hasKinematics()) {
-      return 0;
+      return 0.;
     }
     return this.getKinematics().getMaxVelocity();
   }
@@ -166,6 +174,10 @@ public class Remote {
     return this.hasRemoteMatch(matchers) || this.hasSensorMatch(matchers);
   }
 
+  public boolean hasMaxAcceleration() {
+    return this.hasKinematics() && this.getKinematics().hasMaxAcceleration();
+  }
+
   public boolean hasMaxVelocity() {
     return this.hasKinematics() && this.getKinematics().hasMaxVelocity();
   }
@@ -242,7 +254,29 @@ public class Remote {
   }
 
   public void shiftToDestination(double stepSize) {
+    this.shiftToDestination(stepSize, this.getMaxVelocity(), this.getMaxAcceleration());
+  }
+
+  public void shiftToDestination(double stepSize, double maxVelocity, double maxAcceleration) {
     if (!this.hasDestination()) {
+      return;
+    }
+    double timeToReach = Physics.getTimeToReach(
+        this.getLocation(),
+        this.getDestination(),
+        this.getSpeed(),
+        (this.hasMaxVelocity()) ? Math.min(maxVelocity, this.getMaxVelocity()) : maxVelocity,
+        (this.hasMaxAcceleration()) ? Math.min(maxAcceleration, this.getMaxAcceleration()) : maxAcceleration
+      );
+    if (timeToReach <= stepSize) {
+      this.setLocationTo(this.getDestination());
+      this.setVelocityTo(Vector.ZERO);
+      this.getKinematics().updateFuelBy(
+          this.getKinematics().getRemoteFuelUsage(Vector.dist(this.getLocation(), this.getDestination())),
+          1.
+        );
+      this.destination = Optional.empty();
+      this.getKinematics().update(stepSize);
       return;
     }
     Vector delta = this.getKinematics().shiftLocationTo(this.getDestination());
@@ -316,12 +350,7 @@ public class Remote {
       GoToIntention intent = (GoToIntention) intentions.getIntentionWithType(IntentionType.GOTO);
       this.destination = (intent.hasLocation()) ? Optional.of(intent.getLocation())
           : Optional.of(this.getKinematics().getHomeLocation());
-      Vector delta = this.getKinematics().shiftLocationTo(this.getDestination(), intent.getMaxVelocity(),
-          intent.getMaxAcceleration()); 
-      this.getKinematics().update(delta, stepSize);
-      if (this.getLocation().near(this.getDestination())) {
-        this.destination = Optional.empty();
-      }
+      this.shiftToDestination(stepSize, intent.getMaxVelocity(), intent.getMaxAcceleration());
       return;
     } 
     if (intentions.hasIntentionWithType(IntentionType.MOVE)) {

@@ -252,6 +252,34 @@ public class Physics {
     return Physics.getBoundaryCollision(tail, tip, grid);
   }
 
+  public static double getTimeToReach(Vector location, Vector dest, double speed, double maxSpeed, double acceleration) {
+    if (!Double.isFinite(acceleration)) {
+      return 0.;
+    }
+    double dist = Vector.dist(location, dest);
+    double timeToBrake = (speed > 0.) ? speed / acceleration : 0.;
+    double distToBrake = speed * timeToBrake - 0.5 * acceleration * timeToBrake * timeToBrake;
+    if (distToBrake >= dist) {
+      return timeToBrake;
+    }
+    if (!Double.isFinite(maxSpeed)) {
+      double timeToCover = (Math.sqrt(4 * acceleration * (dist - distToBrake) / 2. + speed * speed) - speed) /
+          (2. * acceleration);
+      return 2 * timeToCover + timeToBrake;
+    }
+    double timeToTopSpeed = (speed < maxSpeed) ? (maxSpeed - speed) / acceleration : 0.;
+    double distToTopSpeed = speed * timeToTopSpeed + 0.5 * acceleration * timeToTopSpeed * timeToTopSpeed;
+    double maxTimeToBrake = maxSpeed / acceleration;
+    double maxDistToBrake = maxSpeed * maxTimeToBrake - 0.5 * acceleration * maxTimeToBrake * maxTimeToBrake;
+    if (distToTopSpeed + maxDistToBrake > dist) {
+      double timeToCover = (Math.sqrt(4 * acceleration * (dist - distToBrake) / 2. + speed * speed) - speed) /
+          (2. * acceleration);
+      return 2 * timeToCover + timeToBrake;
+    }
+    double timeToCover = (dist - distToTopSpeed - maxDistToBrake) / maxSpeed;
+    return timeToTopSpeed + timeToCover + maxTimeToBrake;
+  }
+
   public static boolean isInbounds(Vector point, Grid grid) {
     return new Box(grid).isInbounds(point);
   }

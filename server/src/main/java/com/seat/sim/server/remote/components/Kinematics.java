@@ -28,7 +28,7 @@ public class Kinematics {
     if (!this.isMobile()) {
       return 0;
     }
-    return Kinematics.brakeDistance(this.getMotion().getSpeed(), this.getMotion().getMaxAcceleration());
+    return Kinematics.brakeDistance(this.getSpeed(), this.getMaxAcceleration());
   }
 
   public Fuel getFuel() {
@@ -50,9 +50,16 @@ public class Kinematics {
     return this.location.get();
   }
 
+  public double getMaxAcceleration() {
+    if (!this.isMobile()) {
+      return 0.;
+    }
+    return this.getMotion().getMaxAcceleration();
+  }
+
   public double getMaxVelocity() {
     if (!this.isMobile()) {
-      return 0;
+      return 0.;
     }
     return this.getMotion().getMaxVelocity();
   }
@@ -68,7 +75,7 @@ public class Kinematics {
     if (!this.isMobile()) {
       return this.location;
     }
-    return this.getNextLocation(this.getMotion().getVelocity(), stepSize);
+    return this.getNextLocation(this.getVelocity(), stepSize);
   }
 
   public Optional<Vector> getNextLocation(Vector velocity, double stepSize) {
@@ -78,8 +85,8 @@ public class Kinematics {
     if (!this.isMobile() || velocity == null || !Double.isFinite(velocity.getMagnitude())) {
       return this.location;
     }
-    if (this.getMotion().hasMaxVelocity()) {
-      velocity = velocity.squeeze(this.getMotion().getMaxVelocity());
+    if (this.hasMaxVelocity()) {
+      velocity = velocity.squeeze(this.getMaxVelocity());
     }
     return Optional.of(Vector.add(this.getLocation(), velocity.scale(stepSize)));
   }
@@ -92,8 +99,19 @@ public class Kinematics {
     return this.proto.getRemoteFuelUsage();
   }
 
+  public double getRemoteFuelUsage(double dist) {
+    return this.proto.getRemoteFuelUsage(dist);
+  }
+
   public double getRemoteFuelUsage(Vector acceleration) {
     return this.proto.getRemoteFuelUsage(acceleration);
+  }
+
+  public double getSpeed() {
+    if (!this.isMobile()) {
+      return 0.;
+    }
+    return this.getMotion().getSpeed();
   }
 
   public Vector getVelocity() {
@@ -109,6 +127,10 @@ public class Kinematics {
 
   public boolean hasLocation() {
     return this.location.isPresent();
+  }
+
+  public boolean hasMaxAcceleration() {
+    return this.isMobile() && this.getMotion().hasMaxAcceleration();
   }
 
   public boolean hasMaxVelocity() {
@@ -142,54 +164,54 @@ public class Kinematics {
     if (!this.hasLocation() || !this.isMobile()) {
       return Vector.ZERO;
     }
-    return this.shiftLocationTo(dest, this.getMotion().getMaxVelocity(), this.getMotion().getMaxAcceleration());
+    return this.shiftLocationTo(dest, this.getMaxVelocity(), this.getMaxAcceleration());
   }
 
   public Vector shiftLocationTo(Vector dest, double maxVelocity) {
     if (!this.hasLocation() || !this.isMobile()) {
       return Vector.ZERO;
     }
-    return this.shiftLocationTo(dest, maxVelocity, this.getMotion().getMaxAcceleration());
+    return this.shiftLocationTo(dest, maxVelocity, this.getMaxAcceleration());
   }
 
   public Vector shiftLocationTo(Vector dest, double maxVelocity, double maxAcceleration) {
     if (!this.hasLocation() || !this.isMobile()) {
       return Vector.ZERO;
     }
-    maxVelocity = Math.min(maxVelocity, this.getMotion().getMaxVelocity());
-    maxAcceleration = Math.min(maxAcceleration, this.getMotion().getMaxAcceleration());
-    if (this.getLocation().near(dest) && this.getMotion().getSpeed() < maxAcceleration) {
-      return this.getMotion().getVelocity().invert();
+    maxVelocity = Math.min(maxVelocity, this.getMaxVelocity());
+    maxAcceleration = Math.min(maxAcceleration, this.getMaxAcceleration());
+    if (this.getLocation().near(dest) && this.getSpeed() < maxAcceleration) {
+      return this.getVelocity().invert();
     }
     Vector deltaS = Vector.sub(dest, this.getLocation());
-    if (this.getMotion().getSpeed() > 0 && Double.isFinite(maxAcceleration)) {
-      double brakeDistance = Kinematics.brakeDistance(this.getMotion().getSpeed(), maxAcceleration);
+    if (this.getSpeed() > 0 && Double.isFinite(maxAcceleration)) {
+      double brakeDistance = Kinematics.brakeDistance(this.getSpeed(), maxAcceleration);
       if (deltaS.getMagnitude() <= brakeDistance) {
-        if (this.getMotion().getSpeed() < maxAcceleration) {
-          return this.getMotion().getVelocity().invert();
+        if (this.getSpeed() < maxAcceleration) {
+          return this.getVelocity().invert();
         } else {
-          return this.getMotion().getVelocity().getUnitVector().scale(-maxAcceleration);
+          return this.getVelocity().getUnitVector().scale(-maxAcceleration);
         }
       }
     }
     if (Double.isFinite(maxVelocity)) {
       deltaS = deltaS.squeeze(maxVelocity);
     }
-    Vector deltaV = Vector.sub(deltaS, this.getMotion().getVelocity());
+    Vector deltaV = Vector.sub(deltaS, this.getVelocity());
     if (Double.isFinite(maxAcceleration)) {
       deltaV = deltaV.squeeze(maxAcceleration);
     }
-    Vector nextV = Vector.add(this.getMotion().getVelocity(), deltaV);
+    Vector nextV = Vector.add(this.getVelocity(), deltaV);
     if (Double.isFinite(maxVelocity)) {
       nextV = nextV.squeeze(maxVelocity);
     }
-    if (this.getMotion().getSpeed() > 0 && Double.isFinite(maxAcceleration)) {
+    if (this.getSpeed() > 0 && Double.isFinite(maxAcceleration)) {
       double brakeDistance = Kinematics.brakeDistance(nextV.getMagnitude(), maxAcceleration);
       Vector nextS = Vector.add(this.getLocation(), nextV);
       if (Vector.sub(dest, nextS).getMagnitude() < brakeDistance) {
         double targetMag = Math.sqrt(maxAcceleration) *
             Math.sqrt(maxAcceleration + 2 * deltaV.getMagnitude()) - maxAcceleration;
-        return Vector.sub(nextV.squeeze(targetMag), this.getMotion().getVelocity()).squeeze(maxAcceleration);
+        return Vector.sub(nextV.squeeze(targetMag), this.getVelocity()).squeeze(maxAcceleration);
       }
     }
     return deltaV;
@@ -210,8 +232,8 @@ public class Kinematics {
     if (acceleration == null || !Double.isFinite(acceleration.getMagnitude())) {
       acceleration = Vector.ZERO;
     }
-    if (this.isMobile() && this.getMotion().hasMaxAcceleration()) {
-      acceleration = acceleration.squeeze(this.getMotion().getMaxAcceleration());
+    if (this.isMobile() && this.hasMaxAcceleration()) {
+      acceleration = acceleration.squeeze(this.getMaxAcceleration());
     }
     if (this.isMobile()) {
       this.getMotion().updateVelocityBy(acceleration, stepSize);
@@ -242,7 +264,7 @@ public class Kinematics {
     if (!this.hasLocation() || !this.isMobile()) {
       return;
     }
-    this.updateLocationBy(this.getMotion().getVelocity(), stepSize);
+    this.updateLocationBy(this.getVelocity(), stepSize);
   }
 
   public void updateLocationBy(Vector velocity, double stepSize) throws SimException {

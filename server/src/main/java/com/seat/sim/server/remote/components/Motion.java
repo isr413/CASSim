@@ -19,10 +19,16 @@ public class Motion {
   }
 
   public double getMaxAcceleration() {
+    if (!this.hasMaxAcceleration()) {
+      return Double.POSITIVE_INFINITY;
+    }
     return this.proto.getMaxAcceleration();
   }
 
   public double getMaxVelocity() {
+    if (!this.hasMaxVelocity()) {
+      return Double.POSITIVE_INFINITY;
+    }
     return this.proto.getMaxVelocity();
   }
 
