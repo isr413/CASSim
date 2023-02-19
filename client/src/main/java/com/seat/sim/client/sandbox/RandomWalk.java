@@ -484,9 +484,10 @@ public class RandomWalk implements Application {
             this.logger.log(
                   snap.getTime(),
                   String.format(
-                        "Rescued victim %s (%.2f)",
+                        "Rescued victim %s (%.2f) (%.2f)",
                         state.getRemoteID(),
-                        this.alpha.getStart()
+                        this.alpha.getStart(),
+                        this.beta.getStart()
                       )
                 );
             return intent;
