@@ -13,7 +13,10 @@ run:
 run_default:
 	java -jar target/client-1.0-SNAPSHOT-jar-with-dependencies.jar -id Default -h 127.0.0.1 -p 8080
 
-run_randomwalk:
+run_random_fixed:
+	java -jar target/client-1.0-SNAPSHOT-jar-with-dependencies.jar -id RandomFixed -h 127.0.0.1 -p 8080
+
+run_random_walk:
 	java -jar target/client-1.0-SNAPSHOT-jar-with-dependencies.jar -id RandomWalk -h 127.0.0.1 -p 8080
 
 run_thread_%:
