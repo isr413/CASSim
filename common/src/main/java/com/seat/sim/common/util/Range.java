@@ -1,5 +1,7 @@
 package com.seat.sim.common.util;
 
+import com.seat.sim.common.math.Vector;
+
 public class Range {
 
   private double end;
@@ -51,7 +53,7 @@ public class Range {
   }
 
   public boolean isDone() {
-    return this.start >= this.end;
+    return this.start >= this.end || Vector.near(this.start, this.end);
   }
 
   public int points() {
@@ -59,10 +61,13 @@ public class Range {
   }
 
   public String toString() {
-    return String.format("%.4f:.4f:.4f", this.start, this.step, this.end);
+    return String.format("(%.2f:%.2f:%.2f)", this.start, this.step, this.end);
   }
 
   public void update() {
+    if (this.isDone()) {
+      return;
+    }
     this.start += this.step;
   }
 }
