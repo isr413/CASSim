@@ -271,13 +271,12 @@ public class RandomFixed implements Application {
 
   private void reset(boolean skip) {
     this.trials++;
-    if (this.trials % RandomFixed.TRIALS_PER == 0 && !this.alpha.isDone()) {
-      if (this.beta.isDone()) {
-        this.alpha.update();
-        this.beta = new Range(RandomFixed.DRONE_DISCOVERY_PROBABILITY_BETA);
-      } else {
-        this.beta.update();
-      }
+    if (this.trials % RandomFixed.TRIALS_PER == 0) {
+      this.beta.update();
+    }
+    if (this.beta.isDone()) {
+      this.alpha.update();
+      this.beta = new Range(RandomFixed.DRONE_DISCOVERY_PROBABILITY_BETA);
     }
     if (this.alpha.isDone()) {
       this.alpha = new Range(RandomFixed.VICTIM_STOP_PROBABILITY_ALPHA);
@@ -395,11 +394,14 @@ public class RandomFixed implements Application {
           ),
         RandomFixed.TURN_LENGTH
       );
-    double timeToGoHome = this.timeToCrossDistance(
-        Vector.dist(zone.getLocation(), RandomFixed.GRID_CENTER),
-        0.,
-        RandomFixed.DRONE_MAX_VELOCITY,
-        RandomFixed.DRONE_MAX_ACCELERATION
+    double timeToGoHome = Math.max(
+        this.timeToCrossDistance(
+          Vector.dist(zone.getLocation(), RandomFixed.GRID_CENTER),
+          0.,
+          RandomFixed.DRONE_MAX_VELOCITY,
+          RandomFixed.DRONE_MAX_ACCELERATION
+        ),
+        RandomFixed.TURN_LENGTH
       );
     if ((timeToMove + timeToGoHome) >= (RandomFixed.MISSION_LENGTH - snap.getTime())) {
       return false;
