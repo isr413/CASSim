@@ -106,7 +106,7 @@ public class Snapshot extends Jsonable {
   }
 
   public Collection<RemoteState> getActiveRemoteStates() {
-    return this.getActiveDynamicRemoteIDs()
+    return this.getActiveRemoteIDs()
         .stream()
         .map(remoteID -> this.getRemoteStateWithID(remoteID))
         .collect(Collectors.toList());

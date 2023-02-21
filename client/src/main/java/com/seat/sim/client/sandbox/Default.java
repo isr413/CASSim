@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -45,9 +46,9 @@ public class Default implements Application {
   private static final int ZONE_SIZE = 14;
 
   private static final Vector GRID_CENTER = new Vector(
-        Default.GRID_SIZE * Default.ZONE_SIZE / 2.,
-        Default.GRID_SIZE * Default.ZONE_SIZE / 2.
-      );
+      Default.GRID_SIZE * Default.ZONE_SIZE / 2.,
+      Default.GRID_SIZE * Default.ZONE_SIZE / 2.
+    );
 
   // Base info
   private static final String BASE_TAG = "Base";
@@ -64,13 +65,15 @@ public class Default implements Application {
 
   // Sensors
   private static final String HUMAN_VISION = "Human_Vision";
-  private static final double HUMAN_VISION_RANGE = Default.ZONE_SIZE;
+  private static final double HUMAN_VISION_RANGE = 10.;
+  private static final double BASE_VISION_RANGE = 20.;
 
   // Tunable params
   private static final Range VICTIM_STOP_PROBABILITY_ALPHA = new Range(0., 0.1, 1., true);
   private static final int TRIALS_PER = 100;
  
   private Range alpha;
+  private Set<String> doneRemotes;
   private Grid grid;
   private Logger logger;
   private Random rng;
@@ -85,6 +88,7 @@ public class Default implements Application {
         : new Logger(Default.SCENARIO_ID);
     this.alpha = new Range(Default.VICTIM_STOP_PROBABILITY_ALPHA);
     this.grid = new Grid(Default.GRID_SIZE, Default.GRID_SIZE, Default.ZONE_SIZE);
+    this.doneRemotes = new HashSet<>();
     this.init(threadID, seed);
   }
 
@@ -100,67 +104,68 @@ public class Default implements Application {
 
   private void loadRemotes() {
     this.remotes = List.of(
-          new RemoteConfig(
-                new RemoteProto(
-                      Set.of(Default.BASE_TAG),
-                      List.of(
-                            new SensorConfig(
-                                  new SensorProto(
-                                        Default.HUMAN_VISION,
-                                        Set.of(Default.BASE_TAG),
-                                        Set.of(Default.VICTIM_TAG),
-                                        new SensorStats(0., 1., 0., Default.HUMAN_VISION_RANGE)
-                                      ),
-                                  1,
-                                  true
-                                )
+        new RemoteConfig(
+            new RemoteProto(
+                Set.of(Default.BASE_TAG),
+                List.of(
+                    new SensorConfig(
+                        new SensorProto(
+                            Default.HUMAN_VISION,
+                            Set.of(Default.BASE_TAG),
+                            Set.of(Default.VICTIM_TAG),
+                            new SensorStats(0., 1., 0., Default.BASE_VISION_RANGE)
                           ),
-                      new KinematicsProto(Default.GRID_CENTER)
-                    ),
-                Default.BASE_COLOR,
-                Default.BASE_COUNT,
-                true,
-                false
+                        1,
+                        true
+                      )
+                  ),
+                new KinematicsProto(Default.GRID_CENTER)
               ),
-          new RemoteConfig(
-                new RemoteProto(
-                      Set.of(Default.VICTIM_TAG),
-                      List.of(
-                            new SensorConfig(
-                                  new SensorProto(
-                                        Default.HUMAN_VISION,
-                                        Set.of(Default.VICTIM_TAG),
-                                        Set.of(Default.BASE_TAG),
-                                        new SensorStats(0., 1., 0., Default.HUMAN_VISION_RANGE)
-                                      ),
-                                  1,
-                                  true
-                                )
+            Default.BASE_COLOR,
+            Default.BASE_COUNT,
+            true,
+            false
+          ),
+        new RemoteConfig(
+            new RemoteProto(
+                Set.of(Default.VICTIM_TAG),
+                List.of(
+                    new SensorConfig(
+                        new SensorProto(
+                            Default.HUMAN_VISION,
+                            Set.of(Default.VICTIM_TAG),
+                            Set.of(Default.BASE_TAG),
+                            new SensorStats(0., 1., 0., Default.HUMAN_VISION_RANGE)
                           ),
-                      new KinematicsProto(
-                            null,
-                            null,
-                            new MotionProto(
-                                  Default.VICTIM_INITIAL_VELOCITY,
-                                  Default.VICTIM_MAX_VELOCITY,
-                                  Default.VICTIM_MAX_ACCELERATION
-                                )
-                          )
-                    ),
-                Default.VICTIM_COLOR,
-                Default.VICTIM_COUNT,
-                true,
-                true
-              )
-      );
+                        1,
+                        true
+                      )
+                  ),
+                new KinematicsProto(
+                    null,
+                    null,
+                    new MotionProto(
+                        Default.VICTIM_INITIAL_VELOCITY,
+                        Default.VICTIM_MAX_VELOCITY,
+                        Default.VICTIM_MAX_ACCELERATION
+                      )
+                  )
+              ),
+            Default.VICTIM_COLOR,
+            Default.VICTIM_COUNT,
+            true,
+            true
+          )
+    );
   }
 
   private void loadSeeds() throws IOException {
-    this.seeds = Files.lines(Path.of("config/seeds.txt"))
-        .mapToLong(Long::parseLong)
-        .boxed()
-        .collect(Collectors.toList())
-        .iterator();
+    this.seeds = Files
+      .lines(Path.of("config/seeds.txt"))
+      .mapToLong(Long::parseLong)
+      .boxed()
+      .collect(Collectors.toList())
+      .iterator();
   }
 
   private void reset(boolean skip) {
@@ -172,6 +177,9 @@ public class Default implements Application {
       this.alpha = new Range(Default.VICTIM_STOP_PROBABILITY_ALPHA);
     }
     this.setSeed(skip);
+    if (!skip) {
+      this.doneRemotes = new HashSet<>();
+    }
   }
 
   private void setSeed() {
@@ -213,22 +221,22 @@ public class Default implements Application {
     List<Zone> neighborhood = this.grid.getNeighborhood(zone);
     Collections.shuffle(neighborhood, this.rng.getRng());
     Optional<Zone> nextZone = neighborhood
-        .stream()
-        .filter(neighbor -> neighbor != zone && !neighbor.hasZoneType(ZoneType.BLOCKED))
-        .findFirst();
+      .stream()
+      .filter(neighbor -> neighbor != zone && !neighbor.hasZoneType(ZoneType.BLOCKED))
+      .findFirst();
     if (nextZone.isEmpty()) {
       return Optional.empty();
     }
     Vector nextLocation = new Vector(
-          this.rng.getRandomPoint(
-              nextZone.get().getLocation().getX() - nextZone.get().getSize() / 2.,
-              nextZone.get().getLocation().getX() + nextZone.get().getSize() / 2.
-            ),
-          this.rng.getRandomPoint(
-              nextZone.get().getLocation().getY() - nextZone.get().getSize() / 2.,
-              nextZone.get().getLocation().getY() + nextZone.get().getSize() / 2.
-            )
-        );
+        this.rng.getRandomPoint(
+            nextZone.get().getLocation().getX() - nextZone.get().getSize() / 2.,
+            nextZone.get().getLocation().getX() + nextZone.get().getSize() / 2.
+          ),
+        this.rng.getRandomPoint(
+            nextZone.get().getLocation().getY() - nextZone.get().getSize() / 2.,
+            nextZone.get().getLocation().getY() + nextZone.get().getSize() / 2.
+          )
+      );
     return Optional.of(nextLocation);
   }
 
@@ -274,23 +282,29 @@ public class Default implements Application {
       intentions.addIntention(IntentRegistry.Done());
       return List.of(intentions);
     }
-    String baseID = snap.getRemoteStateWithTag(Default.BASE_TAG).get().getRemoteID();
-    return snap
-      .getRemoteStates()
+    snap
+      .getRemoteStateWithTag(Default.BASE_TAG)
+      .get()
+      .getSubjects()
       .stream()
-      .filter(state -> state.isActive() && state.hasTag(Default.VICTIM_TAG))
+      .filter(subjectID -> snap.getRemoteStateWithID(subjectID).hasTag(Default.VICTIM_TAG))
+      .forEach(victimID -> this.doneRemotes.add(victimID));
+    return snap
+      .getActiveRemoteStates()
+      .stream()
+      .filter(state -> state.hasTag(Default.VICTIM_TAG))
       .map(state -> {
           IntentionSet intent = new IntentionSet(state.getRemoteID());
-          if (state.hasSubjectWithID(baseID)) {
+          if (this.doneRemotes.contains(state.getRemoteID())) {
             intent.addIntention(IntentRegistry.Done());
             this.logger.log(
-                  snap.getTime(),
-                  String.format(
-                        "Rescued victim %s (%.2f)",
-                        state.getRemoteID(),
-                        this.alpha.getStart()
-                      )
-                );
+                snap.getTime(),
+                String.format(
+                    "Rescued victim %s (%.2f)",
+                    state.getRemoteID(),
+                    this.alpha.getStart()
+                  )
+              );
             return intent;
           }
           if (this.rng.getRandomProbability() < this.alpha.getStart()) {

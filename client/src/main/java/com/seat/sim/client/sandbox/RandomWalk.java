@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.seat.sim.common.core.Application;
 import com.seat.sim.common.core.TeamColor;
@@ -48,9 +49,9 @@ public class RandomWalk implements Application {
   private static final int ZONE_SIZE = 14;
 
   private static final Vector GRID_CENTER = new Vector(
-        RandomWalk.GRID_SIZE * RandomWalk.ZONE_SIZE / 2.,
-        RandomWalk.GRID_SIZE * RandomWalk.ZONE_SIZE / 2.
-      );
+      RandomWalk.GRID_SIZE * RandomWalk.ZONE_SIZE / 2.,
+      RandomWalk.GRID_SIZE * RandomWalk.ZONE_SIZE / 2.
+    );
 
   // Base info
   private static final String BASE_TAG = "Base";
@@ -80,14 +81,15 @@ public class RandomWalk implements Application {
 
   // Sensors
   private static final String HUMAN_VISION = "Human_Vision";
-  private static final double HUMAN_VISION_RANGE = RandomWalk.ZONE_SIZE;
+  private static final double HUMAN_VISION_RANGE = 10.;
+  private static final double BASE_VISION_RANGE = 20.;
 
   public static final String LONG_RANGE_COMMS = "Long_Range_Comms";
   public static final double LRC_BATT_USAGE = 0.0001;
 
   public static final String DRONE_CAMERA = "Drone_Camera";
   public static final double CAM_BATT_USAGE = 0.0001;
-  public static final double CAM_RANGE = RandomWalk.ZONE_SIZE;
+  public static final double CAM_RANGE = 10.;
 
   // Tunable params
   private static final Range VICTIM_STOP_PROBABILITY_ALPHA = new Range(0., 0.1, 1., true);
@@ -128,122 +130,122 @@ public class RandomWalk implements Application {
 
   private void loadRemotes() {
     this.remotes = List.of(
-          new RemoteConfig(
-                new RemoteProto(
-                      Set.of(RandomWalk.BASE_TAG),
-                      List.of(
-                            new SensorConfig(
-                                  new SensorProto(
-                                        RandomWalk.HUMAN_VISION,
-                                        Set.of(RandomWalk.BASE_TAG),
-                                        Set.of(RandomWalk.VICTIM_TAG),
-                                        new SensorStats(0., 1., 0., RandomWalk.HUMAN_VISION_RANGE)
-                                      ),
-                                  1,
-                                  true
-                                ),
-                            new SensorConfig(
-                                  new SensorProto(
-                                        RandomWalk.LONG_RANGE_COMMS,
-                                        Set.of(RandomWalk.BASE_LRC_TAG),
-                                        Set.of(RandomWalk.DRONE_LRC_TAG),
-                                        new SensorStats(RandomWalk.LRC_BATT_USAGE, 1., 0.)
-                                      ),
-                                  1,
-                                  true
-                                )
+        new RemoteConfig(
+            new RemoteProto(
+                Set.of(RandomWalk.BASE_TAG),
+                List.of(
+                    new SensorConfig(
+                        new SensorProto(
+                            RandomWalk.HUMAN_VISION,
+                            Set.of(RandomWalk.BASE_TAG),
+                            Set.of(RandomWalk.VICTIM_TAG),
+                            new SensorStats(0., 1., 0., RandomWalk.BASE_VISION_RANGE)
                           ),
-                      new KinematicsProto(RandomWalk.GRID_CENTER)
-                    ),
-                RandomWalk.BASE_COLOR,
-                RandomWalk.BASE_COUNT,
-                true,
-                false
+                        1,
+                        true
+                      ),
+                    new SensorConfig(
+                        new SensorProto(
+                            RandomWalk.LONG_RANGE_COMMS,
+                            Set.of(RandomWalk.BASE_LRC_TAG),
+                            Set.of(RandomWalk.DRONE_LRC_TAG),
+                            new SensorStats(RandomWalk.LRC_BATT_USAGE, 1., 0.)
+                          ),
+                        1,
+                        true
+                      )
+                  ),
+                new KinematicsProto(RandomWalk.GRID_CENTER)
               ),
+            RandomWalk.BASE_COLOR,
+            RandomWalk.BASE_COUNT,
+            true,
+            false
+          ),
           new RemoteConfig(
-                new RemoteProto(
-                      Set.of(RandomWalk.DRONE_TAG),
-                      List.of(
-                            new SensorConfig(
-                                  new SensorProto(
-                                        RandomWalk.DRONE_CAMERA,
-                                        Set.of(RandomWalk.DRONE_TAG),
-                                        Set.of(RandomWalk.VICTIM_TAG),
-                                        new SensorStats(
-                                              RandomWalk.CAM_BATT_USAGE,
-                                              this.beta.getStart(),
-                                              0.,
-                                              RandomWalk.CAM_RANGE
-                                            )
-                                      ),
-                                  1,
-                                  true
-                                ),
-                            new SensorConfig(
-                                  new SensorProto(
-                                        RandomWalk.LONG_RANGE_COMMS,
-                                        Set.of(RandomWalk.DRONE_LRC_TAG),
-                                        Set.of(RandomWalk.BASE_LRC_TAG),
-                                        new SensorStats(RandomWalk.LRC_BATT_USAGE, 1., 0.)
-                                      ),
-                                  1,
-                                  true
+              new RemoteProto(
+                  Set.of(RandomWalk.DRONE_TAG),
+                  List.of(
+                      new SensorConfig(
+                          new SensorProto(
+                              RandomWalk.DRONE_CAMERA,
+                              Set.of(RandomWalk.DRONE_TAG),
+                              Set.of(RandomWalk.VICTIM_TAG),
+                              new SensorStats(
+                                  RandomWalk.CAM_BATT_USAGE,
+                                  this.beta.getStart(),
+                                  0.,
+                                  RandomWalk.CAM_RANGE
                                 )
-                          ),
-                      new KinematicsProto(
-                            RandomWalk.GRID_CENTER,
-                            new FuelProto(1., 1., RandomWalk.DRONE_FUEL_USAGE),
-                            new MotionProto(
-                                  RandomWalk.DRONE_INITIAL_VELOCITY,
-                                  RandomWalk.DRONE_MAX_VELOCITY,
-                                  RandomWalk.DRONE_MAX_ACCELERATION
-                                )
-                          )
+                            ),
+                          1,
+                          true
+                        ),
+                      new SensorConfig(
+                          new SensorProto(
+                              RandomWalk.LONG_RANGE_COMMS,
+                              Set.of(RandomWalk.DRONE_LRC_TAG),
+                              Set.of(RandomWalk.BASE_LRC_TAG),
+                              new SensorStats(RandomWalk.LRC_BATT_USAGE, 1., 0.)
+                            ),
+                          1,
+                          true
+                        )
                     ),
-                RandomWalk.DRONE_COLOR,
-                RandomWalk.DRONE_COUNT,
-                true,
-                true
-              ),
+                  new KinematicsProto(
+                      RandomWalk.GRID_CENTER,
+                      new FuelProto(1., 1., RandomWalk.DRONE_FUEL_USAGE),
+                      new MotionProto(
+                          RandomWalk.DRONE_INITIAL_VELOCITY,
+                          RandomWalk.DRONE_MAX_VELOCITY,
+                          RandomWalk.DRONE_MAX_ACCELERATION
+                        )
+                    )
+                ),
+              RandomWalk.DRONE_COLOR,
+              RandomWalk.DRONE_COUNT,
+              true,
+              true
+            ),
           new RemoteConfig(
-                new RemoteProto(
-                      Set.of(RandomWalk.VICTIM_TAG),
-                      List.of(
-                            new SensorConfig(
-                                  new SensorProto(
-                                        RandomWalk.HUMAN_VISION,
-                                        Set.of(RandomWalk.VICTIM_TAG),
-                                        Set.of(RandomWalk.BASE_TAG),
-                                        new SensorStats(0., 1., 0., RandomWalk.HUMAN_VISION_RANGE)
-                                      ),
-                                  1,
-                                  true
-                                )
-                          ),
-                      new KinematicsProto(
-                            null,
-                            null,
-                            new MotionProto(
-                                  RandomWalk.VICTIM_INITIAL_VELOCITY,
-                                  RandomWalk.VICTIM_MAX_VELOCITY,
-                                  RandomWalk.VICTIM_MAX_ACCELERATION
-                                )
-                          )
+              new RemoteProto(
+                  Set.of(RandomWalk.VICTIM_TAG),
+                  List.of(
+                      new SensorConfig(
+                          new SensorProto(
+                              RandomWalk.HUMAN_VISION,
+                              Set.of(RandomWalk.VICTIM_TAG),
+                              Set.of(RandomWalk.BASE_TAG),
+                              new SensorStats(0., 1., 0., RandomWalk.HUMAN_VISION_RANGE)
+                            ),
+                          1,
+                          true
+                        )
                     ),
-                RandomWalk.VICTIM_COLOR,
-                RandomWalk.VICTIM_COUNT,
-                true,
-                true
-              )
+                  new KinematicsProto(
+                      null,
+                      null,
+                      new MotionProto(
+                          RandomWalk.VICTIM_INITIAL_VELOCITY,
+                          RandomWalk.VICTIM_MAX_VELOCITY,
+                          RandomWalk.VICTIM_MAX_ACCELERATION
+                        )
+                    )
+                ),
+              RandomWalk.VICTIM_COLOR,
+              RandomWalk.VICTIM_COUNT,
+              true,
+              true
+            )
       );
   }
 
   private void loadSeeds() throws IOException {
     this.seeds = Files.lines(Path.of("config/seeds.txt"))
-        .mapToLong(Long::parseLong)
-        .boxed()
-        .collect(Collectors.toList())
-        .iterator();
+      .mapToLong(Long::parseLong)
+      .boxed()
+      .collect(Collectors.toList())
+      .iterator();
   }
 
   private void reset(boolean skip) {
@@ -261,8 +263,8 @@ public class RandomWalk implements Application {
     }
     this.setSeed(skip);
     if (!skip) {
-      this.loadRemotes();
       this.doneRemotes = new HashSet<>();
+      this.loadRemotes();
     }
   }
 
@@ -323,11 +325,11 @@ public class RandomWalk implements Application {
     List<Zone> neighborhood = this.grid.getNeighborhood(zone);
     Collections.shuffle(neighborhood, this.rng.getRng());
     Optional<Zone> nextZone = neighborhood
-        .stream()
-        .filter(neighbor -> neighbor != zone)
-        .filter(neighbor -> !neighbor.hasZoneType(ZoneType.BLOCKED))
-        .filter(neighbor -> state.hasTag(RandomWalk.VICTIM_TAG) || this.validChoice(snap, state, zone))
-        .findFirst();
+      .stream()
+      .filter(neighbor -> neighbor != zone)
+      .filter(neighbor -> !neighbor.hasZoneType(ZoneType.BLOCKED))
+      .filter(neighbor -> state.hasTag(RandomWalk.VICTIM_TAG) || this.validChoice(snap, state, zone))
+      .findFirst();
     if (nextZone.isEmpty()) {
       return Optional.empty();
     }
@@ -335,15 +337,15 @@ public class RandomWalk implements Application {
       return Optional.of(nextZone.get().getLocation());
     }
     Vector nextLocation = new Vector(
-          this.rng.getRandomPoint(
-              nextZone.get().getLocation().getX() - nextZone.get().getSize() / 2.,
-              nextZone.get().getLocation().getX() + nextZone.get().getSize() / 2.
-            ),
-          this.rng.getRandomPoint(
-              nextZone.get().getLocation().getY() - nextZone.get().getSize() / 2.,
-              nextZone.get().getLocation().getY() + nextZone.get().getSize() / 2.
-            )
-        );
+        this.rng.getRandomPoint(
+            nextZone.get().getLocation().getX() - nextZone.get().getSize() / 2.,
+            nextZone.get().getLocation().getX() + nextZone.get().getSize() / 2.
+          ),
+        this.rng.getRandomPoint(
+            nextZone.get().getLocation().getY() - nextZone.get().getSize() / 2.,
+            nextZone.get().getLocation().getY() + nextZone.get().getSize() / 2.
+          )
+      );
     return Optional.of(nextLocation);
   }
 
@@ -434,91 +436,82 @@ public class RandomWalk implements Application {
       intentions.addIntention(IntentRegistry.Done());
       return List.of(intentions);
     }
-    Collection<IntentionSet> droneIntentions = snap
-      .getRemoteStates()
-      .stream()
-      .filter(state -> state.isActive() && state.hasTag(RandomWalk.DRONE_TAG))
-      .map(state -> {
-          IntentionSet intent = new IntentionSet(state.getRemoteID());
-          state
-            .getSubjects()
+    Stream.concat(
+          Stream.of(snap.getRemoteStateWithTag(RandomWalk.BASE_TAG).get()),
+          snap.getActiveRemoteStates().stream().filter(state -> state.hasTag(RandomWalk.DRONE_TAG))
+        )
+      .flatMap(state -> state.getSubjects().stream())
+      .filter(subjectID -> snap.getRemoteStateWithID(subjectID).hasTag(RandomWalk.VICTIM_TAG))
+      .forEach(victimID -> this.doneRemotes.add(victimID));
+    return Stream.concat(
+          snap
+            .getActiveRemoteStates()
             .stream()
-            .filter(subjectID -> snap.getRemoteStateWithID(subjectID).hasTag(RandomWalk.VICTIM_TAG))
-            .forEach(victimID -> this.doneRemotes.add(victimID));
-          if (this.doneRemotes.contains(state.getRemoteID())) {
-            if (state.getLocation().near(RandomWalk.GRID_CENTER)) {
-              intent.addIntention(IntentRegistry.Done());
-              this.logger.log(snap.getTime(), String.format("Drone done %s", state.getRemoteID()));
-              return intent;
-            }
-            intent.addIntention(IntentRegistry.GoHome());
-            return intent;
-          }
-          if (this.shouldReturnHome(snap, state)) {
-            intent.addIntention(IntentRegistry.GoHome());
-            intent.addIntention(IntentRegistry.DeactivateAllSensors());
-            this.doneRemotes.add(state.getRemoteID());
-            this.logger.log(snap.getTime(), String.format("Drone returning home %s", state.getRemoteID()));
-            return intent;
-          }
-          if (snap.getTime() % RandomWalk.TURN_LENGTH != 0.) {
-            intent.addIntention(IntentRegistry.None());
-            return intent;
-          }
-          Optional<Vector> location = this.randomWalk(snap, state, true);
-          if (location.isPresent()) {
-            intent.addIntention(
-                IntentRegistry.GoTo(
-                    location.get(),
-                    RandomWalk.DRONE_SCAN_VELOCITY,
-                    RandomWalk.DRONE_SCAN_ACCELERATION
-                  )
-              );
-          } else {
-            intent.addIntention(IntentRegistry.Stop());
-          }
-          return intent;
-        })
-      .collect(Collectors.toList());
-    String baseID = snap.getRemoteStateWithTag(RandomWalk.BASE_TAG).get().getRemoteID();
-    Collection<IntentionSet> victimIntentions = snap
-      .getRemoteStates()
-      .stream()
-      .filter(state -> state.isActive() && state.hasTag(RandomWalk.VICTIM_TAG))
-      .map(state -> {
-          IntentionSet intent = new IntentionSet(state.getRemoteID());
-          if (state.hasSubjectWithID(baseID) || this.doneRemotes.contains(state.getRemoteID())) {
-            intent.addIntention(IntentRegistry.Done());
-            this.doneRemotes.add(state.getRemoteID());
-            this.logger.log(
-                  snap.getTime(),
-                  String.format(
-                        "Rescued victim %s (%.2f) (%.2f)",
-                        state.getRemoteID(),
-                        this.alpha.getStart(),
-                        this.beta.getStart()
-                      )
-                );
-            return intent;
-          }
-          if (snap.getTime() % RandomWalk.TURN_LENGTH != 0.) {
-            intent.addIntention(IntentRegistry.None());
-            return intent;
-          }
-          if (this.rng.getRandomProbability() < this.alpha.getStart()) {
-            intent.addIntention(IntentRegistry.Stop());
-            return intent;
-          }
-          Optional<Vector> location = this.randomWalk(snap, state, false);
-          if (location.isPresent()) {
-            intent.addIntention(IntentRegistry.GoTo(location.get()));
-          } else {
-            intent.addIntention(IntentRegistry.Stop());
-          }
-          return intent;
-        })
+            .filter(state -> state.hasTag(RandomWalk.DRONE_TAG))
+            .map(state -> {
+                IntentionSet intent = new IntentionSet(state.getRemoteID());
+                if (this.doneRemotes.contains(state.getRemoteID())) {
+                  if (state.getLocation().near(RandomWalk.GRID_CENTER)) {
+                    intent.addIntention(IntentRegistry.Done());
+                    this.logger.log(snap.getTime(), String.format("Drone done %s", state.getRemoteID()));
+                    return intent;
+                  }
+                  intent.addIntention(IntentRegistry.GoHome());
+                  return intent;
+                }
+                if (this.shouldReturnHome(snap, state)) {
+                  intent.addIntention(IntentRegistry.DeactivateAllSensors());
+                  intent.addIntention(IntentRegistry.GoHome());
+                  this.doneRemotes.add(state.getRemoteID());
+                  this.logger.log(snap.getTime(), String.format("Drone returning home %s", state.getRemoteID()));
+                  return intent;
+                }
+                Optional<Vector> location = this.randomWalk(snap, state, true);
+                if (location.isPresent()) {
+                  intent.addIntention(
+                      IntentRegistry.GoTo(
+                          location.get(),
+                          RandomWalk.DRONE_SCAN_VELOCITY,
+                          RandomWalk.DRONE_SCAN_ACCELERATION
+                        )
+                    );
+                } else {
+                  intent.addIntention(IntentRegistry.Stop());
+                }
+                return intent;
+              }),
+          snap
+            .getActiveRemoteStates()
+            .stream()
+            .filter(state -> state.hasTag(RandomWalk.VICTIM_TAG))
+            .map(state -> {
+                IntentionSet intent = new IntentionSet(state.getRemoteID());
+                if (this.doneRemotes.contains(state.getRemoteID())) {
+                  intent.addIntention(IntentRegistry.Done());
+                  this.logger.log(
+                      snap.getTime(),
+                      String.format(
+                          "Rescued victim %s (%.2f) (%.2f)",
+                          state.getRemoteID(),
+                          this.alpha.getStart(),
+                          this.beta.getStart()
+                        )
+                    );
+                  return intent;
+                }
+                if (this.rng.getRandomProbability() < this.alpha.getStart()) {
+                  intent.addIntention(IntentRegistry.Stop());
+                  return intent;
+                }
+                Optional<Vector> location = this.randomWalk(snap, state, false);
+                if (location.isPresent()) {
+                  intent.addIntention(IntentRegistry.GoTo(location.get()));
+                } else {
+                  intent.addIntention(IntentRegistry.Stop());
+                }
+                return intent;
+              })
+        )
       .collect(Collectors.toList()); 
-    droneIntentions.addAll(victimIntentions);
-    return droneIntentions;
   }
 }
