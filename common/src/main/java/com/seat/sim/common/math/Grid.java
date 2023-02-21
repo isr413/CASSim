@@ -3,7 +3,6 @@ package com.seat.sim.common.math;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -19,34 +18,23 @@ public class Grid extends Jsonable {
   public static final String ZONE_SIZE = "zone_size";
 
   private int height; // number of zones in each column of the grid
-  private boolean isCustomGrid;
   private int width; // number of zones in each row of the grid
-  private Zone[][] zones;
+  private Optional<Zone[][]> zones;
   private int zoneSize; // zones in the same map grid must have a uniform size
 
   public Grid(int width, int height, int zoneSize) {
-    this(width, height, zoneSize, null);
+    this(width, height, zoneSize, Optional.empty());
   }
 
   public Grid(int width, int height, int zoneSize, Zone[][] zones) {
+    this(width, height, zoneSize, Optional.of(zones));
+  }
+
+  private Grid(int width, int height, int zoneSize, Optional<Zone[][]> zones) {
     this.width = width;
     this.height = height;
     this.zoneSize = zoneSize;
-    if (zones != null) {
-      this.isCustomGrid = true;
-      this.zones = zones;
-    } else {
-      this.isCustomGrid = false;
-      this.zones = new Zone[this.height][this.width];
-      for (int y = 0; y < this.height; y++) {
-        for (int x = 0; x < this.width; x++) {
-          this.zones[y][x] = new Zone(
-                new Vector(x * zoneSize + zoneSize / 2., y * zoneSize + zoneSize / 2.),
-                zoneSize
-              );
-        }
-      }
-    }
+    this.zones = (zones != null) ? zones : Optional.empty();
   }
 
   public Grid(BufferedImage img) {
@@ -54,21 +42,18 @@ public class Grid extends Jsonable {
   }
 
   public Grid(BufferedImage img, int zoneSize) {
-    this.width = img.getWidth();
-    this.height= img.getHeight();
-    this.zoneSize = zoneSize;
-    this.isCustomGrid = true;
-    this.zones = new Zone[img.getHeight()][img.getWidth()];
+    this(img.getWidth(), img.getHeight(), zoneSize);
+    this.zones = Optional.of(new Zone[img.getHeight()][img.getWidth()]);
     for (int y = 0; y < img.getHeight(); y++) {
       for (int x = 0; x < img.getWidth(); x++) {
         if (img.getRGB(x, y) == Color.BLACK.getRGB()) {
-          this.zones[y][x] = new Zone(
+          this.getZones()[y][x] = new Zone(
                 ZoneType.BLOCKED,
                 new Vector(x * zoneSize + zoneSize / 2., y * zoneSize + zoneSize / 2.),
                 zoneSize
               );
         } else {
-          this.zones[y][x] = new Zone(
+          this.getZones()[y][x] = new Zone(
                 new Vector(x * zoneSize + zoneSize / 2., y * zoneSize + zoneSize / 2.),
                 zoneSize
               );
@@ -86,27 +71,17 @@ public class Grid extends Jsonable {
     this.width = json.getInt(Grid.GRID_WIDTH);
     this.height = json.getInt(Grid.GRID_HEIGHT);
     this.zoneSize = json.getInt(Grid.ZONE_SIZE);
-    this.zones = new Zone[this.height][this.width];
     if (json.hasKey(Grid.ZONES)) {
-      this.isCustomGrid = true;
+      this.zones = Optional.of(new Zone[this.width][this.height]);
       JsonArray jsonZones = json.getJsonArray(Grid.ZONES);
       for (int y = 0; y < this.height; y++) {
         JsonArray jsonRow = jsonZones.getJsonArray(y);
         for (int x = 0; x < this.width; x++) {
-          this.zones[y][x] = new Zone(jsonRow.getJson(x));
+          this.getZones()[y][x] = new Zone(jsonRow.getJson(x));
         }
       }
     } else {
-      this.isCustomGrid = false;
-      for (int y = 0; y < this.height; y++) {
-        for (int x = 0; x < this.width; x++) {
-          this.zones[y][x] = new Zone(
-              new Vector(
-                  this.zoneSize * (x + 0.5),
-                  this.zoneSize * (y + 0.5)),
-              this.zoneSize);
-        }
-      }
+      this.zones = Optional.empty();
     }
   }
 
@@ -115,7 +90,7 @@ public class Grid extends Jsonable {
     json.put(Grid.GRID_WIDTH, this.width);
     json.put(Grid.GRID_HEIGHT, this.height);
     json.put(Grid.ZONE_SIZE, this.zoneSize);
-    if (this.isCustomGrid) {
+    if (this.hasZones()) {
       JsonArrayBuilder jsonZones = JsonBuilder.Array();
       for (int row = 0; row < this.height; row++) {
         JsonArrayBuilder jsonRow = JsonBuilder.Array();
@@ -210,7 +185,16 @@ public class Grid extends Jsonable {
     if (col < 0 || this.width <= col) {
       throw new CommonException(new IndexOutOfBoundsException(col).toString());
     }
-    return this.zones[row][col];
+    if (!this.hasZones()) {
+      return new Zone(
+          new Vector(
+              row * this.zoneSize + this.zoneSize / 2.,
+              col * this.zoneSize + this.zoneSize / 2.
+          ),
+          this.zoneSize
+        );
+    }
+    return this.getZones()[row][col];
   }
 
   /**
@@ -233,7 +217,22 @@ public class Grid extends Jsonable {
   }
 
   public Zone[][] getZones() {
-    return this.zones;
+    if (this.zones.isPresent()) {
+      return this.zones.get();
+    }
+    Zone[][] zones = new Zone[this.width][this.height];
+    for (int y = 0; y < this.getHeightInZones(); y++) {
+      for (int x = 0; x < this.getWidthInZones(); x++) {
+        zones[y][x] = new Zone(
+            new Vector(
+                this.zoneSize * x + this.zoneSize / 2.,
+                this.zoneSize * y + this.zoneSize / 2.
+              ),
+            this.zoneSize
+          );
+      }
+    }
+    return zones;
   }
 
   public int getZoneSize() {
@@ -249,7 +248,7 @@ public class Grid extends Jsonable {
   }
 
   public boolean hasZones() {
-    return this.isCustomGrid;
+    return this.zones.isPresent();
   }
 
   public Json toJson() throws JsonException {
