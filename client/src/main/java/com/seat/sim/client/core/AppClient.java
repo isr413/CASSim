@@ -1,5 +1,6 @@
 package com.seat.sim.client.core;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import com.seat.sim.common.core.Application;
@@ -98,10 +99,6 @@ public class AppClient {
           throw new ClientException(snap.toString());
         }
 
-        if (snap.isDone()) {
-          break;
-        }
-
         if (visualDisplay && this.frame != null && this.app.hasGrid()) {
           Debugger.logger.info(String.format("Displaying snap <%s> ...", snap.getHash()));
           this.frame.displaySnap(snap);
@@ -109,6 +106,10 @@ public class AppClient {
 
         Debugger.logger.info("Updating application ...");
         Collection<IntentionSet> intentions = this.app.update(snap);
+
+        if (snap.isDone()) {
+          break;
+        }
 
         Debugger.logger.info("Sending intention(s) ...");
         this.socket.sendIntentions(intentions);
@@ -130,6 +131,13 @@ public class AppClient {
       }
 
       Debugger.logger.state(String.format("Scenario <%s> done", app.getScenarioID()));
+
+      if (visualDisplay) {
+        try {
+          Debugger.logger.state("PRESS ENTER TO CONTINUE...");
+          System.in.read();
+        } catch (IOException e) {}
+      }
     }
     socket.close();
   }
