@@ -250,13 +250,12 @@ public class RandomWalk implements Application {
 
   private void reset(boolean skip) {
     this.trials++;
-    if (this.trials % RandomWalk.TRIALS_PER == 0 && !this.alpha.isDone()) {
-      if (this.beta.isDone()) {
-        this.alpha.update();
-        this.beta = new Range(RandomWalk.DRONE_DISCOVERY_PROBABILITY_BETA);
-      } else {
-        this.beta.update();
-      }
+    if (this.trials % RandomWalk.TRIALS_PER == 0) {
+      this.beta.update();
+    }
+    if (this.beta.isDone()) {
+      this.alpha.update();
+      this.beta = new Range(RandomWalk.DRONE_DISCOVERY_PROBABILITY_BETA);
     }
     if (this.alpha.isDone()) {
       this.alpha = new Range(RandomWalk.VICTIM_STOP_PROBABILITY_ALPHA);
@@ -378,11 +377,14 @@ public class RandomWalk implements Application {
           ),
         RandomWalk.TURN_LENGTH
       );
-    double timeToGoHome = this.timeToCrossDistance(
-        Vector.dist(zone.getLocation(), RandomWalk.GRID_CENTER),
-        0.,
-        RandomWalk.DRONE_MAX_VELOCITY,
-        RandomWalk.DRONE_MAX_ACCELERATION
+    double timeToGoHome = Math.max(
+        this.timeToCrossDistance(
+            Vector.dist(zone.getLocation(), RandomWalk.GRID_CENTER),
+            0.,
+            RandomWalk.DRONE_MAX_VELOCITY,
+            RandomWalk.DRONE_MAX_ACCELERATION
+          ),
+        RandomWalk.TURN_LENGTH
       );
     if ((timeToMove + timeToGoHome) >= (RandomWalk.MISSION_LENGTH - snap.getTime())) {
       return false;
