@@ -21,7 +21,7 @@ def add_data(df, scenario, trial, seed, alpha, beta, gamma, drones, victims):
     return df
 
 
-def parse_file(filename):
+def parse_file(filename, trial_offset=0):
     df = pd.DataFrame(columns=["Scenario", "Trial", "Seed", "Alpha", "Beta",
                                "Gamma", "Drones", "Victims"])
     scenario = filename.strip().split("/")[-1].split("_")[0]
@@ -38,8 +38,8 @@ def parse_file(filename):
             split = line.split(" ")
             if "Seed" in split:
                 if trial > 0:
-                    df = add_data(df, scenario, trial, seed, alpha, beta,
-                                  gamma, drones, victims)
+                    df = add_data(df, scenario, trial_offset + trial, seed,
+                                  alpha, beta, gamma, drones, victims)
                 trial += 1
                 seed = int(split[3])
                 if "GAMMA" in split:
@@ -65,18 +65,20 @@ def parse_file(filename):
                 drones += 1
             if "Rescued victim" in line:
                 victims += 1
-        df = add_data(df, scenario, trial, seed, alpha, beta, gamma,
-                      drones, victims)
-    return df
+        df = add_data(df, scenario, trial_offset + trial, seed, alpha, beta,
+                      gamma, drones, victims)
+    return (df, trial_offset + trial)
 
 
 def parse_files(targets):
     df = pd.DataFrame()
+    trial_offset = 0
     for filename in targets:
         if df.empty:
-            df = parse_file(filename)
+            df, trial_offset = parse_file(filename, trial_offset)
         else:
-            df = pd.concat([df, parse_file(filename)], ignore_index=True)
+            data, trial_offset = parse_file(filename, trial_offset)
+            df = pd.concat([df, data], ignore_index=True)
             df.reset_index()
     return df
 
