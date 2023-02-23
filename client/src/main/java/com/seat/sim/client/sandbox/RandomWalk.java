@@ -64,7 +64,7 @@ public class RandomWalk implements Application {
   private static final String DRONE_LRC_TAG = "Drone_LRC";
   private static final TeamColor DRONE_COLOR = TeamColor.BLUE;
   private static final int DRONE_COUNT = 32;
-  private static final Vector DRONE_FUEL_USAGE = new Vector(0.0001, 0.0001, 0.0001);
+  private static final Vector DRONE_FUEL_USAGE = new Vector(0.0002, 0.0001, 0.0001);
   private static final Vector DRONE_INITIAL_VELOCITY = Vector.ZERO;
   private static final double DRONE_SCAN_VELOCITY = 6.7;
   private static final double DRONE_SCAN_ACCELERATION = 1.4;
@@ -85,10 +85,10 @@ public class RandomWalk implements Application {
   private static final double BASE_VISION_RANGE = 20.;
 
   public static final String LONG_RANGE_COMMS = "Long_Range_Comms";
-  public static final double LRC_BATT_USAGE = 0.0001;
+  public static final double LRC_BATT_USAGE = 0.0002;
 
   public static final String DRONE_CAMERA = "Drone_Camera";
-  public static final double CAM_BATT_USAGE = 0.0001;
+  public static final double CAM_BATT_USAGE = 0.0002;
   public static final double CAM_RANGE = 10.;
 
   // Tunable params
