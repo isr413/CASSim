@@ -273,12 +273,14 @@ public class Remote {
             : this.getDestination().getMaxAcceleration()
       );
     if (timeToReach <= stepSize) {
-      this.setLocationTo(this.getDestination().getLocation());
-      this.setVelocityTo(Vector.ZERO);
       this.getKinematics().updateFuelBy(
-          this.getKinematics().getRemoteFuelUsage(Vector.dist(this.getLocation(), this.getDestination().getLocation())),
+          -this.getKinematics().getRemoteFuelUsage(
+              Vector.dist(this.getLocation(), this.getDestination().getLocation())
+            ),
           1.
         );
+      this.setLocationTo(this.getDestination().getLocation());
+      this.setVelocityTo(Vector.ZERO);
       this.destination = Optional.empty();
       this.getKinematics().update(stepSize);
       return;
