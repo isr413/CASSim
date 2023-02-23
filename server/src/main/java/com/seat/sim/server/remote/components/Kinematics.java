@@ -138,7 +138,7 @@ public class Kinematics {
   }
 
   public boolean isFuelEmpty() {
-    return this.getFuelAmount() == 0;
+    return Vector.near(this.getFuelAmount(), 0.);
   }
 
   public boolean isInMotion() {

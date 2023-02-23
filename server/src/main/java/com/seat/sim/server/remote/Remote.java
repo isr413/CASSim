@@ -273,12 +273,43 @@ public class Remote {
             : this.getDestination().getMaxAcceleration()
       );
     if (timeToReach <= stepSize) {
-      this.getKinematics().updateFuelBy(
-          -this.getKinematics().getRemoteFuelUsage(
-              Vector.dist(this.getLocation(), this.getDestination().getLocation())
-            ),
-          1.
-        );
+      if (!this.hasMaxVelocity() && !this.getDestination().hasMaxVelocity()) {
+        this.getKinematics().updateFuelBy(
+            -this.getKinematics().getRemoteFuelUsage(
+                Vector.dist(this.getLocation(), this.getDestination().getLocation())
+              ),
+            1.
+          );
+      } else {
+        double maxVelocity = Math.min(this.getMaxVelocity(), this.getDestination().getMaxVelocity());
+        double maxAcceleration = Math.min(this.getMaxAcceleration(), this.getDestination().getMaxAcceleration());
+        double timeToZero = (Double.isFinite(maxAcceleration) && maxAcceleration > 0.)
+          ? this.getSpeed() / maxAcceleration
+          : 0.;
+        if (timeToZero >= timeToReach) {
+          this.getKinematics().updateFuelBy(
+              -this.getKinematics().getRemoteFuelUsage(this.getSpeed()),
+              1.
+            );
+        } else {
+          double timeToMax = (Double.isFinite(maxAcceleration) && maxAcceleration > 0.)
+            ? (maxVelocity - this.getSpeed()) / maxAcceleration
+            : 0.;
+          if (2 * timeToMax + timeToZero >= timeToReach) {
+            this.getKinematics().updateFuelBy(
+                -this.getKinematics().getRemoteFuelUsage(
+                    this.getSpeed() + this.getMaxAcceleration() * (timeToReach - timeToZero)
+                  ),
+                1.
+              );
+          } else {
+            this.getKinematics().updateFuelBy(
+                -this.getKinematics().getRemoteFuelUsage(2 * maxVelocity - this.getSpeed()),
+                1.
+              );
+          }
+        }
+      }
       this.setLocationTo(this.getDestination().getLocation());
       this.setVelocityTo(Vector.ZERO);
       this.destination = Optional.empty();
