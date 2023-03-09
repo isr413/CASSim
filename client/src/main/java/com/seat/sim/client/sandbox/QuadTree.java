@@ -3,6 +3,7 @@ package com.seat.sim.client.sandbox;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -140,17 +141,40 @@ public class QuadTree implements Application {
     Zone[][] zones = this.grid.getZones();
     int y = 0, x = 0;
     for (String remoteID : remoteIDs) {
-      this.droneAssignment.put(remoteID, new LinkedList<>());
+      ArrayList<Zone> assignment = new ArrayList<>();
       for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 16; j++) {
-          this.droneAssignment.get(remoteID).add(zones[y + i][x + j]);
+          assignment.add(zones[y + i][x + j]);
         }
       }
       x = (x + 16) % QuadTree.GRID_SIZE;
       if (x == 0) {
         y += 8;
       }
+      this.droneAssignment.put(remoteID, this.sortAssignment(assignment));
     }
+  }
+
+  private Queue<Zone> sortAssignment(List<Zone> zones) {
+    Queue<Zone> assignment = new LinkedList<>();
+    Vector[] origin = new Vector[] { QuadTree.GRID_CENTER };
+    while (zones.size() > 1) {
+      Collections.sort(zones, (Zone z1, Zone z2) -> {
+          return Double.compare(
+              Vector.dist(origin[0], z1.getLocation()),
+              Vector.dist(origin[0], z2.getLocation())
+            );
+        });
+      assignment.add(zones.get(0));
+      origin[0] = zones.get(0).getLocation();
+      zones.set(0, zones.get(zones.size() - 1));
+      zones.remove(zones.size() - 1);
+    }
+    if (!zones.isEmpty()) {
+      assignment.add(zones.get(0));
+      zones.clear();
+    }
+    return assignment;
   }
 
   private void loadRemotes() {
