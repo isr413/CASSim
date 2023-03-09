@@ -5,6 +5,7 @@ import com.seat.sim.client.core.ClientException;
 import com.seat.sim.client.sandbox.BmpExample;
 import com.seat.sim.client.sandbox.Default;
 import com.seat.sim.client.sandbox.GlobalTaskQueue;
+import com.seat.sim.client.sandbox.GlobalTaskQueueGamma;
 import com.seat.sim.client.sandbox.QuadTree;
 import com.seat.sim.client.sandbox.RandomFixed;
 import com.seat.sim.client.sandbox.RandomWalk;
@@ -34,6 +35,9 @@ public class App {
       }
       if (scenarioID.equals("GlobalTaskQueue")) {
         return new GlobalTaskQueue(args, threadID, seed);
+      }
+      if (scenarioID.equals("GlobalTaskQueueGamma")) {
+        return new GlobalTaskQueueGamma(args, threadID, seed);
       }
       if (scenarioID.equals("QuadTree")) {
         return new QuadTree(args, threadID, seed);
