@@ -136,31 +136,31 @@ public class RandomWalk implements Application {
                 List.of(
                     new SensorConfig(
                         new SensorProto(
-                            RandomWalk.HUMAN_VISION,
-                            Set.of(RandomWalk.BASE_TAG),
-                            Set.of(RandomWalk.VICTIM_TAG),
-                            new SensorStats(0., 1., 0., RandomWalk.BASE_VISION_RANGE)
+                            RandomWalk.HUMAN_VISION,        // model 
+                            Set.of(RandomWalk.BASE_TAG),    // tags
+                            Set.of(RandomWalk.VICTIM_TAG),  // matchers
+                            new SensorStats(0., 1., 0., RandomWalk.BASE_VISION_RANGE) // usage, accuracy, delay, range
                           ),
-                        1,
-                        true
+                        1,    // count
+                        true  // active
                       ),
                     new SensorConfig(
                         new SensorProto(
-                            RandomWalk.LONG_RANGE_COMMS,
-                            Set.of(RandomWalk.BASE_LRC_TAG),
-                            Set.of(RandomWalk.DRONE_LRC_TAG),
-                            new SensorStats(RandomWalk.LRC_BATT_USAGE, 1., 0.)
+                            RandomWalk.LONG_RANGE_COMMS,        // model
+                            Set.of(RandomWalk.BASE_LRC_TAG),    // tags
+                            Set.of(RandomWalk.DRONE_LRC_TAG),   // matchers
+                            new SensorStats(RandomWalk.LRC_BATT_USAGE, 1., 0.) // usage, accuracy, delay, range
                           ),
-                        1,
-                        true
+                        1,    // count
+                        true  // active
                       )
                   ),
-                new KinematicsProto(RandomWalk.GRID_CENTER)
+                new KinematicsProto(RandomWalk.GRID_CENTER) // location, no fuel, no motion
               ),
             RandomWalk.BASE_COLOR,
             RandomWalk.BASE_COUNT,
-            true,
-            false
+            true,   // active
+            false   // dynamic
           ),
           new RemoteConfig(
               new RemoteProto(
@@ -168,44 +168,44 @@ public class RandomWalk implements Application {
                   List.of(
                       new SensorConfig(
                           new SensorProto(
-                              RandomWalk.DRONE_CAMERA,
-                              Set.of(RandomWalk.DRONE_TAG),
-                              Set.of(RandomWalk.VICTIM_TAG),
+                              RandomWalk.DRONE_CAMERA,        // model
+                              Set.of(RandomWalk.DRONE_TAG),   // tags
+                              Set.of(RandomWalk.VICTIM_TAG),  // matchers
                               new SensorStats(
-                                  RandomWalk.CAM_BATT_USAGE,
-                                  this.beta.getStart(),
-                                  0.,
-                                  RandomWalk.CAM_RANGE
+                                  RandomWalk.CAM_BATT_USAGE,  // usage
+                                  this.beta.getStart(),       // accuracy
+                                  0.,                         // delay
+                                  RandomWalk.CAM_RANGE        // range
                                 )
                             ),
-                          1,
-                          true
+                          1,    // count
+                          true  // active
                         ),
                       new SensorConfig(
                           new SensorProto(
-                              RandomWalk.LONG_RANGE_COMMS,
-                              Set.of(RandomWalk.DRONE_LRC_TAG),
-                              Set.of(RandomWalk.BASE_LRC_TAG),
-                              new SensorStats(RandomWalk.LRC_BATT_USAGE, 1., 0.)
+                              RandomWalk.LONG_RANGE_COMMS,        // model
+                              Set.of(RandomWalk.DRONE_LRC_TAG),   // tags
+                              Set.of(RandomWalk.BASE_LRC_TAG),    // matchers
+                              new SensorStats(RandomWalk.LRC_BATT_USAGE, 1., 0.) // usage, accuracy, delay, inf range
                             ),
-                          1,
-                          true
+                          1,    // count
+                          true  // active
                         )
                     ),
                   new KinematicsProto(
-                      RandomWalk.GRID_CENTER,
-                      new FuelProto(1., 1., RandomWalk.DRONE_FUEL_USAGE),
+                      RandomWalk.GRID_CENTER, // location
+                      new FuelProto(1., 1., RandomWalk.DRONE_FUEL_USAGE), // initial, max, usage
                       new MotionProto(
-                          RandomWalk.DRONE_INITIAL_VELOCITY,
-                          RandomWalk.DRONE_MAX_VELOCITY,
-                          RandomWalk.DRONE_MAX_ACCELERATION
+                          RandomWalk.DRONE_INITIAL_VELOCITY,  // initial velocity
+                          RandomWalk.DRONE_MAX_VELOCITY,      // max velocity
+                          RandomWalk.DRONE_MAX_ACCELERATION   // max acceleration
                         )
                     )
                 ),
               RandomWalk.DRONE_COLOR,
               RandomWalk.DRONE_COUNT,
-              true,
-              true
+              true, // active
+              true  // dynamic
             ),
           new RemoteConfig(
               new RemoteProto(
@@ -213,29 +213,29 @@ public class RandomWalk implements Application {
                   List.of(
                       new SensorConfig(
                           new SensorProto(
-                              RandomWalk.HUMAN_VISION,
-                              Set.of(RandomWalk.VICTIM_TAG),
-                              Set.of(RandomWalk.BASE_TAG),
-                              new SensorStats(0., 1., 0., RandomWalk.HUMAN_VISION_RANGE)
+                              RandomWalk.HUMAN_VISION,          // model
+                              Set.of(RandomWalk.VICTIM_TAG),    // tags
+                              Set.of(RandomWalk.BASE_TAG),      // matchers
+                              new SensorStats(0., 1., 0., RandomWalk.HUMAN_VISION_RANGE) // usage, acc., delay, range
                             ),
-                          1,
-                          true
+                          1,    // count
+                          true  // active
                         )
                     ),
                   new KinematicsProto(
-                      null,
-                      null,
+                      null, // random location
+                      null, // no fuel
                       new MotionProto(
-                          RandomWalk.VICTIM_INITIAL_VELOCITY,
-                          RandomWalk.VICTIM_MAX_VELOCITY,
-                          RandomWalk.VICTIM_MAX_ACCELERATION
+                          RandomWalk.VICTIM_INITIAL_VELOCITY,   // initial velocity
+                          RandomWalk.VICTIM_MAX_VELOCITY,       // max velocity
+                          RandomWalk.VICTIM_MAX_ACCELERATION    // max acceleration
                         )
                     )
                 ),
               RandomWalk.VICTIM_COLOR,
               RandomWalk.VICTIM_COUNT,
-              true,
-              true
+              true,   // active
+              true    // dynamic
             )
       );
   }
