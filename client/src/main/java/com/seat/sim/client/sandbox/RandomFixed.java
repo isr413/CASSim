@@ -67,7 +67,7 @@ public class RandomFixed implements Application {
   private static final String DRONE_LRC_TAG = "Drone_LRC";
   private static final TeamColor DRONE_COLOR = TeamColor.BLUE;
   private static final int DRONE_COUNT = 32;
-  private static final Vector DRONE_FUEL_USAGE = new Vector(0.0002, 0.0001, 0.0001);
+  private static final Vector DRONE_FUEL_USAGE = new Vector(0.0001, 0.0001, 0.0001);
   private static final Vector DRONE_INITIAL_VELOCITY = Vector.ZERO;
   private static final double DRONE_SCAN_VELOCITY = 6.7;
   private static final double DRONE_SCAN_ACCELERATION = 1.4;
