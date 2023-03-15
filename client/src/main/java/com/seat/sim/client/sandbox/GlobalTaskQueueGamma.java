@@ -42,7 +42,7 @@ import com.seat.sim.common.util.Random;
 import com.seat.sim.common.util.Range;
 
 public class GlobalTaskQueueGamma implements Application {
-import com.seat.sim.client.sandbox.RandomWalk;
+
   // Scenario info
   private static final String SCENARIO_ID = "GlobalTaskQueueGamma";
   private static final int NUM_TURNS = 81;
