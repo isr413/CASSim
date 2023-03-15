@@ -42,6 +42,7 @@ import com.seat.sim.common.util.Random;
 import com.seat.sim.common.util.Range;
 
 public class GlobalTaskQueueGamma implements Application {
+import com.seat.sim.client.sandbox.RandomWalk;
   // Scenario info
   private static final String SCENARIO_ID = "GlobalTaskQueueGamma";
   private static final int NUM_TURNS = 81;
@@ -70,7 +71,7 @@ public class GlobalTaskQueueGamma implements Application {
   private static final String DRONE_BLE_TAG = "Drone_BLE";
   private static final TeamColor DRONE_COLOR = TeamColor.BLUE;
   private static final int DRONE_COUNT = 32;
-  private static final Vector DRONE_FUEL_USAGE = new Vector(0.0002, 0.0001, 0.0001);
+  private static final Vector DRONE_FUEL_USAGE = new Vector(0.0001, 0.0001, 0.0001);
   private static final Vector DRONE_INITIAL_VELOCITY = Vector.ZERO;
   private static final double DRONE_SCAN_VELOCITY = 6.7;
   private static final double DRONE_SCAN_ACCELERATION = 1.4;
