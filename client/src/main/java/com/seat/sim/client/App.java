@@ -11,6 +11,7 @@ import com.seat.sim.client.sandbox.RandomFixed;
 import com.seat.sim.client.sandbox.RandomFixedGamma;
 import com.seat.sim.client.sandbox.RandomWalk;
 import com.seat.sim.client.sandbox.RandomWalkGamma;
+import com.seat.sim.client.sandbox.SmgWalk;
 import com.seat.sim.common.core.Application;
 import com.seat.sim.common.util.ArgsParser;
 
@@ -55,6 +56,9 @@ public class App {
       }
       if (scenarioID.equals("RandomWalkGamma")) {
         return new RandomWalkGamma(args, threadID, seed);
+      }
+      if (scenarioID.equals("SmgWalk")) {
+        return new SmgWalk(args, threadID, seed);
       }
     } catch (Exception e) {
       throw new ClientException(e.getMessage());
