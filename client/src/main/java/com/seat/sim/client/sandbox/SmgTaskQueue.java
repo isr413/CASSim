@@ -3,12 +3,14 @@ package com.seat.sim.client.sandbox;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,13 +41,13 @@ import com.seat.sim.common.util.Logger;
 import com.seat.sim.common.util.Random;
 import com.seat.sim.common.util.Range;
 
-public class SmgWalk implements Application {
+public class SmgTaskQueue implements Application {
 
   // Scenario info
-  private static final String SCENARIO_ID = "SmgWalk";
+  private static final String SCENARIO_ID = "SmgTaskQueue";
   private static final int NUM_TURNS = 81;
   private static final int TURN_LENGTH = 20;
-  private static final int MISSION_LENGTH = SmgWalk.NUM_TURNS * SmgWalk.TURN_LENGTH;
+  private static final int MISSION_LENGTH = SmgTaskQueue.NUM_TURNS * SmgTaskQueue.TURN_LENGTH;
   private static final double STEP_SIZE = 20.;
 
   // Grid info
@@ -53,8 +55,8 @@ public class SmgWalk implements Application {
   private static final int ZONE_SIZE = 14;
 
   private static final Vector GRID_CENTER = new Vector(
-      SmgWalk.GRID_SIZE * SmgWalk.ZONE_SIZE / 2.,
-      SmgWalk.GRID_SIZE * SmgWalk.ZONE_SIZE / 2.
+      SmgTaskQueue.GRID_SIZE * SmgTaskQueue.ZONE_SIZE / 2.,
+      SmgTaskQueue.GRID_SIZE * SmgTaskQueue.ZONE_SIZE / 2.
     );
 
   // Base info
@@ -118,23 +120,25 @@ public class SmgWalk implements Application {
   private List<RemoteConfig> remotes;
   private long seed;
   private Iterator<Long> seeds;
+  private LinkedList<Zone> tasks;
   private int totalTrials;
   private int trials;
   private double[][] zones;
 
-  public SmgWalk(ArgsParser args, int threadID, long seed) throws IOException {
-    this.logger = (threadID > 0) ? new Logger(String.format("%s_%d", SmgWalk.SCENARIO_ID, threadID))
-        : new Logger(SmgWalk.SCENARIO_ID);
-    this.alpha = new Range(SmgWalk.VICTIM_STOP_PROBABILITY_ALPHA);
-    this.beta = new Range(SmgWalk.DRONE_DISCOVERY_PROBABILITY_BETA);
-    this.gamma = new Range(SmgWalk.DRONE_DISCOVERY_PROBABILITY_GAMMA);
+  public SmgTaskQueue(ArgsParser args, int threadID, long seed) throws IOException {
+    this.logger = (threadID > 0) ? new Logger(String.format("%s_%d", SmgTaskQueue.SCENARIO_ID, threadID))
+        : new Logger(SmgTaskQueue.SCENARIO_ID);
+    this.alpha = new Range(SmgTaskQueue.VICTIM_STOP_PROBABILITY_ALPHA);
+    this.beta = new Range(SmgTaskQueue.DRONE_DISCOVERY_PROBABILITY_BETA);
+    this.gamma = new Range(SmgTaskQueue.DRONE_DISCOVERY_PROBABILITY_GAMMA);
     this.grid = new Grid(
-        SmgWalk.GRID_SIZE,
-        SmgWalk.GRID_SIZE,
-        SmgWalk.ZONE_SIZE
+        SmgTaskQueue.GRID_SIZE,
+        SmgTaskQueue.GRID_SIZE,
+        SmgTaskQueue.ZONE_SIZE
       );
     this.doneRemotes = new HashSet<>();
     this.droneAssignment = new HashMap<>();
+    this.tasks = new LinkedList<>();
     this.init(threadID, seed);
   }
 
@@ -156,56 +160,62 @@ public class SmgWalk implements Application {
         this.zones[i][j] = 1. / (this.grid.getHeightInZones() * this.grid.getWidthInZones());
       }
     }
+    List<Zone> allZones = Arrays
+      .stream(this.grid.getZones())
+      .flatMap(row -> Arrays.stream(row))
+      .collect(Collectors.toList());
+    Collections.shuffle(allZones);
+    this.tasks = new LinkedList<Zone>(allZones);
   }
 
   private void loadRemotes() {
     this.remotes = List.of(
         new RemoteConfig(
             new RemoteProto(
-                Set.of(SmgWalk.BASE_TAG),
+                Set.of(SmgTaskQueue.BASE_TAG),
                 List.of(
                     new SensorConfig(
                         new SensorProto(
-                            SmgWalk.HUMAN_VISION,
-                            Set.of(SmgWalk.BASE_TAG),
-                            Set.of(SmgWalk.VICTIM_TAG),
-                            new SensorStats(0., 1., 0., SmgWalk.BASE_VISION_RANGE)
+                            SmgTaskQueue.HUMAN_VISION,
+                            Set.of(SmgTaskQueue.BASE_TAG),
+                            Set.of(SmgTaskQueue.VICTIM_TAG),
+                            new SensorStats(0., 1., 0., SmgTaskQueue.BASE_VISION_RANGE)
                           ),
                         1,
                         true
                       ),
                     new SensorConfig(
                         new SensorProto(
-                            SmgWalk.LONG_RANGE_COMMS,
-                            Set.of(SmgWalk.BASE_LRC_TAG),
-                            Set.of(SmgWalk.DRONE_LRC_TAG),
-                            new SensorStats(SmgWalk.LRC_BATT_USAGE, 1., 0.)
+                            SmgTaskQueue.LONG_RANGE_COMMS,
+                            Set.of(SmgTaskQueue.BASE_LRC_TAG),
+                            Set.of(SmgTaskQueue.DRONE_LRC_TAG),
+                            new SensorStats(SmgTaskQueue.LRC_BATT_USAGE, 1., 0.)
                           ),
                         1,
                         true
                       )
                   ),
-                new KinematicsProto(SmgWalk.GRID_CENTER)
+                new KinematicsProto(SmgTaskQueue.GRID_CENTER)
               ),
-            SmgWalk.BASE_COLOR,
-            SmgWalk.BASE_COUNT,
+            SmgTaskQueue.BASE_COLOR,
+            SmgTaskQueue.BASE_COUNT,
             true,
             false
           ),
           new RemoteConfig(
               new RemoteProto(
-                  Set.of(SmgWalk.DRONE_TAG),
+                  Set.of(SmgTaskQueue.DRONE_TAG),
                   List.of(
                       new SensorConfig(
                           new SensorProto(
-                              SmgWalk.DRONE_CAMERA,
-                              Set.of(SmgWalk.DRONE_TAG),
-                              Set.of(SmgWalk.VICTIM_TAG),
+                              SmgTaskQueue.DRONE_CAMERA,
+                              Set.of(SmgTaskQueue.DRONE_TAG),
+                              Set.of(SmgTaskQueue.VICTIM_TAG),
                               new SensorStats(
-                                  SmgWalk.CAM_BATT_USAGE,
+                                  SmgTaskQueue.CAM_BATT_USAGE,
                                   this.beta.getStart(),
                                   0.,
-                                  SmgWalk.CAM_RANGE
+                                  SmgTaskQueue.CAM_RANGE
                                 )
                             ),
                           1,
@@ -213,24 +223,24 @@ public class SmgWalk implements Application {
                         ),
                       new SensorConfig(
                           new SensorProto(
-                              SmgWalk.LONG_RANGE_COMMS,
-                              Set.of(SmgWalk.DRONE_LRC_TAG),
-                              Set.of(SmgWalk.BASE_LRC_TAG),
-                              new SensorStats(SmgWalk.LRC_BATT_USAGE, 1., 0.)
+                              SmgTaskQueue.LONG_RANGE_COMMS,
+                              Set.of(SmgTaskQueue.DRONE_LRC_TAG),
+                              Set.of(SmgTaskQueue.BASE_LRC_TAG),
+                              new SensorStats(SmgTaskQueue.LRC_BATT_USAGE, 1., 0.)
                             ),
                           1,
                           true
                         ),
                       new SensorConfig(
                           new SensorProto(
-                              SmgWalk.BLE_COMMS,
-                              Set.of(SmgWalk.DRONE_BLE_TAG),
-                              Set.of(SmgWalk.VICTIM_BLE_TAG),
+                              SmgTaskQueue.BLE_COMMS,
+                              Set.of(SmgTaskQueue.DRONE_BLE_TAG),
+                              Set.of(SmgTaskQueue.VICTIM_BLE_TAG),
                               new SensorStats(
-                                  SmgWalk.BLE_BATT_USAGE,
+                                  SmgTaskQueue.BLE_BATT_USAGE,
                                   this.gamma.getStart(),
                                   0.,
-                                  SmgWalk.BLE_RANGE
+                                  SmgTaskQueue.BLE_RANGE
                                 )
                             ),
                           1,
@@ -238,44 +248,44 @@ public class SmgWalk implements Application {
                         )
                     ),
                   new KinematicsProto(
-                      SmgWalk.GRID_CENTER,
-                      new FuelProto(1., 1., SmgWalk.DRONE_FUEL_USAGE),
+                      SmgTaskQueue.GRID_CENTER,
+                      new FuelProto(1., 1., SmgTaskQueue.DRONE_FUEL_USAGE),
                       new MotionProto(
-                          SmgWalk.DRONE_INITIAL_VELOCITY,
-                          SmgWalk.DRONE_MAX_VELOCITY,
-                          SmgWalk.DRONE_MAX_ACCELERATION
+                          SmgTaskQueue.DRONE_INITIAL_VELOCITY,
+                          SmgTaskQueue.DRONE_MAX_VELOCITY,
+                          SmgTaskQueue.DRONE_MAX_ACCELERATION
                         )
                     )
                 ),
-              SmgWalk.DRONE_COLOR,
-              SmgWalk.DRONE_COUNT,
+              SmgTaskQueue.DRONE_COLOR,
+              SmgTaskQueue.DRONE_COUNT,
               true,
               true
             ),
           new RemoteConfig(
               new RemoteProto(
-                  Set.of(SmgWalk.VICTIM_TAG),
+                  Set.of(SmgTaskQueue.VICTIM_TAG),
                   List.of(
                       new SensorConfig(
                           new SensorProto(
-                              SmgWalk.HUMAN_VISION,
-                              Set.of(SmgWalk.VICTIM_TAG),
-                              Set.of(SmgWalk.BASE_TAG),
-                              new SensorStats(0., 1., 0., SmgWalk.HUMAN_VISION_RANGE)
+                              SmgTaskQueue.HUMAN_VISION,
+                              Set.of(SmgTaskQueue.VICTIM_TAG),
+                              Set.of(SmgTaskQueue.BASE_TAG),
+                              new SensorStats(0., 1., 0., SmgTaskQueue.HUMAN_VISION_RANGE)
                             ),
                           1,
                           true
                         ),
                       new SensorConfig(
                           new SensorProto(
-                              SmgWalk.BLE_COMMS,
-                              Set.of(SmgWalk.VICTIM_BLE_TAG),
-                              Set.of(SmgWalk.DRONE_BLE_TAG),
+                              SmgTaskQueue.BLE_COMMS,
+                              Set.of(SmgTaskQueue.VICTIM_BLE_TAG),
+                              Set.of(SmgTaskQueue.DRONE_BLE_TAG),
                               new SensorStats(
-                                  SmgWalk.BLE_BATT_USAGE,
+                                  SmgTaskQueue.BLE_BATT_USAGE,
                                   this.gamma.getStart(),
                                   0.,
-                                  SmgWalk.BLE_RANGE
+                                  SmgTaskQueue.BLE_RANGE
                                 )
                             ),
                           1,
@@ -286,14 +296,14 @@ public class SmgWalk implements Application {
                       null,
                       null,
                       new MotionProto(
-                          SmgWalk.VICTIM_INITIAL_VELOCITY,
-                          SmgWalk.VICTIM_MAX_VELOCITY,
-                          SmgWalk.VICTIM_MAX_ACCELERATION
+                          SmgTaskQueue.VICTIM_INITIAL_VELOCITY,
+                          SmgTaskQueue.VICTIM_MAX_VELOCITY,
+                          SmgTaskQueue.VICTIM_MAX_ACCELERATION
                         )
                     )
                 ),
-              SmgWalk.VICTIM_COLOR,
-              SmgWalk.VICTIM_COUNT,
+              SmgTaskQueue.VICTIM_COLOR,
+              SmgTaskQueue.VICTIM_COUNT,
               true,
               true
             )
@@ -310,24 +320,25 @@ public class SmgWalk implements Application {
 
   private void reset(boolean skip) {
     this.trials++;
-    if (this.trials % SmgWalk.TRIALS_PER == 0) {
+    if (this.trials % SmgTaskQueue.TRIALS_PER == 0) {
       this.gamma.update();
     }
     if (this.gamma.isDone()) {
       this.beta.update();
-      this.gamma = new Range(SmgWalk.DRONE_DISCOVERY_PROBABILITY_GAMMA);
+      this.gamma = new Range(SmgTaskQueue.DRONE_DISCOVERY_PROBABILITY_GAMMA);
     }
     if (this.beta.isDone()) {
       this.alpha.update();
-      this.beta = new Range(SmgWalk.DRONE_DISCOVERY_PROBABILITY_BETA);
+      this.beta = new Range(SmgTaskQueue.DRONE_DISCOVERY_PROBABILITY_BETA);
     }
     if (this.alpha.isDone()) {
-      this.alpha = new Range(SmgWalk.VICTIM_STOP_PROBABILITY_ALPHA);
+      this.alpha = new Range(SmgTaskQueue.VICTIM_STOP_PROBABILITY_ALPHA);
     }
     this.setSeed(skip);
     if (!skip) {
       this.doneRemotes = new HashSet<>();
       this.droneAssignment = new HashMap<>();
+      this.tasks = new LinkedList<>();
       this.loadRemotes();
       this.loadZones();
     }
@@ -352,9 +363,9 @@ public class SmgWalk implements Application {
   }
 
   private void setTrials(int threadID) {
-    this.totalTrials = SmgWalk.VICTIM_STOP_PROBABILITY_ALPHA.points() *
-        SmgWalk.DRONE_DISCOVERY_PROBABILITY_BETA.points() *
-        SmgWalk.DRONE_DISCOVERY_PROBABILITY_GAMMA.points() * SmgWalk.TRIALS_PER;
+    this.totalTrials = SmgTaskQueue.VICTIM_STOP_PROBABILITY_ALPHA.points() *
+        SmgTaskQueue.DRONE_DISCOVERY_PROBABILITY_BETA.points() *
+        SmgTaskQueue.DRONE_DISCOVERY_PROBABILITY_GAMMA.points() * SmgTaskQueue.TRIALS_PER;
     this.trials = 0;
     if (threadID > 0) {
       this.totalTrials /= 4;
@@ -369,14 +380,14 @@ public class SmgWalk implements Application {
   }
 
   protected Zone getBestNeighbor(Vector location) {
-    List<Zone> neighbors = this.grid.getNeighborhood(location);
-    Collections.sort(neighbors, new Comparator<Zone>() {
-      @Override
-      public int compare(Zone z1, Zone z2) {
-        return -Double.compare(SmgWalk.this.getWeight(z1.getLocation()), SmgWalk.this.getWeight(z2.getLocation()));
-      }
-    });
-    return neighbors.get(0);
+    return this.tasks.poll();
+  }
+
+  protected double getNeighborhoodWeight(Vector location) {
+    return this.grid.getNeighborhood(location)
+      .stream()
+      .mapToDouble(zone -> this.getWeight(zone.getLocation()))
+      .sum();
   }
 
   protected double getWeight(Vector location) {
@@ -385,11 +396,11 @@ public class SmgWalk implements Application {
   }
 
   protected boolean shouldReturnHome(Snapshot snap, RemoteState state) {
-    if (!state.hasTag(SmgWalk.DRONE_TAG)) {
+    if (!state.hasTag(SmgTaskQueue.DRONE_TAG)) {
       return false;
     }
     if (!state.hasLocation() || !this.grid.hasZoneAtLocation(state.getLocation())) {
-      return snap.getTime() + SmgWalk.TURN_LENGTH >= SmgWalk.MISSION_LENGTH;
+      return snap.getTime() + SmgTaskQueue.TURN_LENGTH >= SmgTaskQueue.MISSION_LENGTH;
     }
     return !this.validChoice(snap, state, this.grid.getZoneAtLocation(state.getLocation()));
   }
@@ -405,7 +416,7 @@ public class SmgWalk implements Application {
       .stream()
       .filter(neighbor -> neighbor != zone)
       .filter(neighbor -> !neighbor.hasZoneType(ZoneType.BLOCKED))
-      .filter(neighbor -> state.hasTag(SmgWalk.VICTIM_TAG) || this.validChoice(snap, state, zone))
+      .filter(neighbor -> state.hasTag(SmgTaskQueue.VICTIM_TAG) || this.validChoice(snap, state, zone))
       .findFirst();
     if (nextZone.isEmpty()) {
       return Optional.empty();
@@ -430,6 +441,18 @@ public class SmgWalk implements Application {
     int i = (int) (zone.getLocation().getY() / this.grid.getZoneSize());
     int j = (int) (zone.getLocation().getX() / this.grid.getZoneSize());
     this.zones[i][j] *= weight;
+  }
+
+  protected void sortTasks() {
+    Collections.shuffle(this.tasks);
+    Collections.sort(this.tasks, new Comparator<Zone>() {
+      @Override
+      public int compare(Zone z1, Zone z2) {
+        double z1weight = SmgTaskQueue.this.getNeighborhoodWeight(z1.getLocation());
+        double z2weight = SmgTaskQueue.this.getNeighborhoodWeight(z2.getLocation());
+        return -Double.compare(z1weight, z2weight);
+      }
+    });
   }
 
   protected double timeToCrossDistance(double dist, double speed, double maxSpeed, double acceleration) {
@@ -491,6 +514,7 @@ public class SmgWalk implements Application {
             (weight * (1. - this.alpha.getStart()) * 1. / numNeighbors);
       }
     }
+    this.sortTasks();
   }
 
   protected boolean validChoice(Snapshot snap, RemoteState state, Zone zone) {
@@ -498,28 +522,28 @@ public class SmgWalk implements Application {
         this.timeToCrossDistance(
             Vector.dist(state.getLocation(), zone.getLocation()),
             state.getSpeed(),
-            SmgWalk.DRONE_MAX_VELOCITY,
-            SmgWalk.DRONE_MAX_ACCELERATION
+            SmgTaskQueue.DRONE_MAX_VELOCITY,
+            SmgTaskQueue.DRONE_MAX_ACCELERATION
           ),
-        SmgWalk.TURN_LENGTH
+        SmgTaskQueue.TURN_LENGTH
       );
     double timeToGoHome = Math.max(
         this.timeToCrossDistance(
-          Vector.dist(zone.getLocation(), SmgWalk.GRID_CENTER),
+          Vector.dist(zone.getLocation(), SmgTaskQueue.GRID_CENTER),
           0.,
-          SmgWalk.DRONE_MAX_VELOCITY,
-          SmgWalk.DRONE_MAX_ACCELERATION
+          SmgTaskQueue.DRONE_MAX_VELOCITY,
+          SmgTaskQueue.DRONE_MAX_ACCELERATION
         ),
-        SmgWalk.TURN_LENGTH
+        SmgTaskQueue.TURN_LENGTH
       );
-    if ((timeToMove + timeToGoHome) >= (SmgWalk.MISSION_LENGTH - snap.getTime())) {
+    if ((timeToMove + timeToGoHome) >= (SmgTaskQueue.MISSION_LENGTH - snap.getTime())) {
       return false;
     }
     double avgBattUsage = (1. - state.getFuelAmount()) / snap.getTime();
     if ((timeToMove + timeToGoHome) * avgBattUsage >= state.getFuelAmount()) {
       return false;
     }
-    return snap.getTime() + SmgWalk.TURN_LENGTH < SmgWalk.MISSION_LENGTH;
+    return snap.getTime() + SmgTaskQueue.TURN_LENGTH < SmgTaskQueue.MISSION_LENGTH;
   }
 
   public Optional<Grid> getGrid() {
@@ -527,7 +551,7 @@ public class SmgWalk implements Application {
   }
 
   public int getMissionLength() {
-    return SmgWalk.MISSION_LENGTH;
+    return SmgTaskQueue.MISSION_LENGTH;
   }
 
   public Collection<RemoteConfig> getRemoteConfigs() {
@@ -535,7 +559,7 @@ public class SmgWalk implements Application {
   }
 
   public String getScenarioID() {
-    return SmgWalk.SCENARIO_ID;
+    return SmgTaskQueue.SCENARIO_ID;
   }
 
   public long getSeed() {
@@ -543,7 +567,7 @@ public class SmgWalk implements Application {
   }
 
   public double getStepSize() {
-    return SmgWalk.STEP_SIZE;
+    return SmgTaskQueue.STEP_SIZE;
   }
   
   public int getTrials() {
@@ -559,33 +583,33 @@ public class SmgWalk implements Application {
   }
 
   public Collection<IntentionSet> update(Snapshot snap) {
-    if (!snap.hasActiveRemoteWithTag(SmgWalk.DRONE_TAG) && !snap.hasActiveRemoteWithTag(SmgWalk.VICTIM_TAG)) {
-      IntentionSet intentions = new IntentionSet(SmgWalk.SCENARIO_ID);
+    if (!snap.hasActiveRemoteWithTag(SmgTaskQueue.DRONE_TAG) && !snap.hasActiveRemoteWithTag(SmgTaskQueue.VICTIM_TAG)) {
+      IntentionSet intentions = new IntentionSet(SmgTaskQueue.SCENARIO_ID);
       intentions.addIntention(IntentRegistry.Done());
       return List.of(intentions);
     }
     Stream.concat(
-          Stream.of(snap.getRemoteStateWithTag(SmgWalk.BASE_TAG).get()),
-          snap.getActiveRemoteStates().stream().filter(state -> state.hasTag(SmgWalk.DRONE_TAG))
+          Stream.of(snap.getRemoteStateWithTag(SmgTaskQueue.BASE_TAG).get()),
+          snap.getActiveRemoteStates().stream().filter(state -> state.hasTag(SmgTaskQueue.DRONE_TAG))
         )
       .flatMap(state -> state.getSubjects().stream())
-      .filter(subjectID -> snap.getRemoteStateWithID(subjectID).hasTag(SmgWalk.VICTIM_TAG))
+      .filter(subjectID -> snap.getRemoteStateWithID(subjectID).hasTag(SmgTaskQueue.VICTIM_TAG))
       .forEach(victimID -> this.doneRemotes.add(victimID));
     this.updateZones();
     double halfSize = this.grid.getZoneSize() / 2.;
-    this.scanZone(this.grid.getZoneAtLocation(Vector.add(SmgWalk.GRID_CENTER, new Vector(-halfSize, -halfSize))), 0.);
-    this.scanZone(this.grid.getZoneAtLocation(Vector.add(SmgWalk.GRID_CENTER, new Vector(-halfSize, halfSize))), 0.);
-    this.scanZone(this.grid.getZoneAtLocation(Vector.add(SmgWalk.GRID_CENTER, new Vector(halfSize, halfSize))), 0.);
-    this.scanZone(this.grid.getZoneAtLocation(Vector.add(SmgWalk.GRID_CENTER, new Vector(halfSize, -halfSize))), 0.);
+    this.scanZone(this.grid.getZoneAtLocation(Vector.add(SmgTaskQueue.GRID_CENTER, new Vector(-halfSize, -halfSize))), 0.);
+    this.scanZone(this.grid.getZoneAtLocation(Vector.add(SmgTaskQueue.GRID_CENTER, new Vector(-halfSize, halfSize))), 0.);
+    this.scanZone(this.grid.getZoneAtLocation(Vector.add(SmgTaskQueue.GRID_CENTER, new Vector(halfSize, halfSize))), 0.);
+    this.scanZone(this.grid.getZoneAtLocation(Vector.add(SmgTaskQueue.GRID_CENTER, new Vector(halfSize, -halfSize))), 0.);
     return Stream.concat(
           snap
             .getActiveRemoteStates()
             .stream()
-            .filter(state -> state.hasTag(SmgWalk.DRONE_TAG))
+            .filter(state -> state.hasTag(SmgTaskQueue.DRONE_TAG))
             .map(state -> {
                 IntentionSet intent = new IntentionSet(state.getRemoteID());
                 if (this.doneRemotes.contains(state.getRemoteID())) {
-                  if (state.getLocation().near(SmgWalk.GRID_CENTER)) {
+                  if (state.getLocation().near(SmgTaskQueue.GRID_CENTER)) {
                     intent.addIntention(IntentRegistry.Done());
                     this.logger.log(snap.getTime(), String.format("Drone done %s", state.getRemoteID()));
                     return intent;
@@ -598,7 +622,9 @@ public class SmgWalk implements Application {
                   intent.addIntention(IntentRegistry.GoHome());
                   this.doneRemotes.add(state.getRemoteID());
                   if (this.droneAssignment.containsKey(state.getRemoteID())) {
+                    Zone task = this.droneAssignment.get(state.getRemoteID());
                     this.droneAssignment.remove(state.getRemoteID());
+                    this.tasks.add(task);
                   }
                   this.logger.log(snap.getTime(), String.format("Drone returning home %s", state.getRemoteID()));
                   return intent;
@@ -606,19 +632,20 @@ public class SmgWalk implements Application {
                 if (!this.droneAssignment.containsKey(state.getRemoteID())) {
                   Zone task = this.getBestNeighbor(state.getLocation());
                   this.droneAssignment.put(state.getRemoteID(), task);
-                  // done early to avoid collisions
-                  this.scanZone(task, (1. - this.beta.getStart()) * (1. - this.gamma.getStart()));
                 }
                 if (state.getLocation().near(this.droneAssignment.get(state.getRemoteID()).getLocation())) {
                   intent.addIntention(IntentRegistry.Stop());
+                  Zone task = this.droneAssignment.get(state.getRemoteID());
+                  this.scanZone(task, (1. - this.beta.getStart()) * (1. - this.gamma.getStart()));
                   this.droneAssignment.remove(state.getRemoteID());
+                  this.tasks.add(task);
                   return intent;
                 }
                 intent.addIntention(
                     IntentRegistry.GoTo(
                       this.droneAssignment.get(state.getRemoteID()).getLocation(),
-                      SmgWalk.DRONE_SCAN_VELOCITY,
-                      SmgWalk.DRONE_SCAN_ACCELERATION
+                      SmgTaskQueue.DRONE_SCAN_VELOCITY,
+                      SmgTaskQueue.DRONE_SCAN_ACCELERATION
                     )
                   );
                 return intent;
@@ -626,7 +653,7 @@ public class SmgWalk implements Application {
           snap
             .getActiveRemoteStates()
             .stream()
-            .filter(state -> state.hasTag(SmgWalk.VICTIM_TAG))
+            .filter(state -> state.hasTag(SmgTaskQueue.VICTIM_TAG))
             .map(state -> {
                 IntentionSet intent = new IntentionSet(state.getRemoteID());
                 if (this.doneRemotes.contains(state.getRemoteID())) {

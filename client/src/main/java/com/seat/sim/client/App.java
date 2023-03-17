@@ -6,12 +6,15 @@ import com.seat.sim.client.sandbox.BmpExample;
 import com.seat.sim.client.sandbox.Default;
 import com.seat.sim.client.sandbox.GlobalTaskQueue;
 import com.seat.sim.client.sandbox.GlobalTaskQueueGamma;
+import com.seat.sim.client.sandbox.MapA;
 import com.seat.sim.client.sandbox.QuadTree;
 import com.seat.sim.client.sandbox.RandomFixed;
 import com.seat.sim.client.sandbox.RandomFixedGamma;
 import com.seat.sim.client.sandbox.RandomWalk;
 import com.seat.sim.client.sandbox.RandomWalkGamma;
+import com.seat.sim.client.sandbox.SmgTaskQueue;
 import com.seat.sim.client.sandbox.SmgWalk;
+import com.seat.sim.client.sandbox.SmgWalkNeighbors;
 import com.seat.sim.common.core.Application;
 import com.seat.sim.common.util.ArgsParser;
 
@@ -30,17 +33,20 @@ public class App {
     int threadID = (args.hasParam(App.THREAD_ARG)) ? args.getInt(App.THREAD_ARG) : 0;
     long seed = (args.hasParam(App.SEED_ARG)) ? args.getLong(App.SEED_ARG) : 0;
     try {
-      if (scenarioID.equals("Default")) {
-        return new Default(args, threadID, seed);
-      }
       if (scenarioID.equals("BmpExample")) {
         return new BmpExample(args);
+      }
+      if (scenarioID.equals("Default")) {
+        return new Default(args, threadID, seed);
       }
       if (scenarioID.equals("GlobalTaskQueue")) {
         return new GlobalTaskQueue(args, threadID, seed);
       }
       if (scenarioID.equals("GlobalTaskQueueGamma")) {
         return new GlobalTaskQueueGamma(args, threadID, seed);
+      }
+      if (scenarioID.equals("MapA")) {
+        return new MapA(args, threadID, seed);
       }
       if (scenarioID.equals("QuadTree")) {
         return new QuadTree(args, threadID, seed);
@@ -57,8 +63,14 @@ public class App {
       if (scenarioID.equals("RandomWalkGamma")) {
         return new RandomWalkGamma(args, threadID, seed);
       }
+      if (scenarioID.equals("SmgTaskQueue")) {
+        return new SmgTaskQueue(args, threadID, seed);
+      }
       if (scenarioID.equals("SmgWalk")) {
         return new SmgWalk(args, threadID, seed);
+      }
+      if (scenarioID.equals("SmgWalkNeighbors")) {
+        return new SmgWalkNeighbors(args, threadID, seed);
       }
     } catch (Exception e) {
       throw new ClientException(e.getMessage());
