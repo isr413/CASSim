@@ -72,7 +72,7 @@ public class Grid extends Jsonable {
     this.height = json.getInt(Grid.GRID_HEIGHT);
     this.zoneSize = json.getInt(Grid.ZONE_SIZE);
     if (json.hasKey(Grid.ZONES)) {
-      this.zones = Optional.of(new Zone[this.width][this.height]);
+      this.zones = Optional.of(new Zone[this.height][this.width]);
       JsonArray jsonZones = json.getJsonArray(Grid.ZONES);
       for (int y = 0; y < this.height; y++) {
         JsonArray jsonRow = jsonZones.getJsonArray(y);

@@ -106,12 +106,12 @@ public class GUIGridFrame extends JFrame {
           if (!this.grid.getZone(y, x).hasZoneType(ZoneType.BLOCKED)) {
             continue;
           }
-          g2d.drawRect(
-                this.getGridBoundsX() + x * this.grid.getZoneSize(),
-                this.getGridBoundsY() + y * this.grid.getZoneSize(),
-                this.grid.getZoneSize(),
-                this.grid.getZoneSize()
-              );
+          g2d.fillRect(
+              this.getGridBoundsX() + x * this.grid.getZoneSize(),
+              this.getGridBoundsY() + y * this.grid.getZoneSize(),
+              this.grid.getZoneSize(),
+              this.grid.getZoneSize()
+            );
         }
       }
     }
@@ -137,8 +137,8 @@ public class GUIGridFrame extends JFrame {
       for (Point p : this.points) {
         g2d.setPaint(p.color);
         g2d.fillOval(
-          this.getGridBoundsX() + p.x - GUIGridPanel.DEFAULT_POINT_SIZE/2,
-          this.getGridBoundsY() + p.y - GUIGridPanel.DEFAULT_POINT_SIZE/2,
+          this.getGridBoundsX() + p.x - GUIGridPanel.DEFAULT_POINT_SIZE / 2,
+          this.getGridBoundsY() + p.y - GUIGridPanel.DEFAULT_POINT_SIZE / 2,
           GUIGridPanel.DEFAULT_POINT_SIZE,
           GUIGridPanel.DEFAULT_POINT_SIZE
         );
@@ -146,11 +146,11 @@ public class GUIGridFrame extends JFrame {
     }
 
     private int getGridBoundsX() {
-      return this.getCenterX() - (int) Math.round(this.grid.getWidth() / 2.0);
+      return this.getCenterX() - (int) Math.round(this.grid.getWidth() / 2.);
     }
 
     private int getGridBoundsY() {
-      return this.getCenterY() - (int) Math.round(this.grid.getHeight() / 2.0);
+      return this.getCenterY() - (int) Math.round(this.grid.getHeight() / 2.);
     }
 
     @Override
