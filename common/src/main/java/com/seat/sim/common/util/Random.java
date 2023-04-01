@@ -86,4 +86,8 @@ public class Random {
   public long getSeed() {
     return this.seed;
   }
+
+  public java.util.Random unwrap() {
+    return this.rng;
+  }
 }
