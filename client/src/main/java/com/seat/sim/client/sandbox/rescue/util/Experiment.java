@@ -1,4 +1,4 @@
-package com.seat.sim.client.core.util;
+package com.seat.sim.client.sandbox.rescue.util;
 
 import java.util.Iterator;
 import java.util.Optional;

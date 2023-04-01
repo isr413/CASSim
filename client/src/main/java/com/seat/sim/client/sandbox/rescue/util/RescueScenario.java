@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.seat.sim.client.core.util.Experiment;
 import com.seat.sim.common.core.Application;
 import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.math.Grid;
