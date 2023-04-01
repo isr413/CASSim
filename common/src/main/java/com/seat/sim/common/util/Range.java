@@ -57,7 +57,7 @@ public class Range {
   }
 
   public int points() {
-    return (int) ((this.end - this.start) / this.step);
+    return (int) Math.ceil((this.end - this.start) / this.step);
   }
 
   public String toString() {
