@@ -24,8 +24,17 @@ public class RemoteManager {
     this.victimManager = new VictimManager(scenario, victimCount);
   }
 
+  public void close() {
+    this.droneManager.close();
+    this.victimManager.close();
+  }
+
   public int getBaseCount() {
     return this.baseCount;
+  }
+
+  public int getCooldown(String droneID) {
+    return this.droneManager.getCooldown(droneID);
   }
 
   public int getDroneCount() {
@@ -42,6 +51,11 @@ public class RemoteManager {
 
   public boolean hasRemoteConfigs() {
     return this.remotes != null && !this.remotes.isEmpty();
+  }
+
+  public void init() {
+    this.droneManager.init();
+    this.victimManager.init();
   }
 
   public boolean isDone(String remoteID) {

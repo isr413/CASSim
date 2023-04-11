@@ -3,18 +3,17 @@ package com.seat.sim.client;
 import com.seat.sim.client.core.AppClient;
 import com.seat.sim.client.core.ClientException;
 import com.seat.sim.client.sandbox.BmpExample;
-import com.seat.sim.client.sandbox.Default;
-import com.seat.sim.client.sandbox.GlobalTaskQueue;
-import com.seat.sim.client.sandbox.GlobalTaskQueueGamma;
 import com.seat.sim.client.sandbox.MapA;
 import com.seat.sim.client.sandbox.QuadTree;
-import com.seat.sim.client.sandbox.RandomFixed;
-import com.seat.sim.client.sandbox.RandomFixedGamma;
-import com.seat.sim.client.sandbox.RandomWalk;
-import com.seat.sim.client.sandbox.RandomWalkGamma;
-import com.seat.sim.client.sandbox.SmgTaskQueue;
-import com.seat.sim.client.sandbox.SmgWalk;
-import com.seat.sim.client.sandbox.SmgWalkNeighbors;
+import com.seat.sim.client.sandbox.TrackingLong;
+import com.seat.sim.client.sandbox.TrackingMed;
+import com.seat.sim.client.sandbox.TrackingShort;
+import com.seat.sim.client.sandbox.rescue.Default;
+import com.seat.sim.client.sandbox.rescue.GlobalTaskQueue;
+import com.seat.sim.client.sandbox.rescue.RandomFixed;
+import com.seat.sim.client.sandbox.rescue.RandomTasks;
+import com.seat.sim.client.sandbox.rescue.RandomWalk;
+import com.seat.sim.client.sandbox.rescue.SmgWalk;
 import com.seat.sim.common.core.Application;
 import com.seat.sim.common.util.ArgsParser;
 
@@ -42,9 +41,6 @@ public class App {
       if (scenarioID.equals("GlobalTaskQueue")) {
         return new GlobalTaskQueue(args, threadID, seed);
       }
-      if (scenarioID.equals("GlobalTaskQueueGamma")) {
-        return new GlobalTaskQueueGamma(args, threadID, seed);
-      }
       if (scenarioID.equals("MapA")) {
         return new MapA(args, threadID, seed);
       }
@@ -54,23 +50,23 @@ public class App {
       if (scenarioID.equals("RandomFixed")) {
         return new RandomFixed(args, threadID, seed);
       }
-      if (scenarioID.equals("RandomFixedGamma")) {
-        return new RandomFixedGamma(args, threadID, seed);
+      if (scenarioID.equals("RandomTasks")) {
+        return new RandomTasks(args, threadID, seed);
       }
       if (scenarioID.equals("RandomWalk")) {
         return new RandomWalk(args, threadID, seed);
       }
-      if (scenarioID.equals("RandomWalkGamma")) {
-        return new RandomWalkGamma(args, threadID, seed);
-      }
-      if (scenarioID.equals("SmgTaskQueue")) {
-        return new SmgTaskQueue(args, threadID, seed);
-      }
       if (scenarioID.equals("SmgWalk")) {
         return new SmgWalk(args, threadID, seed);
       }
-      if (scenarioID.equals("SmgWalkNeighbors")) {
-        return new SmgWalkNeighbors(args, threadID, seed);
+      if (scenarioID.equals("TrackingLong")) {
+        return new TrackingLong(args, threadID, seed);
+      }
+      if (scenarioID.equals("TrackingMed")) {
+        return new TrackingMed(args, threadID, seed);
+      }
+      if (scenarioID.equals("TrackingShort")) {
+        return new TrackingShort(args, threadID, seed);
       }
     } catch (Exception e) {
       throw new ClientException(e.getMessage());

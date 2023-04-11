@@ -64,6 +64,8 @@ public class AppClient {
     Debugger.logger.info("Running client ...");
     Debugger.logger.state(String.format("Loaded application <%s>", this.app.getScenarioID()));
 
+    this.app.init();
+
     for (int t = 1; t <= this.app.getTrials(); t++) {
       if (t > 1) {
         this.app.reset();
@@ -139,6 +141,8 @@ public class AppClient {
         } catch (IOException e) {}
       }
     }
+
+    this.app.close();
     socket.close();
   }
 }

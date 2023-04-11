@@ -4,16 +4,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.seat.sim.common.math.Grid;
-import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
-import com.seat.sim.common.math.ZoneType;
 import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.remote.intent.IntentRegistry;
 import com.seat.sim.common.remote.intent.IntentionSet;
@@ -31,102 +27,23 @@ public class DroneManager {
   public DroneManager(RescueScenario scenario, int droneCount, int cooldownTime) {
     this.scenario = scenario;
     this.droneCount = droneCount;
-    this.assignments = new HashMap<>();
-    this.cooldown = new HashMap<>();
     this.cooldownTime = cooldownTime;
-    this.goingHome = new HashSet<>();
   }
 
-  private int countDetectionsBy(Snapshot snap, RemoteState drone, String model, String tag) {
+  private Set<String> detectionsBy(Snapshot snap, RemoteState drone, String model, String tag) {
     if (!drone.hasSensorStateWithModel(model)) {
-      return 0;
+      return Set.of();
     }
-    return (int) drone
+    return drone
       .getSensorStateWithModel(model)
       .get()
       .getSubjects()
       .stream()
       .filter(remoteID -> snap.getRemoteStateWithID(remoteID).hasTag(tag))
-      .count();
+      .collect(Collectors.toSet());
   }
 
-  private Optional<Vector> randomWalk(Snapshot snap, RemoteState state) {
-    Grid grid = this.scenario.getGrid().get();
-    if (!state.hasLocation() || !grid.hasZoneAtLocation(state.getLocation())) {
-      return Optional.empty();
-    }
-    Zone zone = grid.getZoneAtLocation(state.getLocation());
-    List<Zone> neighborhood = grid.getNeighborhood(zone);
-    Collections.shuffle(neighborhood, this.scenario.getRng().unwrap());
-    Optional<Zone> nextZone = neighborhood
-      .stream()
-      .filter(neighbor -> !neighbor.getLocation().equals(zone.getLocation()))
-      .filter(neighbor -> !neighbor.hasZoneType(ZoneType.BLOCKED))
-      .filter(neighbor -> this.validChoice(snap, state, zone))
-      .findFirst();
-    if (nextZone.isEmpty()) {
-      return Optional.empty();
-    }
-    return Optional.of(nextZone.get().getLocation());
-  }
-
-  private boolean shouldReturnHome(Snapshot snap, RemoteState drone) {
-    if (!drone.hasTag(RescueScenario.DRONE_TAG)) {
-      return false;
-    }
-    if (!drone.hasLocation() || !this.scenario.getGrid().get().hasZoneAtLocation(drone.getLocation())) {
-      return snap.getTime() + RescueScenario.TURN_LENGTH >= RescueScenario.MISSION_LENGTH;
-    }
-    return !this.validChoice(snap, drone, this.scenario.getGrid().get().getZoneAtLocation(drone.getLocation()));
-  }
-
-  private double timeToCrossDistance(double dist, double speed, double maxSpeed, double acceleration) {
-    double timeToBrake = (speed > 0.) ? speed / acceleration : 0.;
-    double distToBrake = speed * timeToBrake - 0.5 * acceleration * timeToBrake * timeToBrake;
-    if (distToBrake >= dist) {
-      return timeToBrake;
-    }
-    double timeToTopSpeed = (speed < maxSpeed) ? (maxSpeed - speed) / acceleration : 0.;
-    double distToTopSpeed = speed * timeToTopSpeed + 0.5 * acceleration * timeToTopSpeed * timeToTopSpeed;
-    double maxTimeToBrake = maxSpeed / acceleration;
-    double maxDistToBrake = maxSpeed * maxTimeToBrake - 0.5 * acceleration * maxTimeToBrake * maxTimeToBrake;
-    if (distToTopSpeed + maxDistToBrake > dist) {
-      double timeToCover = (Math.sqrt(4 * acceleration * (dist - distToBrake) / 2. + speed * speed) - speed) /
-          (2. * acceleration);
-      return 2 * timeToCover + timeToBrake;
-    }
-    double timeToCover = (dist - distToTopSpeed - maxDistToBrake) / maxSpeed;
-    return timeToTopSpeed + timeToCover + maxTimeToBrake;
-  }
-
-  private boolean validChoice(Snapshot snap, RemoteState drone, Zone zone) {
-    double timeToMove = Math.max(
-        this.timeToCrossDistance(
-            Vector.dist(drone.getLocation(), zone.getLocation()),
-            drone.getSpeed(),
-            RescueScenario.DRONE_MAX_VELOCITY,
-            RescueScenario.DRONE_MAX_ACCELERATION
-          ),
-        RescueScenario.TURN_LENGTH
-      );
-    double timeToGoHome = Math.max(
-        this.timeToCrossDistance(
-          Vector.dist(zone.getLocation(), RescueScenario.GRID_CENTER),
-          0.,
-          RescueScenario.DRONE_MAX_VELOCITY,
-          RescueScenario.DRONE_MAX_ACCELERATION
-        ),
-        RescueScenario.TURN_LENGTH
-      );
-    if ((timeToMove + timeToGoHome) >= (RescueScenario.MISSION_LENGTH - snap.getTime())) {
-      return false;
-    }
-    double avgBattUsage = (1. - drone.getFuelAmount()) / snap.getTime();
-    if ((timeToMove + timeToGoHome) * avgBattUsage >= drone.getFuelAmount()) {
-      return false;
-    }
-    return snap.getTime() + RescueScenario.TURN_LENGTH < RescueScenario.MISSION_LENGTH;
-  }
+  public void close() {}
 
   public Optional<Zone> getAssignment(String droneID) {
     return (this.hasAssignment(droneID)) ? Optional.of(this.assignments.get(droneID)) : Optional.empty();
@@ -148,6 +65,12 @@ public class DroneManager {
     return this.assignments.containsKey(droneID);
   }
 
+  public void init() {
+    this.assignments = new HashMap<>();
+    this.cooldown = new HashMap<>();
+    this.goingHome = new HashSet<>();
+  }
+
   public boolean isDone(String droneID) {
     return this.goingHome.contains(droneID);
   }
@@ -157,9 +80,7 @@ public class DroneManager {
   }
 
   public void reset() {
-    this.assignments = new HashMap<>();
-    this.cooldown = new HashMap<>();
-    this.goingHome = new HashSet<>();
+    this.init();
   }
 
   public void removeAssignment(String droneID) {
@@ -200,6 +121,7 @@ public class DroneManager {
     if (drones.isEmpty()) {
       return Collections.emptyList();
     }
+    Set<String> assistedVictims = new HashSet<>();
     return snap
       .getActiveRemoteStates()
       .stream()
@@ -215,7 +137,12 @@ public class DroneManager {
             intent.addIntention(IntentRegistry.GoHome());
             return intent;
           }
-          if (this.shouldReturnHome(snap, drone)) {
+          if (RemoteUtil.shouldReturnHome(
+                snap,
+                drone,
+                this.scenario.getGrid().get(),
+                this.getAssignment(drone.getRemoteID()))
+              ) {
             intent.addIntention(IntentRegistry.DeactivateAllSensors());
             intent.addIntention(IntentRegistry.GoHome());
             this.setDone(drone.getRemoteID());
@@ -228,11 +155,10 @@ public class DroneManager {
           if (this.isOnCooldown(drone.getRemoteID())) {
             intent.addIntention(IntentRegistry.Stop());
             this.setCooldown(drone.getRemoteID(), this.getCooldown(drone.getRemoteID()) - 1);
+            if (this.getCooldown(drone.getRemoteID()) == 0) {
+              intent.addIntention(IntentRegistry.ActivateAllSensors());
+            }
             return intent;
-          }
-          if (this.cooldown.containsKey(drone.getRemoteID())) {
-            this.cooldown.remove(drone.getRemoteID());
-            intent.addIntention(IntentRegistry.ActivateAllSensors());
           }
           if (!this.hasAssignment(drone.getRemoteID())) {
             Optional<Zone> task = this.scenario.nextTask(snap, drone);
@@ -244,9 +170,17 @@ public class DroneManager {
           }
           if (drone.getLocation().near(this.getAssignment(drone.getRemoteID()).get().getLocation())) {
             intent.addIntention(IntentRegistry.Stop());
-            if (this.countDetectionsBy(snap, drone, RescueScenario.BLE_COMMS, RescueScenario.VICTIM_TAG) > 0) {
+            Set<String> uniqueVictims = this.detectionsBy(
+                snap,
+                drone,
+                RescueScenario.BLE_COMMS,
+                RescueScenario.VICTIM_TAG
+              );
+            uniqueVictims.removeAll(assistedVictims);
+            if (!uniqueVictims.isEmpty()) {
               this.setCooldown(drone.getRemoteID(), this.getCooldownTime());
               intent.addIntention(IntentRegistry.DeactivateAllSensors());
+              assistedVictims.addAll(uniqueVictims);
               return intent;
             }
             this.removeAssignment(drone.getRemoteID());

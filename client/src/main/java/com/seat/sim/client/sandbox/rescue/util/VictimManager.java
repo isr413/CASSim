@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Vector;
@@ -25,7 +26,6 @@ public class VictimManager {
   public VictimManager(RescueScenario scenario, int victimCount) {
     this.scenario = scenario;
     this.victimCount = victimCount;
-    this.rescues = new HashSet<>();
   }
 
   private Optional<Vector> randomWalk(Snapshot snap, RemoteState victim) {
@@ -38,7 +38,7 @@ public class VictimManager {
     Collections.shuffle(neighborhood, this.scenario.getRng().unwrap());
     Optional<Zone> nextZone = neighborhood
       .stream()
-      .filter(neighbor -> !neighbor.getLocation().equals(zone.getLocation()))
+      .filter(neighbor -> !neighbor.getLocation().near(zone.getLocation()))
       .filter(neighbor -> !neighbor.hasZoneType(ZoneType.BLOCKED))
       .findFirst();
     if (nextZone.isEmpty()) {
@@ -57,8 +57,14 @@ public class VictimManager {
     return Optional.of(nextLocation);
   }
 
+  public void close() {}
+
   public int getVictimCount() {
     return this.victimCount;
+  }
+
+  public void init() {
+    this.rescues = new HashSet<>();
   }
 
   public boolean isDone(String victimID) {
@@ -66,7 +72,7 @@ public class VictimManager {
   }
 
   public void reset() {
-    this.rescues = new HashSet<>();
+    this.init();
   }
 
   public void setDone(String victimID) {
@@ -93,16 +99,28 @@ public class VictimManager {
       .stream()
       .filter(state -> state.hasTag(RescueScenario.BASE_TAG) || state.hasTag(RescueScenario.DRONE_TAG))
       .filter(state -> !this.scenario.isOnCooldown(state.getRemoteID()))
-      .flatMap(state -> state.getSubjects().stream())
+      .filter(state -> !this.scenario.isDone(state.getRemoteID()))
+      .flatMap(state -> {
+          if (state.hasTag(RescueScenario.BASE_TAG)) {
+            return state.getSensorStateWithModel(RescueScenario.HUMAN_VISION).get().getSubjects().stream();
+          }
+          return Stream.concat(
+              state.getSensorStateWithModel(RescueScenario.DRONE_CAMERA).get().getSubjects().stream(),
+              state.getSensorStateWithModel(RescueScenario.BLE_COMMS).get().getSubjects().stream()
+            );
+        })
       .filter(subjectID -> snap.getRemoteStateWithID(subjectID).hasTag(RescueScenario.VICTIM_TAG))
-      .forEach(victimID -> this.setDone(victimID));
+      .filter(victimID -> !this.isDone(victimID))
+      .forEach(victimID -> {
+          this.setDone(victimID);
+          this.scenario.report(snap.getTime(), "Rescued victim %s", victimID);
+        });
     return victims
       .stream()
       .map(victim -> {
           IntentionSet intent = new IntentionSet(victim.getRemoteID());
           if (this.isDone(victim.getRemoteID())) {
             intent.addIntention(IntentRegistry.Done());
-            this.scenario.report(snap.getTime(), "Rescued victim %s", victim.getRemoteID());
             return intent;
           }
           if (this.scenario.getRng().getRandomProbability() < this.scenario.getAlpha()) {

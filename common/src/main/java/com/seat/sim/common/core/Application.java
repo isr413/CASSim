@@ -14,6 +14,8 @@ import com.seat.sim.common.scenario.Snapshot;
 
 public interface Application {
 
+  default void close() {}
+
   Optional<Grid> getGrid();
 
   int getMissionLength();
@@ -61,6 +63,8 @@ public interface Application {
   }
 
   boolean hasGrid();
+
+  default void init() {}
 
   default void reset() {}
 

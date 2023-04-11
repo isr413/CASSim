@@ -125,8 +125,6 @@ public abstract class RescueScenario implements Application {
       );
     this.exp = new Experiment(alpha, beta, gamma, trialsPer, threadID, threadCount, seed, this.loadSeeds());
     this.manager = new RemoteManager(this, baseCount, droneCount, victimCount, cooldown);
-    this.manager.setRemoteConfigs(this.loadRemotes());
-    this.tasks = this.getTaskManager();
   }
 
   protected abstract Optional<TaskManager> getTaskManager();
@@ -288,8 +286,15 @@ public abstract class RescueScenario implements Application {
   }
 
   public void addTask(Zone task) {
-    if (this.tasks.isPresent()) {
+    if (this.hasTasks()) {
       this.tasks.get().addTask(task);
+    }
+  }
+
+  public void close() {
+    this.manager.close();
+    if (this.hasTasks()) {
+      this.tasks.get().close();
     }
   }
 
@@ -299,6 +304,10 @@ public abstract class RescueScenario implements Application {
 
   public double getBeta() {
     return this.exp.getBeta();
+  }
+
+  public int getCooldown(String droneID) {
+    return this.manager.getCooldown(droneID);
   }
 
   public double getGamma() {
@@ -348,6 +357,19 @@ public abstract class RescueScenario implements Application {
     return true;
   }
 
+  public boolean hasTasks() {
+    return this.tasks.isPresent();
+  }
+
+  public void init() {
+    this.manager.setRemoteConfigs(this.loadRemotes());
+    this.manager.init();
+    this.tasks = this.getTaskManager();
+    if (this.hasTasks()) {
+      this.tasks.get().init();
+    }
+  }
+
   public boolean isDone(String remoteID) {
     return this.manager.isDone(remoteID);
   }
@@ -357,10 +379,10 @@ public abstract class RescueScenario implements Application {
   }
 
   public Optional<Zone> nextTask(Snapshot snap, RemoteState state) {
-    if (this.tasks.isEmpty()) {
+    if (!this.hasTasks()) {
       return Optional.empty();
     }
-    return this.tasks.get().getNextTask();
+    return this.tasks.get().getNextTask(snap, state);
   }
 
   public void report(double simTime, String fmt, Object... args) {
@@ -375,13 +397,16 @@ public abstract class RescueScenario implements Application {
     this.exp.reset();
     this.manager.reset();
     this.manager.setRemoteConfigs(this.loadRemotes());
-    if (this.tasks.isPresent()) {
-      this.tasks.get().clear();
+    if (this.hasTasks()) {
+      this.tasks.get().reset();
     }
     this.reportTrial();
   }
 
   public Collection<IntentionSet> update(Snapshot snap) {
+    if (this.hasTasks()) {
+      this.tasks.get().update(snap);
+    }
     return this.manager.update(snap);
   }
 }
