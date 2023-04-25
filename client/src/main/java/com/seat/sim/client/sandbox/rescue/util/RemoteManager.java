@@ -71,13 +71,21 @@ public class RemoteManager {
     this.victimManager.reset();
   }
 
+  public void setDone(String remoteID, boolean droneNotVictim) {
+    if (droneNotVictim) {
+      this.droneManager.setDone(remoteID);
+    } else {
+      this.victimManager.setDone(remoteID);
+    }
+  }
+
   public void setRemoteConfigs(Collection<RemoteConfig> remotes) {
     this.remotes = remotes;
   }
 
   public Collection<IntentionSet> update(Snapshot snap) {
-    Collection<IntentionSet> victimIntentions = this.victimManager.update(snap);
     Collection<IntentionSet> droneIntentions = this.droneManager.update(snap);
+    Collection<IntentionSet> victimIntentions = this.victimManager.update(snap);
     if (victimIntentions.isEmpty() && droneIntentions.isEmpty()) {
       IntentionSet intentions = new IntentionSet(this.scenario.getScenarioID());
       intentions.addIntention(IntentRegistry.Done());

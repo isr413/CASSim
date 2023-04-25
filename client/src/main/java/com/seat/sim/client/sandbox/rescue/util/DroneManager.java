@@ -176,6 +176,12 @@ public class DroneManager {
                 RescueScenario.BLE_COMMS,
                 RescueScenario.VICTIM_TAG
               );
+            for (String victimID : uniqueVictims) {
+              if (!this.scenario.isDone(victimID)) {
+                this.scenario.report(snap.getTime(), "Rescued victim %s", victimID);
+                this.scenario.setDone(victimID, false);
+              }
+            }
             uniqueVictims.removeAll(assistedVictims);
             if (!uniqueVictims.isEmpty()) {
               this.setCooldown(drone.getRemoteID(), this.getCooldownTime());

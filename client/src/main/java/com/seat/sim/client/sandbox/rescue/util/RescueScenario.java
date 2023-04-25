@@ -341,7 +341,7 @@ public abstract class RescueScenario implements Application {
   public double getStepSize() {
     return RescueScenario.STEP_SIZE;
   }
-  
+
   public int getTrials() {
     return this.exp.getTrials();
   }
@@ -401,6 +401,10 @@ public abstract class RescueScenario implements Application {
       this.tasks.get().reset();
     }
     this.reportTrial();
+  }
+
+  public void setDone(String remoteID, boolean droneNotVictim) {
+    this.manager.setDone(remoteID, droneNotVictim);
   }
 
   public Collection<IntentionSet> update(Snapshot snap) {

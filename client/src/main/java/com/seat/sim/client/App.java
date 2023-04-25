@@ -10,6 +10,7 @@ import com.seat.sim.client.sandbox.TrackingMed;
 import com.seat.sim.client.sandbox.TrackingShort;
 import com.seat.sim.client.sandbox.rescue.Default;
 import com.seat.sim.client.sandbox.rescue.GlobalTaskQueue;
+import com.seat.sim.client.sandbox.rescue.Heatmap;
 import com.seat.sim.client.sandbox.rescue.RandomFixed;
 import com.seat.sim.client.sandbox.rescue.RandomTasks;
 import com.seat.sim.client.sandbox.rescue.RandomWalk;
@@ -40,6 +41,9 @@ public class App {
       }
       if (scenarioID.equals("GlobalTaskQueue")) {
         return new GlobalTaskQueue(args, threadID, seed);
+      }
+      if (scenarioID.equals("Heatmap")) {
+        return new Heatmap(args, threadID, seed);
       }
       if (scenarioID.equals("MapA")) {
         return new MapA(args, threadID, seed);

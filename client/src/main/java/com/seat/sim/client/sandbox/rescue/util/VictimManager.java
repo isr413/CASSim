@@ -44,17 +44,7 @@ public class VictimManager {
     if (nextZone.isEmpty()) {
       return Optional.empty();
     }
-    Vector nextLocation = new Vector(
-        this.scenario.getRng().getRandomPoint(
-            nextZone.get().getLocation().getX() - nextZone.get().getSize() / 2.,
-            nextZone.get().getLocation().getX() + nextZone.get().getSize() / 2.
-          ),
-        this.scenario.getRng().getRandomPoint(
-            nextZone.get().getLocation().getY() - nextZone.get().getSize() / 2.,
-            nextZone.get().getLocation().getY() + nextZone.get().getSize() / 2.
-          )
-      );
-    return Optional.of(nextLocation);
+    return Optional.of(nextZone.get().getLocation());
   }
 
   public void close() {}
@@ -97,17 +87,9 @@ public class VictimManager {
     snap
       .getActiveRemoteStates()
       .stream()
-      .filter(state -> state.hasTag(RescueScenario.BASE_TAG) || state.hasTag(RescueScenario.DRONE_TAG))
-      .filter(state -> !this.scenario.isOnCooldown(state.getRemoteID()))
-      .filter(state -> !this.scenario.isDone(state.getRemoteID()))
+      .filter(state -> state.hasTag(RescueScenario.BASE_TAG))
       .flatMap(state -> {
-          if (state.hasTag(RescueScenario.BASE_TAG)) {
-            return state.getSensorStateWithModel(RescueScenario.HUMAN_VISION).get().getSubjects().stream();
-          }
-          return Stream.concat(
-              state.getSensorStateWithModel(RescueScenario.DRONE_CAMERA).get().getSubjects().stream(),
-              state.getSensorStateWithModel(RescueScenario.BLE_COMMS).get().getSubjects().stream()
-            );
+          return state.getSensorStateWithModel(RescueScenario.HUMAN_VISION).get().getSubjects().stream();
         })
       .filter(subjectID -> snap.getRemoteStateWithID(subjectID).hasTag(RescueScenario.VICTIM_TAG))
       .filter(victimID -> !this.isDone(victimID))
