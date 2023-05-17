@@ -27,7 +27,7 @@ public class SmgWalk extends RescueScenario {
   private static final int COOLDOWN = 6;
 
   public SmgWalk(ArgsParser args, int threadID, long seed) throws IOException {
-    super("SmgWalk", 1, 32, 1024, SmgWalk.COOLDOWN, new Range(0., .1, 1., true), 0.6, 0.6, 12, threadID, 4, seed);
+    super("SmgWalk", 1, 32, 1024, SmgWalk.COOLDOWN, Range.Inclusive(0., 1., .1), 0.6, 0.6, 12, threadID, 4, seed);
   }
 
   public Optional<TaskManager> getTaskManager() {
@@ -35,7 +35,7 @@ public class SmgWalk extends RescueScenario {
   }
 
   private static class SmgTaskManager implements TaskManager {
-    
+
     private Set<Integer> defer;
     private RescueScenario scenario;
     private double[][] zones;
@@ -125,7 +125,7 @@ public class SmgWalk extends RescueScenario {
       }
       this.zones = weights;
     }
-    
+
     public void addTask(Zone task) {}
 
     public void close() {

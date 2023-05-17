@@ -2,12 +2,6 @@ package com.seat.sim.client;
 
 import com.seat.sim.client.core.AppClient;
 import com.seat.sim.client.core.ClientException;
-import com.seat.sim.client.sandbox.BmpExample;
-import com.seat.sim.client.sandbox.MapA;
-import com.seat.sim.client.sandbox.QuadTree;
-import com.seat.sim.client.sandbox.TrackingLong;
-import com.seat.sim.client.sandbox.TrackingMed;
-import com.seat.sim.client.sandbox.TrackingShort;
 import com.seat.sim.client.sandbox.rescue.Default;
 import com.seat.sim.client.sandbox.rescue.GlobalTaskQueue;
 import com.seat.sim.client.sandbox.rescue.Heatmap;
@@ -33,9 +27,6 @@ public class App {
     int threadID = (args.hasParam(App.THREAD_ARG)) ? args.getInt(App.THREAD_ARG) : 0;
     long seed = (args.hasParam(App.SEED_ARG)) ? args.getLong(App.SEED_ARG) : 0;
     try {
-      if (scenarioID.equals("BmpExample")) {
-        return new BmpExample(args);
-      }
       if (scenarioID.equals("Default")) {
         return new Default(args, threadID, seed);
       }
@@ -44,12 +35,6 @@ public class App {
       }
       if (scenarioID.equals("Heatmap")) {
         return new Heatmap(args, threadID, seed);
-      }
-      if (scenarioID.equals("MapA")) {
-        return new MapA(args, threadID, seed);
-      }
-      if (scenarioID.equals("QuadTree")) {
-        return new QuadTree(args, threadID, seed);
       }
       if (scenarioID.equals("RandomFixed")) {
         return new RandomFixed(args, threadID, seed);
@@ -62,15 +47,6 @@ public class App {
       }
       if (scenarioID.equals("SmgWalk")) {
         return new SmgWalk(args, threadID, seed);
-      }
-      if (scenarioID.equals("TrackingLong")) {
-        return new TrackingLong(args, threadID, seed);
-      }
-      if (scenarioID.equals("TrackingMed")) {
-        return new TrackingMed(args, threadID, seed);
-      }
-      if (scenarioID.equals("TrackingShort")) {
-        return new TrackingShort(args, threadID, seed);
       }
     } catch (Exception e) {
       throw new ClientException(e.getMessage());

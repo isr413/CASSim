@@ -11,7 +11,7 @@ import com.seat.sim.common.util.Range;
 public class Default extends RescueScenario {
 
   public Default(ArgsParser args, int threadID, long seed) throws IOException {
-    super("Default", 1, 0, 1024, 0, new Range(0., .1, 1., true), 0., 0., 12, threadID, 4, seed);
+    super("Default", 1, 0, 1024, 0, Range.Inclusive(0., 1., .1), 0., 0., 12, threadID, 4, seed);
   }
 
   public Optional<TaskManager> getTaskManager() {

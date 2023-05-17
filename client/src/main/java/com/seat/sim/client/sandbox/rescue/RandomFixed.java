@@ -16,9 +16,9 @@ import com.seat.sim.common.util.ArgsParser;
 import com.seat.sim.common.util.Range;
 
 public class RandomFixed extends RescueScenario {
- 
+
   public RandomFixed(ArgsParser args, int threadID, long seed) throws IOException {
-    super("RandomFixed", 1, 32, 1024, 6, new Range(0., .1, 1., true), 0.6, 0.6, 12, threadID, 4, seed);
+    super("RandomFixed", 1, 32, 1024, 6, Range.Inclusive(0., 1., .1), 0.6, 0.6, 12, threadID, 4, seed);
   }
 
   public Optional<TaskManager> getTaskManager() {
@@ -26,14 +26,14 @@ public class RandomFixed extends RescueScenario {
   }
 
   private static class RandomFixedTaskManager implements TaskManager {
-    
+
     private RescueScenario scenario;
     private List<Zone> tasks;
 
     public RandomFixedTaskManager(RescueScenario scenario) {
       this.scenario = scenario;
     }
-   
+
     public void addTask(Zone task) {
       this.tasks.add(task);
     }

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.seat.sim.common.core.Application;
-import com.seat.sim.common.core.TeamColor;
+import com.seat.sim.common.gui.TeamColor;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
@@ -105,8 +105,8 @@ public abstract class RescueScenario implements Application {
 
   public RescueScenario(String scenarioID, int baseCount, int droneCount, int victimCount, int cooldown, Range alpha,
       double beta, double gamma, int trialsPer, int threadID, int threadCount, long seed) throws IOException {
-    this(scenarioID, baseCount, droneCount, victimCount, cooldown, alpha, new Range(beta, beta, true),
-        new Range(gamma, gamma, true), trialsPer, threadID, threadCount, seed);
+    this(scenarioID, baseCount, droneCount, victimCount, cooldown, alpha, Range.Inclusive(beta, beta),
+        Range.Inclusive(gamma, gamma), trialsPer, threadID, threadCount, seed);
   }
 
   public RescueScenario(String scenarioID, Range alpha, Range beta, Range gamma, int trialsPer,

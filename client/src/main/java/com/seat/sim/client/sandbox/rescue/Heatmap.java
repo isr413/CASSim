@@ -1,7 +1,6 @@
 package com.seat.sim.client.sandbox.rescue;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -18,7 +17,7 @@ public class Heatmap extends RescueScenario {
   private int[][] heatmap;
 
   public Heatmap(ArgsParser args, int threadID, long seed) throws IOException {
-    super("Heatmap", 1, 0, 1024, 0, new Range(0., .1, 1., true), 0., 0., 1, threadID, 4, seed);
+    super("Heatmap", 1, 0, 1024, 0, Range.Inclusive(0., 1., .1), 0., 0., 1, threadID, 4, seed);
   }
 
   public Optional<TaskManager> getTaskManager() {

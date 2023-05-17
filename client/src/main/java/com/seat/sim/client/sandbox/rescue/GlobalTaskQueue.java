@@ -16,9 +16,9 @@ import com.seat.sim.common.util.ArgsParser;
 import com.seat.sim.common.util.Range;
 
 public class GlobalTaskQueue extends RescueScenario {
- 
+
   public GlobalTaskQueue(ArgsParser args, int threadID, long seed) throws IOException {
-    super("GlobalTaskQueue", 1, 32, 1024, 6, new Range(0., .1, 1., true), 0.6, 0.6, 12, threadID, 4, seed);
+    super("GlobalTaskQueue", 1, 32, 1024, 6, Range.Inclusive(0., 1., .1), 0.6, 0.6, 12, threadID, 4, seed);
   }
 
   public Optional<TaskManager> getTaskManager() {
@@ -26,7 +26,7 @@ public class GlobalTaskQueue extends RescueScenario {
   }
 
   private static class GlobalTaskManager implements TaskManager {
-    
+
     private RescueScenario scenario;
     private List<Zone> tasks;
 
@@ -35,7 +35,7 @@ public class GlobalTaskQueue extends RescueScenario {
       this.init();
     }
 
-   
+
     public void addTask(Zone task) {
       this.tasks.add(task);
     }

@@ -13,9 +13,9 @@ import com.seat.sim.common.util.ArgsParser;
 import com.seat.sim.common.util.Range;
 
 public class RandomTasks extends RescueScenario {
- 
+
   public RandomTasks(ArgsParser args, int threadID, long seed) throws IOException {
-    super("RandomTasks", 1, 32, 1024, 6, new Range(0., .1, 1., true), 0.6, 0.6, 12, threadID, 4, seed);
+    super("RandomTasks", 1, 32, 1024, 6, Range.Inclusive(0., 1., .1), 0.6, 0.6, 12, threadID, 4, seed);
   }
 
   public Optional<TaskManager> getTaskManager() {
@@ -23,7 +23,7 @@ public class RandomTasks extends RescueScenario {
   }
 
   private static class RandomTaskManager implements TaskManager {
-    
+
     private RescueScenario scenario;
 
     public RandomTaskManager(RescueScenario scenario) {
