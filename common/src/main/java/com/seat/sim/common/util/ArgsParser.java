@@ -15,24 +15,25 @@ public class ArgsParser {
   }
 
   public ArgsParser(String[] args) {
-    this();
-    this.parse(args);
+    this.parsedArgs = this.parse(args);
   }
 
-  private void parse(String[] args) throws CommonException {
+  private HashMap<String, String> parse(String[] args) throws CommonException {
+    HashMap<String, String> parsedArgs = new HashMap<>();
     for (int i = 0; i < args.length; i++) {
       if (args[i].length() >= 3 && args[i].charAt(0) == '-' && args[i].charAt(1) == '-') {
-        this.parsedArgs.put(args[i], args[i].substring(2));
+        parsedArgs.put(args[i], args[i].substring(2));
       } else if (args[i].length() >= 2 && args[i].charAt(0) == '-') {
         if (i+1 >= args.length) {
           throw new CommonException(String.format("No input arg for parameter %s", args[i]));
         }
-        this.parsedArgs.put(args[i], args[i+1]);
+        parsedArgs.put(args[i], args[i+1]);
         i++;
       } else {
         throw new CommonException(String.format("Unrecognized arg %s", args[i]));
       }
     }
+    return parsedArgs;
   }
 
   public Set<String> getArgs() {

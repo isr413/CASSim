@@ -1,43 +1,50 @@
 package com.seat.sim.common.util;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import com.seat.sim.common.math.Vector;
 
-public class Range {
+public class Range implements Iterable<Double> {
+
+  public static Range Exclusive(double end) {
+    return Range.Exclusive(0., end, 1.);
+  }
+
+  public static Range Exclusive(double start, double end) {
+    return Range.Exclusive(start, end, 1.);
+  }
+
+  public static Range Exclusive(double start, double end, double step) {
+    return new Range(start, end, step, false);
+  }
+
+  public static Range Inclusive(double end) {
+    return Range.Inclusive(0., end, 1.);
+  }
+
+  public static Range Inclusive(double start, double end) {
+    return Range.Inclusive(start, end, 1.);
+  }
+
+  public static Range Inclusive(double start, double end, double step) {
+    return new Range(start, end, step, true);
+  }
 
   private double end;
   private double start;
   private double step;
 
-  public Range(double end) {
-    this(0., 1., end, false);
-  }
-
-  public Range(double end, boolean inclusive) {
-    this(0., 1., end, inclusive);
-  }
-
-  public Range(double start, double end) {
-    this(start, 1., end, false);
-  }
-
-  public Range(double start, double end, boolean inclusive) {
-    this(start, 1., end, inclusive);
-  }
-
-  public Range(double start, double step, double end) {
-    this(start, step, end, false);
-  }
-
-  public Range(double start, double step, double end, boolean inclusive) {
+  private Range(double start, double end, double step, boolean inclusive) {
     this.start = start;
-    this.step = step;
     this.end = end + ((inclusive) ? step : 0.);
+    this.step = step;
   }
 
   public Range(Range range) {
     this.start = range.start;
-    this.step = range.step;
     this.end = range.end;
+    this.step = range.step;
   }
 
   public double getEnd() {
@@ -52,8 +59,8 @@ public class Range {
     return this.step;
   }
 
-  public boolean isDone() {
-    return this.start >= this.end || Vector.near(this.start, this.end);
+  public Iterator<Double> iterator() {
+    return new RangeIterator(this);
   }
 
   public int points() {
@@ -61,13 +68,30 @@ public class Range {
   }
 
   public String toString() {
-    return String.format("(%.2f:%.2f:%.2f)", this.start, this.step, this.end);
+    return String.format("[%.2f:%.2f:%.2f]", this.start, this.end, this.step);
   }
 
-  public void update() {
-    if (this.isDone()) {
-      return;
+  private static class RangeIterator implements Iterator<Double> {
+
+    private double cursor;
+    private Range range;
+
+    public RangeIterator(Range range) {
+      this.range = range;
+      this.cursor = range.start;
     }
-    this.start += this.step;
+
+    public boolean hasNext() {
+      return this.cursor >= this.range.end || Vector.near(this.cursor, this.range.end);
+    }
+
+    public Double next() {
+      if (!this.hasNext()) {
+        throw new NoSuchElementException();
+      }
+      double point = this.cursor;
+      this.cursor += this.range.step;
+      return point;
+    }
   }
 }
