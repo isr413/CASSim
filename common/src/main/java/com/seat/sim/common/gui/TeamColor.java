@@ -1,4 +1,4 @@
-package com.seat.sim.common.core;
+package com.seat.sim.common.gui;
 
 import com.seat.sim.common.json.JsonObject;
 import com.seat.sim.common.json.SerializableEnum;

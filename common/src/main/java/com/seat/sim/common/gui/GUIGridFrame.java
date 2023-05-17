@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.seat.sim.common.core.TeamColor;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.ZoneType;
 import com.seat.sim.common.remote.RemoteState;

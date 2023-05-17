@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.seat.sim.common.core.TeamColor;
+import com.seat.sim.common.gui.TeamColor;
 import com.seat.sim.common.json.*;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.sensor.SensorState;

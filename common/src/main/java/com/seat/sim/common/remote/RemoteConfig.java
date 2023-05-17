@@ -3,7 +3,7 @@ package com.seat.sim.common.remote;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.seat.sim.common.core.TeamColor;
+import com.seat.sim.common.gui.TeamColor;
 import com.seat.sim.common.json.*;
 
 /** A serializable Remote configuration. */
