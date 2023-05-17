@@ -253,6 +253,11 @@ public class Vector extends Jsonable {
     return json;
   }
 
+  /** Returns the Euclidean distance to the destination. */
+  public double distTo(Vector dest) {
+    return Vector.dist(this, dest);
+  }
+
   /** Returns true if both vectors have equal components. */
   public boolean equals(Vector vec) {
     if (vec == null)
