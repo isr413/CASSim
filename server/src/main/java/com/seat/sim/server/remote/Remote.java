@@ -3,7 +3,9 @@ package com.seat.sim.server.remote;
 import java.util.Optional;
 import java.util.Set;
 
-import com.seat.sim.common.core.TeamColor;
+import com.seat.sim.common.gui.TeamColor;
+import com.seat.sim.common.math.RemotePhysics;
+import com.seat.sim.common.math.PhysicsState;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.RemoteProto;
 import com.seat.sim.common.remote.RemoteState;
@@ -261,16 +263,9 @@ public class Remote {
     if (!this.hasDestination()) {
       return;
     }
-    double timeToReach = Physics.getTimeToReach(
-        this.getLocation(),
-        this.getDestination().getLocation(),
-        this.getSpeed(),
-        (this.hasMaxVelocity())
-            ? Math.min(this.getDestination().getMaxVelocity(), this.getMaxVelocity())
-            : this.getDestination().getMaxVelocity(),
-        (this.hasMaxAcceleration())
-            ? Math.min(this.getDestination().getMaxAcceleration(), this.getMaxAcceleration())
-            : this.getDestination().getMaxAcceleration()
+    double timeToReach = RemotePhysics.timeToReachDest(
+        this.toPhysicsState(),
+        this.getDestination().getLocation()
       );
     if (timeToReach <= stepSize) {
       if (!this.hasMaxVelocity() && !this.getDestination().hasMaxVelocity()) {
@@ -329,6 +324,19 @@ public class Remote {
     if (this.getLocation().near(this.getDestination().getLocation())) {
       this.destination = Optional.empty();
     }
+  }
+
+  public PhysicsState toPhysicsState() {
+    return new PhysicsState(
+        this.getLocation(),
+        this.getVelocity(),
+        (this.hasMaxVelocity())
+            ? Math.min(this.getDestination().getMaxVelocity(), this.getMaxVelocity())
+            : this.getDestination().getMaxVelocity(),
+        (this.hasMaxAcceleration())
+            ? Math.min(this.getDestination().getMaxAcceleration(), this.getMaxAcceleration())
+            : this.getDestination().getMaxAcceleration()
+      );
   }
 
   public void update(double stepSize) throws SimException {
