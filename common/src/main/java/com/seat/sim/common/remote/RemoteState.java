@@ -59,8 +59,8 @@ public class RemoteState extends Jsonable {
     this.remoteID = remoteID;
     this.tags = (tags != null) ? new HashSet<>(tags) : new HashSet<>();
     this.team = (team != null) ? team : TeamColor.NONE;
-    this.state = (state != null) ? state : Optional.empty();
-    this.fuel = (fuel != null) ? fuel : Optional.empty();
+    this.state = (state != null && state.get() != null) ? state : Optional.empty();
+    this.fuel = (fuel != null && fuel.get() != null) ? fuel : Optional.empty();
     this.sensorStates = (sensorStates != null)
         ? sensorStates.stream().collect(Collectors.toMap(SensorState::getSensorID, Function.identity()))
         : new HashMap<>();
