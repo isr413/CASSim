@@ -62,10 +62,10 @@ public class PhysicsState extends Jsonable {
   json.put(PhysicsState.LOCATION, this.location.toJson());
   json.put(PhysicsState.VELOCITY, this.velocity.toJson());
   if (this.hasMaxVelocity()) {
-    json.put(PhysicsState.MAX_VELOCITY, this.velocity);
+    json.put(PhysicsState.MAX_VELOCITY, this.maxVelocity);
   }
   if (this.hasMaxAcceleration()) {
-    json.put(PhysicsState.MAX_ACCELERATION, this.velocity);
+    json.put(PhysicsState.MAX_ACCELERATION, this.maxAcceleration);
   }
   return json;
   }
