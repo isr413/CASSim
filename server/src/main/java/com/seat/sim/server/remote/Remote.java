@@ -18,7 +18,6 @@ import com.seat.sim.common.remote.intent.MoveIntention;
 import com.seat.sim.common.remote.intent.PushIntention;
 import com.seat.sim.common.remote.intent.SteerIntention;
 import com.seat.sim.server.core.SimException;
-import com.seat.sim.server.math.Physics;
 import com.seat.sim.server.remote.components.Destination;
 import com.seat.sim.server.remote.components.Kinematics;
 import com.seat.sim.server.remote.components.SensorController;
@@ -119,8 +118,7 @@ public class Remote {
           this.getRemoteID(),
           this.getTags(),
           this.getTeam(),
-          (this.hasLocation()) ? this.getKinematics().getLocation() : null,
-          (this.isMobile()) ? this.getVelocity() : null,
+          (this.hasLocation()) ? this.toPhysicsState() : null,
           this.getKinematics().getFuelAmount(),
           (this.hasSensors()) ? this.getSensorController().getSensorStates() : null,
           this.isActive(),
@@ -130,8 +128,7 @@ public class Remote {
         this.getRemoteID(),
         this.getTags(),
         this.getTeam(),
-        (this.hasLocation()) ? this.getKinematics().getLocation() : null,
-        (this.isMobile()) ? this.getVelocity() : null,
+        (this.hasLocation()) ? this.toPhysicsState() : null,
         (this.hasSensors()) ? this.getSensorController().getSensorStates() : null,
         this.isActive(),
         this.isDone());
@@ -330,12 +327,12 @@ public class Remote {
     return new PhysicsState(
         this.getLocation(),
         this.getVelocity(),
-        (this.hasMaxVelocity())
+        (this.hasDestination())
             ? Math.min(this.getDestination().getMaxVelocity(), this.getMaxVelocity())
-            : this.getDestination().getMaxVelocity(),
-        (this.hasMaxAcceleration())
+            : this.getMaxVelocity(),
+        (this.hasDestination())
             ? Math.min(this.getDestination().getMaxAcceleration(), this.getMaxAcceleration())
-            : this.getDestination().getMaxAcceleration()
+            : this.getMaxAcceleration()
       );
   }
 
