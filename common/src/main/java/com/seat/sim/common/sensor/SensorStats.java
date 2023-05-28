@@ -8,6 +8,7 @@ import com.seat.sim.common.json.JsonException;
 import com.seat.sim.common.json.JsonObject;
 import com.seat.sim.common.json.JsonObjectBuilder;
 import com.seat.sim.common.json.Jsonable;
+import com.seat.sim.common.math.Vector;
 
 public class SensorStats extends Jsonable {
   public static final String ACCURACY = "accuracy";
@@ -79,6 +80,20 @@ public class SensorStats extends Jsonable {
       json.put(SensorStats.RANGE, this.getRange());
     }
     return json;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || this.getClass() != o.getClass()) {
+      return this == o;
+    }
+    return this.equals((SensorStats) o);
+  }
+
+  public boolean equals(SensorStats stats) {
+    return Vector.near(this.batteryUsage, stats.batteryUsage)
+        && Vector.near(this.accuracy, stats.accuracy) && Vector.near(this.delay, stats.delay)
+        && Vector.near(this.getRange(), stats.getRange());
   }
 
   public double getAccuracy() {

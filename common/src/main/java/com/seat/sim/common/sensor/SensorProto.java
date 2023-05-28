@@ -21,14 +21,23 @@ public class SensorProto extends Jsonable {
   private Set<String> tags;
 
   public SensorProto() {
-    this(SensorProto.DEFAULT_MODEL, null, null, null);
+    this(SensorProto.DEFAULT_MODEL, null, null, Optional.empty());
+  }
+
+  public SensorProto(String model, Set<String> tags, Set<String> matchers) {
+    this(model, tags, matchers, Optional.empty());
   }
 
   public SensorProto(String model, Set<String> tags, Set<String> matchers, SensorStats stats) {
+    this(model, tags, matchers, Optional.of(stats));
+  }
+
+  private SensorProto(String model, Set<String> tags, Set<String> matchers,
+        Optional<SensorStats> stats) {
     this.model = (model != null && !model.isBlank()) ? model : SensorProto.DEFAULT_MODEL;
     this.tags = (tags != null) ? new HashSet<>(tags) : new HashSet<>();
     this.matchers = (matchers != null) ? new HashSet<>(matchers) : new HashSet<>();
-    this.stats = (stats != null) ? Optional.of(stats) : Optional.empty();
+    this.stats = (stats != null && stats.isPresent()) ? stats : Optional.empty();
   }
 
   public SensorProto(Json json) throws JsonException {
@@ -64,6 +73,19 @@ public class SensorProto extends Jsonable {
       json.put(SensorProto.STATS, this.getStats().toJson());
     }
     return json;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || this.getClass() != o.getClass()) {
+      return this == o;
+    }
+    return this.equals((SensorProto) o);
+  }
+
+  public boolean equals(SensorProto proto) {
+    return this.model.equals(proto.model) && this.tags.equals(proto.tags)
+        && this.matchers.equals(proto.matchers) && this.stats.equals(proto.stats);
   }
 
   public String getLabel() {

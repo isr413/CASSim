@@ -106,6 +106,11 @@ public interface JsonObject extends JsonSerializable {
     /** Returns the number of key-value pairs. */
     int size();
 
+    /** Returns the Json representation. */
+    default Json toJson() {
+        return Json.of(this);
+    }
+
     /** Returns a Map representation. */
     Map<String, Object> toMap();
 

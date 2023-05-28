@@ -113,6 +113,11 @@ public interface JsonArray extends Iterable<Object>, JsonSerializable {
     /** Returns a Spliterator. */
     Spliterator<Object> spliterator();
 
+    /** Returns the Json representation. */
+    default Json toJson() {
+        return Json.of(this);
+    }
+
     /** Returns a List representation. */
     List<Object> toList();
 
