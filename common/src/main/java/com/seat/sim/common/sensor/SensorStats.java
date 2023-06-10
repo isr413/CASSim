@@ -93,7 +93,7 @@ public class SensorStats extends Jsonable {
   public boolean equals(SensorStats stats) {
     return Vector.near(this.batteryUsage, stats.batteryUsage)
         && Vector.near(this.accuracy, stats.accuracy) && Vector.near(this.delay, stats.delay)
-        && Vector.near(this.getRange(), stats.getRange());
+        && (this.getRange() == stats.getRange() || Vector.near(this.getRange(), stats.getRange()));
   }
 
   public double getAccuracy() {

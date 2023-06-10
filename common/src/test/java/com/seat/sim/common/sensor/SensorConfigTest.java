@@ -16,76 +16,59 @@ import com.seat.sim.common.json.JsonObjectBuilder;
 
 public class SensorConfigTest {
 
+  public static SensorConfig MockSensorConfig() {
+    return SensorConfigTest.MockSensorConfig(false);
+  }
+
+  public static SensorConfig MockSensorConfig(boolean usePartialConstructor) {
+    return (usePartialConstructor)
+        ? new SensorConfig(SensorProtoTest.MockSensorProto(), 2, true)
+        : new SensorConfig(SensorProtoTest.MockSensorProto(), Set.of("s1", "s2"), true);
+  }
+
   @Test
   public void sensorconfigToJson() {
-    SensorProto proto = new SensorProto(
-        "model",
-        Set.of("tag1", "tag2"),
-        Set.of("matcher1", "matcher2"),
-        new SensorStats(1.0, 2.0, 3.0, 4.0)
-      );
-    SensorConfig config = new SensorConfig(proto, Set.of("sensor1", "sensor2"), true);
+    SensorConfig config = SensorConfigTest.MockSensorConfig();
     JsonObject json = config.toJson().getJsonObject();
-    assertThat(new SensorProto(json.getJson(SensorConfig.PROTO)), is(proto));
+    assertThat(new SensorProto(json.getJson(SensorConfig.PROTO)), is(config.getProto()));
     assertThat(
         json.getJsonArray(SensorConfig.SENSOR_IDS).toList(String.class),
-        containsInAnyOrder("sensor1", "sensor2")
+        containsInAnyOrder(config.getSensorIDs().toArray())
       );
-    assertThat(json.getInt(SensorConfig.COUNT), equalTo(2));
-    assertThat(json.getBoolean(SensorConfig.ACTIVE), is(true));
+    assertThat(json.getInt(SensorConfig.COUNT), equalTo(config.getCount()));
+    assertThat(json.getBoolean(SensorConfig.ACTIVE), is(config.isActive()));
   }
 
   @Test
   public void jsonToSensorConfig() {
+    SensorConfig config = SensorConfigTest.MockSensorConfig();
     JsonObjectBuilder json = JsonBuilder.Object();
-    SensorProto proto = new SensorProto(
-        "model",
-        Set.of("tag1", "tag2"),
-        Set.of("matcher1", "matcher2"),
-        new SensorStats(1.0, 2.0, 3.0, 4.0)
-      );
-    json.put(SensorConfig.PROTO, proto.toJson());
+    json.put(SensorConfig.PROTO, config.getProto().toJson());
     JsonArrayBuilder jsonSensors = JsonBuilder.Array();
-    jsonSensors.put("sensor1");
-    jsonSensors.put("sensor2");
+    config.getSensorIDs().forEach(jsonSensors::put);
     json.put(SensorConfig.SENSOR_IDS, jsonSensors.toJsonArray());
-    json.put(SensorConfig.COUNT, 2);
-    json.put(SensorConfig.ACTIVE, true);
-    SensorConfig config = new SensorConfig(json.toJson());
-    assertThat(config.getProto(), is(proto));
-    assertThat(config.getSensorIDs(), containsInAnyOrder("sensor1", "sensor2"));
-    assertThat(config.getCount(), equalTo(2));
-    assertThat(config.isActive(), is(true));
+    json.put(SensorConfig.COUNT, config.getCount());
+    json.put(SensorConfig.ACTIVE, config.isActive());
+    assertThat(new SensorConfig(json.toJson()), is(config));
   }
 
   @Test
   public void sensorconfigDecode() {
-    SensorProto proto = new SensorProto(
-        "model",
-        Set.of("tag1", "tag2"),
-        Set.of("matcher1", "matcher2"),
-        new SensorStats(1.0, 2.0, 3.0, 4.0)
-      );
-    SensorConfig config = new SensorConfig(proto, Set.of("sensor1", "sensor2"), true);
+    SensorConfig config = SensorConfigTest.MockSensorConfig();
     assertThat(new SensorConfig(config.toJson()), is(config));
   }
 
   @Test
   public void sensorconfigPartialDecode() {
-    SensorProto proto = new SensorProto(
-        "model",
-        Set.of("tag1", "tag2"),
-        Set.of("matcher1", "matcher2"),
-        new SensorStats(1.0, 2.0, 3.0, 4.0)
-      );
-    SensorConfig config = new SensorConfig(proto, 2, true);
+    SensorConfig config = SensorConfigTest.MockSensorConfig(true);
     JsonObject json = config.toJson().getJsonObject();
-    assertThat(new SensorProto(json.getJson(SensorConfig.PROTO)), is(proto));
+    assertThat(new SensorProto(json.getJson(SensorConfig.PROTO)), is(config.getProto()));
     assertThat(
         json.getJsonArray(SensorConfig.SENSOR_IDS).toList(String.class),
-        containsInAnyOrder("s:<model>:(0)", "s:<model>:(1)")
+        containsInAnyOrder(config.getSensorIDs().toArray())
       );
-    assertThat(json.getInt(SensorConfig.COUNT), equalTo(2));
-    assertThat(json.getBoolean(SensorConfig.ACTIVE), is(true));
+    assertThat(json.getInt(SensorConfig.COUNT), equalTo(config.getCount()));
+    assertThat(json.getBoolean(SensorConfig.ACTIVE), is(config.isActive()));
+    assertThat(new SensorConfig(config.toJson()), is(config));
   }
 }
