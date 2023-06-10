@@ -64,6 +64,21 @@ public class SensorState extends Jsonable {
     return json;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || this.getClass() != o.getClass()) {
+      return this == o;
+    }
+    return this.equals((SensorState) o);
+  }
+
+  public boolean equals(SensorState state) {
+    return this.sensorID.equals(state.sensorID) && this.sensorModel.equals(state.sensorModel) &&
+        this.tags.equals(state.tags) && this.subjects.equals(state.subjects) &&
+        this.active == state.active;
+  }
+
+
   public String getLabel() {
     return String.format("%s:<%s>", this.sensorID, this.sensorModel);
   }
