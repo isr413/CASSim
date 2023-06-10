@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -42,24 +41,21 @@ public class SensorProtoTest {
   @Test
   public void jsonToSensorProto() {
     SensorStats stats = new SensorStats(1.0, 2.0, 3.0, 4.0);
-    JsonArrayBuilder tags = JsonBuilder.Array();
-    tags.put("tag1");
-    tags.put("tag2");
-    JsonArrayBuilder matchers = JsonBuilder.Array();
-    matchers.put("matcher1");
-    matchers.put("matcher2");
+    JsonArrayBuilder jsonTags = JsonBuilder.Array();
+    jsonTags.put("tag1");
+    jsonTags.put("tag2");
+    JsonArrayBuilder jsonMatchers = JsonBuilder.Array();
+    jsonMatchers.put("matcher1");
+    jsonMatchers.put("matcher2");
     JsonObjectBuilder json = JsonBuilder.Object();
     json.put(SensorProto.MODEL, "model");
-    json.put(SensorProto.TAGS, tags.toJsonArray());
-    json.put(SensorProto.MATCHERS, matchers.toJsonArray());
+    json.put(SensorProto.TAGS, jsonTags.toJsonArray());
+    json.put(SensorProto.MATCHERS, jsonMatchers.toJsonArray());
     json.put(SensorProto.STATS, stats.toJson());
     SensorProto proto = new SensorProto(json.toJson());
     assertThat(proto.getModel(), equalTo("model"));
-    assertThat(List.copyOf(proto.getTags()), containsInAnyOrder("tag1", "tag2"));
-    assertThat(
-        List.copyOf(proto.getMatchers()),
-        containsInAnyOrder("matcher1", "matcher2")
-      );
+    assertThat(proto.getTags(), containsInAnyOrder("tag1", "tag2"));
+    assertThat(proto.getMatchers(), containsInAnyOrder("matcher1", "matcher2"));
     assertThat(proto.getStats(), is(stats));
   }
 
@@ -95,11 +91,8 @@ public class SensorProtoTest {
     assertThat(json.hasKey(SensorProto.STATS), is(false));
     proto = new SensorProto(json.toJson());
     assertThat(proto.getModel(), equalTo("model"));
-    assertThat(List.copyOf(proto.getTags()), containsInAnyOrder("tag1", "tag2"));
-    assertThat(
-        List.copyOf(proto.getMatchers()),
-        containsInAnyOrder("matcher1", "matcher2")
-      );
+    assertThat(proto.getTags(), containsInAnyOrder("tag1", "tag2"));
+    assertThat(proto.getMatchers(), containsInAnyOrder("matcher1", "matcher2"));
     assertThat(proto.hasStats(), is(false));
   }
 }

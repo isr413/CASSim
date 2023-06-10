@@ -66,6 +66,19 @@ public class SensorConfig extends Jsonable {
     return json;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || this.getClass() != o.getClass()) {
+      return this == o;
+    }
+    return this.equals((SensorConfig) o);
+  }
+
+  public boolean equals(SensorConfig config) {
+    return this.proto.equals(config.proto) && this.sensorIDs.equals(config.sensorIDs) &&
+        this.active == config.active;
+  }
+
   public int getCount() {
     return this.sensorIDs.size();
   }
