@@ -72,4 +72,49 @@ public class SensorStatsTest {
     assertThat(json.hasKey(SensorStats.RANGE), is(false));
     assertThat(new SensorStats(json.toJson()), is(stats));
   }
+
+  @Test
+  public void hasAccuracy() {
+    assertThat(SensorStatsTest.MockSensorStats().hasAccuracy(), is(true));
+    SensorStats stats = new SensorStats(1.0, -2.0, 3.0, 4.0);
+    assertThat(stats.hasAccuracy(), is(false));
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void hasAccuracyException() {
+    new SensorStats(1.0, Double.POSITIVE_INFINITY, 3.0, 4.0);
+  }
+
+  @Test
+  public void hasBatteryUsage() {
+    assertThat(SensorStatsTest.MockSensorStats().hasBatteryUsage(), is(true));
+    SensorStats stats = new SensorStats(-1.0, 2.0, 3.0, 4.0);
+    assertThat(stats.hasBatteryUsage(), is(false));
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void hasBatteryUsageException() {
+    new SensorStats(Double.POSITIVE_INFINITY, 2.0, 3.0, 4.0);
+  }
+
+  @Test
+  public void hasDelay() {
+    assertThat(SensorStatsTest.MockSensorStats().hasDelay(), is(true));
+    SensorStats stats = new SensorStats(1.0, 2.0, -3.0, 4.0);
+    assertThat(stats.hasDelay(), is(false));
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void hasDelayException() {
+    new SensorStats(1.0, 2.0, Double.POSITIVE_INFINITY, 4.0);
+  }
+
+  @Test
+  public void hasRange() {
+    assertThat(SensorStatsTest.MockSensorStats().hasRange(), is(true));
+    SensorStats stats = new SensorStats(1.0, 2.0, 3.0, Double.POSITIVE_INFINITY);
+    assertThat(stats.hasRange(), is(false));
+    stats = new SensorStats(1.0, 2.0, 3.0, -4.0);
+    assertThat(stats.hasRange(), is(false));
+  }
 }

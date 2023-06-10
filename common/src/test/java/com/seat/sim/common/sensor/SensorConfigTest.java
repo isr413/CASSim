@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -70,5 +71,51 @@ public class SensorConfigTest {
     assertThat(json.getInt(SensorConfig.COUNT), equalTo(config.getCount()));
     assertThat(json.getBoolean(SensorConfig.ACTIVE), is(config.isActive()));
     assertThat(new SensorConfig(config.toJson()), is(config));
+  }
+
+  @Test
+  public void hasSensorWithID() {
+    SensorConfig config = SensorConfigTest.MockSensorConfig();
+    config
+      .getSensorIDs()
+      .stream()
+      .map(sensorID -> String.valueOf(sensorID))
+      .forEach(sensorID -> assertThat(config.hasSensorWithID(sensorID), is(true)));
+    assertThat(config.hasSensorWithID("ns1"), is(false));
+  }
+
+  @Test
+  public void hasSensorWithModel() {
+    SensorConfig config = SensorConfigTest.MockSensorConfig();
+    assertThat(config.hasSensorWithModel(String.valueOf(config.getProto().getModel())), is(true));
+    assertThat(config.hasSensorWithModel("nsm1"), is(false));
+  }
+
+  @Test
+  public void hasSensorMatch() {
+    SensorConfig config = SensorConfigTest.MockSensorConfig();
+    config
+      .getProto()
+      .getTags()
+      .stream()
+      .map(tag -> String.valueOf(tag))
+      .forEach(tag -> {
+          assertThat(config.hasSensorWithTag(tag), is(true));
+          assertThat(config.hasSensorMatch(Set.of(tag)), is(true));
+          assertThat(config.hasSensorMatch(Set.of(tag, "nt1")), is(true));
+        });
+    assertThat(
+        config.hasSensorMatch(
+            config
+              .getProto()
+              .getTags()
+              .stream()
+              .map(tag -> String.valueOf(tag))
+              .collect(Collectors.toSet())
+          ),
+        is(true)
+      );
+    assertThat(config.hasSensorMatch(Set.of("nt1", "nt2")), is(false));
+    assertThat(config.hasSensorMatch(Set.of()), is(false));
   }
 }

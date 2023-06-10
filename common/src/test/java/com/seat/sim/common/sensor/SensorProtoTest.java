@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -77,5 +78,49 @@ public class SensorProtoTest {
     assertThat(json.hasKey(SensorProto.MATCHERS), is(false));
     assertThat(json.hasKey(SensorProto.STATS), is(false));
     assertThat(new SensorProto(proto.toJson()), is(proto));
+  }
+
+  @Test
+  public void hasModel() {
+    SensorProto proto = SensorProtoTest.MockSensorProto();
+    assertThat(proto.hasModel(String.valueOf(proto.getModel())), is(true));
+    assertThat(proto.hasModel("nsm1"), is(false));
+  }
+
+  @Test
+  public void hasMatcher() {
+    SensorProto proto = SensorProtoTest.MockSensorProto();
+    proto
+      .getMatchers()
+      .stream()
+      .map(matcher -> String.valueOf(matcher))
+      .forEach(matcher -> assertThat(proto.hasMatcher(matcher), is(true)));
+    assertThat(proto.hasMatcher("nm1"), is(false));
+  }
+
+  @Test
+  public void hasTag() {
+    SensorProto proto = SensorProtoTest.MockSensorProto();
+    proto
+      .getTags()
+      .stream()
+      .map(tag -> String.valueOf(tag))
+      .forEach(tag -> {
+          assertThat(proto.hasTag(tag), is(true));
+          assertThat(proto.hasMatch(Set.of(tag)), is(true));
+          assertThat(proto.hasMatch(Set.of(tag, "nt1")), is(true));
+        });
+    assertThat(
+        proto.hasMatch(
+            proto
+              .getTags()
+              .stream()
+              .map(tag -> String.valueOf(tag))
+              .collect(Collectors.toSet())
+          ),
+        is(true)
+      );
+    assertThat(proto.hasMatch(Set.of("nt1", "nt2")), is(false));
+    assertThat(proto.hasMatch(Set.of()), is(false));
   }
 }

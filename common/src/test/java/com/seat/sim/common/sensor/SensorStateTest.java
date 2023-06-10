@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -81,5 +82,56 @@ public class SensorStateTest {
     assertThat(json.hasKey(SensorState.SUBJECTS), is(false));
     assertThat(json.getBoolean(SensorState.ACTIVE), is(state.isActive()));
     assertThat(new SensorState(json.toJson()), is(state));
+  }
+
+  @Test
+  public void hasSensorID() {
+    SensorState state = SensorStateTest.MockSensorState();
+    assertThat(state.hasSensorID(String.valueOf(state.getSensorID())), is(true));
+    assertThat(state.hasSensorID("ns1"), is(false));
+  }
+
+  @Test
+  public void hasSensorModel() {
+    SensorState state = SensorStateTest.MockSensorState();
+    assertThat(state.hasSensorModel(String.valueOf(state.getSensorModel())), is(true));
+    assertThat(state.hasSensorModel("nsm1"), is(false));
+  }
+
+  @Test
+  public void hasMatch() {
+    SensorState state = SensorStateTest.MockSensorState();
+    state
+      .getTags()
+      .stream()
+      .map(tag -> String.valueOf(tag))
+      .forEach(tag -> {
+          assertThat(state.hasTag(tag), is(true));
+          assertThat(state.hasMatch(Set.of(tag)), is(true));
+          assertThat(state.hasMatch(Set.of(tag, "nt1")), is(true));
+        });
+    assertThat(
+        state.hasMatch(
+            state
+              .getTags()
+              .stream()
+              .map(tag -> String.valueOf(tag))
+              .collect(Collectors.toSet())
+          ),
+        is(true)
+      );
+    assertThat(state.hasMatch(Set.of("nt1", "nt2")), is(false));
+    assertThat(state.hasMatch(Set.of()), is(false));
+  }
+
+  @Test
+  public void hasSubjectWithID() {
+    SensorState state = SensorStateTest.MockSensorState();
+    state
+      .getSubjects()
+      .stream()
+      .map(subjectID -> String.valueOf(subjectID))
+      .forEach(subjectID -> assertThat(state.hasSubjectWithID(subjectID), is(true)));
+    assertThat(state.hasSubjectWithID("ns1"), is(false));
   }
 }

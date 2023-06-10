@@ -116,19 +116,19 @@ public class SensorStats extends Jsonable {
   }
 
   public boolean hasAccuracy() {
-    return Double.isFinite(this.accuracy) && this.accuracy > 0;
+    return Double.isFinite(this.accuracy) && this.accuracy > 0.;
   }
 
   public boolean hasBatteryUsage() {
-    return Double.isFinite(this.batteryUsage) && this.batteryUsage > 0;
+    return Double.isFinite(this.batteryUsage) && this.batteryUsage > 0.;
   }
 
   public boolean hasDelay() {
-    return Double.isFinite(this.delay) && this.delay > 0;
+    return Double.isFinite(this.delay) && this.delay > 0.;
   }
 
   public boolean hasRange() {
-    return this.range.isPresent() && Double.isFinite(this.getRange());
+    return this.range.isPresent() && Double.isFinite(this.getRange()) && this.getRange() > 0.;
   }
 
   public Json toJson() throws JsonException {
