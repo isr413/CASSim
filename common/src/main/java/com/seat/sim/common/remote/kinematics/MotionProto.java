@@ -72,6 +72,20 @@ public class MotionProto extends Jsonable {
     return json;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || this.getClass() != o.getClass()) {
+      return this == o;
+    }
+    return this.equals((MotionProto) o);
+  }
+
+  public boolean equals(MotionProto proto) {
+    return this.initialVelocity.equals(proto.initialVelocity) &&
+        Vector.near(this.getMaxVelocity(), proto.getMaxVelocity()) &&
+        Vector.near(this.getMaxAcceleration(), proto.getMaxAcceleration());
+  }
+
   public double getInitialSpeed() {
     return this.getInitialVelocity().getMagnitude();
   }

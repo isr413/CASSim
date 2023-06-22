@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.is;
 
 import org.junit.Test;
 
-import com.seat.sim.common.json.JsonArrayBuilder;
 import com.seat.sim.common.json.JsonBuilder;
 import com.seat.sim.common.json.JsonObject;
 import com.seat.sim.common.json.JsonObjectBuilder;
