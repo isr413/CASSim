@@ -60,6 +60,21 @@ public class KinematicsProto extends Jsonable {
     return json;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || this.getClass() != o.getClass()) {
+      return this == o;
+    }
+    return this.equals((KinematicsProto) o);
+  }
+
+  public boolean equals(KinematicsProto proto) {
+    return this.location.equals(proto.location) && this.hasFuelProto() == proto.hasFuelProto() &&
+        (!this.hasFuelProto() || this.getFuelProto().equals(proto.getFuelProto())) &&
+        this.hasMotionProto() == proto.hasMotionProto() &&
+        (!this.hasMotionProto() || this.getMotionProto().equals(proto.getMotionProto()));
+  }
+
   public FuelProto getFuelProto() {
     return this.fuelProto.get();
   }
@@ -104,6 +119,10 @@ public class KinematicsProto extends Jsonable {
 
   public boolean hasLocation() {
     return this.location.isPresent();
+  }
+
+  public boolean hasMotionProto() {
+    return this.motionProto.isPresent();
   }
 
   public boolean isEnabled() {
