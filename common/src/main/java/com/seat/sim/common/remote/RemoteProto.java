@@ -27,6 +27,10 @@ public class RemoteProto extends Jsonable {
     this(null, null, null);
   }
 
+  public RemoteProto(Set<String> tags, Collection<SensorConfig> sensorConfigs) {
+    this(tags, sensorConfigs, null);
+  }
+
   public RemoteProto(Set<String> tags, Collection<SensorConfig> sensorConfigs, KinematicsProto kinematicsProto) {
     this.tags = (tags != null) ? new HashSet<>(tags) : new HashSet<>();
     this.sensorConfigs = (sensorConfigs != null) ? new ArrayList<>(sensorConfigs) : new ArrayList<>();
@@ -73,6 +77,20 @@ public class RemoteProto extends Jsonable {
       json.put(RemoteProto.KINEMATICS_PROTO, this.getKinematicsProto().toJson());
     }
     return json;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || this.getClass() != o.getClass()) {
+      return this == o;
+    }
+    return this.equals((RemoteProto) o);
+  }
+
+  public boolean equals(RemoteProto proto) {
+    return this.tags.equals(proto.tags) && this.sensorConfigs.equals(proto.sensorConfigs) &&
+        this.hasKinematicsProto() == proto.hasKinematicsProto() &&
+        (!this.hasKinematicsProto() || this.getKinematicsProto().equals(proto.getKinematicsProto()));
   }
 
   public KinematicsProto getKinematicsProto() {
