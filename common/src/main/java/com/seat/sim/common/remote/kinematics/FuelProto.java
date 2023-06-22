@@ -64,6 +64,19 @@ public class FuelProto extends Jsonable {
     return json;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || this.getClass() != o.getClass()) {
+      return this == o;
+    }
+    return this.equals((FuelProto) o);
+  }
+
+  public boolean equals(FuelProto proto) {
+    return Vector.near(this.initialFuel, proto.initialFuel) && Vector.near(this.getMaxFuel(), proto.getMaxFuel()) &&
+        this.getFuelUsage().equals(proto.getFuelUsage());
+  }
+
   public Vector getFuelUsage() {
     if (this.fuelUsage.isEmpty()) {
       return Vector.ZERO;

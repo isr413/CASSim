@@ -147,9 +147,15 @@ public class Vector extends Jsonable {
 
   /** Returns {@code true} if the two vectors are within precision of each other. */
   public static boolean near(double d1, double d2) {
+    if (Double.isNaN(d1) || Double.isNaN(d2)) {
+      return false;
+    }
+    if (!Double.isFinite(d1) || !Double.isFinite(d2)) {
+      return d1 == d2;
+    }
     return Math.abs(d1 - d2) < Vector.PRECISION;
   }
-  
+
   /** Returns {@code true} if the two vectors are within precision of each other. */
   public static boolean near(Vector a, Vector b) {
     return Vector.near(Vector.sub(a, b).getMagnitude(), 0);
@@ -178,8 +184,8 @@ public class Vector extends Jsonable {
     return new Vector(Math.sqrt(a.x), Math.sqrt(a.y), Math.sqrt(a.z));
   }
 
-  /** 
-   * Returns a new vector scaled down to the limit if the magnitude of the 
+  /**
+   * Returns a new vector scaled down to the limit if the magnitude of the
    * vector surpasses the limit. Otherwise, returns the original vector.
    */
   public static Vector squeeze(Vector a, double limit) {
@@ -258,10 +264,16 @@ public class Vector extends Jsonable {
     return Vector.dist(this, dest);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || this.getClass() != o.getClass()) {
+      return this == o;
+    }
+    return this.equals((Vector) o);
+  }
+
   /** Returns true if both vectors have equal components. */
   public boolean equals(Vector vec) {
-    if (vec == null)
-      return false;
     return this.x == vec.x && this.y == vec.y && this.z == vec.z;
   }
 
@@ -344,14 +356,14 @@ public class Vector extends Jsonable {
   public boolean near(Vector target) {
     return Vector.near(this, target);
   }
- 
+
   /** Returns a new vector that has the components of a scaled by scalar. */
   public Vector scale(double scalar) {
     return Vector.scale(this, scalar);
   }
 
-  /** 
-   * Returns a new vector scaled down to the limit if the magnitude of the 
+  /**
+   * Returns a new vector scaled down to the limit if the magnitude of the
    * vector surpasses the limit. Otherwise, returns the original vector.
    */
   public Vector squeeze(double limit) {
