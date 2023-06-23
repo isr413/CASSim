@@ -13,6 +13,7 @@ public class RemoteConfig extends Jsonable {
   public static final String DYNAMIC = "dynamic";
   public static final String PROTO = "__proto__";
   public static final String REMOTE_IDS = "remote_ids";
+  public static final String TEAM = "team";
 
   private boolean active;
   private boolean dynamic;
@@ -47,7 +48,7 @@ public class RemoteConfig extends Jsonable {
   protected void decode(JsonObject json) throws JsonException {
     this.proto = (json.hasKey(RemoteConfig.PROTO)) ? new RemoteProto(json.getJson(RemoteConfig.PROTO))
         : new RemoteProto();
-    this.team = (json.hasKey(TeamColor.TEAM)) ? TeamColor.decodeType(json) : TeamColor.NONE;
+    this.team = (json.hasKey(RemoteConfig.TEAM)) ? TeamColor.decodeType(json) : TeamColor.NONE;
     this.remoteIDs = (json.hasKey(RemoteConfig.REMOTE_IDS))
         ? new HashSet<>(json.getJsonArray(RemoteConfig.REMOTE_IDS).toList(String.class))
         : new HashSet<>();
@@ -62,7 +63,7 @@ public class RemoteConfig extends Jsonable {
     JsonObjectBuilder json = JsonBuilder.Object();
     json.put(RemoteConfig.PROTO, this.proto.toJson());
     if (this.hasTeam()) {
-      json.put(TeamColor.TEAM, this.team.getType());
+      json.put(RemoteConfig.TEAM, this.team.getType());
     }
     if (this.getCount() > 0) {
       json.put(RemoteConfig.COUNT, this.getCount());
@@ -73,6 +74,19 @@ public class RemoteConfig extends Jsonable {
     json.put(RemoteConfig.ACTIVE, this.active);
     json.put(RemoteConfig.DYNAMIC, this.dynamic);
     return json;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || this.getClass() != o.getClass()) {
+      return this == o;
+    }
+    return this.equals((RemoteConfig) o);
+  }
+
+  public boolean equals(RemoteConfig config) {
+    return this.proto.equals(config.proto) && this.team.equals(config.team) && this.remoteIDs.equals(config.remoteIDs)
+        && this.active == config.active && this.dynamic == config.dynamic;
   }
 
   public int getCount() {
