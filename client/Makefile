@@ -1,7 +1,7 @@
 TARGET=Default
 
 default: clean install
-	mvn assembly:assembly
+	mvn compile assembly:single
 
 clean:
 	mvn clean

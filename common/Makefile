@@ -1,5 +1,5 @@
 default: clean
-	mvn assembly:assembly
+	mvn compile assembly:single
 
 test:
 	mvn test
