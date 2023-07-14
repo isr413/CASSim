@@ -103,6 +103,10 @@ public class PhysicsState extends Jsonable {
     return this.velocity;
   }
 
+  public boolean hasLocation() {
+    return this.location != null;
+  }
+
   public boolean hasMaxAcceleration() {
     return Double.isFinite(this.maxAcceleration);
   }

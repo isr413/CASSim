@@ -78,7 +78,6 @@ public class SensorState extends Jsonable {
         this.active == state.active;
   }
 
-
   public String getLabel() {
     return String.format("%s:<%s>", this.sensorID, this.sensorModel);
   }
