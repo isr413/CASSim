@@ -38,8 +38,8 @@ public class RemoteConfigTest {
         json.getJsonArray(RemoteConfig.REMOTE_IDS).toList(String.class),
         containsInAnyOrder(config.getRemoteIDs().toArray())
       );
-    assertThat(json.getBoolean(RemoteConfig.ACTIVE), is(true));
-    assertThat(json.getBoolean(RemoteConfig.DYNAMIC), is(true));
+    assertThat(json.getBoolean(RemoteConfig.ACTIVE), is(config.isActive()));
+    assertThat(json.getBoolean(RemoteConfig.DYNAMIC), is(config.isDynamic()));
   }
 
   @Test
@@ -70,8 +70,8 @@ public class RemoteConfigTest {
     assertThat(new RemoteProto(json.getJson(RemoteConfig.PROTO)), is(config.getProto()));
     assertThat(TeamColor.decodeType(json), equalTo(config.getTeam()));
     assertThat(json.getInt(RemoteConfig.COUNT), equalTo(config.getCount()));
-    assertThat(json.getBoolean(RemoteConfig.ACTIVE), is(true));
-    assertThat(json.getBoolean(RemoteConfig.DYNAMIC), is(true));
+    assertThat(json.getBoolean(RemoteConfig.ACTIVE), is(config.isActive()));
+    assertThat(json.getBoolean(RemoteConfig.DYNAMIC), is(config.isDynamic()));
     assertThat(new RemoteConfig(json.toJson()), is(config));
   }
 
