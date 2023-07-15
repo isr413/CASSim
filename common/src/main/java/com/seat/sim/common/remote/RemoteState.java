@@ -21,8 +21,10 @@ public class RemoteState extends Jsonable {
   public static final String DONE = "done";
   public static final String FUEL = "fuel";
   public static final String REMOTE_ID = "remote_id";
+  public static final String SENSORS = "sensors";
   public static final String STATE = "state";
   public static final String TAGS = "tags";
+  public static final String TEAM = "team";
 
   private boolean active;
   private boolean done;
@@ -62,7 +64,9 @@ public class RemoteState extends Jsonable {
     this.state = (state != null) ? state : Optional.empty();
     this.fuel = (fuel != null) ? fuel : Optional.empty();
     this.sensorStates = (sensorStates != null)
-        ? sensorStates.stream().collect(Collectors.toMap(SensorState::getSensorID, Function.identity()))
+        ? sensorStates
+            .stream()
+            .collect(Collectors.toMap(SensorState::getSensorID, Function.identity()))
         : new HashMap<>();
     this.active = active;
     this.done = done;
@@ -81,15 +85,17 @@ public class RemoteState extends Jsonable {
     this.tags = (json.hasKey(RemoteState.TAGS))
         ? new HashSet<>(json.getJsonArray(RemoteState.TAGS).toList(String.class))
         : new HashSet<>();
-    this.team = (json.hasKey(TeamColor.TEAM)) ? TeamColor.decodeType(json) : TeamColor.NONE;
+    this.team = (json.hasKey(RemoteState.TEAM)) ? TeamColor.decodeType(json) : TeamColor.NONE;
     this.state = (json.hasKey(RemoteState.STATE))
         ? Optional.of(new PhysicsState(json.getJson(RemoteState.STATE)))
         : Optional.empty();
-    this.fuel = (json.hasKey(RemoteState.FUEL)) ? Optional.of(json.getDouble(RemoteState.FUEL)) : Optional.empty();
+    this.fuel = (json.hasKey(RemoteState.FUEL))
+        ? Optional.of(json.getDouble(RemoteState.FUEL))
+        : Optional.empty();
     this.active = json.getBoolean(RemoteState.ACTIVE);
     this.done = json.getBoolean(RemoteState.DONE);
-    this.sensorStates = (json.hasKey(RemoteProto.SENSORS))
-        ? json.getJsonArray(RemoteProto.SENSORS).toList(Json.class).stream()
+    this.sensorStates = (json.hasKey(RemoteState.SENSORS))
+        ? json.getJsonArray(RemoteState.SENSORS).toList(Json.class).stream()
             .map(state -> new SensorState(state))
             .collect(Collectors.toMap(SensorState::getSensorID, Function.identity()))
         : new HashMap<>();
@@ -102,7 +108,7 @@ public class RemoteState extends Jsonable {
       json.put(RemoteState.TAGS, JsonBuilder.toJsonArray(this.tags));
     }
     if (this.hasTeam()) {
-      json.put(TeamColor.TEAM, this.team.getType());
+      json.put(RemoteState.TEAM, this.team.getType());
     }
     if (this.hasLocation()) {
       json.put(RemoteState.STATE, this.getPhysicsState().toJson());
@@ -114,13 +120,31 @@ public class RemoteState extends Jsonable {
     json.put(RemoteState.DONE, this.done);
     if (this.hasSensors()) {
       json.put(
-          RemoteProto.SENSORS,
+          RemoteState.SENSORS,
           JsonBuilder.toJsonArray(
               this.sensorStates.values().stream()
                   .map(sensorState -> sensorState.toJson())
                   .collect(Collectors.toList())));
     }
     return json;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || this.getClass() != o.getClass()) {
+      return this == o;
+    }
+    return this.equals((RemoteState) o);
+  }
+
+  public boolean equals(RemoteState state) {
+    return this.remoteID.equals(state.remoteID) && this.tags.equals(state.tags) &&
+        this.team.equals(state.team) && this.hasPhysicsState() == state.hasPhysicsState() &&
+        (!this.hasPhysicsState() || this.getPhysicsState().equals(state.getPhysicsState())) &&
+        this.hasFuel() == state.hasFuel() &&
+        (!this.hasFuel() || Vector.near(this.getFuelAmount(), state.getFuelAmount())) &&
+        this.sensorStates.equals(state.sensorStates) && this.active == state.active &&
+        this.done == state.done;
   }
 
   public Collection<SensorState> getAllSensorStatesWithModel(String sensorModel) {
@@ -224,11 +248,15 @@ public class RemoteState extends Jsonable {
   }
 
   public boolean hasLocation() {
-    return this.state.isPresent();
+    return this.state.isPresent() && this.state.get().hasLocation();
   }
 
   public boolean hasMatch(Set<String> matchers) {
     return this.hasRemoteMatch(matchers) || this.hasSensorMatch(matchers);
+  }
+
+  public boolean hasPhysicsState() {
+    return this.state.isPresent();
   }
 
   public boolean hasRemoteID(String remoteID) {
