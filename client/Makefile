@@ -6,6 +6,9 @@ default: clean install
 clean:
 	mvn clean
 
+wipe:
+	rm logs/*.log
+
 install:
 	cp ../common/target/common-1.0-SNAPSHOT-jar-with-dependencies.jar ./lib/common.jar && mvn validate && mvn install
 

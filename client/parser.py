@@ -92,5 +92,10 @@ def save_data(df):
 
 
 if __name__ == "__main__":
-    df = parse_files([filename for filename in sys.argv[1:]])
-    save_data(df)
+    target = sys.argv[1]
+    if ' ' in target:
+        df = parse_files(target.split(' '))
+        save_data(df)
+    else:
+        df = parse_files([target.replace('_1_', f'_{i + 1}_') for i in range(4)])
+        save_data(df)
