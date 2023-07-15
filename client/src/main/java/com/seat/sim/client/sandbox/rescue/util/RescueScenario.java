@@ -103,6 +103,12 @@ public abstract class RescueScenario implements Application {
     this(scenarioID, 1, 32, 1024, 0, alpha, beta, gamma, trialsPer, threadID, threadCount, seed);
   }
 
+  public RescueScenario(String scenarioID, int baseCount, int droneCount, int victimCount, int cooldown, double alpha,
+      double beta, double gamma, int trialsPer, int threadID, int threadCount, long seed) throws IOException {
+    this(scenarioID, baseCount, droneCount, victimCount, cooldown, Range.Inclusive(alpha, alpha),
+        Range.Inclusive(beta, beta), Range.Inclusive(gamma, gamma), trialsPer, threadID, threadCount, seed);
+  }
+
   public RescueScenario(String scenarioID, int baseCount, int droneCount, int victimCount, int cooldown, Range alpha,
       double beta, double gamma, int trialsPer, int threadID, int threadCount, long seed) throws IOException {
     this(scenarioID, baseCount, droneCount, victimCount, cooldown, alpha, Range.Inclusive(beta, beta),
@@ -368,6 +374,7 @@ public abstract class RescueScenario implements Application {
     if (this.hasTasks()) {
       this.tasks.get().init();
     }
+    this.reportTrial();
   }
 
   public boolean isDone(String remoteID) {

@@ -9,6 +9,10 @@ import com.seat.sim.client.sandbox.rescue.RandomFixed;
 import com.seat.sim.client.sandbox.rescue.RandomTasks;
 import com.seat.sim.client.sandbox.rescue.RandomWalk;
 import com.seat.sim.client.sandbox.rescue.SmgWalk;
+import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes1RandomWalkA;
+import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes1RandomWalkB;
+import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes32RandomWalkA;
+import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes32RandomWalkB;
 import com.seat.sim.common.core.Application;
 import com.seat.sim.common.util.ArgsParser;
 
@@ -29,6 +33,18 @@ public class App {
     try {
       if (scenarioID.equals("Default")) {
         return new Default(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes1RandomWalkA")) {
+        return new ScenarioSize64Probes1RandomWalkA(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes1RandomWalkB")) {
+        return new ScenarioSize64Probes1RandomWalkB(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32RandomWalkA")) {
+        return new ScenarioSize64Probes32RandomWalkA(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32RandomWalkB")) {
+        return new ScenarioSize64Probes32RandomWalkB(args, threadID, seed);
       }
       if (scenarioID.equals("GlobalTaskQueue")) {
         return new GlobalTaskQueue(args, threadID, seed);
