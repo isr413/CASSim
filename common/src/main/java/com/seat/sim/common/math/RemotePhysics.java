@@ -2,7 +2,7 @@ package com.seat.sim.common.math;
 
 public class RemotePhysics {
 
-  private static double timeToReachDest(Vector loc, double speed, double maxVel, double maxAccel,
+  public static double timeToReachDest(Vector loc, double speed, double maxVel, double maxAccel,
         Vector dest) {
     if (!Double.isFinite(maxAccel)) {
       return 0.;
