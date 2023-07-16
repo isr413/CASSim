@@ -3,8 +3,8 @@ package com.seat.sim.client.sandbox.rescue.scenarios;
 import java.io.IOException;
 import java.util.Optional;
 
-import com.seat.sim.client.sandbox.rescue.addons.RandomWalkTaskManager;
-import com.seat.sim.client.sandbox.rescue.util.RescueScenario;
+import com.seat.sim.client.sandbox.rescue.remote.RescueScenario;
+import com.seat.sim.client.sandbox.rescue.util.RandomWalkTaskManager;
 import com.seat.sim.client.sandbox.rescue.util.TaskManager;
 import com.seat.sim.common.util.ArgsParser;
 
@@ -19,8 +19,8 @@ public class ScenarioSize64Probes1RandomWalkA extends RescueScenario {
         0,                                    // cooldown
         1.,                                   // alpha
         1.,                                   // beta
-        1.,                                   // gamma
-        10,                                   // trials
+        0.,                                   // gamma
+        20,                                   // trials
         threadID,                             // threadID
         4,                                    // threadCount
         seed                                  // seed
