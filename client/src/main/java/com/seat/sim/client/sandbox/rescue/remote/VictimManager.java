@@ -94,7 +94,13 @@ public class VictimManager {
       .filter(victimID -> !this.isDone(victimID))
       .forEach(victimID -> {
           this.setDone(victimID);
-          this.scenario.report(snap.getTime(), "Rescued victim %s", victimID);
+          this.scenario.report(
+              snap.getTime(),
+              ":: %s :: %s :: %s :: Rescued victim",
+              RescueScenario.BASE_TAG,
+              RescueScenario.GRID_CENTER.toString("%.0f"),
+              victimID
+            );
         });
     return victims
       .stream()
