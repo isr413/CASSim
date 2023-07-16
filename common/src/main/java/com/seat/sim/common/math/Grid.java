@@ -140,24 +140,24 @@ public class Grid extends Jsonable {
     if (this.hasZoneAtLocation(cx - size, cy - size)) {
       neighbors.add(this.getZoneAtLocation(cx - size, cy - size));
     }
-    if (this.hasZoneAtLocation(cx, cy - size)) {
-      neighbors.add(this.getZoneAtLocation(cx, cy - size));
-    }
-    if (this.hasZoneAtLocation(cx + size, cy - size)) {
-      neighbors.add(this.getZoneAtLocation(cx + size, cy - size));
-    }
     if (this.hasZoneAtLocation(cx - size, cy)) {
       neighbors.add(this.getZoneAtLocation(cx - size, cy));
-    }
-    neighbors.add(zone);
-    if (this.hasZoneAtLocation(cx + size, cy)) {
-      neighbors.add(this.getZoneAtLocation(cx + size, cy));
     }
     if (this.hasZoneAtLocation(cx - size, cy + size)) {
       neighbors.add(this.getZoneAtLocation(cx - size, cy + size));
     }
+    if (this.hasZoneAtLocation(cx, cy - size)) {
+      neighbors.add(this.getZoneAtLocation(cx, cy - size));
+    }
+    neighbors.add(zone);
     if (this.hasZoneAtLocation(cx, cy + size)) {
       neighbors.add(this.getZoneAtLocation(cx, cy + size));
+    }
+    if (this.hasZoneAtLocation(cx + size, cy - size)) {
+      neighbors.add(this.getZoneAtLocation(cx + size, cy - size));
+    }
+    if (this.hasZoneAtLocation(cx + size, cy)) {
+      neighbors.add(this.getZoneAtLocation(cx + size, cy));
     }
     if (this.hasZoneAtLocation(cx + size, cy + size)) {
       neighbors.add(this.getZoneAtLocation(cx + size, cy + size));
@@ -188,8 +188,8 @@ public class Grid extends Jsonable {
     if (!this.hasZones()) {
       return new Zone(
           new Vector(
-              row * this.zoneSize + this.zoneSize / 2.,
-              col * this.zoneSize + this.zoneSize / 2.
+              col * this.zoneSize + this.zoneSize / 2.,
+              row * this.zoneSize + this.zoneSize / 2.
           ),
           this.zoneSize
         );
