@@ -377,6 +377,10 @@ public class Vector extends Jsonable {
 
   @Override
   public String toString() {
-    return String.format("[%f, %f, %f]", this.x, this.y, this.z);
+    return this.toString("%f");
+  }
+  public String toString(String fmt) {
+    String format = String.format("[%s, %s, %s]", fmt, fmt, fmt);
+    return String.format(format, this.x, this.y, this.z);
   }
 }
