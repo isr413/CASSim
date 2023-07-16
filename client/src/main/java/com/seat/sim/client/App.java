@@ -2,13 +2,6 @@ package com.seat.sim.client;
 
 import com.seat.sim.client.core.AppClient;
 import com.seat.sim.client.core.ClientException;
-import com.seat.sim.client.sandbox.rescue.Default;
-import com.seat.sim.client.sandbox.rescue.GlobalTaskQueue;
-import com.seat.sim.client.sandbox.rescue.Heatmap;
-import com.seat.sim.client.sandbox.rescue.RandomFixed;
-import com.seat.sim.client.sandbox.rescue.RandomTasks;
-import com.seat.sim.client.sandbox.rescue.RandomWalk;
-import com.seat.sim.client.sandbox.rescue.SmgWalk;
 import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes1RandomWalkA;
 import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes1RandomWalkB;
 import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes32RandomWalkA;
@@ -31,9 +24,6 @@ public class App {
     int threadID = (args.hasParam(App.THREAD_ARG)) ? args.getInt(App.THREAD_ARG) : 0;
     long seed = (args.hasParam(App.SEED_ARG)) ? args.getLong(App.SEED_ARG) : 0;
     try {
-      if (scenarioID.equals("Default")) {
-        return new Default(args, threadID, seed);
-      }
       if (scenarioID.equals("ScenarioSize64Probes1RandomWalkA")) {
         return new ScenarioSize64Probes1RandomWalkA(args, threadID, seed);
       }
@@ -45,24 +35,6 @@ public class App {
       }
       if (scenarioID.equals("ScenarioSize64Probes32RandomWalkB")) {
         return new ScenarioSize64Probes32RandomWalkB(args, threadID, seed);
-      }
-      if (scenarioID.equals("GlobalTaskQueue")) {
-        return new GlobalTaskQueue(args, threadID, seed);
-      }
-      if (scenarioID.equals("Heatmap")) {
-        return new Heatmap(args, threadID, seed);
-      }
-      if (scenarioID.equals("RandomFixed")) {
-        return new RandomFixed(args, threadID, seed);
-      }
-      if (scenarioID.equals("RandomTasks")) {
-        return new RandomTasks(args, threadID, seed);
-      }
-      if (scenarioID.equals("RandomWalk")) {
-        return new RandomWalk(args, threadID, seed);
-      }
-      if (scenarioID.equals("SmgWalk")) {
-        return new SmgWalk(args, threadID, seed);
       }
     } catch (Exception e) {
       throw new ClientException(e.getMessage());
