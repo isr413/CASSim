@@ -1,12 +1,11 @@
-package com.seat.sim.client.sandbox.rescue.addons;
+package com.seat.sim.client.sandbox.rescue.util;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import com.seat.sim.client.sandbox.rescue.util.RemoteUtil;
-import com.seat.sim.client.sandbox.rescue.util.RescueScenario;
-import com.seat.sim.client.sandbox.rescue.util.TaskManager;
+import com.seat.sim.client.sandbox.rescue.remote.RemoteUtil;
+import com.seat.sim.client.sandbox.rescue.remote.RescueScenario;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.math.ZoneType;
@@ -15,9 +14,15 @@ import com.seat.sim.common.scenario.Snapshot;
 
 public class RandomWalkTaskManager implements TaskManager {
     private RescueScenario scenario;
+    private boolean useMiddle;
 
     public RandomWalkTaskManager(RescueScenario scenario) {
+      this(scenario, false);
+    }
+
+    public RandomWalkTaskManager(RescueScenario scenario, boolean useMiddle) {
       this.scenario = scenario;
+      this.useMiddle = useMiddle;
     }
 
     private Optional<Zone> randomWalk(Snapshot snap, RemoteState state) {
@@ -30,7 +35,7 @@ public class RandomWalkTaskManager implements TaskManager {
       Collections.shuffle(neighborhood, this.scenario.getRng().unwrap());
       return neighborhood
         .stream()
-        .filter(neighbor -> !neighbor.getLocation().equals(zone.getLocation()))
+        .filter(neighbor -> this.useMiddle || !zone.equals(neighbor))
         .filter(neighbor -> !neighbor.hasZoneType(ZoneType.BLOCKED))
         .filter(neighbor -> RemoteUtil.validChoice(snap, state, zone))
         .findFirst();

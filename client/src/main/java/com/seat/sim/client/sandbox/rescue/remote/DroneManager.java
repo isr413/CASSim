@@ -1,4 +1,4 @@
-package com.seat.sim.client.sandbox.rescue.util;
+package com.seat.sim.client.sandbox.rescue.remote;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -131,10 +131,21 @@ public class DroneManager {
           if (this.isDone(drone.getRemoteID())) {
             if (drone.getLocation().near(RescueScenario.GRID_CENTER)) {
               intent.addIntention(IntentRegistry.Done());
-              this.scenario.report(snap.getTime(), "Drone done %s", drone.getRemoteID());
+              this.scenario.report(
+                  snap.getTime(),
+                  ":: %s :: %s :: Drone done",
+                  drone.getRemoteID(),
+                  drone.getLocation().toString("%.0f")
+                );
               return intent;
             }
             intent.addIntention(IntentRegistry.GoHome());
+            this.scenario.report(
+                snap.getTime(),
+                ":: %s :: %s :: Drone going home",
+                drone.getRemoteID(),
+                drone.getLocation().toString("%.0f")
+              );
             return intent;
           }
           if (RemoteUtil.shouldReturnHome(
@@ -149,48 +160,108 @@ public class DroneManager {
             if (this.hasAssignment(drone.getRemoteID())) {
               this.removeAssignment(drone.getRemoteID());
             }
-            this.scenario.report(snap.getTime(), "Drone returning home %s", drone.getRemoteID());
+            this.scenario.report(
+                snap.getTime(),
+                ":: %s :: %s :: Drone returning home",
+                drone.getRemoteID(),
+                drone.getLocation().toString("%.0f")
+              );
             return intent;
           }
           if (this.isOnCooldown(drone.getRemoteID())) {
-            intent.addIntention(IntentRegistry.Stop());
             this.setCooldown(drone.getRemoteID(), this.getCooldown(drone.getRemoteID()) - 1);
-            if (this.getCooldown(drone.getRemoteID()) == 0) {
-              intent.addIntention(IntentRegistry.ActivateAllSensors());
-            }
-            return intent;
-          }
-          if (!this.hasAssignment(drone.getRemoteID())) {
-            Optional<Zone> task = this.scenario.nextTask(snap, drone);
-            if (task.isEmpty()) {
+            if (this.getCooldown(drone.getRemoteID()) > 0) {
               intent.addIntention(IntentRegistry.Stop());
+              this.scenario.report(
+                  snap.getTime(),
+                  ":: %s :: %s :: Performing task",
+                  drone.getRemoteID(),
+                  drone.getLocation().toString("%.0f")
+                );
               return intent;
+            } else {
+              intent.addIntention(IntentRegistry.ActivateAllSensors());
+              this.scenario.report(
+                  snap.getTime(),
+                  ":: %s :: %s :: Completes task",
+                  drone.getRemoteID(),
+                  drone.getLocation().toString("%.0f")
+                );
+              if (this.hasAssignment(drone.getRemoteID()) &&
+                    drone.getLocation().near(this.getAssignment(drone.getRemoteID()).get().getLocation())) {
+                this.removeAssignment(drone.getRemoteID());
+              }
             }
-            this.setAssignment(drone.getRemoteID(), task.get());
           }
-          if (drone.getLocation().near(this.getAssignment(drone.getRemoteID()).get().getLocation())) {
-            intent.addIntention(IntentRegistry.Stop());
-            Set<String> uniqueVictims = this.detectionsBy(
+          if (this.hasAssignment(drone.getRemoteID()) &&
+                drone.getLocation().near(this.getAssignment(drone.getRemoteID()).get().getLocation())) {
+            Set<String> bleDetections = this.detectionsBy(
                 snap,
                 drone,
                 RescueScenario.BLE_COMMS,
                 RescueScenario.VICTIM_TAG
               );
-            for (String victimID : uniqueVictims) {
+            Set<String> allDetections = this.detectionsBy(
+                snap,
+                drone,
+                RescueScenario.DRONE_CAMERA,
+                RescueScenario.VICTIM_TAG
+              );
+            allDetections.addAll(bleDetections);
+            for (String victimID : allDetections) {
               if (!this.scenario.isDone(victimID)) {
-                this.scenario.report(snap.getTime(), "Rescued victim %s", victimID);
+                this.scenario.report(
+                    snap.getTime(),
+                    ":: %s :: %s :: %s :: Rescued victim",
+                    drone.getRemoteID(),
+                    drone.getLocation().toString("%.0f"),
+                    victimID
+                  );
                 this.scenario.setDone(victimID, false);
               }
             }
-            uniqueVictims.removeAll(assistedVictims);
-            if (!uniqueVictims.isEmpty()) {
+            bleDetections.removeAll(assistedVictims);
+            if (this.getCooldownTime() > 0 && !bleDetections.isEmpty()) {
               this.setCooldown(drone.getRemoteID(), this.getCooldownTime());
+              intent.addIntention(IntentRegistry.Stop());
               intent.addIntention(IntentRegistry.DeactivateAllSensors());
-              assistedVictims.addAll(uniqueVictims);
+              assistedVictims.addAll(bleDetections);
+              this.scenario.report(
+                  snap.getTime(),
+                  ":: %s :: %s :: Initiating task",
+                  drone.getRemoteID(),
+                  drone.getLocation().toString("%.0f")
+                );
               return intent;
             }
             this.removeAssignment(drone.getRemoteID());
-            return intent;
+            this.scenario.report(
+                snap.getTime(),
+                ":: %s :: %s :: Completes assignment",
+                drone.getRemoteID(),
+                drone.getLocation().toString("%.0f")
+              );
+          }
+          if (!this.hasAssignment(drone.getRemoteID())) {
+            Optional<Zone> task = this.scenario.nextTask(snap, drone);
+            if (task.isEmpty()) {
+              intent.addIntention(IntentRegistry.Stop());
+              this.scenario.report(
+                  snap.getTime(),
+                  ":: %s :: %s :: Drone on standby",
+                  drone.getRemoteID(),
+                  drone.getLocation().toString("%.0f")
+                );
+              return intent;
+            }
+            this.setAssignment(drone.getRemoteID(), task.get());
+            this.scenario.report(
+                snap.getTime(),
+                ":: %s :: %s :: %s :: Drone assigned",
+                drone.getRemoteID(),
+                drone.getLocation().toString("%.0f"),
+                task.get().getLocation().toString("%.0f")
+              );
           }
           intent.addIntention(
               IntentRegistry.GoTo(
@@ -198,6 +269,12 @@ public class DroneManager {
                 RescueScenario.DRONE_SCAN_VELOCITY,
                 RescueScenario.DRONE_SCAN_ACCELERATION
               )
+            );
+          this.scenario.report(
+              snap.getTime(),
+              ":: %s :: %s :: Drone exploring",
+              drone.getRemoteID(),
+              drone.getLocation().toString("%.0f")
             );
           return intent;
         })

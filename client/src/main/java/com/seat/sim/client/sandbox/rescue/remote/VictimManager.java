@@ -1,4 +1,4 @@
-package com.seat.sim.client.sandbox.rescue.util;
+package com.seat.sim.client.sandbox.rescue.remote;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package com.seat.sim.client.sandbox.rescue.util;
+package com.seat.sim.client.sandbox.rescue.remote;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.seat.sim.client.sandbox.rescue.util.Experiment;
+import com.seat.sim.client.sandbox.rescue.util.TaskManager;
 import com.seat.sim.common.core.Application;
 import com.seat.sim.common.gui.TeamColor;
 import com.seat.sim.common.math.Grid;
@@ -80,7 +82,7 @@ public abstract class RescueScenario implements Application {
   public static final double BASE_VISION_RANGE = 20.;
 
   public static final String LONG_RANGE_COMMS = "Long_Range_Comms";
-  public static final double LRC_BATT_USAGE = 0.0002;
+  public static final double LRC_BATT_USAGE = 0.0001;
 
   public static final String DRONE_CAMERA = "Drone_Camera";
   public static final double CAM_BATT_USAGE = 0.0002;
@@ -113,6 +115,12 @@ public abstract class RescueScenario implements Application {
       double beta, double gamma, int trialsPer, int threadID, int threadCount, long seed) throws IOException {
     this(scenarioID, baseCount, droneCount, victimCount, cooldown, alpha, Range.Inclusive(beta, beta),
         Range.Inclusive(gamma, gamma), trialsPer, threadID, threadCount, seed);
+  }
+
+  public RescueScenario(String scenarioID, int baseCount, int droneCount, int victimCount, int cooldown, Range alpha,
+      Range beta, double gamma, int trialsPer, int threadID, int threadCount, long seed) throws IOException {
+    this(scenarioID, baseCount, droneCount, victimCount, cooldown, alpha, beta, Range.Inclusive(gamma, gamma),
+        trialsPer, threadID, threadCount, seed);
   }
 
   public RescueScenario(String scenarioID, Range alpha, Range beta, Range gamma, int trialsPer,
