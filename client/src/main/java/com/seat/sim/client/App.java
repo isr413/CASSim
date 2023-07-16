@@ -6,6 +6,8 @@ import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes1RandomW
 import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes1RandomWalkB;
 import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes32RandomWalkA;
 import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes32RandomWalkB;
+import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes32SmgWalkA;
+import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes32SmgWalkB;
 import com.seat.sim.common.core.Application;
 import com.seat.sim.common.util.ArgsParser;
 
@@ -35,6 +37,12 @@ public class App {
       }
       if (scenarioID.equals("ScenarioSize64Probes32RandomWalkB")) {
         return new ScenarioSize64Probes32RandomWalkB(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32SmgWalkA")) {
+        return new ScenarioSize64Probes32SmgWalkA(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32SmgWalkB")) {
+        return new ScenarioSize64Probes32SmgWalkB(args, threadID, seed);
       }
     } catch (Exception e) {
       throw new ClientException(e.getMessage());
