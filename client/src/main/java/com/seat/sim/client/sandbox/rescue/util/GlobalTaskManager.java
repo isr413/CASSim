@@ -1,7 +1,6 @@
 package com.seat.sim.client.sandbox.rescue.util;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -65,7 +64,8 @@ public class GlobalTaskManager implements TaskManager {
 
   public Optional<Zone> getNextTask(Snapshot snap, RemoteState state) {
     Zone zone = this.scenario.getGrid().get().getZoneAtLocation(state.getLocation());
-    Collection<Zone> neighborhood = this.scenario.getGrid().get().getNeighborhood(zone);
+    List<Zone> neighborhood = this.scenario.getGrid().get().getNeighborhood(zone, false);
+    Collections.shuffle(neighborhood, this.scenario.getRng().unwrap());
     if (neighborhood.isEmpty()) {
       return Optional.empty();
     }
@@ -76,7 +76,6 @@ public class GlobalTaskManager implements TaskManager {
     if (choices.isEmpty()) {
       OptionalInt minColls = neighborhood
         .stream()
-        .filter(neighbor -> !zone.equals(neighbor))
         .mapToInt(neighbor -> this.getColls(neighbor))
         .min();
       if (minColls.isPresent()) {
@@ -84,11 +83,10 @@ public class GlobalTaskManager implements TaskManager {
           .stream()
           .filter(neighbor -> this.getColls(neighbor) == minColls.getAsInt())
           .toList();
-        choices = new ArrayList<>(choices);
       } else {
-        choices = new ArrayList<>(neighborhood);
+        choices = neighborhood;
       }
-      Collections.shuffle(choices);
+      choices = new ArrayList<>(choices);
       Collections.sort(choices, new Comparator<Zone>() {
         @Override
         public int compare(Zone z1, Zone z2) {
@@ -123,6 +121,8 @@ public class GlobalTaskManager implements TaskManager {
     this.init();
   }
 
-  public void update(Snapshot snap) {}
+  public void update(Snapshot snap) {
+    this.defer.clear();
+  }
 }
 

@@ -25,6 +25,12 @@ public class QuadTaskManager implements TaskManager {
     this.quadZones = List.of();
   }
 
+  public QuadTaskManager(RescueScenario scenario, boolean useDefer, boolean useMovement, boolean useMax) {
+    this.scenario = scenario;
+    this.smgWalk = new SmgTaskManager(scenario, useDefer, useMovement, useMax);
+    this.quadZones = List.of();
+  }
+
   private List<Zone> getQuadZones() {
     Grid grid = this.scenario.getGrid().get();
     List<Zone> quadZones = new ArrayList<>();

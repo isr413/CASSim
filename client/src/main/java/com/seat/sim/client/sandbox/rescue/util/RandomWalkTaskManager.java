@@ -31,11 +31,10 @@ public class RandomWalkTaskManager implements TaskManager {
         return Optional.empty();
       }
       Zone zone = grid.getZoneAtLocation(state.getLocation());
-      List<Zone> neighborhood = grid.getNeighborhood(zone);
+      List<Zone> neighborhood = grid.getNeighborhood(zone, this.useMiddle);
       Collections.shuffle(neighborhood, this.scenario.getRng().unwrap());
       return neighborhood
         .stream()
-        .filter(neighbor -> this.useMiddle || !zone.equals(neighbor))
         .filter(neighbor -> !neighbor.hasZoneType(ZoneType.BLOCKED))
         .filter(neighbor -> RemoteUtil.validChoice(snap, state, zone))
         .findFirst();

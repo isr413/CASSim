@@ -2,14 +2,13 @@ package com.seat.sim.client.sandbox.rescue.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.Set;
+import java.util.OptionalInt;
 import java.util.stream.Stream;
 
 import com.seat.sim.client.sandbox.rescue.remote.RescueScenario;
@@ -21,20 +20,35 @@ import com.seat.sim.common.scenario.Snapshot;
 
 public class SmgTaskManager implements TaskManager {
 
-  private Set<Integer> defer;
+  private HashMap<Integer, Integer> defer;
   private RescueScenario scenario;
+  private boolean useDefer;
   private boolean useMax;
   private boolean useMovement;
   private double[][] zones;
 
   public SmgTaskManager(RescueScenario scenario) {
-    this(scenario, true, true);
+    this(scenario, true, true, true);
   }
 
-  public SmgTaskManager(RescueScenario scenario, boolean useMovement, boolean useMax) {
+  public SmgTaskManager(RescueScenario scenario, boolean useDefer, boolean useMovement, boolean useMax) {
     this.scenario = scenario;
+    this.useDefer = useDefer;
     this.useMovement = useMovement;
     this.useMax = useMax;
+  }
+
+  private void deferZone(Zone zone) {
+    int key = this.getZoneKey(zone);
+    if (!this.defer.containsKey(key)) {
+      this.defer.put(key, 0);
+    }
+    this.defer.put(key, this.defer.get(key) + 1);
+  }
+
+  private int getColls(Zone zone) {
+    int key = this.getZoneKey(zone);
+    return (this.defer.containsKey(key)) ? this.defer.get(key) : 0;
   }
 
   private int getZoneKey(Zone zone) {
@@ -131,48 +145,62 @@ public class SmgTaskManager implements TaskManager {
   }
 
   public Optional<Zone> getNextTask(Snapshot snap, RemoteState state) {
-    Collection<Zone> neighborhood = this.scenario.getGrid().get().getNeighborhood(state.getLocation());
+    Zone zone = this.scenario.getGrid().get().getZoneAtLocation(state.getLocation());
+    List<Zone> neighborhood = this.scenario.getGrid().get().getNeighborhood(zone, false);
+    Collections.shuffle(neighborhood, this.scenario.getRng().unwrap());
     if (neighborhood.isEmpty()) {
       return Optional.empty();
     }
-    List<Zone> choices = new ArrayList<>(neighborhood);
+    List<Zone> choices = neighborhood
+      .stream()
+      .filter(neighbor -> !this.useDefer || !this.defer.containsKey(this.getZoneKey(neighbor)))
+      .toList();
+    if (choices.isEmpty()) {
+      OptionalInt minColls = neighborhood
+        .stream()
+        .mapToInt(neighbor -> this.getColls(neighbor))
+        .min();
+      if (minColls.isPresent()) {
+        choices = neighborhood
+          .stream()
+          .filter(neighbor -> this.getColls(neighbor) == minColls.getAsInt())
+          .toList();
+      } else {
+        choices = neighborhood;
+      }
+    }
     if (this.useMax) {
       OptionalDouble maxWeight = choices
         .stream()
-        .filter(zone -> !this.defer.contains(this.getZoneKey(zone)))
         .mapToDouble(neighbor -> this.getZoneWeight(neighbor))
         .max();
       if (maxWeight.isPresent()) {
-        choices = neighborhood
+        choices = choices
           .stream()
           .filter(neighbor -> Vector.near(this.getZoneWeight(neighbor), maxWeight.getAsDouble()))
           .toList();
-      } else {
-        Collections.sort(choices, new Comparator<Zone>() {
-          @Override
-          public int compare(Zone z1, Zone z2) {
-            return -Double.compare(
-                Vector.dist(RescueScenario.GRID_CENTER, z1.getLocation()),
-                Vector.dist(RescueScenario.GRID_CENTER, z2.getLocation())
-              );
-          }
-        });
       }
+      // choices = new ArrayList<>(choices);
+      // Collections.sort(choices, new Comparator<Zone>() {
+      //   @Override
+      //   public int compare(Zone z1, Zone z2) {
+      //     return -Double.compare(
+      //         Vector.dist(RescueScenario.GRID_CENTER, z1.getLocation()),
+      //         Vector.dist(RescueScenario.GRID_CENTER, z2.getLocation())
+      //       );
+      //   }
+      // });
+      // Zone choice = choices.get(0);
       Zone choice = choices.get(this.scenario.getRng().getRandomNumber(choices.size()));
-      this.defer.add(this.getZoneKey(choice));
+      if (this.useDefer) {
+        this.deferZone(choice);
+      }
       return Optional.of(choice);
     } else {
       double[] weights = choices
         .stream()
-        .filter(zone -> !this.defer.contains(this.getZoneKey(zone)))
         .mapToDouble(neighbor -> this.getZoneWeight(neighbor))
         .toArray();
-      if (weights.length == 0) {
-        weights = choices
-          .stream()
-          .mapToDouble(neighbor -> this.getZoneWeight(neighbor))
-          .toArray();
-      }
       double normalSum = Arrays.stream(weights).sum();
       weights[0] /= normalSum;
       for (int i = 1; i < weights.length; i++) {
@@ -186,7 +214,9 @@ public class SmgTaskManager implements TaskManager {
         idx++;
       }
       Zone choice = choices.get(idx);
-      this.defer.add(this.getZoneKey(choice));
+      if (this.useDefer) {
+        this.deferZone(choice);
+      }
       return Optional.of(choice);
     }
   }
@@ -199,7 +229,7 @@ public class SmgTaskManager implements TaskManager {
     Grid grid = this.scenario.getGrid().get();
     this.zones = new double[grid.getHeightInZones()][grid.getWidthInZones()];
     this.setZoneWeights();
-    this.defer = new HashSet<>();
+    this.defer = new HashMap<>();
   }
 
   public void reset() {
