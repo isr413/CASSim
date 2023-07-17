@@ -103,7 +103,7 @@ def save_data(df, filename=None):
     if not filename:
         filename = f'parser_{time.strftime("%Y%m%d%H%M%S")}'
 
-    df.to_csv(f'logs/{filename}.csv')
+    df.to_csv(f'logs/{filename}.csv', index=False)
 
 
 if __name__ == "__main__":
