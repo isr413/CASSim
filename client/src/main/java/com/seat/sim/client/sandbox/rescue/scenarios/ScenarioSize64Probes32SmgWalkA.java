@@ -13,7 +13,7 @@ public class ScenarioSize64Probes32SmgWalkA extends RescueScenario {
   public ScenarioSize64Probes32SmgWalkA(ArgsParser args, int threadID, long seed) throws IOException {
     super(
         "ScenarioSize64Probes32SmgWalkA",     // scenarioID
-        1,                                    // base count
+        0,                                    // base count
         32,                                   // drone count
         1024,                                 // victim count
         0,                                    // cooldown

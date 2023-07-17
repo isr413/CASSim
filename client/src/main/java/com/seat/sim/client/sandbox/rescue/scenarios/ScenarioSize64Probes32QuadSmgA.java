@@ -4,22 +4,21 @@ import java.io.IOException;
 import java.util.Optional;
 
 import com.seat.sim.client.sandbox.rescue.remote.RescueScenario;
-import com.seat.sim.client.sandbox.rescue.util.SmgTaskManager;
+import com.seat.sim.client.sandbox.rescue.util.QuadTaskManager;
 import com.seat.sim.client.sandbox.rescue.util.TaskManager;
 import com.seat.sim.common.util.ArgsParser;
-import com.seat.sim.common.util.Range;
 
-public class ScenarioSize64Probes32SmgWalkB extends RescueScenario {
+public class ScenarioSize64Probes32QuadSmgA extends RescueScenario {
 
-  public ScenarioSize64Probes32SmgWalkB(ArgsParser args, int threadID, long seed) throws IOException {
+  public ScenarioSize64Probes32QuadSmgA(ArgsParser args, int threadID, long seed) throws IOException {
     super(
-        "ScenarioSize64Probes32SmgWalkB",     // scenarioID
+        "ScenarioSize64Probes32QuadSmgA",     // scenarioID
         0,                                    // base count
         32,                                   // drone count
         1024,                                 // victim count
         0,                                    // cooldown
-        Range.Inclusive(0.0, 1.0, 0.25),      // alpha
-        Range.Inclusive(0.5, 1.0, 0.25),      // beta
+        1.,                                   // alpha
+        1.,                                   // beta
         0.,                                   // gamma
         20,                                   // trials
         threadID,                             // threadID
@@ -29,6 +28,6 @@ public class ScenarioSize64Probes32SmgWalkB extends RescueScenario {
   }
 
   public Optional<TaskManager> getTaskManager() {
-    return Optional.of(new SmgTaskManager(this));
+    return Optional.of(new QuadTaskManager(this));
   }
 }
