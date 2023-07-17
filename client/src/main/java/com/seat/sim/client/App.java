@@ -2,12 +2,7 @@ package com.seat.sim.client;
 
 import com.seat.sim.client.core.AppClient;
 import com.seat.sim.client.core.ClientException;
-import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes1RandomWalkA;
-import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes1RandomWalkB;
-import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes32RandomWalkA;
-import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes32RandomWalkB;
-import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes32SmgWalkA;
-import com.seat.sim.client.sandbox.rescue.scenarios.ScenarioSize64Probes32SmgWalkB;
+import com.seat.sim.client.sandbox.rescue.scenarios.*;
 import com.seat.sim.common.core.Application;
 import com.seat.sim.common.util.ArgsParser;
 
@@ -26,23 +21,50 @@ public class App {
     int threadID = (args.hasParam(App.THREAD_ARG)) ? args.getInt(App.THREAD_ARG) : 0;
     long seed = (args.hasParam(App.SEED_ARG)) ? args.getLong(App.SEED_ARG) : 0;
     try {
+      if (scenarioID.equals("ScenarioSize64Probes32GlobalExploreA")) {
+        return new ScenarioSize64Probes32GlobalExploreA(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32GlobalExploreB")) {
+        return new ScenarioSize64Probes32GlobalExploreB(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32GlobalExploreC")) {
+        return new ScenarioSize64Probes32GlobalExploreC(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32QuadSmgA")) {
+        return new ScenarioSize64Probes32QuadSmgA(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32QuadSmgB")) {
+        return new ScenarioSize64Probes32QuadSmgB(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32QuadSmgC")) {
+        return new ScenarioSize64Probes32QuadSmgC(args, threadID, seed);
+      }
       if (scenarioID.equals("ScenarioSize64Probes1RandomWalkA")) {
         return new ScenarioSize64Probes1RandomWalkA(args, threadID, seed);
       }
       if (scenarioID.equals("ScenarioSize64Probes1RandomWalkB")) {
         return new ScenarioSize64Probes1RandomWalkB(args, threadID, seed);
       }
-      if (scenarioID.equals("ScenarioSize64Probes32RandomWalkA")) {
-        return new ScenarioSize64Probes32RandomWalkA(args, threadID, seed);
-      }
-      if (scenarioID.equals("ScenarioSize64Probes32RandomWalkB")) {
-        return new ScenarioSize64Probes32RandomWalkB(args, threadID, seed);
+      if (scenarioID.equals("ScenarioSize64Probes1RandomWalkC")) {
+        return new ScenarioSize64Probes1RandomWalkC(args, threadID, seed);
       }
       if (scenarioID.equals("ScenarioSize64Probes32SmgWalkA")) {
         return new ScenarioSize64Probes32SmgWalkA(args, threadID, seed);
       }
       if (scenarioID.equals("ScenarioSize64Probes32SmgWalkB")) {
         return new ScenarioSize64Probes32SmgWalkB(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32SmgWalkC")) {
+        return new ScenarioSize64Probes32SmgWalkC(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32WeightedWalkA")) {
+        return new ScenarioSize64Probes32WeightedWalkA(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32WeightedWalkB")) {
+        return new ScenarioSize64Probes32WeightedWalkB(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32WeightedWalkC")) {
+        return new ScenarioSize64Probes32WeightedWalkC(args, threadID, seed);
       }
     } catch (Exception e) {
       throw new ClientException(e.getMessage());
