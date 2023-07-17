@@ -128,6 +128,10 @@ public class Grid extends Jsonable {
   }
 
   public List<Zone> getNeighborhood(Vector location) {
+    return this.getNeighborhood(location, true);
+  }
+
+  public List<Zone> getNeighborhood(Vector location, boolean useMiddle) {
     if (!this.hasZoneAtLocation(location)) {
       return Collections.emptyList();
     }
@@ -135,6 +139,10 @@ public class Grid extends Jsonable {
   }
 
   public List<Zone> getNeighborhood(Zone zone) {
+    return this.getNeighborhood(zone, true);
+  }
+
+  public List<Zone> getNeighborhood(Zone zone, boolean useMiddle) {
     List<Zone> neighbors = new ArrayList<>();
     double cx = zone.getLocation().getX(), cy = zone.getLocation().getY(), size = zone.getSize();
     if (this.hasZoneAtLocation(cx - size, cy - size)) {
@@ -149,7 +157,9 @@ public class Grid extends Jsonable {
     if (this.hasZoneAtLocation(cx, cy - size)) {
       neighbors.add(this.getZoneAtLocation(cx, cy - size));
     }
-    neighbors.add(zone);
+    if (useMiddle) {
+      neighbors.add(zone);
+    }
     if (this.hasZoneAtLocation(cx, cy + size)) {
       neighbors.add(this.getZoneAtLocation(cx, cy + size));
     }
