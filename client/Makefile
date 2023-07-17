@@ -1,4 +1,5 @@
 TARGET=Default
+PORT=50000
 
 default: clean install
 	mvn compile assembly:single
@@ -22,6 +23,6 @@ run:
 	java -jar target/client-1.0-SNAPSHOT-jar-with-dependencies.jar -id $(TARGET) -h 127.0.0.1 -p 8080
 
 run_thread_%:
-	java -jar target/client-1.0-SNAPSHOT-jar-with-dependencies.jar -id $(TARGET) -h 127.0.0.1 -j $* -p $(shell echo $$(( 50000 + $* )))
+	java -jar target/client-1.0-SNAPSHOT-jar-with-dependencies.jar -id $(TARGET) -h 127.0.0.1 -j $* -p $(shell echo $$(( $(PORT) + $* )))
 
 run_parallel: run_thread_1 run_thread_2 run_thread_3 run_thread_4
