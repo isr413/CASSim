@@ -28,6 +28,6 @@ public class ScenarioSize64Probes32WeightedWalkA extends RescueScenario {
   }
 
   public Optional<TaskManager> getTaskManager() {
-    return Optional.of(new SmgTaskManager(this, false, false));
+    return Optional.of(new SmgTaskManager(this, false, false, false));
   }
 }

@@ -24,11 +24,12 @@ public class ScenarioSize64Probes32QuadSmgC extends RescueScenario {
         20,                                   // trials
         threadID,                             // threadID
         4,                                    // threadCount
-        seed                                  // seed
+        seed,                                 // seed
+        "seedsBC"                             // seedFile
       );
   }
 
   public Optional<TaskManager> getTaskManager() {
-    return Optional.of(new QuadTaskManager(this));
+    return Optional.of(new QuadTaskManager(this, true, false, false));
   }
 }

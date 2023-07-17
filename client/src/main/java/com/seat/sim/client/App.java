@@ -21,6 +21,15 @@ public class App {
     int threadID = (args.hasParam(App.THREAD_ARG)) ? args.getInt(App.THREAD_ARG) : 0;
     long seed = (args.hasParam(App.SEED_ARG)) ? args.getLong(App.SEED_ARG) : 0;
     try {
+      if (scenarioID.equals("ScenarioSize64Probes32BestWalkA")) {
+        return new ScenarioSize64Probes32BestWalkA(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32BestWalkB")) {
+        return new ScenarioSize64Probes32BestWalkB(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32BestWalkC")) {
+        return new ScenarioSize64Probes32BestWalkC(args, threadID, seed);
+      }
       if (scenarioID.equals("ScenarioSize64Probes32GlobalExploreA")) {
         return new ScenarioSize64Probes32GlobalExploreA(args, threadID, seed);
       }
@@ -47,6 +56,15 @@ public class App {
       }
       if (scenarioID.equals("ScenarioSize64Probes1RandomWalkC")) {
         return new ScenarioSize64Probes1RandomWalkC(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32RandomWalkA")) {
+        return new ScenarioSize64Probes32RandomWalkA(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32RandomWalkB")) {
+        return new ScenarioSize64Probes32RandomWalkB(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32RandomWalkC")) {
+        return new ScenarioSize64Probes32RandomWalkC(args, threadID, seed);
       }
       if (scenarioID.equals("ScenarioSize64Probes32SmgWalkA")) {
         return new ScenarioSize64Probes32SmgWalkA(args, threadID, seed);

@@ -28,6 +28,6 @@ public class ScenarioSize64Probes32QuadSmgA extends RescueScenario {
   }
 
   public Optional<TaskManager> getTaskManager() {
-    return Optional.of(new QuadTaskManager(this));
+    return Optional.of(new QuadTaskManager(this, true, false, false));
   }
 }

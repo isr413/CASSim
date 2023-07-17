@@ -13,7 +13,7 @@ public class ScenarioSize64Probes32GlobalExploreC extends RescueScenario {
 
   public ScenarioSize64Probes32GlobalExploreC(ArgsParser args, int threadID, long seed) throws IOException {
     super(
-        "ScenarioSize64Probes32GlobalExploreB", // scenarioID
+        "ScenarioSize64Probes32GlobalExploreC", // scenarioID
         0,                                      // base count
         32,                                     // drone count
         1024,                                   // victim count
@@ -24,7 +24,8 @@ public class ScenarioSize64Probes32GlobalExploreC extends RescueScenario {
         20,                                     // trials
         threadID,                               // threadID
         4,                                      // threadCount
-        seed                                    // seed
+        seed,                                   // seed
+        "seedsBC"                               // seedFile
       );
   }
 

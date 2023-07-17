@@ -24,7 +24,8 @@ public class ScenarioSize64Probes1RandomWalkC extends RescueScenario {
         20,                                   // trials
         threadID,                             // threadID
         4,                                    // threadCount
-        seed                                  // seed
+        seed,                                 // seed
+        "seedsBC"                             // seedFile
       );
   }
 
