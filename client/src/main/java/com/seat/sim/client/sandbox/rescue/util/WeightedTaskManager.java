@@ -1,7 +1,6 @@
 package com.seat.sim.client.sandbox.rescue.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,22 +18,14 @@ import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.scenario.Snapshot;
 
-public class SmgTaskManager implements TaskManager {
+public class WeightedTaskManager implements TaskManager {
 
   private Set<Integer> defer;
   private RescueScenario scenario;
-  private boolean useMax;
-  private boolean useMovement;
   private double[][] zones;
 
-  public SmgTaskManager(RescueScenario scenario) {
-    this(scenario, true, true);
-  }
-
-  public SmgTaskManager(RescueScenario scenario, boolean useMovement, boolean useMax) {
+  public WeightedTaskManager(RescueScenario scenario) {
     this.scenario = scenario;
-    this.useMovement = useMovement;
-    this.useMax = useMax;
   }
 
   private int getZoneKey(Zone zone) {
@@ -90,12 +81,7 @@ public class SmgTaskManager implements TaskManager {
   private void updateZones(Stream<RemoteState> drones) {
     int size = this.scenario.getGrid().get().getZoneSize();
     drones.forEach(drone -> this.scanZone(drone.getLocation().getX(), drone.getLocation().getY(), size));
-    if (this.scenario.getBaseCount() > 0) {
-      this.scanForBase(RescueScenario.GRID_CENTER.getX(), RescueScenario.GRID_CENTER.getY(), size);
-    }
-    if (!this.useMovement) {
-      return;
-    }
+    this.scanForBase(RescueScenario.GRID_CENTER.getX(), RescueScenario.GRID_CENTER.getY(), size);
     double[][] weights = new double[this.zones.length][this.zones[0].length];
     for (int i = 0; i < this.zones.length; i++) {
       for (int j = 0; j < this.zones[i].length; j++) {
@@ -135,60 +121,33 @@ public class SmgTaskManager implements TaskManager {
     if (neighborhood.isEmpty()) {
       return Optional.empty();
     }
-    List<Zone> choices = new ArrayList<>(neighborhood);
-    if (this.useMax) {
-      OptionalDouble maxWeight = choices
-        .stream()
-        .filter(zone -> !this.defer.contains(this.getZoneKey(zone)))
-        .mapToDouble(neighbor -> this.getZoneWeight(neighbor))
-        .max();
-      if (maxWeight.isPresent()) {
-        choices = neighborhood
-          .stream()
-          .filter(neighbor -> Vector.near(this.getZoneWeight(neighbor), maxWeight.getAsDouble()))
-          .toList();
-      } else {
-        Collections.sort(choices, new Comparator<Zone>() {
-          @Override
-          public int compare(Zone z1, Zone z2) {
-            return -Double.compare(
-                Vector.dist(RescueScenario.GRID_CENTER, z1.getLocation()),
-                Vector.dist(RescueScenario.GRID_CENTER, z2.getLocation())
-              );
-          }
-        });
-      }
+    OptionalDouble maxWeight = neighborhood
+      .stream()
+      .filter(zone -> !this.defer.contains(this.getZoneKey(zone)))
+      .mapToDouble(neighbor -> this.getZoneWeight(neighbor))
+      .max();
+    if (maxWeight.isEmpty()) {
+      List<Zone> choices = new ArrayList<>(neighborhood);
+      Collections.sort(choices, new Comparator<Zone>() {
+        @Override
+        public int compare(Zone z1, Zone z2) {
+          return -Double.compare(
+              Vector.dist(RescueScenario.GRID_CENTER, z1.getLocation()),
+              Vector.dist(RescueScenario.GRID_CENTER, z2.getLocation())
+            );
+        }
+      });
       Zone choice = choices.get(this.scenario.getRng().getRandomNumber(choices.size()));
       this.defer.add(this.getZoneKey(choice));
       return Optional.of(choice);
-    } else {
-      double[] weights = choices
-        .stream()
-        .filter(zone -> !this.defer.contains(this.getZoneKey(zone)))
-        .mapToDouble(neighbor -> this.getZoneWeight(neighbor))
-        .toArray();
-      if (weights.length == 0) {
-        weights = choices
-          .stream()
-          .mapToDouble(neighbor -> this.getZoneWeight(neighbor))
-          .toArray();
-      }
-      double normalSum = Arrays.stream(weights).sum();
-      weights[0] /= normalSum;
-      for (int i = 1; i < weights.length; i++) {
-        weights[i] /= normalSum;
-        weights[i] += weights[i - 1];
-      }
-      weights[weights.length - 1] = 1.;
-      double roll = this.scenario.getRng().getRandomProbability();
-      int idx = 0;
-      while (weights[idx] < roll) {
-        idx++;
-      }
-      Zone choice = choices.get(idx);
-      this.defer.add(this.getZoneKey(choice));
-      return Optional.of(choice);
     }
+    List<Zone> choices = neighborhood
+      .stream()
+      .filter(neighbor -> Vector.near(this.getZoneWeight(neighbor), maxWeight.getAsDouble()))
+      .toList();
+    Zone choice = choices.get(this.scenario.getRng().getRandomNumber(choices.size()));
+    this.defer.add(this.getZoneKey(choice));
+    return Optional.of(choice);
   }
 
   public boolean hasNextTask() {
