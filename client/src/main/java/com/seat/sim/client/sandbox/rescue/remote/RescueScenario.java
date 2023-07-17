@@ -123,6 +123,12 @@ public abstract class RescueScenario implements Application {
         trialsPer, threadID, threadCount, seed);
   }
 
+  public RescueScenario(String scenarioID, int baseCount, int droneCount, int victimCount, int cooldown, Range alpha,
+      double beta, Range gamma, int trialsPer, int threadID, int threadCount, long seed) throws IOException {
+    this(scenarioID, baseCount, droneCount, victimCount, cooldown, alpha, Range.Inclusive(beta, beta), gamma,
+        trialsPer, threadID, threadCount, seed);
+  }
+
   public RescueScenario(String scenarioID, Range alpha, Range beta, Range gamma, int trialsPer,
       int threadID, int threadCount, long seed) throws IOException {
     this(scenarioID, 1, 32, 1024, 0, alpha, beta, gamma, trialsPer, threadID, threadCount, seed);
@@ -316,12 +322,20 @@ public abstract class RescueScenario implements Application {
     return this.exp.getAlpha();
   }
 
+  public int getBaseCount() {
+    return this.manager.getBaseCount();
+  }
+
   public double getBeta() {
     return this.exp.getBeta();
   }
 
   public int getCooldown(String droneID) {
     return this.manager.getCooldown(droneID);
+  }
+
+  public int getDroneCount() {
+    return this.manager.getDroneCount();
   }
 
   public double getGamma() {
@@ -358,6 +372,10 @@ public abstract class RescueScenario implements Application {
 
   public int getTrials() {
     return this.exp.getTrials();
+  }
+
+  public int getVictimCount() {
+    return this.manager.getVictimCount();
   }
 
   public Stream<Zone> getZones() {
