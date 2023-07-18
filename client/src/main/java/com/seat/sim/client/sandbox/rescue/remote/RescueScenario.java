@@ -354,6 +354,10 @@ public abstract class RescueScenario implements Application {
     return RescueScenario.MISSION_LENGTH;
   }
 
+  public double getPhi() {
+    return 1. - (1. - this.getBeta()) * (1. - this.getGamma());
+  }
+
   public Collection<RemoteConfig> getRemoteConfigs() {
     return this.manager.getRemoteConfigs();
   }

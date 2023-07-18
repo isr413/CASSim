@@ -1,9 +1,7 @@
 package com.seat.sim.client.sandbox.rescue.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -89,8 +87,7 @@ public class SmgTaskManager implements TaskManager {
       this.zones[(int) (y / size)][(int) (x / size)] = 0;
       return;
     }
-    double updateWeight = (1. - this.scenario.getBeta()) * (1. - this.scenario.getGamma());
-    this.zones[(int) (y / size)][(int) (x / size)] *= updateWeight;
+    this.zones[(int) (y / size)][(int) (x / size)] *= (1. - this.scenario.getPhi());
   }
 
   private void setZoneWeights() {
@@ -151,69 +148,63 @@ public class SmgTaskManager implements TaskManager {
     if (neighborhood.isEmpty()) {
       return Optional.empty();
     }
-    List<Zone> choices = neighborhood
-      .stream()
-      .filter(neighbor -> !this.useDefer || !this.defer.containsKey(this.getZoneKey(neighbor)))
-      .toList();
-    if (choices.isEmpty()) {
+    if (this.useDefer) {
       OptionalInt minColls = neighborhood
         .stream()
         .mapToInt(neighbor -> this.getColls(neighbor))
         .min();
-      if (minColls.isPresent()) {
-        choices = neighborhood
+      double normalSum = neighborhood
+        .stream()
+        .filter(neighbor -> this.getColls(neighbor) == minColls.getAsInt())
+        .mapToDouble(neighbor -> this.getZoneWeight(neighbor))
+        .sum();
+      if (!Vector.near(normalSum, 0.)) {
+        neighborhood = neighborhood
           .stream()
           .filter(neighbor -> this.getColls(neighbor) == minColls.getAsInt())
           .toList();
-      } else {
-        choices = neighborhood;
       }
     }
     if (this.useMax) {
-      OptionalDouble maxWeight = choices
+      OptionalDouble maxWeight = neighborhood
         .stream()
         .mapToDouble(neighbor -> this.getZoneWeight(neighbor))
         .max();
       if (maxWeight.isPresent()) {
-        choices = choices
+        neighborhood = neighborhood
           .stream()
           .filter(neighbor -> Vector.near(this.getZoneWeight(neighbor), maxWeight.getAsDouble()))
           .toList();
       }
-      // choices = new ArrayList<>(choices);
-      // Collections.sort(choices, new Comparator<Zone>() {
-      //   @Override
-      //   public int compare(Zone z1, Zone z2) {
-      //     return -Double.compare(
-      //         Vector.dist(RescueScenario.GRID_CENTER, z1.getLocation()),
-      //         Vector.dist(RescueScenario.GRID_CENTER, z2.getLocation())
-      //       );
-      //   }
-      // });
-      // Zone choice = choices.get(0);
-      Zone choice = choices.get(this.scenario.getRng().getRandomNumber(choices.size()));
+      Zone choice = neighborhood.get(this.scenario.getRng().getRandomNumber(neighborhood.size()));
       if (this.useDefer) {
         this.deferZone(choice);
       }
       return Optional.of(choice);
     } else {
-      double[] weights = choices
+      double[] weights = neighborhood
         .stream()
         .mapToDouble(neighbor -> this.getZoneWeight(neighbor))
         .toArray();
       double normalSum = Arrays.stream(weights).sum();
+      if (Vector.near(normalSum, 0.)) {
+        Zone choice = neighborhood.get(this.scenario.getRng().getRandomNumber(neighborhood.size()));
+        if (this.useDefer) {
+          this.deferZone(choice);
+        }
+        return Optional.of(choice);
+      }
       weights[0] /= normalSum;
       for (int i = 1; i < weights.length; i++) {
         weights[i] /= normalSum;
         weights[i] += weights[i - 1];
       }
-      weights[weights.length - 1] = 1.;
       double roll = this.scenario.getRng().getRandomProbability();
       int idx = 0;
-      while (weights[idx] < roll) {
+      while (idx < weights.length - 1 && weights[idx] < roll) {
         idx++;
       }
-      Zone choice = choices.get(idx);
+      Zone choice = neighborhood.get(idx);
       if (this.useDefer) {
         this.deferZone(choice);
       }

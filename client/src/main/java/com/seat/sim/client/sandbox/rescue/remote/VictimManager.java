@@ -33,11 +33,10 @@ public class VictimManager {
       return Optional.empty();
     }
     Zone zone = grid.getZoneAtLocation(victim.getLocation());
-    List<Zone> neighborhood = grid.getNeighborhood(zone);
+    List<Zone> neighborhood = grid.getNeighborhood(zone, false);
     Collections.shuffle(neighborhood, this.scenario.getRng().unwrap());
     Optional<Zone> nextZone = neighborhood
       .stream()
-      .filter(neighbor -> !neighbor.getLocation().near(zone.getLocation()))
       .filter(neighbor -> !neighbor.hasZoneType(ZoneType.BLOCKED))
       .findFirst();
     if (nextZone.isEmpty()) {
