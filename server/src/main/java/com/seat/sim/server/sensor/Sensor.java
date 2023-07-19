@@ -38,6 +38,21 @@ public class Sensor {
     }
   }
 
+  private boolean isWithinRange(Remote remote) {
+    if (!this.remote.hasKinematics() || !this.remote.getKinematics().hasLocation()) {
+      return true;
+    }
+    if (!remote.hasKinematics() || !remote.getKinematics().hasLocation()) {
+      return true;
+    }
+    double range = this.getRange();
+    if (!Double.isFinite(range)) {
+      return true;
+    }
+    double dist = Vector.dist(this.remote.getLocation(), remote.getLocation());
+    return dist <= range || Vector.near(dist, range);
+  }
+
   public double getAccuracy() {
     return this.proto.getStats().getAccuracy();
   }
@@ -79,13 +94,14 @@ public class Sensor {
   }
 
   public Set<String> getSubjects() {
+    if (!this.isActive() || this.getAccuracy() == 0.) {
+      return Set.of();
+    }
     return this.scenario
         .getActiveRemotes()
         .stream()
         .filter(remote -> !this.hasMatchers() || remote.hasMatch(this.getMatchers()))
-        .filter(remote -> !this.remote.hasKinematics() || !this.remote.getKinematics().hasLocation() ||
-            !this.hasRange() || Vector.dist(this.remote.getKinematics().getLocation(),
-                remote.getKinematics().getLocation()) <= this.getRange())
+        .filter(remote -> this.isWithinRange(remote))
         .filter(remote -> this.scenario.getRng().getRandomProbability() < this.getAccuracy())
         .map(remote -> remote.getRemoteID())
         .collect(Collectors.toSet());
