@@ -4,9 +4,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class WearableNegotiator implements Negotiator {
+public class RescueDroneNegotiator implements Negotiator {
 
-  private Stream<Double> deviceReports;
+  private String droneID;
   private ParamsBuilder paramsBuilder;
   private Set<String> privilegeTags;
   private String serviceTag;
@@ -14,15 +14,12 @@ public class WearableNegotiator implements Negotiator {
   private double stepSize;
   private double time;
   private Function<Contract, Double> utility;
-  private String wearableID;
 
-  public WearableNegotiator(String wearableID, Set<String> privilegeTags, String serviceTag,
-      Stream<Double> reports, Function<Contract, Double> utility, ParamsBuilder params,
-      double time, double stepSize) {
-    this.wearableID = wearableID;
+  public RescueDroneNegotiator(String droneID, Set<String> privilegeTags, String serviceTag,
+      Function<Contract, Double> utility, ParamsBuilder params, double time, double stepSize) {
+    this.droneID = droneID;
     this.privilegeTags = privilegeTags;
     this.serviceTag = serviceTag;
-    this.deviceReports = reports;
     this.utility = utility;
     this.paramsBuilder = params;
     this.time = time;
@@ -35,11 +32,13 @@ public class WearableNegotiator implements Negotiator {
     return false;
   }
 
-  public boolean ask(Negotiator receiver, Negotiator provider, String service) {
-    if (!service.equals(this.requestService)) {
-      return provider.leave(this, provider);
+  public boolean ask(Negotiator receiver, Negotiator provider, String serviceTag) {
+    this.steps++;
+    if (!serviceTag.equals(this.serviceTag)) {
+      return receiver.leave(this, receiver);
     }
-    return provider.propose(this, provider, service, this.privileges, null);
+    this.
+    return receiver.propose(receiver, this, serviceTag, this.privilegeTags, params);
   }
 
   @Override
@@ -64,7 +63,6 @@ public class WearableNegotiator implements Negotiator {
   }
 
   public boolean leave(Negotiator sender, Negotiator receiver) {
-    this.steps++;
     return false;
   }
 
@@ -72,9 +70,10 @@ public class WearableNegotiator implements Negotiator {
     return false;
   }
 
-  public void notify(Negotiator provider) {
-    this.steps++;
-    provider.ask(this, provider, this.serviceTag);
+  public void notify(Set<Negotiator> providers) {
+    for (Negotiator provider : providers) {
+      provider.ask(this, provider, this.requestService);
+    }
   }
 
   public boolean propose(Negotiator receive, Negotiator provider, String service,
