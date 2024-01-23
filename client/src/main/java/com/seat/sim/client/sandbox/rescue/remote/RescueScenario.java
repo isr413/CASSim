@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.seat.sim.client.negotiation.NegotiationManager;
 import com.seat.sim.client.sandbox.rescue.util.Experiment;
 import com.seat.sim.client.sandbox.rescue.util.TaskManager;
 import com.seat.sim.common.core.Application;
@@ -98,6 +99,7 @@ public abstract class RescueScenario implements Application {
 
   protected Experiment exp;
   protected RemoteManager manager;
+  protected Optional<NegotiationManager> negotiations;
   protected Optional<TaskManager> tasks;
 
   public RescueScenario(String scenarioID, Range alpha, double beta, double gamma, int trialsPer,
@@ -354,6 +356,10 @@ public abstract class RescueScenario implements Application {
     return RescueScenario.MISSION_LENGTH;
   }
 
+  public NegotiationManager getNegotiationManager() {
+    return this.negotiations.get();
+  }
+
   public double getPhi() {
     return 1. - (1. - this.getBeta()) * (1. - this.getGamma());
   }
@@ -395,6 +401,10 @@ public abstract class RescueScenario implements Application {
 
   public boolean hasGrid() {
     return true;
+  }
+
+  public boolean hasNegotiations() {
+    return this.negotiations != null && this.negotiations.isPresent();
   }
 
   public boolean hasTasks() {
