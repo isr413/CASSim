@@ -1,4 +1,4 @@
-package com.seat.sim.client.sandbox.negotiation;
+package com.seat.sim.client.negotiation;
 
 import java.util.Set;
 
