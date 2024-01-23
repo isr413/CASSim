@@ -78,7 +78,30 @@ public class NegotiationManager {
         return this.hasLabels(id) && this.labels.get(id).contains(label);
     }
 
-    public boolean hasNegotiatior(String id) {
+    public boolean hasNegotiator(String id) {
         return this.negotiators.containsKey(id);
+    }
+
+    public PairwiseNegotiation initiate(String receiverID, String providerID) {
+        if (!this.hasNegotiator(receiverID) || !this.hasNegotiator(providerID)) {
+            return null;
+        }
+        Negotiator receiver = this.negotiators.get(receiverID);
+        Negotiator provider = this.negotiators.get(providerID);
+        if (receiver == null || provider == null) {
+            return null;
+        }
+        receiver.setPartner(provider);
+        provider.setPartner(receiver);
+        return new PairwiseNegotiation(receiver, provider);
+    }
+
+    public void terminate(PairwiseNegotiation negotiation) {
+        if (this.hasNegotiator(negotiation.getReceiver().getID())) {
+            this.getNegotiator(negotiation.getReceiver().getID()).setPartner(null);
+        }
+        if (this.hasNegotiator(negotiation.getProvider().getID())) {
+            this.getNegotiator(negotiation.getProvider().getID()).setPartner(null);
+        }
     }
 }

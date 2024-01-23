@@ -25,4 +25,6 @@ public interface Negotiator {
 
   public boolean propose(Negotiator receiver, Negotiator provider, String service,
       Set<String> privileges, NegotiationParams negParams);
+
+  public void setPartner(Negotiator partner);
 }
