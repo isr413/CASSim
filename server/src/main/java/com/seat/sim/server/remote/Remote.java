@@ -378,7 +378,9 @@ public class Remote {
           }
         }
       }
-      this.getKinematics().updateFuelBy(-this.getSensorController().getSensorFuelUsage(), stepSize);
+      if (this.hasKinematics() && this.hasSensors()) {
+        this.getKinematics().updateFuelBy(-this.getSensorController().getSensorFuelUsage(), stepSize);
+      }
     }
     if (!this.isActive() || !this.isEnabled() || this.isDone()) {
       return;
@@ -407,7 +409,7 @@ public class Remote {
         );
       this.shiftToDestination(stepSize);
       return;
-    } 
+    }
     if (intentions.hasIntentionWithType(IntentionType.MOVE)) {
       MoveIntention intent = (MoveIntention) intentions.getIntentionWithType(IntentionType.MOVE);
       if (intent.hasAcceleration()) {
