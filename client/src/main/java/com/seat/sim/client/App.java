@@ -48,7 +48,8 @@ public class App {
       if (scenarioID.equals("ScenarioSize64Probes32QuadSmgC")) {
         return new ScenarioSize64Probes32QuadSmgC(args, threadID, seed);
       }
-      if (scenarioID.equals("ScenarioSize64Probes1RandomWalkA")) {
+      if (scenarioID.equals("ScenarioSize64Probes1RandomWalkA") ||
+          scenarioID.equals("Default")) {
         return new ScenarioSize64Probes1RandomWalkA(args, threadID, seed);
       }
       if (scenarioID.equals("ScenarioSize64Probes1RandomWalkB")) {

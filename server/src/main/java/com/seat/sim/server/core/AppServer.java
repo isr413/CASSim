@@ -56,7 +56,7 @@ public class AppServer {
               serverIntentions.hasIntentionWithType(IntentionType.SHUTDOWN) ||
               serverIntentions.hasIntentionWithType(IntentionType.DEACTIVATE)) {
             Debugger.logger.state("Shutting server down");
-            break;
+            return;
           }
           continue;
         }

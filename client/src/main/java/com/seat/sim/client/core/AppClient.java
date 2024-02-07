@@ -19,9 +19,11 @@ public class AppClient {
   private Application app;
   private GUIGridFrame frame;
   private long frameTime;
+  private int numFrames;
   private int panelHeight;
   private int panelWidth;
   private JsonSocket socket;
+  private long totalTimeBetweenFrames;
 
   public AppClient(Application app) throws CommonException {
     this.app = app;
@@ -88,6 +90,8 @@ public class AppClient {
         this.frame.setVisible(true);
         Debugger.logger.state("Frame set to visible");
         this.frameTime = System.currentTimeMillis();
+        this.numFrames = 0;
+        this.totalTimeBetweenFrames = 0;
       }
 
       while (true) {
@@ -125,6 +129,12 @@ public class AppClient {
           long prevFrameTime = this.frameTime;
           this.frameTime = System.currentTimeMillis();
           long waitTime = (long) (delay * 1000) - (frameTime - prevFrameTime);
+
+          this.numFrames++;
+          this.totalTimeBetweenFrames += frameTime - prevFrameTime;
+          double avgFrameTime = (double) this.totalTimeBetweenFrames / this.numFrames;
+          waitTime = (long) ((delay * 1000) + (avgFrameTime - (frameTime - prevFrameTime)));
+
           if (waitTime < 0) continue;
           Thread.sleep(waitTime);
         } catch (InterruptedException e) {
