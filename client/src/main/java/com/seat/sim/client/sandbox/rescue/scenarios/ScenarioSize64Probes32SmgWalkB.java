@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import com.seat.sim.client.sandbox.rescue.remote.RescueScenario;
-import com.seat.sim.client.sandbox.rescue.util.SmgTaskManager;
+import com.seat.sim.client.sandbox.rescue.util.StochasticHeatmap;
 import com.seat.sim.client.sandbox.rescue.util.TaskManager;
 import com.seat.sim.common.util.ArgsParser;
 import com.seat.sim.common.util.Range;
@@ -30,6 +30,6 @@ public class ScenarioSize64Probes32SmgWalkB extends RescueScenario {
   }
 
   public Optional<TaskManager> getTaskManager() {
-    return Optional.of(new SmgTaskManager(this, true, false, false));
+    return Optional.of(new StochasticHeatmap(this, true, false, false));
   }
 }

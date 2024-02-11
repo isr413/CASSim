@@ -17,17 +17,17 @@ public class QuadTaskManager implements TaskManager {
 
   private List<Zone> quadZones;
   private RescueScenario scenario;
-  private SmgTaskManager smgWalk;
+  private HeatmapTaskManager smgWalk;
 
   public QuadTaskManager(RescueScenario scenario) {
     this.scenario = scenario;
-    this.smgWalk = new SmgTaskManager(scenario);
+    this.smgWalk = new StochasticHeatmap(scenario);
     this.quadZones = List.of();
   }
 
   public QuadTaskManager(RescueScenario scenario, boolean useDefer, boolean useMovement, boolean useMax) {
     this.scenario = scenario;
-    this.smgWalk = new SmgTaskManager(scenario, useDefer, useMovement, useMax);
+    this.smgWalk = new StochasticHeatmap(scenario, useDefer, useMovement, useMax);
     this.quadZones = List.of();
   }
 
