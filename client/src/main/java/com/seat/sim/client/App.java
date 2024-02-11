@@ -76,6 +76,9 @@ public class App {
       if (scenarioID.equals("ScenarioSize64Probes32SmgWalkC")) {
         return new ScenarioSize64Probes32SmgWalkC(args, threadID, seed);
       }
+      if (scenarioID.equals("ScenarioSize64Probes32StochasticWalkB")) {
+        return new ScenarioSize64Probes32StochasticWalkB(args, threadID, seed);
+      }
       if (scenarioID.equals("ScenarioSize64Probes32WeightedWalkA")) {
         return new ScenarioSize64Probes32WeightedWalkA(args, threadID, seed);
       }
