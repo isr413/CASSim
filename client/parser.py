@@ -4,7 +4,7 @@ import time
 
 
 def add_data(df, scenario, trial, seed, alpha, beta, gamma, drones, victims,
-             score):
+             turn, score):
     data = pd.DataFrame({
             "Scenario": scenario,
             "Trial": trial,
@@ -14,6 +14,7 @@ def add_data(df, scenario, trial, seed, alpha, beta, gamma, drones, victims,
             "Gamma": gamma,
             "Drones": drones,
             "Victims": victims,
+            "Turn": turn,
             "Score": score
         }, index=[0])
 
@@ -28,11 +29,12 @@ def add_data(df, scenario, trial, seed, alpha, beta, gamma, drones, victims,
 
 def parse_file(filename, trial_offset=0):
     df = pd.DataFrame(columns=["Scenario", "Trial", "Seed", "Alpha", "Beta",
-                               "Gamma", "Drones", "Victims", "Score"])
+                               "Gamma", "Drones", "Victims", "Turn", "Score"])
     scenario = filename.strip().split("/")[-1].split("_")[0]
 
     with open(filename) as f:
-        trial = seed = alpha = beta = gamma = drones = victims = score = 0
+        trial = seed = alpha = beta = gamma = drones = victims = 0
+        turn = score = 0
 
         for line in f:
             line = line.strip()
@@ -41,7 +43,8 @@ def parse_file(filename, trial_offset=0):
             if "Seed" in split:
                 if trial > 0:
                     df = add_data(df, scenario, trial_offset + trial, seed,
-                                  alpha, beta, gamma, drones, victims, score)
+                                  alpha, beta, gamma, drones, victims, turn,
+                                  score)
 
                 trial += 1
                 seed = int(split[3])
@@ -66,8 +69,15 @@ def parse_file(filename, trial_offset=0):
                     beta = 0
                     gamma = 0
 
-                drones = victims = score = 0
+                drones = victims = turn = score = 0
                 continue
+
+            curr_turn = float(split[1].strip()[:-1])
+            if curr_turn > turn:
+                df = add_data(df, scenario, trial_offset + trial, seed,
+                              alpha, beta, gamma, drones, victims, turn,
+                              score)
+                turn = curr_turn
 
             if "Drone done" in line:
                 drones += 1
@@ -79,7 +89,7 @@ def parse_file(filename, trial_offset=0):
                 score = float(line.split(":")[1].strip())
 
         df = add_data(df, scenario, trial_offset + trial, seed, alpha, beta,
-                      gamma, drones, victims, score)
+                      gamma, drones, victims, turn, score)
 
     return (df, trial_offset + trial)
 
