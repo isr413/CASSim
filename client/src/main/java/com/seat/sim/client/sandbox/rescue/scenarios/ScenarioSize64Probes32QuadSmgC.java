@@ -17,11 +17,11 @@ public class ScenarioSize64Probes32QuadSmgC extends RescueScenario {
         0,                                    // base count
         32,                                   // drone count
         1024,                                 // victim count
-        3,                                    // cooldown
-        Range.Inclusive(0.0, 1.0, 0.25),      // alpha
+        6,                                    // cooldown
+        Range.Inclusive(0.0, 1.0, 0.125),     // alpha
         0.,                                   // beta
-        Range.Inclusive(0.5, 1.0, 0.25),      // gamma
-        20,                                   // trials
+        Range.Inclusive(0.125, 1.0, 0.125),   // gamma
+        10,                                   // trials
         threadID,                             // threadID
         4,                                    // threadCount
         seed,                                 // seed
@@ -30,6 +30,6 @@ public class ScenarioSize64Probes32QuadSmgC extends RescueScenario {
   }
 
   public Optional<TaskManager> getTaskManager() {
-    return Optional.of(new QuadTaskManager(this, true, false, false));
+    return Optional.of(new QuadTaskManager(this));
   }
 }

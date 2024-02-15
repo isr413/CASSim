@@ -307,7 +307,7 @@ public abstract class RescueScenario implements Application {
 
   protected void reportTrial() {
     this.logger.log(-1.,
-        String.format("Seed %d - ALPHA %.2f - BETA %.2f - GAMMA %.2f", this.exp.getSeed(), this.exp.getAlpha(),
+        String.format("Seed %d - ALPHA %.3f - BETA %.3f - GAMMA %.3f", this.exp.getSeed(), this.exp.getAlpha(),
             this.exp.getBeta(), this.exp.getGamma()));
   }
 
