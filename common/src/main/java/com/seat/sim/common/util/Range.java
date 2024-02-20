@@ -67,6 +67,14 @@ public class Range implements Iterable<Double> {
     return (int) Math.ceil((this.end - this.start) / this.step);
   }
 
+  public double sample() {
+    return this.sample(new Random());
+  }
+
+  public double sample(Random rng) {
+    return this.getStart() + this.getStep() * rng.getRandomNumber(this.points());
+  }
+
   public String toString() {
     return String.format("[%.2f:%.2f:%.2f]", this.start, this.end, this.step);
   }
