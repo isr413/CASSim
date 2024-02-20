@@ -79,8 +79,16 @@ public class RemoteManager {
     }
   }
 
+  public void setDroneManager(DroneManager manager) {
+    this.droneManager = manager;
+  }
+
   public void setRemoteConfigs(Collection<RemoteConfig> remotes) {
     this.remotes = remotes;
+  }
+
+  public void setVictimManager(VictimManager manager) {
+    this.victimManager = manager;
   }
 
   public Collection<IntentionSet> update(Snapshot snap) {
