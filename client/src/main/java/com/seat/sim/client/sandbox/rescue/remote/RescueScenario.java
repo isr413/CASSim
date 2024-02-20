@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.seat.sim.client.negotiation.NegotiationManager;
+import com.seat.sim.client.negotiation.Proposal;
 import com.seat.sim.client.sandbox.rescue.util.Experiment;
 import com.seat.sim.client.sandbox.rescue.util.TaskManager;
 import com.seat.sim.common.core.Application;
@@ -98,6 +100,7 @@ public abstract class RescueScenario implements Application {
 
   protected Experiment exp;
   protected RemoteManager manager;
+  protected Optional<NegotiationManager> negotiations;
   protected Optional<TaskManager> tasks;
 
   public RescueScenario(String scenarioID, Range alpha, double beta, double gamma, int trialsPer,
@@ -320,6 +323,9 @@ public abstract class RescueScenario implements Application {
     if (this.hasTasks()) {
       this.tasks.get().close();
     }
+    if (this.hasNegotiations()) {
+      this.negotiations.get().close();
+    }
   }
 
   public double getAlpha() {
@@ -352,6 +358,10 @@ public abstract class RescueScenario implements Application {
 
   public int getMissionLength() {
     return RescueScenario.MISSION_LENGTH;
+  }
+
+  public Optional<NegotiationManager> getNegotiations() {
+    return (this.negotiations != null) ? this.negotiations : Optional.empty();
   }
 
   public double getPhi() {
@@ -398,15 +408,23 @@ public abstract class RescueScenario implements Application {
   }
 
   public boolean hasTasks() {
-    return this.tasks.isPresent();
+    return this.tasks != null && this.tasks.isPresent();
+  }
+
+  public boolean hasNegotiations() {
+    return this.negotiations != null && this.negotiations.isPresent();
   }
 
   public void init() {
     this.manager.setRemoteConfigs(this.loadRemotes());
     this.manager.init();
     this.tasks = this.getTaskManager();
+    this.negotiations = this.getNegotiations();
     if (this.hasTasks()) {
       this.tasks.get().init();
+    }
+    if (this.hasNegotiations()) {
+      this.negotiations.get().init();
     }
     this.reportTrial();
   }
@@ -417,6 +435,13 @@ public abstract class RescueScenario implements Application {
 
   public boolean isOnCooldown(String remoteID) {
     return this.manager.isOnCooldown(remoteID);
+  }
+
+  public Optional<Proposal> nextProposal(String senderID, String receiverID) {
+    if (!this.hasNegotiations()) {
+      return Optional.empty();
+    }
+    return this.negotiations.get().getNextProposal(senderID, receiverID);
   }
 
   public Optional<Zone> nextTask(Snapshot snap, RemoteState state) {
@@ -441,6 +466,9 @@ public abstract class RescueScenario implements Application {
     if (this.hasTasks()) {
       this.tasks.get().reset();
     }
+    if (this.hasNegotiations()) {
+      this.negotiations.get().reset();
+    }
     this.reportTrial();
   }
 
@@ -455,6 +483,9 @@ public abstract class RescueScenario implements Application {
   public Collection<IntentionSet> update(Snapshot snap) {
     if (this.hasTasks()) {
       this.tasks.get().update(snap);
+    }
+    if (this.hasNegotiations()) {
+      this.negotiations.get().update(snap);
     }
     return this.manager.update(snap);
   }
