@@ -79,6 +79,14 @@ public class Range implements Iterable<Double> {
     return String.format("[%.2f:%.2f:%.2f]", this.start, this.end, this.step);
   }
 
+  public double uniform() {
+    return this.uniform(new Random());
+  }
+
+  public double uniform(Random rng) {
+    return rng.getRandomPoint(this.getStart(), this.getEnd());
+  }
+
   private static class RangeIterator implements Iterator<Double> {
 
     private double cursor;
