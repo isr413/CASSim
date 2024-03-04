@@ -35,7 +35,7 @@ public class ScenarioSize64Probes32GenerousC extends RescueScenario {
   @Override
   public Optional<NegotiationManager> getNegotiations() {
     return Optional.of(new StochasticNegotiation(
-        Range.Exclusive(3),
+        Range.Inclusive(0, 3, 1),
         9,
         Range.Inclusive(0., 1., 0.05),
         Range.Inclusive(0., .5, 0.05),

@@ -56,11 +56,11 @@ public class StochasticNegotiation implements NegotiationManager {
         StochasticNegotiation.E_START_TIME,
         eDeadlineSample,
         deadlineSample,
-        this.reward.sample(this.rng),
-        this.eRewardBonus.sample(this.rng),
-        this.eSuccess.sample(this.rng),
-        this.pSuccess.sample(this.rng),
-        this.penalty.sample(this.rng)
+        this.reward.uniform(this.rng),
+        this.eRewardBonus.uniform(this.rng),
+        this.eSuccess.uniform(this.rng),
+        this.pSuccess.uniform(this.rng),
+        this.penalty.uniform(this.rng)
       );
   }
 
