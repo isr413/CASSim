@@ -17,33 +17,33 @@ public class StochasticNegotiation implements NegotiationManager {
   private static final double NEG_START_TIME = 0;
 
   private double deadline;
-  private Range dRewardRate;
-  private Range dSuccessRate;
   private Range eDeadline;
   private Range eRewardRate;
+  private Range eSuccess;
   private Range limit;
   private Range penalty;
   private Range pSuccess;
   private Range reward;
   private Random rng;
 
+  private Map<String, List<Contract>> contracts;
   private Map<String, List<Proposal>> negotiations;
   private Map<String, List<Proposal>> proposals;
 
-  public StochasticNegotiation(Range eDeadline, double deadline, Range reward, Range eRewardRate, Range dRewardRate,
-      Range pSuccess, Range dSuccessRate, Range penalty, Range limit, Random rng) {
+  public StochasticNegotiation(Range eDeadline, double deadline, Range reward, Range eRewardRate,
+      Range eSuccess, Range pSuccess, Range penalty, Range limit, Random rng) {
     this.eDeadline = eDeadline;
     this.deadline = deadline;
     this.reward = reward;
     this.eRewardRate = eRewardRate;
-    this.dRewardRate = dRewardRate;
+    this.eSuccess = eSuccess;
     this.pSuccess = pSuccess;
-    this.dSuccessRate = dSuccessRate;
     this.penalty = penalty;
     this.limit = limit;
     this.rng = rng;
     this.proposals = new HashMap<>();
     this.negotiations = new HashMap<>();
+    this.contracts = new HashMap<>();
   }
 
   private Proposal generateProposal() {
@@ -58,15 +58,35 @@ public class StochasticNegotiation implements NegotiationManager {
         deadlineSample,
         this.reward.sample(this.rng),
         this.eRewardRate.sample(this.rng),
-        this.dRewardRate.sample(this.rng),
+        this.eSuccess.sample(this.rng),
         this.pSuccess.sample(this.rng),
-        this.dSuccessRate.sample(this.rng),
         this.penalty.sample(this.rng)
       );
   }
 
+  private void ensureProposals(String remoteID) {
+    if (!this.proposals.containsKey(remoteID)) {
+      for (int i = 0; i < (int) this.limit.sample(this.rng); i++) {
+        this.addProposal(remoteID, this.generateProposal());
+      }
+    }
+  }
+
   private String getKey(String senderID, String receiverID) {
     return String.format("%s::%s", senderID, receiverID);
+  }
+
+  public Contract acceptProposal(String senderID, String receiverID, Proposal proposal) {
+    Contract contract = new Contract(senderID, receiverID, proposal);
+    if (!this.contracts.containsKey(senderID)) {
+      this.contracts.put(senderID, new LinkedList<>());
+    }
+    if (!this.contracts.containsKey(receiverID)) {
+      this.contracts.put(receiverID, new LinkedList<>());
+    }
+    this.contracts.get(senderID).add(contract);
+    this.contracts.get(receiverID).add(contract);
+    return contract;
   }
 
   public void addProposal(String remoteID, Proposal proposal) {
@@ -76,11 +96,24 @@ public class StochasticNegotiation implements NegotiationManager {
     this.proposals.get(remoteID).add(proposal);
   }
 
-  public void close() {
-    this.negotiations = new HashMap<>();
+  public Optional<Contract> getContract(String senderID, String receiverID) {
+    if (!this.hasContracts(senderID)) {
+      return Optional.empty();
+    }
+    for (Contract contract : this.getContracts(senderID)) {
+      if (contract.matchSignatures(senderID, receiverID)) {
+        return Optional.of(contract);
+      }
+    }
+    return Optional.empty();
+  }
+
+  public List<Contract> getContracts(String remoteID) {
+    return (this.contracts.containsKey(remoteID)) ? this.contracts.get(remoteID) : List.of();
   }
 
   public Optional<Proposal> getNextProposal(String senderID, String receiverID) {
+    this.ensureProposals(senderID);
     if (!this.hasNextProposal(senderID, receiverID)) {
       return Optional.empty();
     }
@@ -94,30 +127,44 @@ public class StochasticNegotiation implements NegotiationManager {
   }
 
   public List<Proposal> getProposals(String remoteID) {
-    if (!this.proposals.containsKey(remoteID)) {
-      this.proposals.put(remoteID, new LinkedList<>());
-      for (int i = 0; i < (int) this.limit.sample(this.rng); i++) {
-        this.addProposal(remoteID, this.generateProposal());
-      }
-    }
-    return this.proposals.get(remoteID);
+    return (this.proposals.containsKey(remoteID)) ? this.proposals.get(remoteID) : List.of();
+  }
+
+  public boolean hasContract(String senderID, String receiverID) {
+    return this.getContract(senderID, receiverID).isPresent();
+  }
+
+  public boolean hasContracts(String remoteID) {
+    return this.contracts.containsKey(remoteID) && !this.contracts.get(remoteID).isEmpty();
   }
 
   public boolean hasNextProposal(String senderID, String receiverID) {
+    this.ensureProposals(senderID);
     if (!this.hasProposals(senderID)) {
       return false;
     }
     String key = this.getKey(senderID, receiverID);
-    return !this.negotiations.containsKey(key) &&
+    return !this.negotiations.containsKey(key) ||
         this.negotiations.get(key).size() < this.proposals.get(senderID).size();
   }
 
   public boolean hasProposals(String remoteID) {
+    this.ensureProposals(remoteID);
     return !this.getProposals(remoteID).isEmpty();
   }
 
   public void reset() {
     this.proposals = new HashMap<>();
     this.negotiations = new HashMap<>();
+    this.contracts = new HashMap<>();
+  }
+
+  public void terminateContract(String senderID, String receiverID) {
+    Optional<Contract> contract = this.getContract(senderID, receiverID);
+    if (!contract.isPresent()) {
+      return;
+    }
+    this.contracts.get(senderID).remove(contract.get());
+    this.contracts.get(receiverID).remove(contract.get());
   }
 }

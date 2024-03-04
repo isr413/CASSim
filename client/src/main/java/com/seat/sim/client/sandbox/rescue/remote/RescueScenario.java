@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.seat.sim.client.negotiation.Contract;
 import com.seat.sim.client.negotiation.NegotiationManager;
 import com.seat.sim.client.negotiation.Proposal;
 import com.seat.sim.client.sandbox.rescue.util.Experiment;
@@ -101,6 +102,7 @@ public abstract class RescueScenario implements Application {
   protected Experiment exp;
   protected RemoteManager manager;
   protected Optional<NegotiationManager> negotiations;
+  protected double score;
   protected Optional<TaskManager> tasks;
 
   public RescueScenario(String scenarioID, Range alpha, double beta, double gamma, int trialsPer,
@@ -306,6 +308,10 @@ public abstract class RescueScenario implements Application {
       .iterator();
   }
 
+  protected void reportScore() {
+    this.logger.log(RescueScenario.MISSION_LENGTH, String.format("Score %.4f", this.getScore()));
+  }
+
   protected void reportTrial() {
     this.logger.log(-1.,
         String.format("Seed %d - ALPHA %.3f - BETA %.3f - GAMMA %.3f", this.exp.getSeed(), this.exp.getAlpha(),
@@ -319,6 +325,7 @@ public abstract class RescueScenario implements Application {
   }
 
   public void close() {
+    this.reportScore();
     this.manager.close();
     if (this.hasTasks()) {
       this.tasks.get().close();
@@ -380,6 +387,10 @@ public abstract class RescueScenario implements Application {
     return this.scenarioID;
   }
 
+  public double getScore() {
+    return this.score;
+  }
+
   public long getSeed() {
     return this.exp.getSeed();
   }
@@ -426,7 +437,12 @@ public abstract class RescueScenario implements Application {
     if (this.hasNegotiations()) {
       this.negotiations.get().init();
     }
+    this.score = 0;
     this.reportTrial();
+  }
+
+  public boolean isAcceptable(String senderID, String receiverID, Proposal proposal) {
+    return this.hasNegotiations();
   }
 
   public boolean isDone(String remoteID) {
@@ -437,11 +453,17 @@ public abstract class RescueScenario implements Application {
     return this.manager.isOnCooldown(remoteID);
   }
 
-  public Optional<Proposal> nextProposal(String senderID, String receiverID) {
+  public Optional<Contract> negotiate(String senderID, String receiverID) {
     if (!this.hasNegotiations()) {
       return Optional.empty();
     }
-    return this.negotiations.get().getNextProposal(senderID, receiverID);
+    Optional<Proposal> proposal = this.negotiations.get().getNextProposal(senderID, receiverID);
+    if (!proposal.isPresent()) {
+      return Optional.empty();
+    }
+    return (this.isAcceptable(senderID, receiverID, proposal.get()))
+      ? Optional.of(this.negotiations.get().acceptProposal(senderID, receiverID, proposal.get()))
+      : Optional.empty();
   }
 
   public Optional<Zone> nextTask(Snapshot snap, RemoteState state) {
@@ -469,7 +491,49 @@ public abstract class RescueScenario implements Application {
     if (this.hasNegotiations()) {
       this.negotiations.get().reset();
     }
+    this.score = 0;
     this.reportTrial();
+  }
+
+  public boolean scoreContract(Snapshot snap, Contract contract) {
+    return this.scoreContract(snap, contract, false);
+  }
+
+  public boolean scoreContract(Snapshot snap, Contract contract, boolean earlyCompletion) {
+    if (!this.hasNegotiations()) {
+      return false;
+    }
+    double roll = this.getRng().getRandomProbability();
+    if (earlyCompletion) {
+      if (roll > contract.getProposal().getEarlySuccessLikelihood()) {
+        return false;
+      }
+      this.score += contract.getProposal().getReward() + contract.getProposal().getEarlyRewardBonus();
+      this.report(
+          snap.getTime(),
+          ":: %s :: %s :: Succeeds task",
+          contract.getSenderID(),
+          contract.getReceiverID()
+        );
+      return true;
+    }
+    if (roll > contract.getProposal().getSuccessLikelihood()) {
+      this.report(
+          snap.getTime(),
+          ":: %s :: %s :: Fails task",
+          contract.getSenderID(),
+          contract.getReceiverID()
+        );
+      return false;
+    }
+    this.score += contract.getProposal().getReward();
+    this.report(
+        snap.getTime(),
+        ":: %s :: %s :: Succeeds task",
+        contract.getSenderID(),
+        contract.getReceiverID()
+      );
+    return true;
   }
 
   public void setDone(String remoteID, boolean droneNotVictim) {
@@ -478,6 +542,14 @@ public abstract class RescueScenario implements Application {
 
   public void setRemoteManager(RemoteManager manager) {
     this.manager = manager;
+  }
+
+  public boolean terminateContract(Contract contract) {
+    if (!this.hasNegotiations()) {
+      return false;
+    }
+    this.negotiations.get().terminateContract(contract.getSenderID(), contract.getReceiverID());
+    return true;
   }
 
   public Collection<IntentionSet> update(Snapshot snap) {

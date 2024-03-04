@@ -4,11 +4,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.seat.sim.client.negotiation.Contract;
+import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.remote.intent.IntentRegistry;
@@ -18,6 +22,7 @@ import com.seat.sim.common.scenario.Snapshot;
 public class DroneManager {
 
   private Map<String, Zone> assignments;
+  private Map<String, List<Contract>> contracts;
   private Map<String, Integer> cooldown;
   private int cooldownTime;
   private int droneCount;
@@ -43,10 +48,21 @@ public class DroneManager {
       .collect(Collectors.toSet());
   }
 
+  public void addContract(String droneID, Contract contract) {
+    if (!this.contracts.containsKey(droneID)) {
+      this.contracts.put(droneID, new LinkedList<>());
+    }
+    this.contracts.get(droneID).add(contract);
+  }
+
   public void close() {}
 
   public Optional<Zone> getAssignment(String droneID) {
     return (this.hasAssignment(droneID)) ? Optional.of(this.assignments.get(droneID)) : Optional.empty();
+  }
+
+  public List<Contract> getContracts(String droneID) {
+    return (this.hasContracts(droneID)) ? this.contracts.get(droneID) : List.of();
   }
 
   public int getCooldown(String droneID) {
@@ -65,8 +81,13 @@ public class DroneManager {
     return this.assignments.containsKey(droneID);
   }
 
+  public boolean hasContracts(String droneID) {
+    return this.contracts.containsKey(droneID) && !this.contracts.get(droneID).isEmpty();
+  }
+
   public void init() {
     this.assignments = new HashMap<>();
+    this.contracts = new HashMap<>();
     this.cooldown = new HashMap<>();
     this.goingHome = new HashSet<>();
   }
@@ -168,6 +189,9 @@ public class DroneManager {
               );
             return intent;
           }
+          if (this.hasContracts(drone.getRemoteID())) {
+            this.updateContracts(snap, drone.getRemoteID());
+          }
           if (this.isOnCooldown(drone.getRemoteID())) {
             this.setCooldown(drone.getRemoteID(), this.getCooldown(drone.getRemoteID()) - 1);
             if (this.getCooldown(drone.getRemoteID()) > 0) {
@@ -209,19 +233,44 @@ public class DroneManager {
               );
             allDetections.addAll(bleDetections);
             for (String victimID : allDetections) {
-              if (!this.scenario.isDone(victimID)) {
-                this.scenario.report(
+              this.scenario.report(
+                  snap.getTime(),
+                  ":: %s :: %s :: %s :: Detected victim",
+                  drone.getRemoteID(),
+                  drone.getLocation().toString("%.0f"),
+                  victimID
+                );
+            }
+            bleDetections.removeAll(assistedVictims);
+            if (this.scenario.hasNegotiations() && !bleDetections.isEmpty()) {
+              for (String victimID : bleDetections) {
+                Optional<Contract> contract = this.scenario.negotiate(victimID, drone.getRemoteID());
+                if (contract.isPresent()) {
+                  this.scenario.report(
                     snap.getTime(),
-                    ":: %s :: %s :: %s :: Rescued victim",
+                    ":: %s :: %s :: %s :: Accepted Task",
                     drone.getRemoteID(),
                     drone.getLocation().toString("%.0f"),
                     victimID
                   );
-                this.scenario.setDone(victimID, false);
+                  assistedVictims.add(victimID);
+                  this.scenario.setDone(victimID, false);
+                  this.addContract(drone.getRemoteID(), contract.get());
+                }
+              }
+              if (this.hasContracts(drone.getRemoteID())) {
+                intent.addIntention(IntentRegistry.Stop());
+                intent.addIntention(IntentRegistry.DeactivateAllSensors());
+                this.scenario.report(
+                    snap.getTime(),
+                    ":: %s :: %s :: Initiating task",
+                    drone.getRemoteID(),
+                    drone.getLocation().toString("%.0f")
+                  );
+                return intent;
               }
             }
-            bleDetections.removeAll(assistedVictims);
-            if (this.getCooldownTime() > 0 && !bleDetections.isEmpty()) {
+            else if (this.getCooldownTime() > 0 && !bleDetections.isEmpty()) {
               this.setCooldown(drone.getRemoteID(), this.getCooldownTime());
               intent.addIntention(IntentRegistry.Stop());
               intent.addIntention(IntentRegistry.DeactivateAllSensors());
@@ -279,5 +328,38 @@ public class DroneManager {
           return intent;
         })
       .toList();
+  }
+
+  public void updateContracts(Snapshot snap, String droneID) {
+    if (!this.hasContracts(droneID)) {
+      return;
+    }
+    List<Contract> contracts = this.getContracts(droneID)
+      .stream()
+      .map(c -> c.update())
+      .filter(c -> {
+        if (Vector.near(c.getProposal().getDeadline(), 0.)) {
+          this.scenario.scoreContract(snap, c);
+          this.scenario.terminateContract(c);
+          return false;
+        }
+        if (Vector.near(c.getProposal().getEarliestDeadline(), 0.)) {
+          if (this.scenario.scoreContract(snap, c, true)) {
+            this.scenario.terminateContract(c);
+            return false;
+          }
+          return true;
+        }
+        return true;
+      })
+      .collect(Collectors.toList());
+    if (contracts.isEmpty()) {
+      this.contracts.remove(droneID);
+      this.setCooldown(droneID, 0);
+      return;
+    }
+    Collections.sort(contracts);
+    this.contracts.put(droneID, contracts);
+    this.setCooldown(droneID, (int) Math.ceil(contracts.get(0).getProposal().getDeadline()));
   }
 }

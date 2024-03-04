@@ -6,18 +6,16 @@ public class Proposal {
   private double decommitmentPenalty;
   private double earliestDeadline;
   private double earliestStartTime;
-  private double earlyFinishRewardRate;
+  private double earlyFinishReward;
+  private double earlySuccessProbability;
   private double negotiationDeadline;
   private double negotiationDuration;
   private double negotiationStartTime;
   private double regularReward;
-  private double rewardFalloffRate;
-  private double successDeclineRate;
   private double successProbability;
 
   public Proposal(double negStartTime, double negDeadline, double negDuration, double eStartTime, double eDeadline,
-      double deadline, double reward, double eRewardRate, double dRewardRate,
-      double pSuccess, double dSuccessRate, double penalty) {
+      double deadline, double reward, double eRewardBonus, double eSuccess, double pSuccess, double penalty) {
     this.negotiationStartTime = negStartTime;
     this.negotiationDeadline = negDeadline;
     this.negotiationDuration = negDuration;
@@ -25,10 +23,9 @@ public class Proposal {
     this.earliestDeadline = eDeadline;
     this.deadline = deadline;
     this.regularReward = reward;
-    this.earlyFinishRewardRate = eRewardRate;
-    this.rewardFalloffRate = dRewardRate;
+    this.earlyFinishReward = eRewardBonus;
+    this.earlySuccessProbability = eSuccess;
     this.successProbability = pSuccess;
-    this.successDeclineRate = dSuccessRate;
     this.decommitmentPenalty = penalty;
   }
 
@@ -44,12 +41,16 @@ public class Proposal {
     return this.earliestDeadline;
   }
 
-  public double getEarlyRewardBonusRate() {
-    return this.earlyFinishRewardRate;
-  }
-
   public double getEarliestStartTime() {
     return this.earliestStartTime;
+  }
+
+  public double getEarlyRewardBonus() {
+    return this.earlyFinishReward;
+  }
+
+  public double getEarlySuccessLikelihood() {
+    return this.earlySuccessProbability;
   }
 
   public double getNegotiationDeadline() {
@@ -68,15 +69,23 @@ public class Proposal {
     return this.regularReward;
   }
 
-  public double getRewardDeclineRate() {
-    return this.rewardFalloffRate;
-  }
-
-  public double getSuccessDeclineRate() {
-    return this.successDeclineRate;
-  }
-
   public double getSuccessLikelihood() {
     return this.successProbability;
+  }
+
+  public Proposal update() {
+    return new Proposal(
+        Math.max(this.negotiationStartTime - 1, 0),
+        Math.max(this.negotiationDeadline - 1, 0),
+        this.negotiationDuration,
+        Math.max(this.earliestStartTime - 1, 0),
+        Math.max(this.earliestDeadline - 1, 0),
+        Math.max(this.deadline - 1, 0),
+        this.regularReward,
+        this.earlyFinishReward,
+        this.earlySuccessProbability,
+        this.successProbability,
+        this.decommitmentPenalty
+      );
   }
 }
