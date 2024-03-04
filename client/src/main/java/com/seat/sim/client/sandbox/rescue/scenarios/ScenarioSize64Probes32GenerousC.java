@@ -12,11 +12,11 @@ import com.seat.sim.client.sandbox.rescue.util.TaskManager;
 import com.seat.sim.common.util.ArgsParser;
 import com.seat.sim.common.util.Range;
 
-public class ScenarioSize64Probes32SelfishC extends RescueScenario {
+public class ScenarioSize64Probes32GenerousC extends RescueScenario {
 
-  public ScenarioSize64Probes32SelfishC(ArgsParser args, int threadID, long seed) throws IOException {
+  public ScenarioSize64Probes32GenerousC(ArgsParser args, int threadID, long seed) throws IOException {
     super(
-        "ScenarioSize64Probes32SelfishC",     // scenarioID
+        "ScenarioSize64Probes32GenerousC",    // scenarioID
         0,                                    // base count
         32,                                   // drone count
         1024,                                 // victim count
@@ -53,6 +53,6 @@ public class ScenarioSize64Probes32SelfishC extends RescueScenario {
 
   @Override
   public boolean isAcceptable(String senderID, String receiverID, Proposal proposal) {
-    return false;
+    return true;
   }
 }

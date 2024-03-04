@@ -18,7 +18,7 @@ public class StochasticNegotiation implements NegotiationManager {
 
   private double deadline;
   private Range eDeadline;
-  private Range eRewardRate;
+  private Range eRewardBonus;
   private Range eSuccess;
   private Range limit;
   private Range penalty;
@@ -30,14 +30,14 @@ public class StochasticNegotiation implements NegotiationManager {
   private Map<String, List<Proposal>> negotiations;
   private Map<String, List<Proposal>> proposals;
 
-  public StochasticNegotiation(Range eDeadline, double deadline, Range reward, Range eRewardRate,
-      Range eSuccess, Range pSuccess, Range penalty, Range limit, Random rng) {
+  public StochasticNegotiation(Range eDeadline, double deadline, Range reward, Range eRewardBonus,
+      Range pSuccess, Range eSuccess, Range penalty, Range limit, Random rng) {
     this.eDeadline = eDeadline;
     this.deadline = deadline;
     this.reward = reward;
-    this.eRewardRate = eRewardRate;
-    this.eSuccess = eSuccess;
+    this.eRewardBonus = eRewardBonus;
     this.pSuccess = pSuccess;
+    this.eSuccess = eSuccess;
     this.penalty = penalty;
     this.limit = limit;
     this.rng = rng;
@@ -57,7 +57,7 @@ public class StochasticNegotiation implements NegotiationManager {
         eDeadlineSample,
         deadlineSample,
         this.reward.sample(this.rng),
-        this.eRewardRate.sample(this.rng),
+        this.eRewardBonus.sample(this.rng),
         this.eSuccess.sample(this.rng),
         this.pSuccess.sample(this.rng),
         this.penalty.sample(this.rng)
