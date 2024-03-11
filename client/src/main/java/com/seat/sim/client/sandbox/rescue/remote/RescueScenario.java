@@ -441,7 +441,8 @@ public abstract class RescueScenario implements Application {
     this.reportTrial();
   }
 
-  public boolean isAcceptable(String senderID, String receiverID, Proposal proposal) {
+  public boolean isAcceptable(Snapshot Snap, RemoteState state, String senderID, String receiverID,
+      Proposal proposal) {
     return this.hasNegotiations();
   }
 
@@ -453,7 +454,7 @@ public abstract class RescueScenario implements Application {
     return this.manager.isOnCooldown(remoteID);
   }
 
-  public Optional<Contract> negotiate(String senderID, String receiverID) {
+  public Optional<Contract> negotiate(Snapshot snap, RemoteState state, String senderID, String receiverID) {
     if (!this.hasNegotiations()) {
       return Optional.empty();
     }
@@ -461,7 +462,7 @@ public abstract class RescueScenario implements Application {
     if (!proposal.isPresent()) {
       return Optional.empty();
     }
-    return (this.isAcceptable(senderID, receiverID, proposal.get()))
+    return (this.isAcceptable(snap, state, senderID, receiverID, proposal.get()))
       ? Optional.of(this.negotiations.get().acceptProposal(senderID, receiverID, proposal.get()))
       : Optional.empty();
   }

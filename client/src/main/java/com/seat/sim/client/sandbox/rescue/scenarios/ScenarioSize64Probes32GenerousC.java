@@ -9,6 +9,8 @@ import com.seat.sim.client.negotiation.StochasticNegotiation;
 import com.seat.sim.client.sandbox.rescue.remote.RescueScenario;
 import com.seat.sim.client.sandbox.rescue.util.QuadTaskManager;
 import com.seat.sim.client.sandbox.rescue.util.TaskManager;
+import com.seat.sim.common.remote.RemoteState;
+import com.seat.sim.common.scenario.Snapshot;
 import com.seat.sim.common.util.ArgsParser;
 import com.seat.sim.common.util.Range;
 
@@ -52,7 +54,8 @@ public class ScenarioSize64Probes32GenerousC extends RescueScenario {
   }
 
   @Override
-  public boolean isAcceptable(String senderID, String receiverID, Proposal proposal) {
+  public boolean isAcceptable(Snapshot snap, RemoteState state, String senderID, String receiverID,
+      Proposal proposal) {
     return true;
   }
 }

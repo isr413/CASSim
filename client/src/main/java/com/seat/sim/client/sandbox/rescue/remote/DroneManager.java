@@ -173,7 +173,7 @@ public class DroneManager {
                 snap,
                 drone,
                 this.scenario.getGrid().get(),
-                this.getAssignment(drone.getRemoteID()))
+                this.getAssignment(drone.getRemoteID())) && !this.hasContracts(drone.getRemoteID())
               ) {
             intent.addIntention(IntentRegistry.DeactivateAllSensors());
             intent.addIntention(IntentRegistry.GoHome());
@@ -244,7 +244,12 @@ public class DroneManager {
             bleDetections.removeAll(assistedVictims);
             if (this.scenario.hasNegotiations() && !bleDetections.isEmpty()) {
               for (String victimID : bleDetections) {
-                Optional<Contract> contract = this.scenario.negotiate(victimID, drone.getRemoteID());
+                Optional<Contract> contract = this.scenario.negotiate(
+                    snap,
+                    drone,
+                    victimID,
+                    drone.getRemoteID()
+                  );
                 if (contract.isPresent()) {
                   this.scenario.report(
                     snap.getTime(),
@@ -348,7 +353,6 @@ public class DroneManager {
             this.scenario.terminateContract(c);
             return false;
           }
-          return true;
         }
         return true;
       })

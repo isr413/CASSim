@@ -14,11 +14,11 @@ import com.seat.sim.common.scenario.Snapshot;
 import com.seat.sim.common.util.ArgsParser;
 import com.seat.sim.common.util.Range;
 
-public class ScenarioSize64Probes32SelfishC extends RescueScenario {
+public class ScenarioSize64Probes32EagerC extends RescueScenario {
 
-  public ScenarioSize64Probes32SelfishC(ArgsParser args, int threadID, long seed) throws IOException {
+  public ScenarioSize64Probes32EagerC(ArgsParser args, int threadID, long seed) throws IOException {
     super(
-        "ScenarioSize64Probes32SelfishC",     // scenarioID
+        "ScenarioSize64Probes32EagerC",       // scenarioID
         0,                                    // base count
         32,                                   // drone count
         1024,                                 // victim count
@@ -44,7 +44,7 @@ public class ScenarioSize64Probes32SelfishC extends RescueScenario {
         Range.Inclusive(0., 1., 0.05),
         Range.Inclusive(0, .1, 0.01),
         Range.Inclusive(0, 1., 0.05),
-        Range.Inclusive(1, 1),
+        Range.Inclusive(2, 3, 1),
         this.getRng()
       ));
   }
@@ -56,6 +56,18 @@ public class ScenarioSize64Probes32SelfishC extends RescueScenario {
   @Override
   public boolean isAcceptable(Snapshot snap, RemoteState state, String senderID, String receiverID,
       Proposal proposal) {
-    return false;
+    double expectedLoss = super.tasks
+      .get()
+      .predict(
+          snap,
+          state,
+          proposal.getEarliestDeadline(),
+          proposal.getEarlySuccessLikelihood(),
+          proposal.getDeadline()
+        );
+    double expectedReward = (proposal.getEarlyRewardBonus() + proposal.getReward()) *
+        proposal.getEarlySuccessLikelihood() + proposal.getReward() *
+        (1. - proposal.getEarlySuccessLikelihood()) * proposal.getSuccessLikelihood();
+    return Double.compare(expectedReward, expectedLoss) >= 0;
   }
 }

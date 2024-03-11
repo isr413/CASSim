@@ -18,6 +18,12 @@ public interface TaskManager {
 
   boolean hasNextTask();
 
+  default double predict(Snapshot snap, RemoteState state, double deadline) {
+    return predict(snap, state, 0., 0., deadline);
+  }
+
+  double predict(Snapshot snap, RemoteState state, double eDeadline, double eSuccess, double deadline);
+
   default void reset() {}
 
   default void update(Snapshot snap) {}

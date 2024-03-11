@@ -30,6 +30,9 @@ public class App {
       if (scenarioID.equals("ScenarioSize64Probes32BestWalkC")) {
         return new ScenarioSize64Probes32BestWalkC(args, threadID, seed);
       }
+      if (scenarioID.equals("ScenarioSize64Probes32EagerC")) {
+        return new ScenarioSize64Probes32EagerC(args, threadID, seed);
+      }
       if (scenarioID.equals("ScenarioSize64Probes32GenerousC")) {
         return new ScenarioSize64Probes32GenerousC(args, threadID, seed);
       }
@@ -41,6 +44,9 @@ public class App {
       }
       if (scenarioID.equals("ScenarioSize64Probes32GlobalExploreC")) {
         return new ScenarioSize64Probes32GlobalExploreC(args, threadID, seed);
+      }
+      if (scenarioID.equals("ScenarioSize64Probes32HelpfulC")) {
+        return new ScenarioSize64Probes32HelpfulC(args, threadID, seed);
       }
       if (scenarioID.equals("ScenarioSize64Probes32QuadSmgA")) {
         return new ScenarioSize64Probes32QuadSmgA(args, threadID, seed);

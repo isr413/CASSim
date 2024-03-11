@@ -77,7 +77,7 @@ public class Proposal {
     return new Proposal(
         Math.max(this.negotiationStartTime - 1, 0),
         Math.max(this.negotiationDeadline - 1, 0),
-        this.negotiationDuration,
+        Math.max(this.negotiationDuration - 1, 0),
         Math.max(this.earliestStartTime - 1, 0),
         Math.max(this.earliestDeadline - 1, 0),
         Math.max(this.deadline - 1, 0),

@@ -49,4 +49,9 @@ public class RandomWalkTaskManager implements TaskManager {
     public boolean hasNextTask() {
       return true;
     }
+
+    public double predict(Snapshot snap, RemoteState state, double eDeadline, double eSuccess,
+        double deadline) {
+      return 0.;
+    }
 }
