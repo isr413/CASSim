@@ -4,7 +4,7 @@ import time
 
 
 def add_data(df, scenario, trial, seed, alpha, beta, gamma, drones, victims,
-             turn, score):
+             turn, successes, fails, score, heat):
     data = pd.DataFrame({
             "Scenario": scenario,
             "Trial": trial,
@@ -15,7 +15,10 @@ def add_data(df, scenario, trial, seed, alpha, beta, gamma, drones, victims,
             "Drones": drones,
             "Victims": victims,
             "Turn": turn,
-            "Score": score
+            "Successes": successes,
+            "Fails": fails,
+            "Score": score,
+            "Heat": heat
         }, index=[0])
 
     if df.empty:
@@ -29,12 +32,13 @@ def add_data(df, scenario, trial, seed, alpha, beta, gamma, drones, victims,
 
 def parse_file(filename, trial_offset=0):
     df = pd.DataFrame(columns=["Scenario", "Trial", "Seed", "Alpha", "Beta",
-                               "Gamma", "Drones", "Victims", "Turn", "Score"])
+                               "Gamma", "Drones", "Victims", "Turn",
+                               "Successes", "Fails", "Score", "Heat"])
     scenario = filename.strip().split("/")[-1].split("_")[0]
 
     with open(filename) as f:
         trial = seed = alpha = beta = gamma = drones = victims = 0
-        turn = score = 0
+        turn = successes = fails = score = heat = 0
 
         for line in f:
             line = line.strip()
@@ -44,7 +48,7 @@ def parse_file(filename, trial_offset=0):
                 if trial > 0:
                     df = add_data(df, scenario, trial_offset + trial, seed,
                                   alpha, beta, gamma, drones, victims, turn,
-                                  score)
+                                  successes, fails, score, heat)
 
                 trial += 1
                 seed = int(split[3])
@@ -69,27 +73,37 @@ def parse_file(filename, trial_offset=0):
                     beta = 0
                     gamma = 0
 
-                drones = victims = turn = score = 0
+                drones = victims = turn = 0
+                successes = fails = score = heat = 0
                 continue
 
             curr_turn = float(split[1].strip()[:-1])
             if curr_turn > turn:
                 df = add_data(df, scenario, trial_offset + trial, seed,
                               alpha, beta, gamma, drones, victims, turn,
-                              score)
+                              successes, fails, score, heat)
                 turn = curr_turn
 
             if "Drone done" in line:
                 drones += 1
 
-            if "Rescued victim" in line:
+            if "Detected victim" in line:
                 victims += 1
 
+            if "Fails task" in line:
+                fails += 1
+
+            if "Succeeds task" in line:
+                successes += 1
+
             if "Score" in line:
-                score = float(line.split(":")[1].strip())
+                score = float(line.split(":")[-1].strip())
+
+            if "Heat" in line:
+                heat = float(line.split(":")[-1].strip())
 
         df = add_data(df, scenario, trial_offset + trial, seed, alpha, beta,
-                      gamma, drones, victims, turn, score)
+                      gamma, drones, victims, turn, successes, fails, score, heat)
 
     return (df, trial_offset + trial)
 
