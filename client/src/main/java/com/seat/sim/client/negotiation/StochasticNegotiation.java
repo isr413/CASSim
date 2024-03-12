@@ -17,9 +17,9 @@ public class StochasticNegotiation implements NegotiationManager {
   private static final double NEG_START_TIME = 0;
 
   private double deadline;
-  private Range eDeadline;
-  private Range eRewardBonus;
-  private Range eSuccess;
+  private Optional<Range> eDeadline;
+  private Optional<Range> eRewardBonus;
+  private Optional<Range> eSuccess;
   private Range limit;
   private Range penalty;
   private Range pSuccess;
@@ -30,14 +30,15 @@ public class StochasticNegotiation implements NegotiationManager {
   private Map<String, List<Proposal>> negotiations;
   private Map<String, List<Proposal>> proposals;
 
-  public StochasticNegotiation(Range eDeadline, double deadline, Range reward, Range eRewardBonus,
-      Range pSuccess, Range eSuccess, Range penalty, Range limit, Random rng) {
-    this.eDeadline = eDeadline;
+  public StochasticNegotiation(Optional<Range> eDeadline, double deadline, Range reward,
+      Optional<Range> eRewardBonus, Range pSuccess, Optional<Range> eSuccess,
+      Range penalty, Range limit, Random rng) {
+    this.eDeadline = (eDeadline != null) ? eDeadline : Optional.empty();
     this.deadline = deadline;
     this.reward = reward;
-    this.eRewardBonus = eRewardBonus;
+    this.eRewardBonus = (eRewardBonus != null) ? eRewardBonus : Optional.empty();
     this.pSuccess = pSuccess;
-    this.eSuccess = eSuccess;
+    this.eSuccess = (eSuccess != null) ? eSuccess : Optional.empty();
     this.penalty = penalty;
     this.limit = limit;
     this.rng = rng;
@@ -47,7 +48,7 @@ public class StochasticNegotiation implements NegotiationManager {
   }
 
   private Proposal generateProposal() {
-    double eDeadlineSample = eDeadline.sample(this.rng);
+    double eDeadlineSample = (this.eDeadline.isPresent()) ? this.eDeadline.get().sample(this.rng) : 0.;
     double deadlineSample = Range.Inclusive(eDeadlineSample, this.deadline).sample(this.rng);
     return new Proposal(
         StochasticNegotiation.NEG_START_TIME,
@@ -57,8 +58,8 @@ public class StochasticNegotiation implements NegotiationManager {
         eDeadlineSample,
         deadlineSample,
         this.reward.uniform(this.rng),
-        this.eRewardBonus.uniform(this.rng),
-        this.eSuccess.uniform(this.rng),
+        (this.eRewardBonus.isPresent()) ? this.eRewardBonus.get().uniform(this.rng) : 0.,
+        (this.eSuccess.isPresent()) ? this.eSuccess.get().uniform(this.rng) : 0.,
         this.pSuccess.uniform(this.rng),
         this.penalty.uniform(this.rng)
       );

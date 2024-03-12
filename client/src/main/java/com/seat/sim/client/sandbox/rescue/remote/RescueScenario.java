@@ -309,7 +309,15 @@ public abstract class RescueScenario implements Application {
   }
 
   protected void reportScore() {
-    this.logger.log(RescueScenario.MISSION_LENGTH, String.format("Score %.4f", this.getScore()));
+    this.reportScore(RescueScenario.MISSION_LENGTH);
+  }
+
+  protected void reportScore(Snapshot snap) {
+    this.reportScore(snap.getTime());
+  }
+
+  protected void reportScore(double simTime) {
+    this.logger.log(simTime, String.format("Score: %.4f", this.getScore()));
   }
 
   protected void reportTrial() {
@@ -483,6 +491,7 @@ public abstract class RescueScenario implements Application {
   }
 
   public void reset() {
+    this.reportScore();
     this.exp.reset();
     this.manager.reset();
     this.manager.setRemoteConfigs(this.loadRemotes());
@@ -560,6 +569,8 @@ public abstract class RescueScenario implements Application {
     if (this.hasNegotiations()) {
       this.negotiations.get().update(snap);
     }
-    return this.manager.update(snap);
+    Collection<IntentionSet> intentions = this.manager.update(snap);
+    this.reportScore(snap);
+    return intentions;
   }
 }

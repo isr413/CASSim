@@ -110,7 +110,7 @@ public abstract class HeatmapTaskManager implements TaskManager {
     return neighbors.get(0).getLocation();
   }
 
-  private void reportScore() {
+  private void reportHeat() {
     double weight = 0.;
     for (int i = 0; i < this.zones.length; i++) {
       for (int j = 0; j < this.zones[i].length; j++) {
@@ -118,7 +118,7 @@ public abstract class HeatmapTaskManager implements TaskManager {
       }
     }
     double count = this.zones.length * this.zones[0].length;
-    this.scenario.report(RescueScenario.MISSION_LENGTH, "Score: %.4f", (count - weight) / count);
+    this.scenario.report(RescueScenario.MISSION_LENGTH, "Heat: %.4f", (count - weight) / count);
   }
 
   private void scanForBase(double x, double y, int size) {
@@ -171,7 +171,7 @@ public abstract class HeatmapTaskManager implements TaskManager {
   public void addTask(Zone task) {}
 
   public void close() {
-    this.reportScore();
+    this.reportHeat();
   }
 
   public abstract Optional<Zone> getNextTask(Snapshot snap, RemoteState state);
@@ -245,7 +245,7 @@ public abstract class HeatmapTaskManager implements TaskManager {
   }
 
   public void reset() {
-    this.reportScore();
+    this.reportHeat();
     this.setZoneWeights();
   }
 
