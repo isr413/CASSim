@@ -13,7 +13,7 @@ def add_data(df, scenario, trial, seed, alpha, beta, gamma, drones, victims,
             "Beta": beta,
             "Gamma": gamma,
             "Drones": drones,
-            "Victims": victims,
+            "Victims": len(victims),
             "Turn": turn,
             "Successes": successes,
             "Fails": fails,
@@ -37,8 +37,9 @@ def parse_file(filename, trial_offset=0):
     scenario = filename.strip().split("/")[-1].split("_")[0]
 
     with open(filename) as f:
-        trial = seed = alpha = beta = gamma = drones = victims = 0
+        trial = seed = alpha = beta = gamma = drones = 0
         turn = successes = fails = score = heat = 0
+        victims = set()
 
         for line in f:
             line = line.strip()
@@ -73,8 +74,9 @@ def parse_file(filename, trial_offset=0):
                     beta = 0
                     gamma = 0
 
-                drones = victims = turn = 0
+                drones = turn = 0
                 successes = fails = score = heat = 0
+                victims = set()
                 continue
 
             curr_turn = float(split[1].strip()[:-1])
@@ -88,7 +90,7 @@ def parse_file(filename, trial_offset=0):
                 drones += 1
 
             if "Detected victim" in line:
-                victims += 1
+                victims.add(line.split("::")[-2].strip())
 
             if "Fails task" in line:
                 fails += 1
