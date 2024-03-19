@@ -32,19 +32,22 @@ public class Range implements Iterable<Double> {
   }
 
   private double end;
+  private boolean inclusive;
   private double start;
   private double step;
 
   private Range(double start, double end, double step, boolean inclusive) {
     this.start = start;
-    this.end = end + ((inclusive) ? step : 0.);
+    this.end = end;
     this.step = step;
+    this.inclusive = inclusive;
   }
 
   public Range(Range range) {
     this.start = range.start;
     this.end = range.end;
     this.step = range.step;
+    this.inclusive = range.inclusive;
   }
 
   public double getEnd() {
@@ -59,12 +62,23 @@ public class Range implements Iterable<Double> {
     return this.step;
   }
 
+  public boolean isInclusive() {
+    return this.inclusive;
+  }
+
   public Iterator<Double> iterator() {
     return new RangeIterator(this);
   }
 
   public int points() {
-    return (int) Math.ceil((this.end - this.start) / this.step);
+    if (Vector.near(this.step, 0.)) {
+      if (Vector.near(this.start, this.end)) {
+        return ((this.inclusive) ? 1 : 0);
+      }
+      return ((this.inclusive) ? 2 : 1);
+    }
+    int length = (int) Math.ceil((this.end - this.start) / this.step - Vector.PRECISION);
+    return length + ((this.inclusive) ? 1 : 0);
   }
 
   public double sample() {
@@ -72,7 +86,17 @@ public class Range implements Iterable<Double> {
   }
 
   public double sample(Random rng) {
-    return this.getStart() + this.getStep() * rng.getRandomNumber(this.points());
+    if (Vector.near(this.start, this.end)) {
+      return this.start;
+    }
+    if (Vector.near(this.step, 0.)) {
+      if (!this.inclusive) {
+        return this.start;
+      }
+      return ((rng.getRandomNumber(2) == 0) ? this.start : this.end);
+    }
+    double choice = this.getStart() + this.getStep() * rng.getRandomNumber(this.points());
+    return ((this.inclusive) ? Math.min(choice, this.end) : choice);
   }
 
   public String toString() {
@@ -98,7 +122,10 @@ public class Range implements Iterable<Double> {
     }
 
     public boolean hasNext() {
-      return this.cursor >= this.range.end || Vector.near(this.cursor, this.range.end);
+      if (this.range.inclusive) {
+        return this.cursor <= this.range.end || Vector.near(this.cursor, this.range.end);
+      }
+      return this.cursor < this.range.end && !Vector.near(this.cursor, this.range.end);
     }
 
     public Double next() {
@@ -106,7 +133,11 @@ public class Range implements Iterable<Double> {
         throw new NoSuchElementException();
       }
       double point = this.cursor;
-      this.cursor += this.range.step;
+      if (Vector.near(this.range.step, 0.)) {
+        this.cursor = ((Vector.near(this.cursor, this.range.end)) ? this.range.end + 1 : this.range.end);
+      } else {
+        this.cursor += this.range.step;
+      }
       return point;
     }
   }
