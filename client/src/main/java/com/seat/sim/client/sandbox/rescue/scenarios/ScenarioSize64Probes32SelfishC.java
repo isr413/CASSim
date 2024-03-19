@@ -39,12 +39,12 @@ public class ScenarioSize64Probes32SelfishC extends RescueScenario {
     return Optional.of(new StochasticNegotiation(
         Optional.empty(),
         9,
-        Range.Inclusive(1., 1.),
+        Range.Inclusive(1., 1., 0.),
         Optional.empty(),
         Range.Inclusive(0., 1., 0.05),
         Optional.empty(),
-        Range.Inclusive(0, 1., 0.05),
-        Range.Inclusive(1, 1),
+        Range.Inclusive(0., 1., 0.05),
+        Range.Inclusive(1., 1., 0.),
         this.getRng()
       ));
   }

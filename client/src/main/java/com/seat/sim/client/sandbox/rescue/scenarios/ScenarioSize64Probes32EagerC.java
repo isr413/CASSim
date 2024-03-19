@@ -39,12 +39,12 @@ public class ScenarioSize64Probes32EagerC extends RescueScenario {
     return Optional.of(new StochasticNegotiation(
         Optional.empty(),
         9,
-        Range.Inclusive(1., 1.),
+        Range.Inclusive(1., 1., 0.),
         Optional.empty(),
         Range.Inclusive(0., 1., 0.05),
         Optional.empty(),
-        Range.Inclusive(0, 1., 0.05),
-        Range.Inclusive(2, 3, 1),
+        Range.Inclusive(0., 1., 0.05),
+        Range.Inclusive(2., 3., 1.),
         this.getRng()
       ));
   }
@@ -56,6 +56,7 @@ public class ScenarioSize64Probes32EagerC extends RescueScenario {
   @Override
   public boolean isAcceptable(Snapshot snap, RemoteState state, String senderID, String receiverID,
       Proposal proposal) {
+    double mass = super.getManager().getDroneManager().getDetectedVictims().size();
     double expectedLoss = super.tasks
       .get()
       .predict(
@@ -63,7 +64,8 @@ public class ScenarioSize64Probes32EagerC extends RescueScenario {
           state,
           proposal.getEarliestDeadline(),
           proposal.getEarlySuccessLikelihood(),
-          proposal.getDeadline()
+          proposal.getDeadline(),
+          Optional.of(mass)
         );
     double expectedReward = (proposal.getEarlyRewardBonus() + proposal.getReward()) *
         proposal.getEarlySuccessLikelihood() + proposal.getReward() *
