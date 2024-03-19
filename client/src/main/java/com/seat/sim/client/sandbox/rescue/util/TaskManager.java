@@ -22,7 +22,13 @@ public interface TaskManager {
     return predict(snap, state, 0., 0., deadline);
   }
 
-  double predict(Snapshot snap, RemoteState state, double eDeadline, double eSuccess, double deadline);
+  default double predict(Snapshot snap, RemoteState state, double eDeadline, double eSuccess,
+      double deadline) {
+    return predict(snap, state, eDeadline, eSuccess, deadline, Optional.empty());
+  }
+
+  double predict(Snapshot snap, RemoteState state, double eDeadline, double eSuccess,
+      double deadline, Optional<Double> mass);
 
   default void reset() {}
 

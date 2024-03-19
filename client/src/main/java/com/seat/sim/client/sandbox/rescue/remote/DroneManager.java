@@ -25,6 +25,7 @@ public class DroneManager {
   private Map<String, List<Contract>> contracts;
   private Map<String, Integer> cooldown;
   private int cooldownTime;
+  private Set<String> detectedVictims;
   private int droneCount;
   private Set<String> goingHome;
   private RescueScenario scenario;
@@ -73,6 +74,10 @@ public class DroneManager {
     return this.cooldownTime;
   }
 
+  public Set<String> getDetectedVictims() {
+    return this.detectedVictims;
+  }
+
   public int getDroneCount() {
     return this.droneCount;
   }
@@ -86,6 +91,7 @@ public class DroneManager {
   }
 
   public void init() {
+    this.detectedVictims = new HashSet<>();
     this.assignments = new HashMap<>();
     this.contracts = new HashMap<>();
     this.cooldown = new HashMap<>();
@@ -240,6 +246,7 @@ public class DroneManager {
                   drone.getLocation().toString("%.0f"),
                   victimID
                 );
+              this.detectedVictims.add(victimID);
             }
             bleDetections.removeAll(assistedVictims);
             if (this.scenario.hasNegotiations() && !bleDetections.isEmpty()) {
@@ -253,7 +260,7 @@ public class DroneManager {
                 if (contract.isPresent()) {
                   this.scenario.report(
                     snap.getTime(),
-                    ":: %s :: %s :: %s :: Accepted Task",
+                    ":: %s :: %s :: %s :: Accepted task",
                     drone.getRemoteID(),
                     drone.getLocation().toString("%.0f"),
                     victimID
@@ -261,6 +268,14 @@ public class DroneManager {
                   assistedVictims.add(victimID);
                   this.scenario.setDone(victimID, false);
                   this.addContract(drone.getRemoteID(), contract.get());
+                } else {
+                  this.scenario.report(
+                    snap.getTime(),
+                    ":: %s :: %s :: %s :: Rejected task",
+                    drone.getRemoteID(),
+                    drone.getLocation().toString("%.0f"),
+                    victimID
+                  );
                 }
               }
               if (this.hasContracts(drone.getRemoteID())) {

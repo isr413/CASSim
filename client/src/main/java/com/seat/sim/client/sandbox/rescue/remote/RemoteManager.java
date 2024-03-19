@@ -41,12 +41,20 @@ public class RemoteManager {
     return this.droneManager.getDroneCount();
   }
 
+  public DroneManager getDroneManager() {
+    return this.droneManager;
+  }
+
   public Collection<RemoteConfig> getRemoteConfigs() {
     return this.remotes;
   }
 
   public int getVictimCount() {
     return this.victimManager.getVictimCount();
+  }
+
+  public VictimManager getVictimManager() {
+    return this.victimManager;
   }
 
   public boolean hasRemoteConfigs() {

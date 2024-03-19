@@ -51,6 +51,21 @@ public abstract class HeatmapTaskManager implements TaskManager {
     return (this.defer.containsKey(key)) ? this.defer.get(key) : 0;
   }
 
+  protected double getHeat() {
+    return this.getHeat(this.zones);
+  }
+
+  protected double getHeat(double[][] zones) {
+    double weight = 0.;
+    for (int i = 0; i < this.zones.length; i++) {
+      for (int j = 0; j < this.zones[i].length; j++) {
+        weight += this.zones[i][j];
+      }
+    }
+    double count = this.zones.length * this.zones[0].length;
+    return (count - weight) / count;
+  }
+
   protected int getZoneKey(Zone zone) {
     int gridSize = this.scenario.getGrid().get().getWidthInZones(), size = zone.getSize();
     double x = zone.getLocation().getX(), y = zone.getLocation().getY();
@@ -111,14 +126,7 @@ public abstract class HeatmapTaskManager implements TaskManager {
   }
 
   private void reportHeat() {
-    double weight = 0.;
-    for (int i = 0; i < this.zones.length; i++) {
-      for (int j = 0; j < this.zones[i].length; j++) {
-        weight += this.zones[i][j];
-      }
-    }
-    double count = this.zones.length * this.zones[0].length;
-    this.scenario.report(RescueScenario.MISSION_LENGTH, "Heat: %.4f", (count - weight) / count);
+    this.scenario.report(RescueScenario.MISSION_LENGTH, "Heat: %.4f", this.getHeat());
   }
 
   private void scanForBase(double x, double y, int size) {
@@ -188,7 +196,7 @@ public abstract class HeatmapTaskManager implements TaskManager {
   }
 
   public double predict(Snapshot snap, RemoteState state, double eDeadline, double eSuccess,
-      double deadline) {
+      double deadline, Optional<Double> mass) {
     double[][] simZones = new double[this.zones.length][];
     double[][] droneZones = new double[this.zones.length][];
     for (int i = 0; i < this.zones.length; i++) {
@@ -218,30 +226,37 @@ public abstract class HeatmapTaskManager implements TaskManager {
       location = this.predict(location, simZones);
 
       Zone choice = this.scenario.getGrid().get().getZoneAtLocation(location);
-      earlyLoss += this.getZoneWeight(zones, choice) * this.scenario.getPhi();
+      earlyLoss += this.getZoneWeight(simZones, choice);
       double x = choice.getLocation().getX(), y = choice.getLocation().getY(), size = choice.getSize();
-      zones[(int) (y / size)][(int) (x / size)] *= (1. - this.scenario.getPhi());
+      simZones[(int) (y / size)][(int) (x / size)] *= (1. - this.scenario.getPhi());
 
       droneZones = this.computeWeights(droneZones);
       this.updateWeights(simZones, droneZones);
     }
+    earlyLoss *= this.scenario.getPhi();
 
     double lateLoss = 0.;
-    for (int t = 0; t < (Vector.near(deadline, 0.) ? 0 : (int) Math.ceil(eDeadline)); t++) {
+    for (int t = 0; t < (Vector.near(deadline, 0.) ? 0 : (int) Math.ceil(deadline)); t++) {
       simZones = this.computeWeights(simZones);
 
       location = this.predict(location, simZones);
 
       Zone choice = this.scenario.getGrid().get().getZoneAtLocation(location);
-      lateLoss += this.getZoneWeight(zones, choice) * this.scenario.getPhi();
+      lateLoss += this.getZoneWeight(simZones, choice);
       double x = choice.getLocation().getX(), y = choice.getLocation().getY(), size = choice.getSize();
-      zones[(int) (y / size)][(int) (x / size)] *= (1. - this.scenario.getPhi());
+      simZones[(int) (y / size)][(int) (x / size)] *= (1. - this.scenario.getPhi());
 
       droneZones = this.computeWeights(droneZones);
       this.updateWeights(simZones, droneZones);
     }
+    lateLoss *= this.scenario.getPhi();
 
-    return earlyLoss + (1. - eSuccess) * lateLoss;
+    double loss = (earlyLoss + (1. - eSuccess) * lateLoss) / (this.zones.length * this.zones[0].length);
+    if (mass.isEmpty()) {
+      return loss;
+    }
+
+    return mass.get() / this.getHeat() * loss;
   }
 
   public void reset() {
