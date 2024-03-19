@@ -3,8 +3,8 @@ import sys
 import time
 
 
-def add_data(df, scenario, trial, seed, alpha, beta, gamma, drones, victims,
-             turn, successes, fails, score, heat):
+def add_data(df, scenario, trial, seed, alpha, beta, gamma, turn,
+             drones, victims, accepts, rejects, successes, fails, score, heat):
     data = pd.DataFrame({
             "Scenario": scenario,
             "Trial": trial,
@@ -12,9 +12,11 @@ def add_data(df, scenario, trial, seed, alpha, beta, gamma, drones, victims,
             "Alpha": alpha,
             "Beta": beta,
             "Gamma": gamma,
-            "Drones": drones,
-            "Victims": len(victims),
             "Turn": turn,
+            "Drones": len(drones),
+            "Victims": len(victims),
+            "Accepts": accepts,
+            "Rejects": rejects,
             "Successes": successes,
             "Fails": fails,
             "Score": score,
@@ -32,13 +34,15 @@ def add_data(df, scenario, trial, seed, alpha, beta, gamma, drones, victims,
 
 def parse_file(filename, trial_offset=0):
     df = pd.DataFrame(columns=["Scenario", "Trial", "Seed", "Alpha", "Beta",
-                               "Gamma", "Drones", "Victims", "Turn",
-                               "Successes", "Fails", "Score", "Heat"])
+                               "Gamma", "Turn", "Drones", "Victims",
+                               "Accepts", "Rejects", "Successes", "Fails",
+                               "Score", "Heat"])
     scenario = filename.strip().split("/")[-1].split("_")[0]
 
     with open(filename) as f:
-        trial = seed = alpha = beta = gamma = drones = 0
-        turn = successes = fails = score = heat = 0
+        trial = seed = alpha = beta = gamma = turn = 0
+        accepts = rejects = successes = fails = score = heat = 0
+        drones = set()
         victims = set()
 
         for line in f:
@@ -48,8 +52,9 @@ def parse_file(filename, trial_offset=0):
             if "Seed" in split:
                 if trial > 0:
                     df = add_data(df, scenario, trial_offset + trial, seed,
-                                  alpha, beta, gamma, drones, victims, turn,
-                                  successes, fails, score, heat)
+                                  alpha, beta, gamma, turn, drones, victims,
+                                  accepts, rejects, successes, fails,
+                                  score, heat)
 
                 trial += 1
                 seed = int(split[3])
@@ -74,29 +79,36 @@ def parse_file(filename, trial_offset=0):
                     beta = 0
                     gamma = 0
 
-                drones = turn = 0
-                successes = fails = score = heat = 0
+                turn = 0
+                accepts = rejects = successes = fails = score = heat = 0
+                drones = set()
                 victims = set()
                 continue
 
             curr_turn = float(split[1].strip()[:-1])
             if curr_turn > turn:
                 df = add_data(df, scenario, trial_offset + trial, seed,
-                              alpha, beta, gamma, drones, victims, turn,
-                              successes, fails, score, heat)
+                              alpha, beta, gamma, turn, drones, victims,
+                              accepts, rejects, successes, fails, score, heat)
                 turn = curr_turn
 
             if "Drone done" in line:
-                drones += 1
+                drones.add(line.split("::")[-3].strip())
 
             if "Detected victim" in line:
                 victims.add(line.split("::")[-2].strip())
 
-            if "Fails task" in line:
-                fails += 1
+            if "Accepted task" in line:
+                accepts += 1
+
+            if "Rejected task" in line:
+                rejects += 1
 
             if "Succeeds task" in line:
                 successes += 1
+
+            if "Fails task" in line:
+                fails += 1
 
             if "Score" in line:
                 score = float(line.split(":")[-1].strip())
@@ -105,7 +117,8 @@ def parse_file(filename, trial_offset=0):
                 heat = float(line.split(":")[-1].strip())
 
         df = add_data(df, scenario, trial_offset + trial, seed, alpha, beta,
-                      gamma, drones, victims, turn, successes, fails, score, heat)
+                      gamma, turn, drones, victims, accepts, rejects,
+                      successes, fails, score, heat)
 
     return (df, trial_offset + trial)
 
