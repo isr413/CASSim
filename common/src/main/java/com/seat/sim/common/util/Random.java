@@ -34,6 +34,9 @@ public class Random {
   }
 
   public int getRandomNumber(int bound) {
+    if (bound <= 0) {
+      return 0;
+    }
     return this.rng.nextInt(bound);
   }
 
