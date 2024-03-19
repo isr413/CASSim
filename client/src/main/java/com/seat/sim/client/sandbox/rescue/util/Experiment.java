@@ -3,6 +3,7 @@ package com.seat.sim.client.sandbox.rescue.util;
 import java.util.Iterator;
 import java.util.Optional;
 
+import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.util.Random;
 import com.seat.sim.common.util.Range;
 
@@ -63,12 +64,36 @@ public class Experiment {
     }
   }
 
+  private double updateRange(double param, Range range) throws IndexOutOfBoundsException {
+    if (range.points() == 1) {
+      throw new IndexOutOfBoundsException("Range out of bounds");
+    }
+    if (Vector.near(range.getStep(), 0.) && !Vector.near(param, range.getEnd())) {
+      return range.getEnd();
+    }
+    if (Vector.near(range.getStep(), 0.) || Vector.near(param, range.getEnd())) {
+      throw new IndexOutOfBoundsException("Range out of bounds");
+    }
+    param += range.getStep();
+    if (range.isInclusive()) {
+      if (param >= range.getEnd() || Vector.near(param, range.getEnd())) {
+        param = range.getEnd();
+      }
+      return param;
+    }
+    if (Vector.near(param, range.getEnd()) || param >= range.getEnd()) {
+      throw new IndexOutOfBoundsException("Range out of bounds");
+    }
+    return param;
+  }
+
   private void updateAlpha() {
     if (this.alphaRange.isEmpty()) {
       return;
     }
-    this.alpha += this.alphaRange.get().getStep();
-    if (this.alpha == this.alphaRange.get().getEnd()) {
+    try {
+      this.alpha = this.updateRange(this.alpha, this.alphaRange.get());
+    } catch (IndexOutOfBoundsException e) {
       this.alpha = this.alphaRange.get().getStart();
     }
   }
@@ -77,8 +102,9 @@ public class Experiment {
     if (this.betaRange.isEmpty()) {
       return;
     }
-    this.beta += this.betaRange.get().getStep();
-    if (this.beta == this.betaRange.get().getEnd()) {
+    try {
+      this.beta = this.updateRange(this.beta, this.betaRange.get());
+    } catch (IndexOutOfBoundsException e) {
       this.beta = this.betaRange.get().getStart();
       this.updateAlpha();
     }
@@ -88,8 +114,9 @@ public class Experiment {
     if (this.gammaRange.isEmpty()) {
       return;
     }
-    this.gamma += this.gammaRange.get().getStep();
-    if (this.gamma == this.gammaRange.get().getEnd()) {
+    try {
+      this.gamma = this.updateRange(this.gamma, this.gammaRange.get());
+    } catch (IndexOutOfBoundsException e) {
       this.gamma = this.gammaRange.get().getStart();
       if (this.betaRange.isPresent()) {
         this.updateBeta();

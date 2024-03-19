@@ -112,28 +112,28 @@ public abstract class RescueScenario implements Application {
 
   public RescueScenario(String scenarioID, int baseCount, int droneCount, int victimCount, int cooldown, double alpha,
       double beta, double gamma, int trialsPer, int threadID, int threadCount, long seed) throws IOException {
-    this(scenarioID, baseCount, droneCount, victimCount, cooldown, Range.Inclusive(alpha, alpha),
-        Range.Inclusive(beta, beta), Range.Inclusive(gamma, gamma), trialsPer, threadID, threadCount, seed, "seeds");
+    this(scenarioID, baseCount, droneCount, victimCount, cooldown, Range.Inclusive(alpha, alpha, 0.),
+        Range.Inclusive(beta, beta, 0.), Range.Inclusive(gamma, gamma, 0.), trialsPer, threadID, threadCount, seed, "seeds");
   }
 
   public RescueScenario(String scenarioID, int baseCount, int droneCount, int victimCount, int cooldown, Range alpha,
       double beta, double gamma, int trialsPer, int threadID, int threadCount,
       long seed, String seedFile) throws IOException {
-    this(scenarioID, baseCount, droneCount, victimCount, cooldown, alpha, Range.Inclusive(beta, beta),
-        Range.Inclusive(gamma, gamma), trialsPer, threadID, threadCount, seed, seedFile);
+    this(scenarioID, baseCount, droneCount, victimCount, cooldown, alpha, Range.Inclusive(beta, beta, 0.),
+        Range.Inclusive(gamma, gamma, 0.), trialsPer, threadID, threadCount, seed, seedFile);
   }
 
   public RescueScenario(String scenarioID, int baseCount, int droneCount, int victimCount, int cooldown, Range alpha,
       Range beta, double gamma, int trialsPer, int threadID, int threadCount,
       long seed, String seedFile) throws IOException {
-    this(scenarioID, baseCount, droneCount, victimCount, cooldown, alpha, beta, Range.Inclusive(gamma, gamma),
+    this(scenarioID, baseCount, droneCount, victimCount, cooldown, alpha, beta, Range.Inclusive(gamma, gamma, 0.),
         trialsPer, threadID, threadCount, seed, seedFile);
   }
 
   public RescueScenario(String scenarioID, int baseCount, int droneCount, int victimCount, int cooldown, Range alpha,
       double beta, Range gamma, int trialsPer, int threadID, int threadCount,
       long seed, String seedFile) throws IOException {
-    this(scenarioID, baseCount, droneCount, victimCount, cooldown, alpha, Range.Inclusive(beta, beta), gamma,
+    this(scenarioID, baseCount, droneCount, victimCount, cooldown, alpha, Range.Inclusive(beta, beta, 0.), gamma,
         trialsPer, threadID, threadCount, seed, seedFile);
   }
 
@@ -369,6 +369,10 @@ public abstract class RescueScenario implements Application {
 
   public Optional<Grid> getGrid() {
     return Optional.of(this.grid);
+  }
+
+  public RemoteManager getManager() {
+    return this.manager;
   }
 
   public int getMissionLength() {
