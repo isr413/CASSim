@@ -17,10 +17,10 @@ public class ScenarioSize64Probes32RandomWalkA extends RescueScenario {
         32,                                   // drone count
         1024,                                 // victim count
         0,                                    // cooldown
-        1.,                                   // alpha
-        1.,                                   // beta
+        0.875,                                // alpha
+        0.75,                                 // beta
         0.,                                   // gamma
-        20,                                   // trials
+        100,                                  // trials
         threadID,                             // threadID
         4,                                    // threadCount
         seed                                  // seed

@@ -1,5 +1,6 @@
 package com.seat.sim.client.sandbox.rescue.remote;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,16 +34,35 @@ public class VictimManager {
       return Optional.empty();
     }
     Zone zone = grid.getZoneAtLocation(victim.getLocation());
-    List<Zone> neighborhood = grid.getNeighborhood(zone, false);
-    Collections.shuffle(neighborhood, this.scenario.getRng().unwrap());
-    Optional<Zone> nextZone = neighborhood
-      .stream()
-      .filter(neighbor -> !neighbor.hasZoneType(ZoneType.BLOCKED))
-      .findFirst();
-    if (nextZone.isEmpty()) {
-      return Optional.empty();
-    }
-    return Optional.of(nextZone.get().getLocation());
+      List<Zone> neighborhood = grid.getNeighborhood(zone, false)
+        .stream()
+        .filter(neighbor -> !neighbor.hasZoneType(ZoneType.BLOCKED))
+        .toList();
+      if (neighborhood.isEmpty()) {
+        return Optional.empty();
+      }
+      double diagonalWeight = Math.PI / (16. * (Math.PI - 0.5));
+      double orthogonalWeight = (1. - 4 * diagonalWeight) / 4.;
+      double[] weights = neighborhood
+        .stream()
+        .mapToDouble(z -> {
+          if (Vector.near(zone.getLocation().getX() - z.getLocation().getX(), 0.) ||
+              Vector.near(zone.getLocation().getY() - z.getLocation().getY(), 0.)) {
+            return orthogonalWeight;
+          } else {
+            return diagonalWeight;
+          }
+        })
+        .toArray();
+      double norm = Arrays.stream(weights).sum();
+      double roll = this.scenario.getRng().getRandomProbability();
+      for (int i = 0; i < weights.length; i++) {
+        roll -= (weights[i] / norm);
+        if (roll <= 0. || Vector.near(roll, 0.)) {
+          return Optional.of(neighborhood.get(i).getLocation());
+        }
+      }
+      return Optional.of(neighborhood.get(neighborhood.size() - 1).getLocation());
   }
 
   public void close() {}
