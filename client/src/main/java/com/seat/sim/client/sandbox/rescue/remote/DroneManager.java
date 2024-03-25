@@ -289,8 +289,7 @@ public class DroneManager {
                   );
                 return intent;
               }
-            }
-            else if (this.getCooldownTime() > 0 && !bleDetections.isEmpty()) {
+            } else if (this.getCooldownTime() > 0 && !bleDetections.isEmpty()) {
               this.setCooldown(drone.getRemoteID(), this.getCooldownTime());
               intent.addIntention(IntentRegistry.Stop());
               intent.addIntention(IntentRegistry.DeactivateAllSensors());
