@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import com.seat.sim.client.core.DroneManager;
 import com.seat.sim.client.core.DroneScenario;
 import com.seat.sim.client.negotiation.Contract;
-import com.seat.sim.client.sandbox.rescue.remote.RemoteUtil;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteState;
@@ -185,7 +184,7 @@ public class ReconDroneManager implements DroneManager {
               );
             return intent;
           }
-          if (RemoteUtil.shouldReturnHome(
+          if (ReconRemoteUtil.shouldReturnHome(
                 snap,
                 drone,
                 this.scenario.getGrid().get(),
@@ -289,8 +288,8 @@ public class ReconDroneManager implements DroneManager {
                   ":: %s :: %s :: %s :: %d :: Detected intel",
                   drone.getRemoteID(),
                   drone.getLocation().toString("%.0f"),
-                  ((IntelManager) this.scenario.getManager().getAssetManager()).getAdvAssignment(intelID),
-                  intelID
+                  intelID,
+                  ((IntelManager) this.scenario.getManager().getAssetManager()).getAdvAssignment(intelID)
                 );
               this.detectedIntel.add(intelID);
             }

@@ -20,19 +20,23 @@ public class IntelManager implements AssetManager {
 
   private Map<String, Integer> advAssignment;
   private int advCount;
+  private Map<String, Integer> pointAssignment;
   private Map<String, Double> popupTimes;
   private int intelCount;
+  private int points;
   private int popupCount;
   private Range popupTime;
   private DroneScenario scenario;
   private Set<String> surveys;
 
-  public IntelManager(DroneScenario scenario, int intelCount, int popupCount, int advCount, Range popupTime) {
+  public IntelManager(DroneScenario scenario, int intelCount, int popupCount, int advCount, int points, Range popupTime) {
     this.scenario = scenario;
     this.intelCount = intelCount;
     this.popupCount = popupCount;
     this.advCount = advCount;
     this.advAssignment = new HashMap<>();
+    this.points = points;
+    this.pointAssignment = new HashMap<>();
     this.popupTime = popupTime;
     this.popupTimes = new HashMap<>();
   }
@@ -68,6 +72,27 @@ public class IntelManager implements AssetManager {
     return this.intelCount;
   }
 
+  public int getPointAssignment(String intelID) {
+    if (!this.pointAssignment.containsKey(intelID)) {
+      int remPoints = points - this.pointAssignment.values().stream().mapToInt(x -> x).sum();
+      int remAssets = this.getAssetCount() - this.surveys.size();
+      if (remPoints == 0 || remAssets == 0) {
+        this.pointAssignment.put(intelID, 0);
+      } else if (remAssets == 1) {
+        this.pointAssignment.put(intelID, remPoints);
+      } else {
+        double avgPoints = (double) remPoints / remAssets;
+        int roll = Math.max(0, (int) (this.scenario.getRng().getRng().nextGaussian() + avgPoints));
+        this.pointAssignment.put(intelID, roll);
+      }
+    }
+    return this.pointAssignment.get(intelID);
+  }
+
+  public int getPoints() {
+    return this.points;
+  }
+
   public int getPopupCount() {
     return this.popupCount;
   }
@@ -75,6 +100,7 @@ public class IntelManager implements AssetManager {
   public void init() {
     this.surveys = new HashSet<>();
     this.advAssignment = new HashMap<>();
+    this.pointAssignment = new HashMap<>();
     this.popupTimes = new HashMap<>();
   }
 
@@ -95,6 +121,8 @@ public class IntelManager implements AssetManager {
   }
 
   public void setDone(String intelID) {
+    this.getAdvAssignment(intelID);
+    this.getPointAssignment(intelID);
     this.surveys.add(intelID);
   }
 

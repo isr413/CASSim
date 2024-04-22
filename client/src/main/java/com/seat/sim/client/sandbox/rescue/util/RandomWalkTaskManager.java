@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.seat.sim.client.core.DroneScenario;
-import com.seat.sim.client.sandbox.rescue.remote.RemoteUtil;
+import com.seat.sim.client.sandbox.rescue.remote.RescueRemoteUtil;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
@@ -35,7 +35,7 @@ public class RandomWalkTaskManager implements TaskManager {
       List<Zone> neighborhood = grid.getNeighborhood(zone, false)
         .stream()
         .filter(neighbor -> !neighbor.hasZoneType(ZoneType.BLOCKED))
-        .filter(neighbor -> RemoteUtil.validChoice(snap, state, zone))
+        .filter(neighbor -> RescueRemoteUtil.validChoice(snap, state, zone))
         .toList();
       if (neighborhood.isEmpty()) {
         return Optional.empty();

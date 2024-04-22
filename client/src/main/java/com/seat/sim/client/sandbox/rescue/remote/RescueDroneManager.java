@@ -181,7 +181,7 @@ public class RescueDroneManager implements DroneManager {
               );
             return intent;
           }
-          if (RemoteUtil.shouldReturnHome(
+          if (RescueRemoteUtil.shouldReturnHome(
                 snap,
                 drone,
                 this.scenario.getGrid().get(),

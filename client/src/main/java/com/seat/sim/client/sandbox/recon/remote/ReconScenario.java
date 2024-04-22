@@ -107,49 +107,49 @@ public abstract class ReconScenario implements DroneScenario {
 
   public ReconScenario(String scenarioID, Range alpha, double beta, double gamma, int trialsPer,
       int threadID, int threadCount, long seed, String seedFile) throws IOException {
-    this(scenarioID, 1, 32, 1024, 0, 0, Range.Inclusive(0, 0), 0, alpha, beta, gamma, trialsPer, threadID, threadCount,
-        seed, seedFile);
+    this(scenarioID, 1, 32, 1024, 0, 0, 1024, Range.Inclusive(0, 0), 0, alpha, beta, gamma, trialsPer,
+        threadID, threadCount, seed, seedFile);
   }
 
   public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int advCount,
-      Range popupTime, int cooldown, double alpha, double beta, double gamma, int trialsPer, int threadID, int threadCount,
-      long seed) throws IOException {
-    this(scenarioID, baseCount, droneCount, intelCount, popupCount, advCount, popupTime, cooldown,
+      int points, Range popupTime, int cooldown, double alpha, double beta, double gamma, int trialsPer,
+      int threadID, int threadCount, long seed) throws IOException {
+    this(scenarioID, baseCount, droneCount, intelCount, popupCount, advCount, points, popupTime, cooldown,
         Range.Inclusive(alpha, alpha, 0.), Range.Inclusive(beta, beta, 0.), Range.Inclusive(gamma, gamma, 0.),
         trialsPer, threadID, threadCount, seed, "seeds");
   }
 
   public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int advCount,
-      Range popupTime, int cooldown, Range alpha, double beta, double gamma, int trialsPer, int threadID, int threadCount,
-      long seed, String seedFile) throws IOException {
-    this(scenarioID, baseCount, droneCount, intelCount, popupCount, advCount, popupTime,
-        cooldown, alpha, Range.Inclusive(beta, beta, 0.),
+      int points, Range popupTime, int cooldown, Range alpha, double beta, double gamma, int trialsPer,
+      int threadID, int threadCount, long seed, String seedFile) throws IOException {
+    this(scenarioID, baseCount, droneCount, intelCount, popupCount, advCount, points, popupTime, cooldown, alpha,
+        Range.Inclusive(beta, beta, 0.), Range.Inclusive(gamma, gamma, 0.), trialsPer, threadID, threadCount,
+        seed, seedFile);
+  }
+
+  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int advCount,
+      int points, Range popupTime, int cooldown, Range alpha, Range beta, double gamma, int trialsPer,
+      int threadID, int threadCount, long seed, String seedFile) throws IOException {
+    this(scenarioID, baseCount, droneCount, intelCount, popupCount, advCount, points, popupTime, cooldown, alpha, beta,
         Range.Inclusive(gamma, gamma, 0.), trialsPer, threadID, threadCount, seed, seedFile);
   }
 
   public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int advCount,
-      Range popupTime, int cooldown, Range alpha, Range beta, double gamma, int trialsPer, int threadID, int threadCount,
-      long seed, String seedFile) throws IOException {
-    this(scenarioID, baseCount, droneCount, intelCount, popupCount, advCount, popupTime, cooldown, alpha, beta,
-        Range.Inclusive(gamma, gamma, 0.), trialsPer, threadID, threadCount, seed, seedFile);
-  }
-
-  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int advCount,
-      Range popupTime, int cooldown, Range alpha, double beta, Range gamma, int trialsPer, int threadID, int threadCount,
-      long seed, String seedFile) throws IOException {
-    this(scenarioID, baseCount, droneCount, intelCount, popupCount, advCount, popupTime, cooldown,
+      int points, Range popupTime, int cooldown, Range alpha, double beta, Range gamma, int trialsPer,
+      int threadID, int threadCount, long seed, String seedFile) throws IOException {
+    this(scenarioID, baseCount, droneCount, intelCount, popupCount, advCount, points, popupTime, cooldown,
         alpha, Range.Inclusive(beta, beta, 0.), gamma, trialsPer, threadID, threadCount, seed, seedFile);
   }
 
   public ReconScenario(String scenarioID, Range alpha, Range beta, Range gamma, int trialsPer,
       int threadID, int threadCount, long seed, String seedFile) throws IOException {
-    this(scenarioID, 1, 32, 1024, 0, 0, Range.Inclusive(0, 0), 0, alpha, beta, gamma, trialsPer, threadID, threadCount,
-        seed, seedFile);
+    this(scenarioID, 1, 32, 1024, 0, 0, 1024, Range.Inclusive(0, 0), 0, alpha, beta, gamma, trialsPer,
+        threadID, threadCount, seed, seedFile);
   }
 
   public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int advCount,
-      Range popupTime, int cooldown, Range alpha, Range beta, Range gamma, int trialsPer, int threadID, int threadCount,
-      long seed, String seedFile) throws IOException {
+      int points, Range popupTime, int cooldown, Range alpha, Range beta, Range gamma, int trialsPer,
+      int threadID, int threadCount, long seed, String seedFile) throws IOException {
     this.scenarioID = scenarioID;
     this.logger = (threadID > 0) ? new Logger(String.format("%s_%d", scenarioID, threadID)) : new Logger(scenarioID);
     this.grid = new Grid(
@@ -161,7 +161,7 @@ public abstract class ReconScenario implements DroneScenario {
     this.manager = new RemoteManager(
         this,
         new ReconDroneManager(this, droneCount, cooldown),
-        new IntelManager(this, intelCount, popupCount, advCount, popupTime),
+        new IntelManager(this, intelCount, popupCount, advCount, points, popupTime),
         baseCount,
         cooldown
       );
@@ -587,7 +587,12 @@ public abstract class ReconScenario implements DroneScenario {
         );
       return false;
     }
-    this.score += contract.getProposal().getReward();
+    String intelID = (this.getManager().getAssetManager().isDone(contract.getSenderID()))
+        ? contract.getSenderID()
+        : contract.getReceiverID();
+    double points = ((IntelManager) this.getManager().getAssetManager()).getPoints();
+    double pointAssignment = ((IntelManager) this.getManager().getAssetManager()).getPointAssignment(intelID);
+    this.score += contract.getProposal().getReward() * pointAssignment / points;
     this.report(
         snap.getTime(),
         ":: %s :: %s :: Succeeds task",

@@ -2,6 +2,8 @@ package com.seat.sim.client;
 
 import com.seat.sim.client.core.AppClient;
 import com.seat.sim.client.core.ClientException;
+import com.seat.sim.client.sandbox.recon.scenarios.ReconDEager;
+import com.seat.sim.client.sandbox.recon.scenarios.ReconDSelfish;
 import com.seat.sim.client.sandbox.rescue.scenarios.*;
 import com.seat.sim.common.core.Application;
 import com.seat.sim.common.util.ArgsParser;
@@ -105,6 +107,12 @@ public class App {
       }
       if (scenarioID.equals("ScenarioSize64Probes32WeightedWalkC")) {
         return new ScenarioSize64Probes32WeightedWalkC(args, threadID, seed);
+      }
+      if (scenarioID.equals("ReconDEager")) {
+        return new ReconDEager(args, threadID, seed);
+      }
+      if (scenarioID.equals("ReconDSelfish")) {
+        return new ReconDSelfish(args, threadID, seed);
       }
     } catch (Exception e) {
       throw new ClientException(e.getMessage());

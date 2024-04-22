@@ -8,7 +8,7 @@ import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.scenario.Snapshot;
 
-public class RemoteUtil {
+public class RescueRemoteUtil {
 
   public static boolean shouldReturnHome(Snapshot snap, RemoteState drone, Grid grid, Optional<Zone> task) {
     if (!drone.hasTag(RescueScenario.DRONE_TAG)) {
@@ -21,8 +21,8 @@ public class RemoteUtil {
       return false;
     }
     return (task.isPresent())
-      ? !RemoteUtil.validChoice(snap, drone, task.get())
-      : !RemoteUtil.validChoice(snap, drone, grid.getZoneAtLocation(drone.getLocation()));
+      ? !RescueRemoteUtil.validChoice(snap, drone, task.get())
+      : !RescueRemoteUtil.validChoice(snap, drone, grid.getZoneAtLocation(drone.getLocation()));
   }
 
   public static boolean validChoice(Snapshot snap, RemoteState drone, Zone zone) {
