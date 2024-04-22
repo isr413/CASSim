@@ -155,7 +155,13 @@ public abstract class RescueScenario implements DroneScenario {
         RescueScenario.ZONE_SIZE
       );
     this.exp = new Experiment(alpha, beta, gamma, trialsPer, threadID, threadCount, seed, this.loadSeeds(seedFile));
-    this.manager = new RemoteManager(this, new VictimManager(this, victimCount), baseCount, droneCount, cooldown);
+    this.manager = new RemoteManager(
+        this,
+        new RescueDroneManager(this, droneCount, cooldown),
+        new VictimManager(this, victimCount),
+        baseCount,
+        cooldown
+      );
   }
 
   protected abstract Optional<TaskManager> getTaskManager();

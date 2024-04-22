@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import com.seat.sim.client.core.AssetManager;
+import com.seat.sim.client.core.DroneManager;
 import com.seat.sim.client.core.DroneScenario;
 import com.seat.sim.common.remote.RemoteConfig;
 import com.seat.sim.common.remote.intent.IntentRegistry;
@@ -19,10 +20,11 @@ public class RemoteManager {
   private Collection<RemoteConfig> remotes;
   private DroneScenario scenario;
 
-  public RemoteManager(DroneScenario scenario, AssetManager assetManager, int baseCount, int droneCount, int cooldown) {
+  public RemoteManager(DroneScenario scenario, DroneManager droneManager, AssetManager assetManager,
+      int baseCount, int cooldown) {
     this.scenario = scenario;
     this.baseCount = baseCount;
-    this.droneManager = new DroneManager(scenario, droneCount, cooldown);
+    this.droneManager = droneManager;
     this.assetManager = assetManager;
   }
 

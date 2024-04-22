@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.seat.sim.client.core.DroneManager;
 import com.seat.sim.client.core.DroneScenario;
 import com.seat.sim.client.negotiation.Contract;
 import com.seat.sim.client.sandbox.rescue.remote.RemoteUtil;
@@ -22,7 +23,7 @@ import com.seat.sim.common.remote.intent.IntentRegistry;
 import com.seat.sim.common.remote.intent.IntentionSet;
 import com.seat.sim.common.scenario.Snapshot;
 
-public class ReconDroneManager {
+public class ReconDroneManager implements DroneManager {
 
   private Map<String, Zone> assignments;
   private Map<String, List<Contract>> contracts;
@@ -76,6 +77,10 @@ public class ReconDroneManager {
 
   public int getCooldownTime() {
     return this.cooldownTime;
+  }
+
+  public Set<String> getDetectedAssets() {
+    return this.getDetectedIntel();
   }
 
   public Set<String> getDetectedIntel() {
@@ -271,6 +276,9 @@ public class ReconDroneManager {
               ));
             allDetections.addAll(sensorDetections);
             for (String intelID : allDetections) {
+              if (this.detectedIntel.contains(intelID)) {
+                continue;
+              }
               RemoteState state = snap.getRemoteStateWithID(intelID);
               if (state.hasTag(ReconScenario.INTEL_POPUP_TAG) &&
                   ((IntelManager) this.scenario.getManager().getAssetManager()).isHidden(snap, state)) {
@@ -294,6 +302,7 @@ public class ReconDroneManager {
                     .stream()
                     .filter(state -> state.hasTag(ReconScenario.DRONE_TAG))
                     .filter(state -> !drone.equals(state))
+                    .filter(state -> !this.hasContracts(state.getRemoteID()))
                     .collect(Collectors.toList());
                 Collections.sort(otherDrones, new Comparator<RemoteState>() {
                   @Override

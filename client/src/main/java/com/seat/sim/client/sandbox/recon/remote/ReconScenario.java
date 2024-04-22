@@ -159,9 +159,10 @@ public abstract class ReconScenario implements DroneScenario {
       );
     this.exp = new Experiment(alpha, beta, gamma, trialsPer, threadID, threadCount, seed, this.loadSeeds(seedFile));
     this.manager = new RemoteManager(
-        this, new IntelManager(this, intelCount, popupCount, advCount, popupTime),
+        this,
+        new ReconDroneManager(this, droneCount, cooldown),
+        new IntelManager(this, intelCount, popupCount, advCount, popupTime),
         baseCount,
-        droneCount,
         cooldown
       );
   }

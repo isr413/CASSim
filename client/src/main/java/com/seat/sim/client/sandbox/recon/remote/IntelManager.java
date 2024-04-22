@@ -113,33 +113,6 @@ public class IntelManager implements AssetManager {
     if (intel.isEmpty()) {
       return Collections.emptyList();
     }
-    snap
-      .getActiveRemoteStates()
-      .stream()
-      .filter(state -> state.hasTag(ReconScenario.BASE_TAG))
-      .flatMap(state -> {
-          return state.getSensorStateWithModel(ReconScenario.SENSOR_A_COMMS).get().getSubjects().stream();
-        })
-      .filter(subjectID -> {
-          if (snap.getRemoteStateWithID(subjectID).hasTag(ReconScenario.INTEL_TAG)) {
-            return true;
-          }
-          if (snap.getRemoteStateWithID(subjectID).hasTag(ReconScenario.INTEL_POPUP_TAG)) {
-            return !this.isHidden(snap, snap.getRemoteStateWithID(subjectID));
-          }
-          return false;
-        })
-      .filter(intelID -> !this.isDone(intelID))
-      .forEach(intelID -> {
-          this.setDone(intelID);
-          this.scenario.report(
-              snap.getTime(),
-              ":: %s :: %s :: %s :: Rescued intel",
-              ReconScenario.BASE_TAG,
-              ReconScenario.GRID_CENTER.toString("%.0f"),
-              intelID
-            );
-        });
     return intel
       .stream()
       .map(intelCache -> {
