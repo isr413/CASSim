@@ -195,7 +195,7 @@ public abstract class HeatmapTaskManager implements TaskManager {
     this.defer = new HashMap<>();
   }
 
-  public double predict(Snapshot snap, RemoteState state, double eDeadline, double eSuccess,
+  public double predict(Snapshot snap, List<RemoteState> states, double eDeadline, double eSuccess,
       double deadline, Optional<Double> mass) {
     double[][] simZones = new double[this.zones.length][];
     double[][] droneZones = new double[this.zones.length][];
@@ -209,7 +209,7 @@ public abstract class HeatmapTaskManager implements TaskManager {
       .getActiveRemoteStates()
       .stream()
       .filter(s -> s.hasTag(scenario.getDroneTag()))
-      .filter(s -> !s.equals(state))
+      .filter(s -> !states.contains(s))
       .collect(Collectors.toList());
     for (RemoteState s : drones) {
       double x = s.getLocation().getX(), y = s.getLocation().getY();
@@ -217,18 +217,20 @@ public abstract class HeatmapTaskManager implements TaskManager {
       droneZones[(int) (y / size)][(int) (x / size)] = 1.;
     }
 
-    Vector location = state.getLocation();
+    List<Vector> locations = states.stream().map(state -> state.getLocation()).collect(Collectors.toList());
 
     double earlyLoss = 0.;
     for (int t = 0; t < (Vector.near(eDeadline, 0.) ? 0 : (int) Math.ceil(eDeadline)); t++) {
       simZones = this.computeWeights(simZones);
 
-      location = this.predict(location, simZones);
-
-      Zone choice = this.scenario.getGrid().get().getZoneAtLocation(location);
-      earlyLoss += this.getZoneWeight(simZones, choice);
-      double x = choice.getLocation().getX(), y = choice.getLocation().getY(), size = choice.getSize();
-      simZones[(int) (y / size)][(int) (x / size)] *= (1. - this.scenario.getPhi());
+      final double[][] currZones = simZones;
+      locations = locations.stream().map(location -> this.predict(location, currZones)).collect(Collectors.toList());
+      for (Vector location : locations) {
+        Zone choice = this.scenario.getGrid().get().getZoneAtLocation(location);
+        earlyLoss += this.getZoneWeight(simZones, choice);
+        double x = choice.getLocation().getX(), y = choice.getLocation().getY(), size = choice.getSize();
+        simZones[(int) (y / size)][(int) (x / size)] *= (1. - this.scenario.getPhi());
+      }
 
       droneZones = this.computeWeights(droneZones);
       this.updateWeights(simZones, droneZones);
@@ -239,12 +241,14 @@ public abstract class HeatmapTaskManager implements TaskManager {
     for (int t = 0; t < (Vector.near(deadline, 0.) ? 0 : (int) Math.ceil(deadline)); t++) {
       simZones = this.computeWeights(simZones);
 
-      location = this.predict(location, simZones);
-
-      Zone choice = this.scenario.getGrid().get().getZoneAtLocation(location);
-      lateLoss += this.getZoneWeight(simZones, choice);
-      double x = choice.getLocation().getX(), y = choice.getLocation().getY(), size = choice.getSize();
-      simZones[(int) (y / size)][(int) (x / size)] *= (1. - this.scenario.getPhi());
+      final double[][] currZones = simZones;
+      locations = locations.stream().map(location -> this.predict(location, currZones)).collect(Collectors.toList());
+      for (Vector location : locations) {
+        Zone choice = this.scenario.getGrid().get().getZoneAtLocation(location);
+        lateLoss += this.getZoneWeight(simZones, choice);
+        double x = choice.getLocation().getX(), y = choice.getLocation().getY(), size = choice.getSize();
+        simZones[(int) (y / size)][(int) (x / size)] *= (1. - this.scenario.getPhi());
+      }
 
       droneZones = this.computeWeights(droneZones);
       this.updateWeights(simZones, droneZones);

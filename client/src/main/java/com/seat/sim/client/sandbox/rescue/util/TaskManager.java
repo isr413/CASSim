@@ -1,5 +1,6 @@
 package com.seat.sim.client.sandbox.rescue.util;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.seat.sim.common.math.Zone;
@@ -24,10 +25,20 @@ public interface TaskManager {
 
   default double predict(Snapshot snap, RemoteState state, double eDeadline, double eSuccess,
       double deadline) {
-    return predict(snap, state, eDeadline, eSuccess, deadline, Optional.empty());
+    return predict(snap, List.of(state), eDeadline, eSuccess, deadline, Optional.empty());
   }
 
-  double predict(Snapshot snap, RemoteState state, double eDeadline, double eSuccess,
+  default double predict(Snapshot snap, List<RemoteState> states, double eDeadline, double eSuccess,
+      double deadline) {
+    return predict(snap, states, eDeadline, eSuccess, deadline, Optional.empty());
+  }
+
+  default double predict(Snapshot snap, RemoteState state, double eDeadline, double eSuccess,
+      double deadline, Optional<Double> mass) {
+    return predict(snap, List.of(state), eDeadline, eSuccess, deadline, mass);
+  }
+
+  double predict(Snapshot snap, List<RemoteState> states, double eDeadline, double eSuccess,
       double deadline, Optional<Double> mass);
 
   default void reset() {}
