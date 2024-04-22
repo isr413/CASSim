@@ -1,6 +1,8 @@
 package com.seat.sim.client.sandbox.rescue.scenarios;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import com.seat.sim.client.negotiation.NegotiationManager;
@@ -9,12 +11,15 @@ import com.seat.sim.client.negotiation.StochasticNegotiation;
 import com.seat.sim.client.sandbox.rescue.remote.RescueScenario;
 import com.seat.sim.client.sandbox.rescue.util.QuadTaskManager;
 import com.seat.sim.client.sandbox.rescue.util.TaskManager;
+import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.scenario.Snapshot;
 import com.seat.sim.common.util.ArgsParser;
 import com.seat.sim.common.util.Range;
 
 public class ScenarioSize64Probes32EagerC extends RescueScenario {
+
+  private Map<String, Result> cache = new HashMap<>();
 
   public ScenarioSize64Probes32EagerC(ArgsParser args, int threadID, long seed) throws IOException {
     super(
@@ -56,20 +61,29 @@ public class ScenarioSize64Probes32EagerC extends RescueScenario {
   @Override
   public boolean isAcceptable(Snapshot snap, RemoteState state, String senderID, String receiverID,
       Proposal proposal) {
-    double mass = super.getManager().getDroneManager().getDetectedVictims().size();
-    double expectedLoss = super.tasks
-      .get()
-      .predict(
-          snap,
-          state,
-          proposal.getEarliestDeadline(),
-          proposal.getEarlySuccessLikelihood(),
-          proposal.getDeadline(),
-          Optional.of(mass)
-        );
-    double expectedReward = (proposal.getEarlyRewardBonus() + proposal.getReward()) *
-        proposal.getEarlySuccessLikelihood() + proposal.getReward() *
-        (1. - proposal.getEarlySuccessLikelihood()) * proposal.getSuccessLikelihood();
-    return Double.compare(expectedReward, expectedLoss) >= 0;
+    if (!this.cache.containsKey(state.getRemoteID()) ||
+        !Vector.near(snap.getTime(), this.cache.get(state.getRemoteID()).time)) {
+      double mass = super.getManager().getDroneManager().getDetectedVictims().size();
+      double expLoss = super.tasks
+        .get()
+        .predict(
+            snap,
+            state,
+            proposal.getEarliestDeadline(),
+            proposal.getEarlySuccessLikelihood(),
+            proposal.getDeadline(),
+            Optional.of(mass)
+          );
+      this.cache.put(state.getRemoteID(), new Result(snap.getTime(), expLoss));
+    }
+    return Double.compare(rankProposal(proposal), this.cache.get(state.getRemoteID()).loss) >= 0;
   }
+
+  @Override
+  public double rankProposal(Proposal p) {
+    return (p.getEarlyRewardBonus() + p.getReward()) * p.getEarlySuccessLikelihood() +
+        p.getReward() * (1. - p.getEarlySuccessLikelihood()) * p.getSuccessLikelihood();
+  }
+
+  static record Result(double time, double loss) {}
 }

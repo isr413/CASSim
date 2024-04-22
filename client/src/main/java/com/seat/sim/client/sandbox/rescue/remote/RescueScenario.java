@@ -5,6 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -478,13 +480,20 @@ public abstract class RescueScenario implements DroneScenario {
     if (!this.hasNegotiations()) {
       return Optional.empty();
     }
-    Optional<Proposal> proposal = this.negotiations.get().getNextProposal(senderID, receiverID);
-    if (!proposal.isPresent()) {
+    List<Proposal> proposals = this.negotiations.get().getProposals(senderID)
+        .stream()
+        .filter(proposal -> this.isAcceptable(snap, state, senderID, receiverID, proposal))
+        .collect(Collectors.toList());
+    if (proposals.isEmpty()) {
       return Optional.empty();
     }
-    return (this.isAcceptable(snap, state, senderID, receiverID, proposal.get()))
-      ? Optional.of(this.negotiations.get().acceptProposal(senderID, receiverID, proposal.get()))
-      : Optional.empty();
+    Collections.sort(proposals, new Comparator<Proposal>() {
+      @Override
+      public int compare(Proposal a, Proposal b) {
+        return -Double.compare(rankProposal(a), rankProposal(b));
+      }
+    });
+    return Optional.of(this.negotiations.get().acceptProposal(senderID, receiverID, proposals.get(0)));
   }
 
   public Optional<Zone> nextTask(Snapshot snap, RemoteState state) {
@@ -492,6 +501,10 @@ public abstract class RescueScenario implements DroneScenario {
       return Optional.empty();
     }
     return this.tasks.get().getNextTask(snap, state);
+  }
+
+  public double rankProposal(Proposal p) {
+    return 1.;
   }
 
   public void report(double simTime, String fmt, Object... args) {

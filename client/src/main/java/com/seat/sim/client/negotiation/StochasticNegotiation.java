@@ -74,7 +74,10 @@ public class StochasticNegotiation implements NegotiationManager {
   }
 
   private String getKey(String senderID, String receiverID) {
-    return String.format("%s::%s", senderID, receiverID);
+    if (senderID.compareTo(receiverID) <= 0) {
+      return String.format("%s::%s", senderID, receiverID);
+    }
+    return String.format("%s::%s", receiverID, senderID);
   }
 
   public Contract acceptProposal(String senderID, String receiverID, Proposal proposal) {
@@ -128,6 +131,7 @@ public class StochasticNegotiation implements NegotiationManager {
   }
 
   public List<Proposal> getProposals(String remoteID) {
+    this.ensureProposals(remoteID);
     return (this.proposals.containsKey(remoteID)) ? this.proposals.get(remoteID) : List.of();
   }
 
