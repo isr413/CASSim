@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 
-import com.seat.sim.client.sandbox.rescue.remote.RescueScenario;
+import com.seat.sim.client.core.DroneScenario;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteState;
@@ -15,11 +15,11 @@ import com.seat.sim.common.scenario.Snapshot;
 
 public class StochasticHeatmap extends HeatmapTaskManager {
 
-  public StochasticHeatmap(RescueScenario scenario) {
+  public StochasticHeatmap(DroneScenario scenario) {
     super(scenario);
   }
 
-  public StochasticHeatmap(RescueScenario scenario, boolean useDefer, boolean useMovement, boolean useMax) {
+  public StochasticHeatmap(DroneScenario scenario, boolean useDefer, boolean useMovement, boolean useMax) {
     super(scenario, useDefer, useMovement, useMax);
   }
 

@@ -1,4 +1,4 @@
-package com.seat.sim.client.sandbox.rescue.remote;
+package com.seat.sim.client.sandbox.recon.remote;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,6 +16,7 @@ import com.seat.sim.client.core.DroneScenario;
 import com.seat.sim.client.negotiation.Contract;
 import com.seat.sim.client.negotiation.NegotiationManager;
 import com.seat.sim.client.negotiation.Proposal;
+import com.seat.sim.client.sandbox.rescue.remote.RemoteManager;
 import com.seat.sim.client.sandbox.rescue.util.Experiment;
 import com.seat.sim.client.sandbox.rescue.util.TaskManager;
 import com.seat.sim.common.gui.TeamColor;
@@ -37,21 +38,21 @@ import com.seat.sim.common.util.Logger;
 import com.seat.sim.common.util.Random;
 import com.seat.sim.common.util.Range;
 
-public abstract class RescueScenario implements DroneScenario {
+public abstract class ReconScenario implements DroneScenario {
 
   // Scenario info
-  public static final int NUM_TURNS = 81;
-  public static final int TURN_LENGTH = 20;
-  public static final int MISSION_LENGTH = RescueScenario.NUM_TURNS * RescueScenario.TURN_LENGTH;
-  public static final double STEP_SIZE = 20.;
+  public static final int NUM_TURNS = 180;
+  public static final int TURN_LENGTH = 10;
+  public static final int MISSION_LENGTH = ReconScenario.NUM_TURNS * ReconScenario.TURN_LENGTH;
+  public static final double STEP_SIZE = 10.;
 
   // Grid info
-  public static final int GRID_SIZE = 64;
-  public static final int ZONE_SIZE = 14;
+  public static final int GRID_SIZE = 102;
+  public static final int ZONE_SIZE = 127;
 
   public static final Vector GRID_CENTER = new Vector(
-      RescueScenario.GRID_SIZE * RescueScenario.ZONE_SIZE / 2.,
-      RescueScenario.GRID_SIZE * RescueScenario.ZONE_SIZE / 2.
+      ReconScenario.GRID_SIZE * ReconScenario.ZONE_SIZE / 2.,
+      ReconScenario.GRID_SIZE * ReconScenario.ZONE_SIZE / 2.
     );
 
   // Base info
@@ -62,38 +63,35 @@ public abstract class RescueScenario implements DroneScenario {
   // Drone info
   public static final String DRONE_TAG = "Drone";
   public static final String DRONE_LRC_TAG = "Drone_LRC";
-  public static final String DRONE_BLE_TAG = "Drone_BLE";
+  public static final String DRONE_SENSOR_A_TAG = "Drone_SENSOR_A";
   public static final TeamColor DRONE_COLOR = TeamColor.BLUE;
   public static final Vector DRONE_FUEL_USAGE = new Vector(0.0001, 0.0001, 0.0001);
   public static final Vector DRONE_INITIAL_VELOCITY = Vector.ZERO;
-  public static final double DRONE_SCAN_VELOCITY = 6.7;
+  public static final double DRONE_SCAN_VELOCITY = 30.;
   public static final double DRONE_SCAN_ACCELERATION = 1.4;
-  public static final double DRONE_MAX_VELOCITY = 20.;
-  public static final double DRONE_MAX_ACCELERATION = 3.;
+  public static final double DRONE_MAX_VELOCITY = 30.;
+  public static final double DRONE_MAX_ACCELERATION = 10.;
 
-  // Victim info
-  public static final String VICTIM_TAG = "Victim";
-  public static final String VICTIM_BLE_TAG = "Victim_BLE";
-  public static final TeamColor VICTIM_COLOR = TeamColor.RED;
-  public static final Vector VICTIM_INITIAL_VELOCITY = Vector.ZERO;
-  public static final double VICTIM_MAX_VELOCITY = 1.4;
-  public static final double VICTIM_MAX_ACCELERATION = 2.5;
+  // Intel info
+  public static final String INTEL_TAG = "Intel";
+  public static final String INTEL_POPUP_TAG = "Intel_Popup";
+  public static final String INTEL_SENSOR_A_TAG = "Intel_SENSOR_A";
+  public static final TeamColor INTEL_COLOR = TeamColor.RED;
+  public static final Vector INTEL_INITIAL_VELOCITY = Vector.ZERO;
+  public static final double INTEL_MAX_VELOCITY = 0.;
+  public static final double INTEL_MAX_ACCELERATION = 0.;
 
   // Sensors
-  public static final String HUMAN_VISION = "Human_Vision";
-  public static final double HUMAN_VISION_RANGE = 10.;
-  public static final double BASE_VISION_RANGE = 20.;
-
   public static final String LONG_RANGE_COMMS = "Long_Range_Comms";
   public static final double LRC_BATT_USAGE = 0.0001;
 
   public static final String DRONE_CAMERA = "Drone_Camera";
-  public static final double CAM_BATT_USAGE = 0.0002;
-  public static final double CAM_RANGE = 10.;
+  public static final double CAM_BATT_USAGE = 0.0001;
+  public static final double CAM_RANGE = 90.;
 
-  public static final String BLE_COMMS = "BLE_Comms";
-  public static final double BLE_BATT_USAGE = 0.0001;
-  public static final double BLE_RANGE = 10.;
+  public static final String SENSOR_A_COMMS = "SENSOR_A_Comms";
+  public static final double SENSOR_A_BATT_USAGE = 0.0001;
+  public static final double SENSOR_A_RANGE = 90.;
 
   private Grid grid;
   private Logger logger;
@@ -102,58 +100,66 @@ public abstract class RescueScenario implements DroneScenario {
   protected Experiment exp;
   protected RemoteManager manager;
   protected Optional<NegotiationManager> negotiations;
+  protected int popups;
   protected double score;
   protected Optional<TaskManager> tasks;
 
-  public RescueScenario(String scenarioID, Range alpha, double beta, double gamma, int trialsPer,
+  public ReconScenario(String scenarioID, Range alpha, double beta, double gamma, int trialsPer,
       int threadID, int threadCount, long seed, String seedFile) throws IOException {
-    this(scenarioID, 1, 32, 1024, 0, alpha, beta, gamma, trialsPer, threadID, threadCount, seed, seedFile);
+    this(scenarioID, 1, 32, 1024, 0, 0, alpha, beta, gamma, trialsPer, threadID, threadCount, seed, seedFile);
   }
 
-  public RescueScenario(String scenarioID, int baseCount, int droneCount, int victimCount, int cooldown, double alpha,
-      double beta, double gamma, int trialsPer, int threadID, int threadCount, long seed) throws IOException {
-    this(scenarioID, baseCount, droneCount, victimCount, cooldown, Range.Inclusive(alpha, alpha, 0.),
+  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int cooldown,
+      double alpha, double beta, double gamma, int trialsPer, int threadID, int threadCount,
+      long seed) throws IOException {
+    this(scenarioID, baseCount, droneCount, intelCount, popupCount, cooldown, Range.Inclusive(alpha, alpha, 0.),
         Range.Inclusive(beta, beta, 0.), Range.Inclusive(gamma, gamma, 0.), trialsPer, threadID, threadCount, seed, "seeds");
   }
 
-  public RescueScenario(String scenarioID, int baseCount, int droneCount, int victimCount, int cooldown, Range alpha,
-      double beta, double gamma, int trialsPer, int threadID, int threadCount,
+  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int cooldown,
+      Range alpha, double beta, double gamma, int trialsPer, int threadID, int threadCount,
       long seed, String seedFile) throws IOException {
-    this(scenarioID, baseCount, droneCount, victimCount, cooldown, alpha, Range.Inclusive(beta, beta, 0.),
+    this(scenarioID, baseCount, droneCount, intelCount, popupCount, cooldown, alpha, Range.Inclusive(beta, beta, 0.),
         Range.Inclusive(gamma, gamma, 0.), trialsPer, threadID, threadCount, seed, seedFile);
   }
 
-  public RescueScenario(String scenarioID, int baseCount, int droneCount, int victimCount, int cooldown, Range alpha,
-      Range beta, double gamma, int trialsPer, int threadID, int threadCount,
+  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int cooldown,
+      Range alpha, Range beta, double gamma, int trialsPer, int threadID, int threadCount,
       long seed, String seedFile) throws IOException {
-    this(scenarioID, baseCount, droneCount, victimCount, cooldown, alpha, beta, Range.Inclusive(gamma, gamma, 0.),
-        trialsPer, threadID, threadCount, seed, seedFile);
+    this(scenarioID, baseCount, droneCount, intelCount, popupCount, cooldown, alpha, beta,
+        Range.Inclusive(gamma, gamma, 0.), trialsPer, threadID, threadCount, seed, seedFile);
   }
 
-  public RescueScenario(String scenarioID, int baseCount, int droneCount, int victimCount, int cooldown, Range alpha,
-      double beta, Range gamma, int trialsPer, int threadID, int threadCount,
+  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int cooldown,
+      Range alpha, double beta, Range gamma, int trialsPer, int threadID, int threadCount,
       long seed, String seedFile) throws IOException {
-    this(scenarioID, baseCount, droneCount, victimCount, cooldown, alpha, Range.Inclusive(beta, beta, 0.), gamma,
-        trialsPer, threadID, threadCount, seed, seedFile);
+    this(scenarioID, baseCount, droneCount, intelCount, popupCount, cooldown, alpha, Range.Inclusive(beta, beta, 0.),
+        gamma, trialsPer, threadID, threadCount, seed, seedFile);
   }
 
-  public RescueScenario(String scenarioID, Range alpha, Range beta, Range gamma, int trialsPer,
+  public ReconScenario(String scenarioID, Range alpha, Range beta, Range gamma, int trialsPer,
       int threadID, int threadCount, long seed, String seedFile) throws IOException {
-    this(scenarioID, 1, 32, 1024, 0, alpha, beta, gamma, trialsPer, threadID, threadCount, seed, seedFile);
+    this(scenarioID, 1, 32, 1024, 0, 0, alpha, beta, gamma, trialsPer, threadID, threadCount, seed, seedFile);
   }
 
-  public RescueScenario(String scenarioID, int baseCount, int droneCount, int victimCount, int cooldown, Range alpha,
-      Range beta, Range gamma, int trialsPer, int threadID, int threadCount,
+  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int cooldown,
+      Range alpha, Range beta, Range gamma, int trialsPer, int threadID, int threadCount,
       long seed, String seedFile) throws IOException {
     this.scenarioID = scenarioID;
+    this.popups = popupCount;
     this.logger = (threadID > 0) ? new Logger(String.format("%s_%d", scenarioID, threadID)) : new Logger(scenarioID);
     this.grid = new Grid(
-        RescueScenario.GRID_SIZE,
-        RescueScenario.GRID_SIZE,
-        RescueScenario.ZONE_SIZE
+        ReconScenario.GRID_SIZE,
+        ReconScenario.GRID_SIZE,
+        ReconScenario.ZONE_SIZE
       );
     this.exp = new Experiment(alpha, beta, gamma, trialsPer, threadID, threadCount, seed, this.loadSeeds(seedFile));
-    this.manager = new RemoteManager(this, new VictimManager(this, victimCount), baseCount, droneCount, cooldown);
+    this.manager = new RemoteManager(
+        this, new IntelManager(this, intelCount + popupCount),
+        baseCount,
+        droneCount,
+        cooldown
+      );
   }
 
   protected abstract Optional<TaskManager> getTaskManager();
@@ -162,50 +168,50 @@ public abstract class RescueScenario implements DroneScenario {
     return List.of(
         new RemoteConfig(
             new RemoteProto(
-                Set.of(RescueScenario.BASE_TAG),
+                Set.of(ReconScenario.BASE_TAG),
                 List.of(
                     new SensorConfig(
                         new SensorProto(
-                            RescueScenario.HUMAN_VISION,
-                            Set.of(RescueScenario.BASE_TAG),
-                            Set.of(RescueScenario.VICTIM_TAG),
-                            new SensorStats(0., 1., 0., RescueScenario.BASE_VISION_RANGE)
+                            ReconScenario.SENSOR_A_COMMS,
+                            Set.of(ReconScenario.BASE_TAG),
+                            Set.of(ReconScenario.INTEL_TAG, ReconScenario.INTEL_POPUP_TAG),
+                            new SensorStats(0., 1., 0., ReconScenario.SENSOR_A_RANGE)
                           ),
                         1,
                         true
                       ),
                     new SensorConfig(
                         new SensorProto(
-                            RescueScenario.LONG_RANGE_COMMS,
-                            Set.of(RescueScenario.BASE_LRC_TAG),
-                            Set.of(RescueScenario.DRONE_LRC_TAG),
-                            new SensorStats(RescueScenario.LRC_BATT_USAGE, 1., 0.)
+                            ReconScenario.LONG_RANGE_COMMS,
+                            Set.of(ReconScenario.BASE_LRC_TAG),
+                            Set.of(ReconScenario.DRONE_LRC_TAG),
+                            new SensorStats(ReconScenario.LRC_BATT_USAGE, 1., 0.)
                           ),
                         1,
                         true
                       )
                   ),
-                new KinematicsProto(RescueScenario.GRID_CENTER)
+                new KinematicsProto(ReconScenario.GRID_CENTER)
               ),
-            RescueScenario.BASE_COLOR,
+            ReconScenario.BASE_COLOR,
             this.manager.getBaseCount(),
             true,
             false
           ),
           new RemoteConfig(
               new RemoteProto(
-                  Set.of(RescueScenario.DRONE_TAG),
+                  Set.of(ReconScenario.DRONE_TAG),
                   List.of(
                       new SensorConfig(
                           new SensorProto(
-                              RescueScenario.DRONE_CAMERA,
-                              Set.of(RescueScenario.DRONE_TAG),
-                              Set.of(RescueScenario.VICTIM_TAG),
+                              ReconScenario.DRONE_CAMERA,
+                              Set.of(ReconScenario.DRONE_TAG),
+                              Set.of(ReconScenario.INTEL_TAG, ReconScenario.INTEL_POPUP_TAG),
                               new SensorStats(
-                                  RescueScenario.CAM_BATT_USAGE,
+                                  ReconScenario.CAM_BATT_USAGE,
                                   this.exp.getBeta(),
                                   0.,
-                                  RescueScenario.CAM_RANGE
+                                  ReconScenario.CAM_RANGE
                                 )
                             ),
                           1,
@@ -213,24 +219,24 @@ public abstract class RescueScenario implements DroneScenario {
                         ),
                       new SensorConfig(
                           new SensorProto(
-                              RescueScenario.LONG_RANGE_COMMS,
-                              Set.of(RescueScenario.DRONE_LRC_TAG),
-                              Set.of(RescueScenario.BASE_LRC_TAG),
-                              new SensorStats(RescueScenario.LRC_BATT_USAGE, 1., 0.)
+                              ReconScenario.LONG_RANGE_COMMS,
+                              Set.of(ReconScenario.DRONE_LRC_TAG),
+                              Set.of(ReconScenario.BASE_LRC_TAG),
+                              new SensorStats(ReconScenario.LRC_BATT_USAGE, 1., 0.)
                             ),
                           1,
                           true
                         ),
                       new SensorConfig(
                           new SensorProto(
-                              RescueScenario.BLE_COMMS,
-                              Set.of(RescueScenario.DRONE_BLE_TAG),
-                              Set.of(RescueScenario.VICTIM_BLE_TAG),
+                              ReconScenario.SENSOR_A_COMMS,
+                              Set.of(ReconScenario.DRONE_SENSOR_A_TAG),
+                              Set.of(ReconScenario.INTEL_SENSOR_A_TAG),
                               new SensorStats(
-                                  RescueScenario.BLE_BATT_USAGE,
+                                  ReconScenario.SENSOR_A_BATT_USAGE,
                                   this.exp.getGamma(),
                                   0.,
-                                  RescueScenario.BLE_RANGE
+                                  ReconScenario.SENSOR_A_RANGE
                                 )
                             ),
                           1,
@@ -238,44 +244,34 @@ public abstract class RescueScenario implements DroneScenario {
                         )
                     ),
                   new KinematicsProto(
-                      RescueScenario.GRID_CENTER,
-                      new FuelProto(1., 1., RescueScenario.DRONE_FUEL_USAGE),
+                      ReconScenario.GRID_CENTER,
+                      new FuelProto(1., 1., ReconScenario.DRONE_FUEL_USAGE),
                       new MotionProto(
-                          RescueScenario.DRONE_INITIAL_VELOCITY,
-                          RescueScenario.DRONE_MAX_VELOCITY,
-                          RescueScenario.DRONE_MAX_ACCELERATION
+                          ReconScenario.DRONE_INITIAL_VELOCITY,
+                          ReconScenario.DRONE_MAX_VELOCITY,
+                          ReconScenario.DRONE_MAX_ACCELERATION
                         )
                     )
                 ),
-              RescueScenario.DRONE_COLOR,
+              ReconScenario.DRONE_COLOR,
               this.manager.getDroneCount(),
               true,
               true
             ),
           new RemoteConfig(
               new RemoteProto(
-                  Set.of(RescueScenario.VICTIM_TAG),
+                  Set.of(ReconScenario.INTEL_TAG),
                   List.of(
                       new SensorConfig(
                           new SensorProto(
-                              RescueScenario.HUMAN_VISION,
-                              Set.of(RescueScenario.VICTIM_TAG),
-                              Set.of(RescueScenario.BASE_TAG, RescueScenario.DRONE_TAG),
-                              new SensorStats(0., 1., 0., RescueScenario.HUMAN_VISION_RANGE)
-                            ),
-                          1,
-                          true
-                        ),
-                      new SensorConfig(
-                          new SensorProto(
-                              RescueScenario.BLE_COMMS,
-                              Set.of(RescueScenario.VICTIM_BLE_TAG),
-                              Set.of(RescueScenario.DRONE_BLE_TAG),
+                              ReconScenario.SENSOR_A_COMMS,
+                              Set.of(ReconScenario.INTEL_SENSOR_A_TAG),
+                              Set.of(ReconScenario.DRONE_SENSOR_A_TAG),
                               new SensorStats(
-                                  RescueScenario.BLE_BATT_USAGE,
+                                  ReconScenario.SENSOR_A_BATT_USAGE,
                                   this.exp.getGamma(),
                                   0.,
-                                  RescueScenario.BLE_RANGE
+                                  ReconScenario.SENSOR_A_RANGE
                                 )
                             ),
                           1,
@@ -286,17 +282,53 @@ public abstract class RescueScenario implements DroneScenario {
                       null,
                       null,
                       new MotionProto(
-                          RescueScenario.VICTIM_INITIAL_VELOCITY,
-                          RescueScenario.VICTIM_MAX_VELOCITY,
-                          RescueScenario.VICTIM_MAX_ACCELERATION
+                          ReconScenario.INTEL_INITIAL_VELOCITY,
+                          ReconScenario.INTEL_MAX_VELOCITY,
+                          ReconScenario.INTEL_MAX_ACCELERATION
                         )
                     )
                 ),
-              RescueScenario.VICTIM_COLOR,
-              this.manager.getAssetCount(),
+              ReconScenario.INTEL_COLOR,
+              this.manager.getAssetCount() - this.popups,
+              true,
+              true
+            ),
+          new RemoteConfig(
+              new RemoteProto(
+                  Set.of(ReconScenario.INTEL_POPUP_TAG),
+                  List.of(
+                      new SensorConfig(
+                          new SensorProto(
+                              ReconScenario.SENSOR_A_COMMS,
+                              Set.of(ReconScenario.INTEL_SENSOR_A_TAG),
+                              Set.of(ReconScenario.DRONE_SENSOR_A_TAG),
+                              new SensorStats(
+                                  ReconScenario.SENSOR_A_BATT_USAGE,
+                                  this.exp.getGamma(),
+                                  0.,
+                                  ReconScenario.SENSOR_A_RANGE
+                                )
+                            ),
+                          1,
+                          true
+                        )
+                    ),
+                  new KinematicsProto(
+                      null,
+                      null,
+                      new MotionProto(
+                          ReconScenario.INTEL_INITIAL_VELOCITY,
+                          ReconScenario.INTEL_MAX_VELOCITY,
+                          ReconScenario.INTEL_MAX_ACCELERATION
+                        )
+                    )
+                ),
+              ReconScenario.INTEL_COLOR,
+              this.popups,
               true,
               true
             )
+
       );
   }
 
@@ -309,7 +341,7 @@ public abstract class RescueScenario implements DroneScenario {
   }
 
   protected void reportScore() {
-    this.reportScore(RescueScenario.MISSION_LENGTH);
+    this.reportScore(ReconScenario.MISSION_LENGTH);
   }
 
   protected void reportScore(Snapshot snap) {
@@ -347,6 +379,10 @@ public abstract class RescueScenario implements DroneScenario {
     return this.exp.getAlpha();
   }
 
+  public int getAssetCount() {
+    return this.manager.getAssetCount();
+  }
+
   public int getBaseCount() {
     return this.manager.getBaseCount();
   }
@@ -364,7 +400,7 @@ public abstract class RescueScenario implements DroneScenario {
   }
 
   public String getDroneTag() {
-    return RescueScenario.DRONE_TAG;
+    return ReconScenario.DRONE_TAG;
   }
 
   public double getGamma() {
@@ -376,7 +412,7 @@ public abstract class RescueScenario implements DroneScenario {
   }
 
   public Vector getGridCenter() {
-    return RescueScenario.GRID_CENTER;
+    return ReconScenario.GRID_CENTER;
   }
 
   public RemoteManager getManager() {
@@ -384,7 +420,7 @@ public abstract class RescueScenario implements DroneScenario {
   }
 
   public int getMissionLength() {
-    return RescueScenario.MISSION_LENGTH;
+    return ReconScenario.MISSION_LENGTH;
   }
 
   public Optional<NegotiationManager> getNegotiations() {
@@ -416,15 +452,11 @@ public abstract class RescueScenario implements DroneScenario {
   }
 
   public double getStepSize() {
-    return RescueScenario.STEP_SIZE;
+    return ReconScenario.STEP_SIZE;
   }
 
   public int getTrials() {
     return this.exp.getTrials();
-  }
-
-  public int getVictimCount() {
-    return this.manager.getAssetCount();
   }
 
   public Stream<Zone> getZones() {
@@ -558,8 +590,8 @@ public abstract class RescueScenario implements DroneScenario {
     return true;
   }
 
-  public void setDone(String remoteID, boolean droneNotVictim) {
-    this.manager.setDone(remoteID, droneNotVictim);
+  public void setDone(String remoteID, boolean droneNotIntel) {
+    this.manager.setDone(remoteID, droneNotIntel);
   }
 
   public void setRemoteManager(RemoteManager manager) {

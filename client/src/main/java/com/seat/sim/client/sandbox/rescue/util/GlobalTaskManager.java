@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.stream.IntStream;
 
-import com.seat.sim.client.sandbox.rescue.remote.RescueScenario;
+import com.seat.sim.client.core.DroneScenario;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteState;
@@ -16,7 +16,7 @@ import com.seat.sim.common.scenario.Snapshot;
 
 public class GlobalTaskManager extends HeatmapTaskManager {
 
-  public GlobalTaskManager(RescueScenario scenario) {
+  public GlobalTaskManager(DroneScenario scenario) {
     super(scenario, true, true, true);
   }
 

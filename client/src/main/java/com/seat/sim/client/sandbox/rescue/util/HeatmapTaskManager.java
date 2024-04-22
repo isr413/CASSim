@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.seat.sim.client.sandbox.rescue.remote.RescueScenario;
+import com.seat.sim.client.core.DroneScenario;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
@@ -21,17 +21,17 @@ public abstract class HeatmapTaskManager implements TaskManager {
   private static final double ORDINAL_WEIGHT = 0.175;
 
   protected HashMap<Integer, Integer> defer;
-  protected RescueScenario scenario;
+  protected DroneScenario scenario;
   protected boolean useDefer;
   protected boolean useMax;
   protected boolean useMovement;
   protected double[][] zones;
 
-  public HeatmapTaskManager(RescueScenario scenario) {
+  public HeatmapTaskManager(DroneScenario scenario) {
     this(scenario, true, true, true);
   }
 
-  public HeatmapTaskManager(RescueScenario scenario, boolean useDefer, boolean useMovement, boolean useMax) {
+  public HeatmapTaskManager(DroneScenario scenario, boolean useDefer, boolean useMovement, boolean useMax) {
     this.scenario = scenario;
     this.useDefer = useDefer;
     this.useMovement = useMovement;
@@ -115,8 +115,8 @@ public abstract class HeatmapTaskManager implements TaskManager {
         double aWeight = getZoneWeight(zones, a);
         double bWeight = getZoneWeight(zones, b);
         if (Vector.near(aWeight, bWeight)) {
-          double aDist = Vector.dist(a.getLocation(), RescueScenario.GRID_CENTER);
-          double bDist = Vector.dist(b.getLocation(), RescueScenario.GRID_CENTER);
+          double aDist = Vector.dist(a.getLocation(), scenario.getGridCenter());
+          double bDist = Vector.dist(b.getLocation(), scenario.getGridCenter());
           return Double.compare(aDist, bDist);
         }
         return Double.compare(bWeight, aWeight);
@@ -126,7 +126,7 @@ public abstract class HeatmapTaskManager implements TaskManager {
   }
 
   private void reportHeat() {
-    this.scenario.report(RescueScenario.MISSION_LENGTH, "Heat: %.4f", this.getHeat());
+    this.scenario.report(scenario.getMissionLength(), "Heat: %.4f", this.getHeat());
   }
 
   private void scanForBase(double x, double y, int size) {
@@ -168,7 +168,7 @@ public abstract class HeatmapTaskManager implements TaskManager {
     int size = this.scenario.getGrid().get().getZoneSize();
     drones.forEach(drone -> this.scanZone(drone.getLocation().getX(), drone.getLocation().getY(), size));
     if (this.scenario.getBaseCount() > 0) {
-      this.scanForBase(RescueScenario.GRID_CENTER.getX(), RescueScenario.GRID_CENTER.getY(), size);
+      this.scanForBase(scenario.getGridCenter().getX(), scenario.getGridCenter().getY(), size);
     }
     if (!this.useMovement) {
       return;
@@ -208,7 +208,7 @@ public abstract class HeatmapTaskManager implements TaskManager {
     List<RemoteState> drones = snap
       .getActiveRemoteStates()
       .stream()
-      .filter(s -> s.hasTag(RescueScenario.DRONE_TAG))
+      .filter(s -> s.hasTag(scenario.getDroneTag()))
       .filter(s -> !s.equals(state))
       .collect(Collectors.toList());
     for (RemoteState s : drones) {
@@ -268,7 +268,7 @@ public abstract class HeatmapTaskManager implements TaskManager {
     Stream<RemoteState> drones = snap
       .getActiveRemoteStates()
       .stream()
-      .filter(state -> state.hasTag(RescueScenario.DRONE_TAG))
+      .filter(state -> state.hasTag(scenario.getDroneTag()))
       .filter(state -> this.scenario.getCooldown(state.getRemoteID()) == 0);
     this.updateZones(drones);
     this.defer.clear();

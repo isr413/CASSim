@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.seat.sim.client.core.AssetManager;
+import com.seat.sim.client.core.DroneScenario;
 import com.seat.sim.common.remote.RemoteConfig;
 import com.seat.sim.common.remote.intent.IntentRegistry;
 import com.seat.sim.common.remote.intent.IntentionSet;
@@ -11,22 +13,30 @@ import com.seat.sim.common.scenario.Snapshot;
 
 public class RemoteManager {
 
+  private AssetManager assetManager;
   private int baseCount;
   private DroneManager droneManager;
   private Collection<RemoteConfig> remotes;
-  private RescueScenario scenario;
-  private VictimManager victimManager;
+  private DroneScenario scenario;
 
-  public RemoteManager(RescueScenario scenario, int baseCount, int droneCount, int victimCount, int cooldown) {
+  public RemoteManager(DroneScenario scenario, AssetManager assetManager, int baseCount, int droneCount, int cooldown) {
     this.scenario = scenario;
     this.baseCount = baseCount;
     this.droneManager = new DroneManager(scenario, droneCount, cooldown);
-    this.victimManager = new VictimManager(scenario, victimCount);
+    this.assetManager = assetManager;
   }
 
   public void close() {
     this.droneManager.close();
-    this.victimManager.close();
+    this.assetManager.close();
+  }
+
+  public int getAssetCount() {
+    return this.assetManager.getAssetCount();
+  }
+
+  public AssetManager getAssetManager() {
+    return this.assetManager;
   }
 
   public int getBaseCount() {
@@ -49,25 +59,17 @@ public class RemoteManager {
     return this.remotes;
   }
 
-  public int getVictimCount() {
-    return this.victimManager.getVictimCount();
-  }
-
-  public VictimManager getVictimManager() {
-    return this.victimManager;
-  }
-
   public boolean hasRemoteConfigs() {
     return this.remotes != null && !this.remotes.isEmpty();
   }
 
   public void init() {
     this.droneManager.init();
-    this.victimManager.init();
+    this.assetManager.init();
   }
 
   public boolean isDone(String remoteID) {
-    return this.droneManager.isDone(remoteID) || this.victimManager.isDone(remoteID);
+    return this.droneManager.isDone(remoteID) || this.assetManager.isDone(remoteID);
   }
 
   public boolean isOnCooldown(String remoteID) {
@@ -76,14 +78,18 @@ public class RemoteManager {
 
   public void reset() {
     this.droneManager.reset();
-    this.victimManager.reset();
+    this.assetManager.reset();
+  }
+
+  public void setAssetManager(AssetManager manager) {
+    this.assetManager = manager;
   }
 
   public void setDone(String remoteID, boolean droneNotVictim) {
     if (droneNotVictim) {
       this.droneManager.setDone(remoteID);
     } else {
-      this.victimManager.setDone(remoteID);
+      this.assetManager.setDone(remoteID);
     }
   }
 
@@ -95,13 +101,9 @@ public class RemoteManager {
     this.remotes = remotes;
   }
 
-  public void setVictimManager(VictimManager manager) {
-    this.victimManager = manager;
-  }
-
   public Collection<IntentionSet> update(Snapshot snap) {
     Collection<IntentionSet> droneIntentions = this.droneManager.update(snap);
-    Collection<IntentionSet> victimIntentions = this.victimManager.update(snap);
+    Collection<IntentionSet> victimIntentions = this.assetManager.update(snap);
     if (victimIntentions.isEmpty() && droneIntentions.isEmpty()) {
       IntentionSet intentions = new IntentionSet(this.scenario.getScenarioID());
       intentions.addIntention(IntentRegistry.Done());

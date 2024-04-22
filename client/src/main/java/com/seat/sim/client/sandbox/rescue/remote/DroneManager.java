@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.seat.sim.client.core.DroneScenario;
 import com.seat.sim.client.negotiation.Contract;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
@@ -28,9 +29,9 @@ public class DroneManager {
   private Set<String> detectedVictims;
   private int droneCount;
   private Set<String> goingHome;
-  private RescueScenario scenario;
+  private DroneScenario scenario;
 
-  public DroneManager(RescueScenario scenario, int droneCount, int cooldownTime) {
+  public DroneManager(DroneScenario scenario, int droneCount, int cooldownTime) {
     this.scenario = scenario;
     this.droneCount = droneCount;
     this.cooldownTime = cooldownTime;

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.seat.sim.client.core.AssetManager;
+import com.seat.sim.client.core.DroneScenario;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
@@ -17,13 +19,13 @@ import com.seat.sim.common.remote.intent.IntentRegistry;
 import com.seat.sim.common.remote.intent.IntentionSet;
 import com.seat.sim.common.scenario.Snapshot;
 
-public class VictimManager {
+public class VictimManager implements AssetManager {
 
   private Set<String> rescues;
-  private RescueScenario scenario;
+  private DroneScenario scenario;
   private int victimCount;
 
-  public VictimManager(RescueScenario scenario, int victimCount) {
+  public VictimManager(DroneScenario scenario, int victimCount) {
     this.scenario = scenario;
     this.victimCount = victimCount;
   }
@@ -66,6 +68,10 @@ public class VictimManager {
   }
 
   public void close() {}
+
+  public int getAssetCount() {
+    return this.getVictimCount();
+  }
 
   public int getVictimCount() {
     return this.victimCount;

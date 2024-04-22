@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
 
-import com.seat.sim.client.sandbox.rescue.remote.RescueScenario;
+import com.seat.sim.client.core.DroneScenario;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
 import com.seat.sim.common.remote.RemoteState;
@@ -16,11 +16,11 @@ import com.seat.sim.common.scenario.Snapshot;
 
 public class WeightedTaskManager extends HeatmapTaskManager {
 
-  public WeightedTaskManager(RescueScenario scenario) {
+  public WeightedTaskManager(DroneScenario scenario) {
     super(scenario);
   }
 
-  public WeightedTaskManager(RescueScenario scenario, boolean useMovement) {
+  public WeightedTaskManager(DroneScenario scenario, boolean useMovement) {
     super(scenario, true, useMovement, true);
   }
 
@@ -43,8 +43,8 @@ public class WeightedTaskManager extends HeatmapTaskManager {
         @Override
         public int compare(Zone z1, Zone z2) {
           return -Double.compare(
-              Vector.dist(RescueScenario.GRID_CENTER, z1.getLocation()),
-              Vector.dist(RescueScenario.GRID_CENTER, z2.getLocation())
+              Vector.dist(scenario.getGridCenter(), z1.getLocation()),
+              Vector.dist(scenario.getGridCenter(), z2.getLocation())
             );
         }
       });

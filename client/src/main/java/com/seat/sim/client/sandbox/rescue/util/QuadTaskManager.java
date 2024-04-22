@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import com.seat.sim.client.sandbox.rescue.remote.RescueScenario;
+import com.seat.sim.client.core.DroneScenario;
 import com.seat.sim.common.math.Grid;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
@@ -17,12 +17,12 @@ public class QuadTaskManager extends StochasticHeatmap {
 
   private List<Zone> quadZones;
 
-  public QuadTaskManager(RescueScenario scenario) {
+  public QuadTaskManager(DroneScenario scenario) {
     super(scenario, true, true, true);
     this.quadZones = List.of();
   }
 
-  public QuadTaskManager(RescueScenario scenario, boolean useDefer, boolean useMovement, boolean useMax) {
+  public QuadTaskManager(DroneScenario scenario, boolean useDefer, boolean useMovement, boolean useMax) {
     super(scenario, useDefer, useMovement, useMax);
   }
 
@@ -53,8 +53,8 @@ public class QuadTaskManager extends StochasticHeatmap {
     Collections.sort(quadZones, new Comparator<Zone>() {
       @Override public int compare(Zone z1, Zone z2) {
         return -Double.compare(
-            Vector.dist(RescueScenario.GRID_CENTER, z1.getLocation()),
-            Vector.dist(RescueScenario.GRID_CENTER, z2.getLocation())
+            Vector.dist(scenario.getGridCenter(), z1.getLocation()),
+            Vector.dist(scenario.getGridCenter(), z2.getLocation())
           );
       }
     });
