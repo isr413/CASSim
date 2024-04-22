@@ -5,6 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -65,7 +67,7 @@ public abstract class ReconScenario implements DroneScenario {
   public static final String DRONE_LRC_TAG = "Drone_LRC";
   public static final String DRONE_SENSOR_A_TAG = "Drone_SENSOR_A";
   public static final TeamColor DRONE_COLOR = TeamColor.BLUE;
-  public static final Vector DRONE_FUEL_USAGE = new Vector(0.0001, 0.0001, 0.0001);
+  public static final Vector DRONE_FUEL_USAGE = new Vector(0.00001, 0.00005, 0.00005);
   public static final Vector DRONE_INITIAL_VELOCITY = Vector.ZERO;
   public static final double DRONE_SCAN_VELOCITY = 30.;
   public static final double DRONE_SCAN_ACCELERATION = 1.4;
@@ -83,14 +85,14 @@ public abstract class ReconScenario implements DroneScenario {
 
   // Sensors
   public static final String LONG_RANGE_COMMS = "Long_Range_Comms";
-  public static final double LRC_BATT_USAGE = 0.0001;
+  public static final double LRC_BATT_USAGE = 0.00001;
 
   public static final String DRONE_CAMERA = "Drone_Camera";
-  public static final double CAM_BATT_USAGE = 0.0001;
+  public static final double CAM_BATT_USAGE = 0.00001;
   public static final double CAM_RANGE = 90.;
 
   public static final String SENSOR_A_COMMS = "SENSOR_A_Comms";
-  public static final double SENSOR_A_BATT_USAGE = 0.0001;
+  public static final double SENSOR_A_BATT_USAGE = 0.00001;
   public static final double SENSOR_A_RANGE = 90.;
 
   private Grid grid;
@@ -100,53 +102,55 @@ public abstract class ReconScenario implements DroneScenario {
   protected Experiment exp;
   protected RemoteManager manager;
   protected Optional<NegotiationManager> negotiations;
-  protected int popups;
   protected double score;
   protected Optional<TaskManager> tasks;
 
   public ReconScenario(String scenarioID, Range alpha, double beta, double gamma, int trialsPer,
       int threadID, int threadCount, long seed, String seedFile) throws IOException {
-    this(scenarioID, 1, 32, 1024, 0, 0, alpha, beta, gamma, trialsPer, threadID, threadCount, seed, seedFile);
+    this(scenarioID, 1, 32, 1024, 0, 0, Range.Inclusive(0, 0), 0, alpha, beta, gamma, trialsPer, threadID, threadCount,
+        seed, seedFile);
   }
 
-  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int cooldown,
-      double alpha, double beta, double gamma, int trialsPer, int threadID, int threadCount,
+  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int advCount,
+      Range popupTime, int cooldown, double alpha, double beta, double gamma, int trialsPer, int threadID, int threadCount,
       long seed) throws IOException {
-    this(scenarioID, baseCount, droneCount, intelCount, popupCount, cooldown, Range.Inclusive(alpha, alpha, 0.),
-        Range.Inclusive(beta, beta, 0.), Range.Inclusive(gamma, gamma, 0.), trialsPer, threadID, threadCount, seed, "seeds");
+    this(scenarioID, baseCount, droneCount, intelCount, popupCount, advCount, popupTime, cooldown,
+        Range.Inclusive(alpha, alpha, 0.), Range.Inclusive(beta, beta, 0.), Range.Inclusive(gamma, gamma, 0.),
+        trialsPer, threadID, threadCount, seed, "seeds");
   }
 
-  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int cooldown,
-      Range alpha, double beta, double gamma, int trialsPer, int threadID, int threadCount,
+  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int advCount,
+      Range popupTime, int cooldown, Range alpha, double beta, double gamma, int trialsPer, int threadID, int threadCount,
       long seed, String seedFile) throws IOException {
-    this(scenarioID, baseCount, droneCount, intelCount, popupCount, cooldown, alpha, Range.Inclusive(beta, beta, 0.),
+    this(scenarioID, baseCount, droneCount, intelCount, popupCount, advCount, popupTime,
+        cooldown, alpha, Range.Inclusive(beta, beta, 0.),
         Range.Inclusive(gamma, gamma, 0.), trialsPer, threadID, threadCount, seed, seedFile);
   }
 
-  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int cooldown,
-      Range alpha, Range beta, double gamma, int trialsPer, int threadID, int threadCount,
+  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int advCount,
+      Range popupTime, int cooldown, Range alpha, Range beta, double gamma, int trialsPer, int threadID, int threadCount,
       long seed, String seedFile) throws IOException {
-    this(scenarioID, baseCount, droneCount, intelCount, popupCount, cooldown, alpha, beta,
+    this(scenarioID, baseCount, droneCount, intelCount, popupCount, advCount, popupTime, cooldown, alpha, beta,
         Range.Inclusive(gamma, gamma, 0.), trialsPer, threadID, threadCount, seed, seedFile);
   }
 
-  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int cooldown,
-      Range alpha, double beta, Range gamma, int trialsPer, int threadID, int threadCount,
+  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int advCount,
+      Range popupTime, int cooldown, Range alpha, double beta, Range gamma, int trialsPer, int threadID, int threadCount,
       long seed, String seedFile) throws IOException {
-    this(scenarioID, baseCount, droneCount, intelCount, popupCount, cooldown, alpha, Range.Inclusive(beta, beta, 0.),
-        gamma, trialsPer, threadID, threadCount, seed, seedFile);
+    this(scenarioID, baseCount, droneCount, intelCount, popupCount, advCount, popupTime, cooldown,
+        alpha, Range.Inclusive(beta, beta, 0.), gamma, trialsPer, threadID, threadCount, seed, seedFile);
   }
 
   public ReconScenario(String scenarioID, Range alpha, Range beta, Range gamma, int trialsPer,
       int threadID, int threadCount, long seed, String seedFile) throws IOException {
-    this(scenarioID, 1, 32, 1024, 0, 0, alpha, beta, gamma, trialsPer, threadID, threadCount, seed, seedFile);
+    this(scenarioID, 1, 32, 1024, 0, 0, Range.Inclusive(0, 0), 0, alpha, beta, gamma, trialsPer, threadID, threadCount,
+        seed, seedFile);
   }
 
-  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int cooldown,
-      Range alpha, Range beta, Range gamma, int trialsPer, int threadID, int threadCount,
+  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int advCount,
+      Range popupTime, int cooldown, Range alpha, Range beta, Range gamma, int trialsPer, int threadID, int threadCount,
       long seed, String seedFile) throws IOException {
     this.scenarioID = scenarioID;
-    this.popups = popupCount;
     this.logger = (threadID > 0) ? new Logger(String.format("%s_%d", scenarioID, threadID)) : new Logger(scenarioID);
     this.grid = new Grid(
         ReconScenario.GRID_SIZE,
@@ -155,7 +159,7 @@ public abstract class ReconScenario implements DroneScenario {
       );
     this.exp = new Experiment(alpha, beta, gamma, trialsPer, threadID, threadCount, seed, this.loadSeeds(seedFile));
     this.manager = new RemoteManager(
-        this, new IntelManager(this, intelCount + popupCount),
+        this, new IntelManager(this, intelCount, popupCount, advCount, popupTime),
         baseCount,
         droneCount,
         cooldown
@@ -289,7 +293,7 @@ public abstract class ReconScenario implements DroneScenario {
                     )
                 ),
               ReconScenario.INTEL_COLOR,
-              this.manager.getAssetCount() - this.popups,
+              ((IntelManager) this.manager.getAssetManager()).getIntelCount(),
               true,
               true
             ),
@@ -324,7 +328,7 @@ public abstract class ReconScenario implements DroneScenario {
                     )
                 ),
               ReconScenario.INTEL_COLOR,
-              this.popups,
+              ((IntelManager) this.manager.getAssetManager()).getPopupCount(),
               true,
               true
             )
@@ -510,13 +514,21 @@ public abstract class ReconScenario implements DroneScenario {
     if (!this.hasNegotiations()) {
       return Optional.empty();
     }
-    Optional<Proposal> proposal = this.negotiations.get().getNextProposal(senderID, receiverID);
-    if (!proposal.isPresent()) {
+    List<Proposal> proposals = this.negotiations.get().getProposals(senderID)
+        .stream()
+        .filter(proposal -> this.isAcceptable(snap, state, senderID, receiverID, proposal))
+        .collect(Collectors.toList());
+    if (proposals.isEmpty()) {
       return Optional.empty();
     }
-    return (this.isAcceptable(snap, state, senderID, receiverID, proposal.get()))
-      ? Optional.of(this.negotiations.get().acceptProposal(senderID, receiverID, proposal.get()))
-      : Optional.empty();
+    Collections.sort(proposals, new Comparator<Proposal>() {
+      @Override
+      public int compare(Proposal a, Proposal b) {
+        return -Double.compare(rankProposal(a), rankProposal(b));
+      }
+    });
+    return Optional.of(this.negotiations.get().acceptProposal(senderID, receiverID, proposals.get(0)));
+
   }
 
   public Optional<Zone> nextTask(Snapshot snap, RemoteState state) {
@@ -524,6 +536,10 @@ public abstract class ReconScenario implements DroneScenario {
       return Optional.empty();
     }
     return this.tasks.get().getNextTask(snap, state);
+  }
+
+  public double rankProposal(Proposal p) {
+    return 1.;
   }
 
   public void report(double simTime, String fmt, Object... args) {
