@@ -3,6 +3,7 @@ package com.seat.sim.client.core;
 import java.util.Optional;
 
 import com.seat.sim.client.negotiation.Contract;
+import com.seat.sim.client.sandbox.rescue.remote.RemoteManager;
 import com.seat.sim.common.core.Application;
 import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.math.Zone;
@@ -25,6 +26,8 @@ public interface DroneScenario extends Application {
   public String getDroneTag();
 
   public Vector getGridCenter();
+
+  public RemoteManager getManager();
 
   public int getMissionLength();
 

@@ -29,6 +29,12 @@ public class Proposal {
     this.decommitmentPenalty = penalty;
   }
 
+  public Proposal clone() {
+    return new Proposal(negotiationStartTime, negotiationDeadline, negotiationDuration, earliestStartTime,
+        earliestDeadline, deadline, regularReward, earlyFinishReward, earlySuccessProbability,
+        successProbability, decommitmentPenalty);
+  }
+
   public double getDeadline() {
     return this.deadline;
   }

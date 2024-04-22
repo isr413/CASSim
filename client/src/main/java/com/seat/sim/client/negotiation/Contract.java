@@ -4,14 +4,24 @@ import com.seat.sim.common.math.Vector;
 
 public class Contract implements Comparable<Contract> {
 
+  private boolean originalContract;
   private Proposal proposal;
   private String receiverID;
   private String senderID;
 
   public Contract(String senderID, String receiverID, Proposal proposal) {
+    this(senderID, receiverID, proposal, true);
+  }
+
+  private Contract(String senderID, String receiverID, Proposal proposal, boolean originalContract) {
     this.senderID = senderID;
     this.receiverID = receiverID;
     this.proposal = proposal;
+    this.originalContract = originalContract;
+  }
+
+  public Contract clone() {
+    return new Contract(senderID, receiverID, proposal.clone(), false);
   }
 
   public int compareTo(Contract c) {
@@ -36,6 +46,10 @@ public class Contract implements Comparable<Contract> {
 
   public String getSenderID() {
     return this.senderID;
+  }
+
+  public boolean isOriginal() {
+    return this.originalContract;
   }
 
   public boolean matchSignatures(String senderID, String receiverID) {

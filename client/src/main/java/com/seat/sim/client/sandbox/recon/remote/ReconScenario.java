@@ -573,20 +573,10 @@ public abstract class ReconScenario implements DroneScenario {
     if (!this.hasNegotiations()) {
       return false;
     }
-    double roll = this.getRng().getRandomProbability();
-    if (earlyCompletion) {
-      if (roll > contract.getProposal().getEarlySuccessLikelihood()) {
-        return false;
-      }
-      this.score += contract.getProposal().getReward() + contract.getProposal().getEarlyRewardBonus();
-      this.report(
-          snap.getTime(),
-          ":: %s :: %s :: Succeeds task",
-          contract.getSenderID(),
-          contract.getReceiverID()
-        );
+    if (!contract.isOriginal()) {
       return true;
     }
+    double roll = this.getRng().getRandomProbability();
     if (roll > contract.getProposal().getSuccessLikelihood()) {
       this.report(
           snap.getTime(),
@@ -617,6 +607,9 @@ public abstract class ReconScenario implements DroneScenario {
   public boolean terminateContract(Contract contract) {
     if (!this.hasNegotiations()) {
       return false;
+    }
+    if (!contract.isOriginal()) {
+      return true;
     }
     this.negotiations.get().terminateContract(contract.getSenderID(), contract.getReceiverID());
     return true;
