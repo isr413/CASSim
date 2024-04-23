@@ -21,13 +21,13 @@ import com.seat.sim.common.scenario.Snapshot;
 import com.seat.sim.common.util.ArgsParser;
 import com.seat.sim.common.util.Range;
 
-public class ReconDEager extends ReconScenario {
+public class ReconDHelpful extends ReconScenario {
 
   private Map<String, Result> cache = new HashMap<>();
 
-  public ReconDEager(ArgsParser args, int threadID, long seed) throws IOException {
+  public ReconDHelpful(ArgsParser args, int threadID, long seed) throws IOException {
     super(
-        "ReconDEager",                        // scenarioID
+        "ReconDHelpful",                      // scenarioID
         0,                                    // base count
         200,                                  // drone count
         50,                                   // intel count
@@ -57,7 +57,7 @@ public class ReconDEager extends ReconScenario {
         Range.Inclusive(0., 1., 0.05),
         Optional.empty(),
         Range.Inclusive(0., 1., 0.05),
-        Range.Inclusive(2., 3., 1.),
+        Range.Inclusive(1., 1., 0.),
         this.getRng()
       ));
   }

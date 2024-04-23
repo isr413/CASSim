@@ -43,7 +43,7 @@ import com.seat.sim.common.util.Range;
 public abstract class ReconScenario implements DroneScenario {
 
   // Scenario info
-  public static final int NUM_TURNS = 180;
+  public static final int NUM_TURNS = 360;
   public static final int TURN_LENGTH = 10;
   public static final int MISSION_LENGTH = ReconScenario.NUM_TURNS * ReconScenario.TURN_LENGTH;
   public static final double STEP_SIZE = 10.;
@@ -145,6 +145,14 @@ public abstract class ReconScenario implements DroneScenario {
       int threadID, int threadCount, long seed, String seedFile) throws IOException {
     this(scenarioID, 1, 32, 1024, 0, 0, 1024, Range.Inclusive(0, 0), 0, alpha, beta, gamma, trialsPer,
         threadID, threadCount, seed, seedFile);
+  }
+
+  public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int advCount,
+      int points, Range popupTime, int cooldown, double alpha, double beta, double gamma, int trialsPer,
+      int threadID, int threadCount, long seed, String seedFile) throws IOException {
+    this(scenarioID, baseCount, droneCount, intelCount, popupCount, advCount, points, popupTime, cooldown,
+        Range.Inclusive(alpha, alpha, 0.), Range.Inclusive(beta, beta, 0.), Range.Inclusive(gamma, gamma, 0.),
+        trialsPer, threadID, threadCount, seed, seedFile);
   }
 
   public ReconScenario(String scenarioID, int baseCount, int droneCount, int intelCount, int popupCount, int advCount,

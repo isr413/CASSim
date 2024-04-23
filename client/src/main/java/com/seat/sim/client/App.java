@@ -2,7 +2,12 @@ package com.seat.sim.client;
 
 import com.seat.sim.client.core.AppClient;
 import com.seat.sim.client.core.ClientException;
+import com.seat.sim.client.sandbox.recon.scenarios.ReconASelfish;
+import com.seat.sim.client.sandbox.recon.scenarios.ReconBSelfish;
+import com.seat.sim.client.sandbox.recon.scenarios.ReconCSelfish;
 import com.seat.sim.client.sandbox.recon.scenarios.ReconDEager;
+import com.seat.sim.client.sandbox.recon.scenarios.ReconDGenerous;
+import com.seat.sim.client.sandbox.recon.scenarios.ReconDHelpful;
 import com.seat.sim.client.sandbox.recon.scenarios.ReconDSelfish;
 import com.seat.sim.client.sandbox.rescue.scenarios.*;
 import com.seat.sim.common.core.Application;
@@ -108,8 +113,23 @@ public class App {
       if (scenarioID.equals("ScenarioSize64Probes32WeightedWalkC")) {
         return new ScenarioSize64Probes32WeightedWalkC(args, threadID, seed);
       }
+      if (scenarioID.equals("ReconASelfish")) {
+        return new ReconASelfish(args, threadID, seed);
+      }
+      if (scenarioID.equals("ReconBSelfish")) {
+        return new ReconBSelfish(args, threadID, seed);
+      }
+      if (scenarioID.equals("ReconCSelfish")) {
+        return new ReconCSelfish(args, threadID, seed);
+      }
       if (scenarioID.equals("ReconDEager")) {
         return new ReconDEager(args, threadID, seed);
+      }
+      if (scenarioID.equals("ReconDGenerous")) {
+        return new ReconDGenerous(args, threadID, seed);
+      }
+      if (scenarioID.equals("ReconDHelpful")) {
+        return new ReconDHelpful(args, threadID, seed);
       }
       if (scenarioID.equals("ReconDSelfish")) {
         return new ReconDSelfish(args, threadID, seed);

@@ -1,33 +1,24 @@
 package com.seat.sim.client.sandbox.recon.scenarios;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.seat.sim.client.negotiation.NegotiationManager;
 import com.seat.sim.client.negotiation.Proposal;
 import com.seat.sim.client.negotiation.StochasticNegotiation;
-import com.seat.sim.client.sandbox.recon.remote.IntelManager;
 import com.seat.sim.client.sandbox.recon.remote.ReconScenario;
 import com.seat.sim.client.sandbox.rescue.util.QuadTaskManager;
 import com.seat.sim.client.sandbox.rescue.util.TaskManager;
-import com.seat.sim.common.math.Vector;
 import com.seat.sim.common.remote.RemoteState;
 import com.seat.sim.common.scenario.Snapshot;
 import com.seat.sim.common.util.ArgsParser;
 import com.seat.sim.common.util.Range;
 
-public class ReconDEager extends ReconScenario {
+public class ReconDGenerous extends ReconScenario {
 
-  private Map<String, Result> cache = new HashMap<>();
-
-  public ReconDEager(ArgsParser args, int threadID, long seed) throws IOException {
+  public ReconDGenerous(ArgsParser args, int threadID, long seed) throws IOException {
     super(
-        "ReconDEager",                        // scenarioID
+        "ReconDGenerous",                     // scenarioID
         0,                                    // base count
         200,                                  // drone count
         50,                                   // intel count
@@ -69,36 +60,11 @@ public class ReconDEager extends ReconScenario {
   @Override
   public boolean isAcceptable(Snapshot snap, RemoteState state, String senderID, String receiverID,
       Proposal proposal) {
-    if (!this.cache.containsKey(state.getRemoteID()) ||
-        !Vector.near(snap.getTime(), this.cache.get(state.getRemoteID()).time)) {
-      double mass = super.getManager().getDroneManager().getDetectedAssets().size();
-      String droneIDs = (receiverID.contains(state.getRemoteID())) ? receiverID : senderID;
-      List<RemoteState> states = Arrays.stream(droneIDs.split("::"))
-          .map(droneID -> snap.getRemoteStateWithID(droneID))
-          .collect(Collectors.toList());
-      double expLoss = super.tasks
-        .get()
-        .predict(
-            snap,
-            states,
-            proposal.getEarliestDeadline(),
-            proposal.getEarlySuccessLikelihood(),
-            proposal.getDeadline(),
-            Optional.of(mass)
-          );
-      this.cache.put(state.getRemoteID(), new Result(snap.getTime(), expLoss));
-    }
-    double points = (receiverID.contains(state.getRemoteID()))
-        ? ((IntelManager) super.getManager().getAssetManager()).getPointAssignment(senderID)
-        : ((IntelManager) super.getManager().getAssetManager()).getPointAssignment(receiverID);
-    return Double.compare(rankProposal(proposal) * points / 1800, this.cache.get(state.getRemoteID()).loss) >= 0;
+    return true;
   }
 
   @Override
   public double rankProposal(Proposal p) {
-    return (p.getEarlyRewardBonus() + p.getReward()) * p.getEarlySuccessLikelihood() +
-        p.getReward() * (1. - p.getEarlySuccessLikelihood()) * p.getSuccessLikelihood();
+    return 1.;
   }
-
-  static record Result(double time, double loss) {}
 }
