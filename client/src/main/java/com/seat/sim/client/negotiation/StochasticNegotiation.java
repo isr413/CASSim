@@ -47,11 +47,11 @@ public class StochasticNegotiation extends DynamicNegotiation {
         StochasticNegotiation.E_START_TIME,
         eDeadlineSample,
         deadlineSample,
-        this.reward.uniform(this.rng),
-        (this.eRewardBonus.isPresent()) ? this.eRewardBonus.get().uniform(this.rng) : 0.,
-        (this.eSuccess.isPresent()) ? this.eSuccess.get().uniform(this.rng) : 0.,
-        this.pSuccess.uniform(this.rng),
-        this.penalty.uniform(this.rng)
+        this.reward.sample(this.rng),
+        (this.eRewardBonus.isPresent()) ? this.eRewardBonus.get().sample(this.rng) : 0.,
+        (this.eSuccess.isPresent()) ? this.eSuccess.get().sample(this.rng) : 0.,
+        this.pSuccess.sample(this.rng),
+        this.penalty.sample(this.rng)
       );
   }
 

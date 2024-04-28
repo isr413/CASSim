@@ -44,7 +44,7 @@ public class ParetoNegotiation extends DynamicNegotiation {
         ParetoNegotiation.NEG_DURATION,
         ParetoNegotiation.E_START_TIME,
         ParetoNegotiation.E_DEADLINE,
-        this.deadline.uniform(this.rng),
+        this.deadline.sample(this.rng),
         reward,
         ParetoNegotiation.E_REWARD,
         ParetoNegotiation.E_SUCCESS,

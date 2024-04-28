@@ -54,7 +54,7 @@ public class Proposal implements Comparable<Proposal> {
   }
 
   public int compareTo(Proposal q) {
-    return Double.compare(this.getCumulativeReward(), q.getCumulativeReward());
+    return -Double.compare(this.getCumulativeReward(), q.getCumulativeReward());
   }
 
   @Override

@@ -89,6 +89,9 @@ public class App {
       if (scenarioID.equals("ScenarioSize64Probes32RandomWalkC")) {
         return new ScenarioSize64Probes32RandomWalkC(args, threadID, seed);
       }
+      if (scenarioID.equals("ScenarioSize64Probes32RationalC")) {
+        return new ScenarioSize64Probes32RationalC(args, threadID, seed);
+      }
       if (scenarioID.equals("ScenarioSize64Probes32SelfishC")) {
         return new ScenarioSize64Probes32SelfishC(args, threadID, seed);
       }
