@@ -56,10 +56,11 @@ public class StochasticNegotiation extends DynamicNegotiation {
   }
 
   private void ensureProposals(String remoteID) {
-    if (!this.proposals.containsKey(remoteID)) {
-      for (int i = 0; i < (int) this.limit.sample(this.rng); i++) {
-        this.addProposal(remoteID, this.generateProposal());
-      }
+    if (this.proposals.containsKey(remoteID)) {
+      return;
+    }
+    for (int i = 0; i < (int) this.limit.sample(this.rng); i++) {
+      this.addProposal(remoteID, this.generateProposal());
     }
   }
 

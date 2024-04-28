@@ -1,5 +1,6 @@
 package com.seat.sim.client.negotiation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class DynamicNegotiation implements NegotiationManager {
 
   public void addProposal(String remoteID, Proposal proposal) {
     if (!this.proposals.containsKey(remoteID)) {
-      this.proposals.put(remoteID, new LinkedList<>());
+      this.proposals.put(remoteID, new ArrayList<>());
     }
     this.proposals.get(remoteID).add(proposal);
   }
