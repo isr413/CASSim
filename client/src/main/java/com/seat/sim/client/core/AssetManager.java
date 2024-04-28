@@ -11,6 +11,8 @@ public interface AssetManager {
 
   public int getAssetCount();
 
+  public boolean hasAsset(String assetID);
+
   public void init();
 
   public boolean isDone(String assetID);

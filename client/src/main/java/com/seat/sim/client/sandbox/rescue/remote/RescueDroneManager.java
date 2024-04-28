@@ -29,6 +29,7 @@ public class RescueDroneManager implements DroneManager {
   private int cooldownTime;
   private Set<String> detectedVictims;
   private int droneCount;
+  private Set<String> drones;
   private Set<String> goingHome;
   private DroneScenario scenario;
 
@@ -96,7 +97,12 @@ public class RescueDroneManager implements DroneManager {
     return this.contracts.containsKey(droneID) && !this.contracts.get(droneID).isEmpty();
   }
 
+  public boolean hasDrone(String droneID) {
+    return this.drones.contains(droneID);
+  }
+
   public void init() {
+    this.drones = new HashSet<>();
     this.detectedVictims = new HashSet<>();
     this.assignments = new HashMap<>();
     this.contracts = new HashMap<>();
@@ -160,6 +166,7 @@ public class RescueDroneManager implements DroneManager {
       .stream()
       .filter(state -> state.hasTag(RescueScenario.DRONE_TAG))
       .map(drone -> {
+          this.drones.add(drone.getRemoteID());
           IntentionSet intent = new IntentionSet(drone.getRemoteID());
           if (this.isDone(drone.getRemoteID())) {
             if (drone.getLocation().near(RescueScenario.GRID_CENTER)) {

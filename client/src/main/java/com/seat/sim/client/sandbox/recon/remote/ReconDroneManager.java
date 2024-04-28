@@ -31,6 +31,7 @@ public class ReconDroneManager implements DroneManager {
   private Set<String> detectedIntel;
   private Set<String> destroyedDrones;
   private int droneCount;
+  private Set<String> drones;
   private Set<String> goingHome;
   private DroneScenario scenario;
 
@@ -99,6 +100,7 @@ public class ReconDroneManager implements DroneManager {
   }
 
   public void init() {
+    this.drones = new HashSet<>();
     this.detectedIntel = new HashSet<>();
     this.assignments = new HashMap<>();
     this.contracts = new HashMap<>();
@@ -113,6 +115,10 @@ public class ReconDroneManager implements DroneManager {
 
   public boolean isOnCooldown(String droneID) {
     return this.cooldown.containsKey(droneID) && this.cooldown.get(droneID) > 0;
+  }
+
+  public boolean hasDrone(String droneID) {
+    return this.drones.contains(droneID);
   }
 
   public void reset() {
@@ -163,6 +169,7 @@ public class ReconDroneManager implements DroneManager {
       .stream()
       .filter(state -> state.hasTag(ReconScenario.DRONE_TAG))
       .map(drone -> {
+          this.drones.add(drone.getRemoteID());
           IntentionSet intent = new IntentionSet(drone.getRemoteID());
           if (this.isDone(drone.getRemoteID())) {
             if (drone.getLocation().near(ReconScenario.GRID_CENTER)) {

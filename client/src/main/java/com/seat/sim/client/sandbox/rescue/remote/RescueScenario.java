@@ -5,8 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -486,20 +484,12 @@ public abstract class RescueScenario implements DroneScenario {
     if (!this.hasNegotiations()) {
       return Optional.empty();
     }
-    List<Proposal> proposals = this.negotiations.get().getProposals(senderID)
-        .stream()
-        .filter(proposal -> this.isAcceptable(snap, state, senderID, receiverID, proposal))
-        .collect(Collectors.toList());
-    if (proposals.isEmpty()) {
-      return Optional.empty();
-    }
-    Collections.sort(proposals, new Comparator<Proposal>() {
-      @Override
-      public int compare(Proposal a, Proposal b) {
-        return -Double.compare(rankProposal(a), rankProposal(b));
+    for (Proposal p : this.negotiations.get().getProposals(senderID)) {
+      if (this.isAcceptable(snap, state, senderID, receiverID, p)) {
+        return Optional.of(this.negotiations.get().acceptProposal(senderID, receiverID, p));
       }
-    });
-    return Optional.of(this.negotiations.get().acceptProposal(senderID, receiverID, proposals.get(0)));
+    }
+    return Optional.empty();
   }
 
   public Optional<Zone> nextTask(Snapshot snap, RemoteState state) {

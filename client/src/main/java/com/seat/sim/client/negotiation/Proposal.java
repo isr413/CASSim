@@ -1,6 +1,8 @@
 package com.seat.sim.client.negotiation;
 
-public class Proposal {
+import java.util.Optional;
+
+public class Proposal implements Comparable<Proposal> {
 
   private double deadline;
   private double decommitmentPenalty;
@@ -8,6 +10,7 @@ public class Proposal {
   private double earliestStartTime;
   private double earlyFinishReward;
   private double earlySuccessProbability;
+  private Optional<Integer> label;
   private double negotiationDeadline;
   private double negotiationDuration;
   private double negotiationStartTime;
@@ -16,6 +19,14 @@ public class Proposal {
 
   public Proposal(double negStartTime, double negDeadline, double negDuration, double eStartTime, double eDeadline,
       double deadline, double reward, double eRewardBonus, double eSuccess, double pSuccess, double penalty) {
+    this(Optional.empty(), negStartTime, negDeadline, negDuration, eStartTime, eDeadline, deadline, reward,
+        eRewardBonus, eSuccess, pSuccess, penalty);
+  }
+
+  public Proposal(Optional<Integer> label, double negStartTime, double negDeadline, double negDuration,
+      double eStartTime, double eDeadline, double deadline, double reward, double eRewardBonus, double eSuccess,
+      double pSuccess, double penalty) {
+    this.label = (label != null) ? label : Optional.empty();
     this.negotiationStartTime = negStartTime;
     this.negotiationDeadline = negDeadline;
     this.negotiationDuration = negDuration;
@@ -30,9 +41,40 @@ public class Proposal {
   }
 
   public Proposal clone() {
-    return new Proposal(negotiationStartTime, negotiationDeadline, negotiationDuration, earliestStartTime,
-        earliestDeadline, deadline, regularReward, earlyFinishReward, earlySuccessProbability,
-        successProbability, decommitmentPenalty);
+    return this.clone(this.earlySuccessProbability, this.successProbability);
+  }
+
+  public Proposal clone(double pSucc) {
+    return this.clone(this.earlySuccessProbability, pSucc);
+  }
+
+  public Proposal clone(double eSucc, double pSucc) {
+    return new Proposal(label, negotiationStartTime, negotiationDeadline, negotiationDuration, earliestStartTime,
+        earliestDeadline, deadline, regularReward, earlyFinishReward, eSucc, pSucc, decommitmentPenalty);
+  }
+
+  public int compareTo(Proposal q) {
+    return Double.compare(this.getCumulativeReward(), q.getCumulativeReward());
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof Proposal) {
+      return this.equals((Proposal) o);
+    }
+    return false;
+  }
+
+  public boolean equals(Proposal p) {
+    if (this.hasLabel() && p.hasLabel()) {
+      return this.getLabel() == p.getLabel();
+    }
+    return this == p;
+  }
+
+  public double getCumulativeReward() {
+    return (this.earlyFinishReward + this.regularReward) * this.earlySuccessProbability +
+        this.regularReward * (1. - this.earlySuccessProbability) * this.successProbability;
   }
 
   public double getDeadline() {
@@ -59,6 +101,10 @@ public class Proposal {
     return this.earlySuccessProbability;
   }
 
+  public int getLabel() {
+    return this.label.get();
+  }
+
   public double getNegotiationDeadline() {
     return this.negotiationDeadline;
   }
@@ -79,8 +125,13 @@ public class Proposal {
     return this.successProbability;
   }
 
+  public boolean hasLabel() {
+    return this.label.isPresent();
+  }
+
   public Proposal update() {
     return new Proposal(
+        this.label,
         Math.max(this.negotiationStartTime - 1, 0),
         Math.max(this.negotiationDeadline - 1, 0),
         Math.max(this.negotiationDuration - 1, 0),

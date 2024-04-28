@@ -24,6 +24,7 @@ public class VictimManager implements AssetManager {
   private Set<String> rescues;
   private DroneScenario scenario;
   private int victimCount;
+  private Set<String> victims;
 
   public VictimManager(DroneScenario scenario, int victimCount) {
     this.scenario = scenario;
@@ -77,7 +78,16 @@ public class VictimManager implements AssetManager {
     return this.victimCount;
   }
 
+  public boolean hasAsset(String assetID) {
+    return this.hasVictim(assetID);
+  }
+
+  public boolean hasVictim(String victimID) {
+    return this.victims.contains(victimID);
+  }
+
   public void init() {
+    this.victims = new HashSet<>();
     this.rescues = new HashSet<>();
   }
 
@@ -130,6 +140,7 @@ public class VictimManager implements AssetManager {
     return victims
       .stream()
       .map(victim -> {
+          this.victims.add(victim.getRemoteID());
           IntentionSet intent = new IntentionSet(victim.getRemoteID());
           if (this.isDone(victim.getRemoteID())) {
             intent.addIntention(IntentRegistry.Done());

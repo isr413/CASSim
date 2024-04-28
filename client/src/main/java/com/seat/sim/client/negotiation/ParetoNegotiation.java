@@ -1,8 +1,8 @@
 package com.seat.sim.client.negotiation;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.seat.sim.common.util.Random;
@@ -36,8 +36,9 @@ public class ParetoNegotiation extends DynamicNegotiation {
     this.matcher = providerMatcher;
   }
 
-  private Proposal generateProposal(double reward, double pSuccess) {
+  private Proposal generateProposal(int label, double reward, double pSuccess) {
     return new Proposal(
+        Optional.of(label),
         ParetoNegotiation.NEG_START_TIME,
         ParetoNegotiation.NEG_DEADLINE,
         ParetoNegotiation.NEG_DURATION,
@@ -61,11 +62,7 @@ public class ParetoNegotiation extends DynamicNegotiation {
     } else {
       this.ensureRequesterProposals(remoteID);
     }
-    Collections.sort(this.getProposals(remoteID), new Comparator<Proposal>() {
-      public int compare(Proposal p, Proposal q) {
-        return Double.compare(p.getReward() * p.getSuccessLikelihood(), q.getReward() * q.getSuccessLikelihood());
-      }
-    });
+    Collections.sort(this.getProposals(remoteID));
   }
 
   private void ensureProviderProposals(String providerID) {
@@ -110,7 +107,7 @@ public class ParetoNegotiation extends DynamicNegotiation {
     succ[0] = this.rng.getRandomPoint(0., minSucc);
 
     for (int i = 0; i < n; i++) {
-      this.addProposal(providerID, this.generateProposal(util[i], succ[i]));
+      this.addProposal(providerID, this.generateProposal(i, util[i], succ[i]));
     }
   }
 
@@ -156,7 +153,7 @@ public class ParetoNegotiation extends DynamicNegotiation {
     succ[0] = this.rng.getRandomPoint(maxSucc, 1.);
 
     for (int i = 0; i < n; i++) {
-      this.addProposal(requesterID, this.generateProposal(util[i], succ[i]));
+      this.addProposal(requesterID, this.generateProposal(i, util[i], succ[i]));
     }
   }
 

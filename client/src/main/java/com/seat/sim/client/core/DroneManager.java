@@ -16,6 +16,8 @@ public interface DroneManager {
 
   public int getDroneCount();
 
+  public boolean hasDrone(String droneID);
+
   public void init();
 
   public boolean isDone(String droneID);

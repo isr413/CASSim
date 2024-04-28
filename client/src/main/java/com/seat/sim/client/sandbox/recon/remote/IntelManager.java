@@ -20,6 +20,7 @@ public class IntelManager implements AssetManager {
 
   private Map<String, Integer> advAssignment;
   private int advCount;
+  private Set<String> assets;
   private Map<String, Integer> pointAssignment;
   private Map<String, Double> popupTimes;
   private int intelCount;
@@ -34,6 +35,7 @@ public class IntelManager implements AssetManager {
     this.intelCount = intelCount;
     this.popupCount = popupCount;
     this.advCount = advCount;
+    this.assets = new HashSet<>();
     this.advAssignment = new HashMap<>();
     this.points = points;
     this.pointAssignment = new HashMap<>();
@@ -98,6 +100,7 @@ public class IntelManager implements AssetManager {
   }
 
   public void init() {
+    this.assets = new HashSet<>();
     this.surveys = new HashSet<>();
     this.advAssignment = new HashMap<>();
     this.pointAssignment = new HashMap<>();
@@ -114,6 +117,10 @@ public class IntelManager implements AssetManager {
     }
     double time = this.popupTimes.get(state.getRemoteID());
     return time < snap.getTime() && !Vector.near(time, snap.getTime());
+  }
+
+  public boolean hasAsset(String assetID) {
+    return this.assets.contains(assetID);
   }
 
   public void reset() {
@@ -144,6 +151,7 @@ public class IntelManager implements AssetManager {
     return intel
       .stream()
       .map(intelCache -> {
+          this.assets.add(intelCache.getRemoteID());
           IntentionSet intent = new IntentionSet(intelCache.getRemoteID());
           if (this.isDone(intelCache.getRemoteID())) {
             intent.addIntention(IntentRegistry.Done());
