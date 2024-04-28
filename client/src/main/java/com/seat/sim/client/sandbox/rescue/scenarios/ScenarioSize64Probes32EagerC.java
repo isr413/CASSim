@@ -81,8 +81,7 @@ public class ScenarioSize64Probes32EagerC extends RescueScenario {
 
   @Override
   public double rankProposal(Proposal p) {
-    return (p.getEarlyRewardBonus() + p.getReward()) * p.getEarlySuccessLikelihood() +
-        p.getReward() * (1. - p.getEarlySuccessLikelihood()) * p.getSuccessLikelihood();
+    return p.getCumulativeReward();
   }
 
   static record Result(double time, double loss) {}

@@ -58,4 +58,9 @@ public class ScenarioSize64Probes32GenerousC extends RescueScenario {
       Proposal proposal) {
     return true;
   }
+
+  @Override
+  public double rankProposal(Proposal p) {
+    return 1.;
+  }
 }

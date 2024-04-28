@@ -70,4 +70,9 @@ public class ScenarioSize64Probes32HelpfulC extends RescueScenario {
         (1. - proposal.getEarlySuccessLikelihood()) * proposal.getSuccessLikelihood();
     return Double.compare(expectedReward, expectedLoss) >= 0;
   }
+
+  @Override
+  public double rankProposal(Proposal p) {
+    return p.getCumulativeReward();
+  }
 }

@@ -58,4 +58,9 @@ public class ScenarioSize64Probes32SelfishC extends RescueScenario {
       Proposal proposal) {
     return false;
   }
+
+  @Override
+  public double rankProposal(Proposal p) {
+    return 0.;
+  }
 }
