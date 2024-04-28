@@ -7,7 +7,7 @@ import com.seat.sim.common.scenario.Snapshot;
 
 public interface NegotiationManager {
 
-  Contract acceptProposal(String senderID, String receiverID, Proposal proposal);
+  Contract acceptProposal(String requesterID, String providerID, Proposal proposal);
 
   void addProposal(String remoteID, Proposal proposal);
 
@@ -15,25 +15,21 @@ public interface NegotiationManager {
 
   default void init() {}
 
-  Optional<Contract> getContract(String senderID, String receiverID);
+  Optional<Contract> getContract(String requesterID, String providerID);
 
   List<Contract> getContracts(String remoteID);
 
-  Optional<Proposal> getNextProposal(String senderID, String receiverID);
-
   List<Proposal> getProposals(String remoteID);
 
-  boolean hasContract(String senderID, String receiverID);
+  boolean hasContract(String requesterID, String providerID);
 
   boolean hasContracts(String remoteID);
-
-  boolean hasNextProposal(String senderID, String receiverID);
 
   boolean hasProposals(String remoteID);
 
   default void reset() {}
 
-  void terminateContract(String senderID, String receiverID);
+  void terminateContract(String requesterID, String providerID);
 
   default void update(Snapshot snap) {}
 }

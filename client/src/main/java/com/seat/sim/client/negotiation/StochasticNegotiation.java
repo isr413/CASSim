@@ -1,15 +1,12 @@
 package com.seat.sim.client.negotiation;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import com.seat.sim.common.util.Random;
 import com.seat.sim.common.util.Range;
 
-public class StochasticNegotiation implements NegotiationManager {
+public class StochasticNegotiation extends DynamicNegotiation {
 
   private static final double E_START_TIME = 0;
   private static final double NEG_DEADLINE = 1;
@@ -26,10 +23,6 @@ public class StochasticNegotiation implements NegotiationManager {
   private Range reward;
   private Random rng;
 
-  private Map<String, List<Contract>> contracts;
-  private Map<String, List<Proposal>> negotiations;
-  private Map<String, List<Proposal>> proposals;
-
   public StochasticNegotiation(Optional<Range> eDeadline, double deadline, Range reward,
       Optional<Range> eRewardBonus, Range pSuccess, Optional<Range> eSuccess,
       Range penalty, Range limit, Random rng) {
@@ -42,9 +35,6 @@ public class StochasticNegotiation implements NegotiationManager {
     this.penalty = penalty;
     this.limit = limit;
     this.rng = rng;
-    this.proposals = new HashMap<>();
-    this.negotiations = new HashMap<>();
-    this.contracts = new HashMap<>();
   }
 
   private Proposal generateProposal() {
@@ -73,103 +63,15 @@ public class StochasticNegotiation implements NegotiationManager {
     }
   }
 
-  private String getKey(String senderID, String receiverID) {
-    if (senderID.compareTo(receiverID) <= 0) {
-      return String.format("%s::%s", senderID, receiverID);
-    }
-    return String.format("%s::%s", receiverID, senderID);
-  }
-
-  public Contract acceptProposal(String senderID, String receiverID, Proposal proposal) {
-    Contract contract = new Contract(senderID, receiverID, proposal);
-    if (!this.contracts.containsKey(senderID)) {
-      this.contracts.put(senderID, new LinkedList<>());
-    }
-    if (!this.contracts.containsKey(receiverID)) {
-      this.contracts.put(receiverID, new LinkedList<>());
-    }
-    this.contracts.get(senderID).add(contract);
-    this.contracts.get(receiverID).add(contract);
-    return contract;
-  }
-
-  public void addProposal(String remoteID, Proposal proposal) {
-    if (!this.proposals.containsKey(remoteID)) {
-      this.proposals.put(remoteID, new LinkedList<>());
-    }
-    this.proposals.get(remoteID).add(proposal);
-  }
-
-  public Optional<Contract> getContract(String senderID, String receiverID) {
-    if (!this.hasContracts(senderID)) {
-      return Optional.empty();
-    }
-    for (Contract contract : this.getContracts(senderID)) {
-      if (contract.matchSignatures(senderID, receiverID)) {
-        return Optional.of(contract);
-      }
-    }
-    return Optional.empty();
-  }
-
-  public List<Contract> getContracts(String remoteID) {
-    return (this.contracts.containsKey(remoteID)) ? this.contracts.get(remoteID) : List.of();
-  }
-
-  public Optional<Proposal> getNextProposal(String senderID, String receiverID) {
-    this.ensureProposals(senderID);
-    if (!this.hasNextProposal(senderID, receiverID)) {
-      return Optional.empty();
-    }
-    String key = this.getKey(senderID, receiverID);
-    if (!this.negotiations.containsKey(key)) {
-      this.negotiations.put(key, new LinkedList<>());
-    }
-    Proposal proposal = this.getProposals(senderID).get(this.negotiations.get(key).size());
-    this.negotiations.get(key).add(proposal);
-    return Optional.of(proposal);
-  }
-
+  @Override
   public List<Proposal> getProposals(String remoteID) {
     this.ensureProposals(remoteID);
-    return (this.proposals.containsKey(remoteID)) ? this.proposals.get(remoteID) : List.of();
+    return super.getProposals(remoteID);
   }
 
-  public boolean hasContract(String senderID, String receiverID) {
-    return this.getContract(senderID, receiverID).isPresent();
-  }
-
-  public boolean hasContracts(String remoteID) {
-    return this.contracts.containsKey(remoteID) && !this.contracts.get(remoteID).isEmpty();
-  }
-
-  public boolean hasNextProposal(String senderID, String receiverID) {
-    this.ensureProposals(senderID);
-    if (!this.hasProposals(senderID)) {
-      return false;
-    }
-    String key = this.getKey(senderID, receiverID);
-    return !this.negotiations.containsKey(key) ||
-        this.negotiations.get(key).size() < this.proposals.get(senderID).size();
-  }
-
+  @Override
   public boolean hasProposals(String remoteID) {
     this.ensureProposals(remoteID);
-    return !this.getProposals(remoteID).isEmpty();
-  }
-
-  public void reset() {
-    this.proposals = new HashMap<>();
-    this.negotiations = new HashMap<>();
-    this.contracts = new HashMap<>();
-  }
-
-  public void terminateContract(String senderID, String receiverID) {
-    Optional<Contract> contract = this.getContract(senderID, receiverID);
-    if (!contract.isPresent()) {
-      return;
-    }
-    this.contracts.get(senderID).remove(contract.get());
-    this.contracts.get(receiverID).remove(contract.get());
+    return super.hasProposals(remoteID);
   }
 }
