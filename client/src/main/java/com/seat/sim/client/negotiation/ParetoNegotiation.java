@@ -92,8 +92,8 @@ public class ParetoNegotiation extends DynamicNegotiation {
         maxSucc = Math.min(maxSucc, succ[j]);
       }
 
-      util[i] = this.rng.getRandomPoint(minUtil, maxUtil);
-      succ[i] = this.rng.getRandomPoint(minSucc, maxSucc);
+      util[i] = Range.Inclusive(minUtil, maxUtil, this.reward.getStep()).sample(this.rng);
+      succ[i] = Range.Inclusive(minSucc, maxSucc, this.pSuccess.getStep()).sample(this.rng);
     }
 
     double minUtil = 1.;
@@ -103,8 +103,8 @@ public class ParetoNegotiation extends DynamicNegotiation {
       minSucc = Math.min(minSucc, succ[i]);
     }
 
-    util[0] = this.rng.getRandomPoint(0., minUtil);
-    succ[0] = this.rng.getRandomPoint(0., minSucc);
+    util[0] = Range.Inclusive(this.reward.getStart(), minUtil, this.reward.getStep()).sample(this.rng);
+    succ[0] = Range.Inclusive(this.pSuccess.getStart(), minSucc, this.pSuccess.getStep()).sample(this.rng);
 
     for (int i = 0; i < n; i++) {
       this.addProposal(providerID, this.generateProposal(i, util[i], succ[i]));
@@ -138,8 +138,8 @@ public class ParetoNegotiation extends DynamicNegotiation {
         maxSucc = Math.min(maxSucc, succ[j]);
       }
 
-      util[i] = this.rng.getRandomPoint(minUtil, maxUtil);
-      succ[i] = this.rng.getRandomPoint(minSucc, maxSucc);
+      util[i] = Range.Inclusive(minUtil, maxUtil, this.reward.getStep()).sample(this.rng);
+      succ[i] = Range.Inclusive(minSucc, maxSucc, this.pSuccess.getStep()).sample(this.rng);
     }
 
     double maxUtil = 1.;
@@ -149,8 +149,8 @@ public class ParetoNegotiation extends DynamicNegotiation {
       maxSucc = Math.min(maxSucc, succ[i]);
     }
 
-    util[0] = this.rng.getRandomPoint(maxUtil, 1.);
-    succ[0] = this.rng.getRandomPoint(maxSucc, 1.);
+    util[0] = Range.Inclusive(maxUtil, this.reward.getEnd(), this.reward.getStep()).sample(this.rng);
+    succ[0] = Range.Inclusive(maxSucc, this.pSuccess.getEnd(), this.pSuccess.getStep()).sample(this.rng);
 
     for (int i = 0; i < n; i++) {
       this.addProposal(requesterID, this.generateProposal(i, util[i], succ[i]));

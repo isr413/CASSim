@@ -147,6 +147,9 @@ public class ScenarioSize64Probes32RationalC extends RescueScenario {
           }
         }
       }
+      if (requesterQueue.isEmpty()) {
+        break;
+      }
       p = providerQueue.poll();
       idx = this.negotiations.get().getProposals(senderID).indexOf(p);
       if (idx >= 0) {
